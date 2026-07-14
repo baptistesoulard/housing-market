@@ -67,6 +67,64 @@ def find_optimal_lag(df_indicator, df_sales, ind_col, sales_col, max_lag=24):
         "max_correlation": round(max_corr, 3)
     }
 
+def resample_quarterly(df, date_col, value_col, agg="sum"):
+    """
+    Resamples a monthly (or finer) series to calendar-quarter frequency, labelled on the
+    first month of each quarter (Jan/Apr/Jul/Oct), matching the company-revenue benchmark
+    convention. Use agg="sum" for flow indicators (permits, transactions) and agg="mean"
+    for level indicators (rates, confidence). Returns [Date, value_col].
+    """
+    s = df[[date_col, value_col]].dropna().copy()
+    s[date_col] = pd.to_datetime(s[date_col])
+    s = s.groupby(date_col)[value_col].sum().sort_index()  # collapse any duplicate dates
+    q = s.resample("QS").mean() if agg == "mean" else s.resample("QS").sum()
+    return q.reset_index().rename(columns={date_col: "Date"})
+
+
+def find_optimal_lag_quarterly(df_indicator, df_sales, ind_col, sales_col,
+                               ind_agg="sum", max_lag_q=8):
+    """
+    Quarterly counterpart of find_optimal_lag, for comparing a monthly leading indicator
+    with a QUARTERLY company-revenue benchmark (in M€). The indicator is first resampled
+    to calendar quarters (ind_agg: "sum" for flows, "mean" for rates), then shifted
+    forward by 0..max_lag_q quarters and correlated (Pearson) with contemporaneous
+    revenue. Returns lags expressed in BOTH quarters and months so the UI can display
+    either. Picks the lag with the highest absolute correlation.
+    """
+    ind_q = resample_quarterly(df_indicator, "Date", ind_col, agg=ind_agg)
+    sales_q = df_sales[["Date", sales_col]].groupby("Date").sum().reset_index()
+
+    correlations = []
+    lags_q = list(range(0, max_lag_q + 1))
+    for q in lags_q:
+        shifted = ind_q.copy()
+        shifted["Date"] = shifted["Date"] + pd.DateOffset(months=3 * q)
+        merged = pd.merge(sales_q, shifted, on="Date", how="inner")
+        if len(merged) > 4:
+            r = merged[ind_col].corr(merged[sales_col])
+            correlations.append(0.0 if pd.isna(r) else r)
+        else:
+            correlations.append(0.0)
+
+    abs_corr = [abs(r) for r in correlations]
+    if abs_corr and max(abs_corr) > 0:
+        opt_idx = int(np.argmax(abs_corr))
+        optimal_lag_q = lags_q[opt_idx]
+        max_corr = correlations[opt_idx]
+    else:
+        optimal_lag_q = 0
+        max_corr = 0.0
+
+    return {
+        "lags_q": lags_q,
+        "lags_months": [3 * q for q in lags_q],
+        "correlations": [round(r, 3) for r in correlations],
+        "optimal_lag_q": optimal_lag_q,
+        "optimal_lag_months": 3 * optimal_lag_q,
+        "max_correlation": round(max_corr, 3),
+    }
+
+
 def min_max_normalize(series):
     """
     Helper to normalize a series to 0-100 range for combining different indicators.

@@ -1,4 +1,5 @@
 import os
+import glob
 import pandas as pd
 import numpy as np
 
@@ -49,6 +50,35 @@ INTENTIONS_LOGEMENT_CSV = os.path.join("data_manual_input",
                                        "intentions-achat-logement.csv")
 CHOMAGE_BIT_CSV = os.path.join("data_manual_input", "taux-chomage-bit.csv")
 
+# --- Prix des logements anciens (real, national) ---
+# House-price indices: Notaires-INSEE "indice des prix des logements anciens", France
+#   métropolitaine, base 100 = moyenne annuelle 2015, série CVS, QUARTERLY. Three columns
+#   in one CSV (Ensemble / Appartements / Maisons), idbanks 010567059 / 010567057 /
+#   010567061 (INSEE SDMX BDM), reindexed onto the monthly master index (NaN on off-period
+#   months, exactly like the quarterly ILO unemployment series above). See
+#   fetch_new_sources.py for the off-runtime acquisition.
+PRIX_ANCIEN_CSV = os.path.join("data_manual_input",
+                               "prix-immobilier-notaires-insee.csv")
+# New-dwelling price index (INSEE IPLN, France, base 100 = 2015, CVS, QUARTERLY, idbank
+# 010751595) — same base as the ancien indices, for a neuf/ancien comparison.
+PRIX_NEUF_CSV = os.path.join("data_manual_input",
+                             "prix-logements-neufs-insee.csv")
+# Housing-loan production (new business, €bn, MONTHLY) — ECB MIR M.FR.B.A2C.A.B.A.2250.EUR.N.
+CREDIT_VOLUME_CSV = os.path.join("data_manual_input",
+                                 "production-credits-habitat.csv")
+# --- Commercialisation des logements neufs (ECLN, SDES) — national quarterly CVS-CJO
+# "ventes aux particuliers": réservations, mises en vente, annulations, encours, délai
+# d'écoulement (en trimestres) et prix au m² du collectif. Its own dataset (data/ecln.csv).
+ECLN_CSV = os.path.join("data_manual_input", "ecln-commercialisation-neuf.csv")
+
+# --- Real "company revenue" benchmark series (quarterly, national, €) ---
+# One CSV per company in data_manual_input/, named "ca-<slug>.csv", each holding
+# [Date, Company, CA_MEUR] at quarterly frequency (Date = first month of the calendar
+# quarter). These are REAL public figures compiled from investor-relations releases
+# (see data_manual_input/ca-SOURCES.md) and are NEVER synthetic. They feed the
+# "Moteur de Simulation Prospective" as an alternative sales benchmark expressed in M€.
+REVENUE_GLOB = os.path.join("data_manual_input", "ca-*.csv")
+
 # Real macro series: (manual-input file, target column). Only the first two are
 # required (raise FileNotFoundError, triggering the synthetic fallback); the two
 # financing rates are optional add-ons — a missing file just leaves NaN so the
@@ -62,6 +92,14 @@ _MACRO_OPTIONAL = [
     (OAT_10ANS_CSV, "OAT_10ans"),
     (INTENTIONS_LOGEMENT_CSV, "Intentions_Achat_Logement"),
     (CHOMAGE_BIT_CSV, "Taux_Chomage_BIT"),
+    # House-price indices (quarterly) — reindexed onto the monthly index leaves NaN on
+    # off-period months (same handling as the quarterly unemployment series).
+    (PRIX_ANCIEN_CSV, "Prix_Ancien_Ensemble"),
+    (PRIX_ANCIEN_CSV, "Prix_Ancien_Appartements"),
+    (PRIX_ANCIEN_CSV, "Prix_Ancien_Maisons"),
+    (PRIX_NEUF_CSV, "Prix_Neuf"),
+    # Housing-loan production (new business, €bn) — monthly, no gaps from 2003.
+    (CREDIT_VOLUME_CSV, "Production_Credits_Habitat"),
 ]
 
 
@@ -275,7 +313,9 @@ class DataManager:
             "sitadel": os.path.join(self.data_dir, "sitadel.csv"),
             "dvf": os.path.join(self.data_dir, "dvf.csv"),
             "macro": os.path.join(self.data_dir, "macro.csv"),
-            "sales": os.path.join(self.data_dir, "sales.csv")
+            "sales": os.path.join(self.data_dir, "sales.csv"),
+            "revenue": os.path.join(self.data_dir, "revenue.csv"),
+            "ecln": os.path.join(self.data_dir, "ecln.csv")
         }
         
     def load_or_generate_all(self, force_regenerate=False):
@@ -302,7 +342,112 @@ class DataManager:
         self.ensure_dvf_ancien(force_rebuild=force_regenerate)
         df_dvf = pd.read_csv(self.paths["dvf"], parse_dates=["Date"])
 
-        return df_sitadel, df_dvf, df_macro, df_sales
+        # Real company-revenue benchmark (quarterly, €). Rebuilt from the ca-*.csv
+        # manual-input files; empty frame when none are present.
+        self.ensure_revenue(force_rebuild=force_regenerate)
+        if os.path.exists(self.paths["revenue"]):
+            df_revenue = pd.read_csv(self.paths["revenue"], parse_dates=["Date"])
+        else:
+            df_revenue = pd.DataFrame(columns=["Date", "Company", "CA_MEUR"])
+
+        # Real ECLN commercialisation-of-new-dwellings series (quarterly). Rebuilt from
+        # the SDES manual-input CSV; empty frame when the source file is absent.
+        self.ensure_ecln(force_rebuild=force_regenerate)
+        if os.path.exists(self.paths["ecln"]):
+            df_ecln = pd.read_csv(self.paths["ecln"], parse_dates=["Date"])
+        else:
+            df_ecln = pd.DataFrame(columns=[
+                "Date", "Reservations", "MisesEnVente", "Annulations",
+                "Encours", "DelaiEcoulement", "PrixM2_Collectif",
+                "Resa_Sociaux", "Resa_Institutionnels"])
+
+        return df_sitadel, df_dvf, df_macro, df_sales, df_revenue, df_ecln
+
+    @staticmethod
+    def build_revenue_from_manual_inputs(pattern=REVENUE_GLOB):
+        """
+        Reads every data_manual_input/ca-*.csv file (one per company) and returns a
+        single tidy dataframe [Date, Company, CA_MEUR] at quarterly frequency, sorted
+        by company then date. Each source file must expose those three columns; the
+        Company label falls back to the file slug when the column is absent. Returns an
+        empty (correctly-typed) frame when no source file matches.
+        """
+        cols = ["Date", "Company", "CA_MEUR"]
+        frames = []
+        for path in sorted(glob.glob(pattern)):
+            df = pd.read_csv(path)
+            df["Date"] = pd.to_datetime(df["Date"])
+            if "Company" not in df.columns:
+                slug = os.path.splitext(os.path.basename(path))[0].replace("ca-", "")
+                df["Company"] = slug
+            df["CA_MEUR"] = pd.to_numeric(df["CA_MEUR"], errors="coerce")
+            frames.append(df[cols])
+        if not frames:
+            return pd.DataFrame(columns=cols)
+        out = pd.concat(frames, ignore_index=True).dropna(subset=["CA_MEUR"])
+        return out.sort_values(["Company", "Date"]).reset_index(drop=True)
+
+    def ensure_revenue(self, force_rebuild=False):
+        """
+        Guarantees data/revenue.csv holds the real company-revenue benchmark compiled
+        from the ca-*.csv manual-input files. (Re)builds it when the cache is missing or
+        force_rebuild is set. Never writes synthetic data. Returns (success, message);
+        success is True with an explanatory message even when no source file exists (the
+        benchmark is simply unavailable, not an error).
+        """
+        # Rebuild when forced, when the cache is missing, or when any source ca-*.csv is
+        # newer than the cache (so editing/adding a company refreshes automatically).
+        if os.path.exists(self.paths["revenue"]) and not force_rebuild:
+            cache_mtime = os.path.getmtime(self.paths["revenue"])
+            sources = glob.glob(REVENUE_GLOB)
+            if not sources or all(os.path.getmtime(s) <= cache_mtime for s in sources):
+                return True, "CA entreprise (benchmark réel) déjà présent."
+        df = self.build_revenue_from_manual_inputs()
+        if df.empty:
+            return True, ("Aucun fichier data_manual_input/ca-*.csv : "
+                          "benchmark CA entreprise indisponible.")
+        df.to_csv(self.paths["revenue"], index=False, encoding="utf-8")
+        companies = ", ".join(sorted(df["Company"].unique()))
+        return True, (f"CA entreprise importé : {len(df)} points trimestriels "
+                      f"({companies}).")
+
+    @staticmethod
+    def build_ecln_from_manual_input(path=ECLN_CSV):
+        """
+        Reads the national ECLN commercialisation series (SDES, quarterly CVS-CJO) from
+        its manual-input CSV and returns a tidy, date-sorted dataframe [Date,
+        Reservations, MisesEnVente, Annulations, Encours, DelaiEcoulement,
+        PrixM2_Collectif]. The file is already in the app's target shape (see
+        fetch_new_sources.py); this just parses dates and enforces numeric columns.
+        """
+        df = pd.read_csv(path)
+        df["Date"] = pd.to_datetime(df["Date"])
+        for c in ["Reservations", "MisesEnVente", "Annulations", "Encours",
+                  "DelaiEcoulement", "PrixM2_Collectif",
+                  "Resa_Sociaux", "Resa_Institutionnels"]:
+            if c in df.columns:
+                df[c] = pd.to_numeric(df[c], errors="coerce")
+        return df.sort_values("Date").reset_index(drop=True)
+
+    def ensure_ecln(self, force_rebuild=False):
+        """
+        Guarantees data/ecln.csv holds the real ECLN commercialisation series, (re)built
+        from the SDES manual-input CSV when the cache is missing / older than the source
+        / force_rebuild is set. Never writes synthetic data. Returns (success, message);
+        a missing source file is not an error (the ECLN charts are simply unavailable).
+        """
+        if os.path.exists(self.paths["ecln"]) and not force_rebuild:
+            if not os.path.exists(ECLN_CSV) or \
+                    os.path.getmtime(ECLN_CSV) <= os.path.getmtime(self.paths["ecln"]):
+                return True, "Commercialisation neuf (ECLN) déjà présente."
+        if not os.path.exists(ECLN_CSV):
+            return True, (f"Fichier ECLN introuvable (« {ECLN_CSV} ») : "
+                          "commercialisation neuf indisponible.")
+        df = self.build_ecln_from_manual_input()
+        df.to_csv(self.paths["ecln"], index=False, encoding="utf-8")
+        dmin, dmax = df["Date"].min().strftime("%Y-%m"), df["Date"].max().strftime("%Y-%m")
+        return True, (f"Commercialisation neuf (ECLN) importée : {len(df)} trimestres "
+                      f"({dmin} → {dmax}).")
 
     @staticmethod
     def build_dvf_ancien_from_igedd(xls_path=IGEDD_ANCIEN_XLS):

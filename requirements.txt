@@ -1,12 +1,15 @@
 # HousingMarket_v3 — dépendances d'exécution (app Streamlit national-only)
-# Revu le 2026-07-14 : inchangé. Les évolutions récentes n'ajoutent aucune dépendance :
-#  - onglet Contexte Macro : 2 graphiques INSEE (intentions d'achat de logement,
-#    taux de chômage BIT) + uniformisation des 4 graphiques → plotly/pandas/numpy.
-#  - anonymisation des produits second-œuvre (renommage) → aucune lib.
-#  - le téléchargement des séries INSEE (API SDMX BDM) est un outillage HORS runtime,
-#    fait via urllib + xml.etree de la bibliothèque standard (pas de requests/httpx).
+# Revu le 2026-07-14 (soir) : inchangé. Les onglets « Prix & Accessibilité »,
+# « Commercialisation Neuf (ECLN) » et « Prévision & Scénarios » n'ajoutent AUCUNE
+# dépendance d'exécution :
+#  - prix Notaires-INSEE/neuf, ECLN et volume de crédits sont lus depuis des CSV (pandas)
+#    et tracés via plotly ; capacité d'emprunt / accessibilité = numpy.
+#  - le module de prévision (forecast.py : régressions OLS taux + transactions, backtest,
+#    scénarios) est en numpy pur (np.linalg.lstsq) — pas de statsmodels/scikit-learn.
+#  - l'acquisition des séries (INSEE SDMX BDM + SDES/data.gouv + BCE SDMX) est un outillage
+#    HORS runtime : fetch_new_sources.py, via urllib de la bibliothèque standard.
 streamlit>=1.30.0     # UI de l'application
 pandas>=2.0.0         # manipulation des données (CSV/Excel, séries temporelles)
-numpy>=1.20.0         # calculs numériques / génération synthétique
+numpy>=1.20.0         # calculs numériques / accessibilité / régressions de prévision
 plotly>=5.10.0        # graphiques (courbes, KPI)
 xlrd>=2.0.1           # lecture du .xls IGEDD (ventes anciennes) via pandas.read_excel

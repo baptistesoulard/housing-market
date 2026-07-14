@@ -9,6 +9,7 @@ from data_manager import DataManager
 import analysis as ana
 import simulation as sim
 import export as exp
+import forecast as fc
 
 # --- Brand palette (see "Color theme.txt") ---
 # Centralised so the CSS block and every Plotly trace draw from the same colours.
@@ -145,12 +146,19 @@ def get_data_manager():
 dm = get_data_manager()
 
 # Load initial datasets (national-level series)
-df_sitadel, df_dvf, df_macro, df_sales = dm.load_or_generate_all()
+df_sitadel, df_dvf, df_macro, df_sales, df_revenue, df_ecln = dm.load_or_generate_all()
+
+# Untouched full-history macro (before the year slicer below). The affordability index
+# rebases borrowing capacity to its 2015 mean from the FULL history, so the sidebar year
+# slicer never moves that base.
+df_macro_full = df_macro
 
 # Keep untouched references to the full national series. The "Chiffres Clés" cards
 # use these so the headline figures stay independent of the sidebar year slicer and
 # the on-chart segment selector (which reassign / filter the working dataframes below).
 df_sitadel_full, df_dvf_full = df_sitadel, df_dvf
+# Full-history macro & revenue for the forecast models (they must not depend on the slicer).
+df_revenue_full = df_revenue
 
 # --- Handle parameter application from state (placed before any widget render) ---
 if "opt_applied" in st.session_state and st.session_state["opt_applied"]:
@@ -169,6 +177,11 @@ st.sidebar.title("🏠 Market Intelligence")
 language = st.sidebar.selectbox("🌐 Langue / Language", ["Français", "English"])
 lang_code = "FR" if language == "Français" else "EN"
 
+def _L(fr, en):
+    """Inline bilingual string for the newer tabs (Prix & Accessibilité / ECLN), which
+    keep their labels local rather than expanding the big T dictionary."""
+    return fr if lang_code == "FR" else en
+
 # --- Bilingual Translations Dictionary ---
 T = {
     "FR": {
@@ -185,6 +198,9 @@ T = {
         "sidebar_info": "💡 **Aide à la décision :** Les permis de construire et mises en chantier de SIT@DEL ainsi que les ventes de logements anciens (IGEDD) prédisent l'activité des industries du second œuvre du bâtiment avec un décalage temporel (Time Lag) propre à chaque segment de logement.",
         "tab_lookback": "📊 Conjoncture rétrospective",
         "tab_macro": "🏦 Contexte Macro & Financement",
+        "tab_prix": "🏷️ Prix & Accessibilité",
+        "tab_ecln": "🏗️ Commercialisation Neuf",
+        "tab_forecast": "📡 Prévision & Scénarios",
         "tab_timelag": "🔮 Simulation Time Lag",
         "tab_composite": "🧪 Modèle Composite",
         "tab_export": "💾 Export SAP IBP",
@@ -279,6 +295,16 @@ T = {
         "time_lag_label": "2. Décalage Temporel (Time Lag en mois)",
         "time_lag_help": "Décale la courbe de l'indicateur vers le futur (valeur positive). Un lag de 14 signifie que l'indicateur d'aujourd'hui prédira les ventes dans 14 mois.",
         "sales_compare": "3. Comparer avec les ventes de",
+        "bench_src_label": "3. Benchmark de ventes",
+        "bench_src_synth": "Ventes synthétiques (unités)",
+        "bench_src_revenue": "CA entreprise réel (M€)",
+        "bench_src_help": "Comparez l'indicateur soit aux ventes synthétiques (mensuelles, "
+                          "en unités), soit au chiffre d'affaires réel d'une entreprise cotée "
+                          "liée au logement (trimestriel, en M€ — Hexaom / Kingfisher France). "
+                          "En mode CA réel, l'indicateur est agrégé au trimestre.",
+        "bench_company": "Entreprise (CA réel)",
+        "revenue_note": "✅ CA réel (source publique, communiqués financiers). "
+                        "Comparaison sur base trimestrielle ; indicateur agrégé au trimestre.",
         "optimal_lag_search": "🎯 Recherche de Décalage Optimal",
         "optimal_lag_desc": "Calculer automatiquement le décalage qui maximise la corrélation avec vos ventes.",
         "btn_calc_optimal": "Calculer le Lag Optimal",
@@ -375,6 +401,9 @@ T = {
         "sidebar_info": "💡 **Decision support:** SIT@DEL building permits & construction starts as well as IGEDD existing-home sales predict activity in the building secondary-works (second-œuvre) industries with a specific Time Lag proper to each housing segment.",
         "tab_lookback": "📊 Look-back Analysis",
         "tab_macro": "🏦 Macro & Financing Context",
+        "tab_prix": "🏷️ Prices & Affordability",
+        "tab_ecln": "🏗️ New-Build Sales (ECLN)",
+        "tab_forecast": "📡 Forecast & Scenarios",
         "tab_timelag": "🔮 Time Lag Simulation",
         "tab_composite": "🧪 Composite Model",
         "tab_export": "💾 Export SAP IBP",
@@ -469,6 +498,16 @@ T = {
         "time_lag_label": "2. Time Lag (months)",
         "time_lag_help": "Shifts the indicator curve forward in time (positive lag). A lag of 14 means today's permits will predict sales 14 months into the future.",
         "sales_compare": "3. Compare with sales of",
+        "bench_src_label": "3. Sales benchmark",
+        "bench_src_synth": "Synthetic sales (units)",
+        "bench_src_revenue": "Real company revenue (€m)",
+        "bench_src_help": "Compare the indicator either against synthetic sales (monthly, "
+                          "in units) or against the real revenue of a listed housing-related "
+                          "company (quarterly, in €m — Hexaom / Kingfisher France). In real-"
+                          "revenue mode the indicator is aggregated to quarters.",
+        "bench_company": "Company (real revenue)",
+        "revenue_note": "✅ Real revenue (public source, investor-relations releases). "
+                        "Compared on a quarterly basis; indicator aggregated to quarters.",
         "optimal_lag_search": "🎯 Optimal Lag Search",
         "optimal_lag_desc": "Automatically calculate the time lag that maximizes Pearson correlation with your sales.",
         "btn_calc_optimal": "Calculate Optimal Lag",
@@ -576,6 +615,10 @@ df_sitadel = _filter_years(df_sitadel)
 df_dvf = _filter_years(df_dvf)
 df_macro = _filter_years(df_macro)
 df_sales = _filter_years(df_sales)
+if not df_revenue.empty:
+    df_revenue = _filter_years(df_revenue)
+if not df_ecln.empty:
+    df_ecln = _filter_years(df_ecln)
 
 st.sidebar.info(T[lang_code]["sidebar_info"])
 
@@ -718,10 +761,11 @@ def find_and_add_extrema_trace(fig, df, date_col, val_col, color, window=24, edg
         hoverinfo="skip"
     ))
 
-def add_last_value_label(fig, df, date_col, val_col, color, lang="FR", decimals=2):
+def add_last_value_label(fig, df, date_col, val_col, color, lang="FR", decimals=2, yshift=0):
     """Mark the last non-null point of `val_col` with a highlighted value callout
     (dot + label), like the reference chart's end-of-line figures. Values use the
-    French decimal comma in FR."""
+    French decimal comma in FR. `yshift` (pixels) nudges the text vertically so several
+    end-labels sharing near-identical values don't overlap (the dot stays on the point)."""
     valid = df.dropna(subset=[val_col])
     if valid.empty:
         return
@@ -737,7 +781,7 @@ def add_last_value_label(fig, df, date_col, val_col, color, lang="FR", decimals=
     ))
     fig.add_annotation(
         x=x, y=y, text=f"<b>{txt}</b>",
-        showarrow=False, xanchor="left", xshift=8,
+        showarrow=False, xanchor="left", xshift=8, yshift=yshift,
         font=dict(color=color, size=12)
     )
 
@@ -768,6 +812,9 @@ def macro_chart_title(title, subtitle):
 tabs = st.tabs([
     T[lang_code]["tab_lookback"],
     T[lang_code]["tab_macro"],
+    T[lang_code]["tab_prix"],
+    T[lang_code]["tab_ecln"],
+    T[lang_code]["tab_forecast"],
     T[lang_code]["tab_timelag"],
     T[lang_code]["tab_composite"],
     T[lang_code]["tab_export"],
@@ -1175,11 +1222,488 @@ with tabs[1]:
         st.plotly_chart(fig_cho, use_container_width=True)
         st.caption(T[lang_code]["source_chomage_full"])
 
+    # --- Volume de crédits : production de crédits à l'habitat (Md€) ---
+    if "Production_Credits_Habitat" in df_macro.columns and df_macro["Production_Credits_Habitat"].notna().any():
+        st.markdown("---")
+        st.markdown("#### " + _L("Volume de crédits à l'habitat", "Housing-loan volumes"))
+        _cr = df_macro.dropna(subset=["Production_Credits_Habitat"]).copy()
+        _cr["_mm12"] = _cr["Production_Credits_Habitat"].rolling(12).mean()
+        _cr["_cum12"] = _cr["Production_Credits_Habitat"].rolling(12).sum()
+        cr_cols = st.columns(2)
+        with cr_cols[0]:
+            macro_chart_title(_L("Production de crédits à l'habitat", "Housing-loan production"),
+                              _L("crédits nouveaux, Md€ par mois", "new loans, €bn per month"))
+            fig_cv = go.Figure()
+            fig_cv.add_trace(go.Bar(x=_cr["Date"], y=_cr["Production_Credits_Habitat"],
+                                    name=_L("Mensuel", "Monthly"), marker_color=COLOR_BLUE, opacity=0.45))
+            fig_cv.add_trace(go.Scatter(x=_cr["Date"], y=_cr["_mm12"], name=_L("Moyenne 12 mois", "12-month average"),
+                                        line=dict(color=COLOR_BRICK, width=2)))
+            apply_macro_chart_layout(fig_cv, "Md€")
+            st.plotly_chart(fig_cv, use_container_width=True)
+            st.caption(_L("Source : BCE — statistiques MIR (crédits nouveaux à l'habitat aux ménages, y.c. renégociations).",
+                          "Source: ECB — MIR statistics (new housing loans to households, incl. renegotiations)."))
+        with cr_cols[1]:
+            macro_chart_title(_L("Production cumulée sur 12 mois", "12-month cumulative production"),
+                              _L("crédits nouveaux, Md€ / an", "new loans, €bn / year"))
+            fig_cc = go.Figure()
+            _c12 = _cr.dropna(subset=["_cum12"])
+            fig_cc.add_trace(go.Scatter(x=_c12["Date"], y=_c12["_cum12"], name=_L("Cumul 12 mois", "12-month sum"),
+                                        line=dict(color=COLOR_GREEN, width=2),
+                                        fill="tozeroy", fillcolor="rgba(56,142,60,0.12)"))
+            add_last_value_label(fig_cc, _c12, "Date", "_cum12", COLOR_GREEN, lang_code, decimals=0)
+            apply_macro_chart_layout(fig_cc, "Md€")
+            st.plotly_chart(fig_cc, use_container_width=True)
+            st.caption(_L("Rythme annuel de production (~175 Md€ attendus en 2026 par BPCE L'Observatoire).",
+                          "Annual production run-rate (~€175bn expected in 2026 by BPCE L'Observatoire)."))
+
 
 # ==============================================================================
-# TAB 3: SIMULATION TIME LAG
+# TAB 3: PRIX & ACCESSIBILITÉ (indices Notaires-INSEE + capacité d'emprunt / accessibilité)
 # ==============================================================================
+def _borrow_capacity_factor(rate_pct, years):
+    """Present value of a 1-unit monthly instalment over `years` at annual rate
+    `rate_pct` — i.e. the principal a fixed monthly payment can service. Vectorised;
+    a zero rate degenerates to n months."""
+    i = np.asarray(rate_pct, dtype=float) / 100.0 / 12.0
+    n = years * 12
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.where(i > 0, (1.0 - (1.0 + i) ** (-n)) / i, float(n))
+
+
 with tabs[2]:
+    st.header(_L("🏷️ Prix des logements & accessibilité",
+                 "🏷️ House prices & affordability"))
+    st.write(_L(
+        "Indices de prix des logements anciens (Notaires-INSEE, base 100 = 2015, France "
+        "métropolitaine) et lecture de l'accessibilité : capacité d'emprunt à mensualité "
+        "constante et indice d'accessibilité (capacité rapportée aux prix).",
+        "Existing-home price indices (Notaires-INSEE, base 100 = 2015, metropolitan "
+        "France) and an affordability read: constant-instalment borrowing capacity and an "
+        "affordability index (capacity over prices)."))
+
+    _labels = {"Prix_Ancien_Ensemble": _L("Ensemble", "All dwellings"),
+               "Prix_Ancien_Appartements": _L("Appartements", "Apartments"),
+               "Prix_Ancien_Maisons": _L("Maisons", "Houses")}
+    _series_cols = [("Prix_Ancien_Ensemble", COLOR_BRICK),
+                    ("Prix_Ancien_Appartements", COLOR_BLUE),
+                    ("Prix_Ancien_Maisons", COLOR_GREEN)]
+
+    if "Prix_Ancien_Ensemble" not in df_macro.columns or df_macro["Prix_Ancien_Ensemble"].dropna().empty:
+        st.warning(_L(
+            "Indices de prix indisponibles — lancez `python fetch_new_sources.py` pour "
+            "générer les fichiers source.",
+            "Price indices unavailable — run `python fetch_new_sources.py` to generate the source files."))
+    else:
+        # --- KPIs: dernier point + glissement annuel (4 trimestres) ---
+        kcols = st.columns(3)
+        for (_c, _), _kc in zip(_series_cols, kcols):
+            s = df_macro.dropna(subset=[_c])
+            if len(s) >= 5:
+                last, prev = s[_c].iloc[-1], s[_c].iloc[-5]
+                yoy = (last / prev - 1) * 100
+                v = f"{last:.1f}"
+                d = f"{yoy:+.1f}%"
+                if lang_code == "FR":
+                    v, d = v.replace(".", ","), d.replace(".", ",")
+                _kc.metric(_labels[_c], v, d)
+        _last_date = df_macro.dropna(subset=["Prix_Ancien_Ensemble"])["Date"].iloc[-1]
+        st.caption(_L(f"Dernier point : {_last_date:%Y-%m} · base 100 = moyenne 2015 · variation en glissement annuel.",
+                      f"Latest: {_last_date:%Y-%m} · base 100 = 2015 average · year-on-year change."))
+
+        _dur = st.radio(_L("Durée d'emprunt (modèle de capacité)", "Loan term (capacity model)"),
+                        [25, 20], horizontal=True,
+                        format_func=lambda y: f"{y} " + _L("ans", "yrs"))
+
+        # --- Row 1: price levels + YoY growth ---
+        r1 = st.columns(2)
+        with r1[0]:
+            macro_chart_title(_L("Prix des logements anciens", "Existing-home prices"),
+                              _L("indices Notaires-INSEE, base 100 = 2015", "Notaires-INSEE indices, base 100 = 2015"))
+            fig_p = go.Figure()
+            # The 3 end values sit within ~1.5 pts, so their labels collide — rank them
+            # and nudge each vertically (highest up, lowest down) to keep them readable.
+            _lasts = {c: df_macro.dropna(subset=[c])[c].iloc[-1] for c, _ in _series_cols}
+            _order = sorted(_series_cols, key=lambda cc: _lasts[cc[0]], reverse=True)
+            _ysh = {c: (1 - _order.index((c, col))) * 13 for c, col in _series_cols}
+            for _c, _col in _series_cols:
+                s = df_macro.dropna(subset=[_c])
+                fig_p.add_trace(go.Scatter(x=s["Date"], y=s[_c], name=_labels[_c], line=dict(color=_col, width=2)))
+                add_last_value_label(fig_p, s, "Date", _c, _col, lang_code, decimals=0, yshift=_ysh[_c])
+            apply_macro_chart_layout(fig_p, _L("Indice (base 100)", "Index (base 100)"))
+            st.plotly_chart(fig_p, use_container_width=True)
+            st.caption(_L("Source : INSEE — indices Notaires-INSEE des prix des logements anciens (CVS), idbanks 010567059/057/061.",
+                          "Source: INSEE — Notaires-INSEE existing-home price indices (SA), idbanks 010567059/057/061."))
+        with r1[1]:
+            macro_chart_title(_L("Évolution annuelle des prix", "Annual price growth"),
+                              _L("glissement sur 1 an, %", "year-on-year, %"))
+            fig_g = go.Figure()
+            for _c, _col in _series_cols:
+                s = df_macro.dropna(subset=[_c]).copy()
+                s["_yoy"] = s[_c].pct_change(4) * 100
+                s = s.dropna(subset=["_yoy"])
+                fig_g.add_trace(go.Scatter(x=s["Date"], y=s["_yoy"], name=_labels[_c], line=dict(color=_col, width=2)))
+            fig_g.add_hline(y=0, line_dash="dash", line_color="grey")
+            apply_macro_chart_layout(fig_g, "%")
+            st.plotly_chart(fig_g, use_container_width=True)
+            st.caption(_L("Source : INSEE — indices Notaires-INSEE (calcul en glissement annuel). Hausse pour le 4ᵉ trimestre consécutif fin 2025 (Note de conjoncture n°71).",
+                          "Source: INSEE — Notaires-INSEE indices (year-on-year calculation). 4th straight quarterly rise at end-2025 (Notaires bulletin no. 71)."))
+
+        # --- Row 2: capacity vs price + affordability index (base 100 = 2015) ---
+        # Prices are already base-2015; capacity is rebased to its 2015 mean computed on
+        # the FULL history so the sidebar year slicer never moves the base.
+        _full = df_macro_full.dropna(subset=["Credit_Logement_Taux_Interet"]).copy()
+        _cap_2015 = _borrow_capacity_factor(
+            _full.loc[_full["Date"].dt.year == 2015, "Credit_Logement_Taux_Interet"], _dur).mean()
+        if not (_cap_2015 and _cap_2015 > 0):
+            _cap_2015 = _borrow_capacity_factor(_full["Credit_Logement_Taux_Interet"].iloc[:1], _dur)[0]
+        _acc = df_macro.dropna(subset=["Credit_Logement_Taux_Interet", "Prix_Ancien_Ensemble"]).copy()
+        _acc["_capidx"] = _borrow_capacity_factor(_acc["Credit_Logement_Taux_Interet"], _dur) / _cap_2015 * 100
+        _acc["_access"] = _acc["_capidx"] / _acc["Prix_Ancien_Ensemble"] * 100
+        r2 = st.columns(2)
+        with r2[0]:
+            macro_chart_title(_L("Capacité d'emprunt vs prix", "Borrowing capacity vs prices"),
+                              _L(f"base 100 = 2015 · mensualité constante, {_dur} ans",
+                                 f"base 100 = 2015 · constant instalment, {_dur} yrs"))
+            fig_c = go.Figure()
+            fig_c.add_trace(go.Scatter(x=_acc["Date"], y=_acc["_capidx"],
+                                       name=_L("Capacité d'emprunt", "Borrowing capacity"),
+                                       line=dict(color=COLOR_GREEN, width=2)))
+            s = df_macro.dropna(subset=["Prix_Ancien_Ensemble"])
+            fig_c.add_trace(go.Scatter(x=s["Date"], y=s["Prix_Ancien_Ensemble"],
+                                       name=_L("Prix (Ensemble)", "Prices (all)"),
+                                       line=dict(color=COLOR_BRICK, width=2)))
+            fig_c.add_hline(y=100, line_dash="dot", line_color="grey")
+            apply_macro_chart_layout(fig_c, _L("Indice (base 100)", "Index (base 100)"))
+            st.plotly_chart(fig_c, use_container_width=True)
+            st.caption(_L("Sources : INSEE (prix Notaires-INSEE), Banque de France/BCE (taux crédit habitat) · capacité = principal finançable à mensualité constante (calcul de l'auteur).",
+                          "Sources: INSEE (Notaires-INSEE prices), Banque de France/ECB (housing-loan rate) · capacity = principal a constant instalment can service (author's calc)."))
+        with r2[1]:
+            macro_chart_title(_L("Indice d'accessibilité", "Affordability index"),
+                              _L("capacité d'emprunt ÷ prix, base 100 = 2015", "capacity ÷ prices, base 100 = 2015"))
+            fig_a = go.Figure()
+            fig_a.add_trace(go.Scatter(x=_acc["Date"], y=_acc["_access"],
+                                       name=_L("Accessibilité", "Affordability"),
+                                       line=dict(color=COLOR_BRICK, width=2),
+                                       fill="tozeroy", fillcolor=COLOR_BRICK_ZONE))
+            fig_a.add_hline(y=100, line_dash="dash", line_color="grey",
+                            annotation_text=_L("niveau 2015", "2015 level"))
+            add_last_value_label(fig_a, _acc, "Date", "_access", COLOR_BRICK, lang_code, decimals=0)
+            apply_macro_chart_layout(fig_a, _L("Indice (base 100)", "Index (base 100)"))
+            st.plotly_chart(fig_a, use_container_width=True)
+            st.caption(_L("Sources : INSEE (prix) + Banque de France/BCE (taux) · calcul de l'auteur. Sous 100 = logement moins accessible qu'en 2015 (hausse des prix et/ou des taux).",
+                          "Sources: INSEE (prices) + Banque de France/ECB (rates) · author's calc. Below 100 = housing less affordable than in 2015 (higher prices and/or rates)."))
+
+        # --- Prix neuf vs ancien (INSEE) : niveaux + glissement annuel ---
+        if "Prix_Neuf" in df_macro.columns and df_macro["Prix_Neuf"].notna().any():
+            st.markdown("---")
+            st.markdown("#### " + _L("Prix des logements neufs vs anciens",
+                                     "New vs existing-home prices"))
+            _na_defs = [("Prix_Neuf", COLOR_BLUE, _L("Neuf", "New")),
+                        ("Prix_Ancien_Ensemble", COLOR_BRICK, _L("Ancien", "Existing"))]
+            r3 = st.columns(2)
+            with r3[0]:
+                macro_chart_title(_L("Indices de prix", "Price indices"),
+                                  _L("neuf & ancien, base 100 = 2015", "new & existing, base 100 = 2015"))
+                fig_na = go.Figure()
+                for _c, _col, _nm in _na_defs:
+                    s = df_macro.dropna(subset=[_c])
+                    fig_na.add_trace(go.Scatter(x=s["Date"], y=s[_c], name=_nm, line=dict(color=_col, width=2)))
+                    add_last_value_label(fig_na, s, "Date", _c, _col, lang_code, decimals=0)
+                apply_macro_chart_layout(fig_na, _L("Indice (base 100)", "Index (base 100)"))
+                st.plotly_chart(fig_na, use_container_width=True)
+                st.caption(_L("Source : INSEE — indice des prix des logements neufs (idbank 010751595) et Notaires-INSEE anciens.",
+                              "Source: INSEE — new-dwelling price index (idbank 010751595) and Notaires-INSEE existing homes."))
+            with r3[1]:
+                macro_chart_title(_L("Croissance en glissement annuel", "Year-on-year growth"),
+                                  _L("neuf & ancien, %", "new & existing, %"))
+                fig_ng = go.Figure()
+                for _c, _col, _nm in _na_defs:
+                    s = df_macro.dropna(subset=[_c]).copy()
+                    s["_yoy"] = s[_c].pct_change(4) * 100
+                    s = s.dropna(subset=["_yoy"])
+                    fig_ng.add_trace(go.Scatter(x=s["Date"], y=s["_yoy"], name=_nm, line=dict(color=_col, width=2)))
+                fig_ng.add_hline(y=0, line_dash="dash", line_color="grey")
+                apply_macro_chart_layout(fig_ng, "%")
+                st.plotly_chart(fig_ng, use_container_width=True)
+                st.caption(_L("Le neuf a moins corrigé que l'ancien : l'écart de prix neuf/ancien s'est creusé (BPCE L'Observatoire).",
+                              "New-build prices corrected less than existing homes: the new/existing gap widened (BPCE L'Observatoire)."))
+
+
+# ==============================================================================
+# TAB 4: COMMERCIALISATION DES LOGEMENTS NEUFS (ECLN)
+# ==============================================================================
+with tabs[3]:
+    st.header(_L("🏗️ Commercialisation des logements neufs (ECLN)", "🏗️ New-build sales (ECLN)"))
+    st.write(_L(
+        "Commercialisation des logements neufs (SDES — ECLN, national, trimestriel CVS-CJO) : encours "
+        "(stock à la vente), mises en vente, délai d'écoulement, prix au m² et réservations par catégorie "
+        "d'acquéreurs (particuliers, bailleurs sociaux, investisseurs institutionnels). Le délai "
+        "d'écoulement — proche de deux ans — est un signal avancé de la demande de second œuvre.",
+        "New-build commercialisation (SDES — ECLN, national, quarterly SA): outstanding stock, new "
+        "listings, absorption time, price per m² and reservations by buyer type (private buyers, social "
+        "landlords, institutional investors). Absorption time — close to two years — leads secondary-works demand."))
+    if df_ecln.empty:
+        st.warning(_L("Données ECLN indisponibles — lancez `python fetch_new_sources.py`.",
+                      "ECLN data unavailable — run `python fetch_new_sources.py`."))
+    else:
+        e = df_ecln.dropna(subset=["Reservations"]).sort_values("Date").copy()
+        e["DelaiMois"] = e["DelaiEcoulement"] * 3.0  # DELAI_ECOUL is in quarters
+        last = e.iloc[-1]
+        _q = f"{last['Date'].year}-T{(last['Date'].month - 1) // 3 + 1}"
+
+        def _fnum(x):
+            return f"{int(x):,}".replace(",", " ")
+        k = st.columns(4)
+        k[0].metric(_L("Réservations particuliers (trim.)", "Private reservations (qtr)"), _fnum(last["Reservations"]))
+        k[1].metric(_L("Mises en vente (trim.)", "New listings (qtr)"), _fnum(last["MisesEnVente"]))
+        k[2].metric(_L("Encours à la vente", "Outstanding stock"), _fnum(last["Encours"]))
+        k[3].metric(_L("Délai d'écoulement", "Absorption time"),
+                    f"{last['DelaiMois']:.0f} " + _L("mois", "mo"))
+        st.caption(_L(f"Dernier trimestre disponible : {_q}. Source : SDES — ECLN (CVS-CJO).",
+                      f"Latest available quarter: {_q}. Source: SDES — ECLN (SA)."))
+
+        # Row 1: encours + mises en vente (même graphique) | délai d'écoulement (à droite)
+        er1 = st.columns(2)
+        with er1[0]:
+            macro_chart_title(_L("Encours & mises en vente", "Outstanding stock & new listings"),
+                              _L("logements neufs, par trimestre", "new dwellings, per quarter"))
+            fig_s = go.Figure()
+            fig_s.add_trace(go.Scatter(x=e["Date"], y=e["Encours"], name=_L("Encours à la vente", "Outstanding stock"),
+                                       line=dict(color=COLOR_TEXT, width=2)))
+            fig_s.add_trace(go.Scatter(x=e["Date"], y=e["MisesEnVente"], name=_L("Mises en vente", "New listings"),
+                                       line=dict(color=COLOR_BLUE, width=2)))
+            add_last_value_label(fig_s, e, "Date", "Encours", COLOR_TEXT, lang_code, decimals=0)
+            add_last_value_label(fig_s, e, "Date", "MisesEnVente", COLOR_BLUE, lang_code, decimals=0)
+            apply_macro_chart_layout(fig_s, _L("Nombre de logements", "Dwellings"))
+            st.plotly_chart(fig_s, use_container_width=True)
+            st.caption(_L("Stock élevé face à des mises en vente historiquement basses (SDES — ECLN).",
+                          "High stock against historically low new listings (SDES — ECLN)."))
+        with er1[1]:
+            macro_chart_title(_L("Délai d'écoulement du stock", "Stock absorption time"),
+                              _L("mois de commercialisation", "months of marketing"))
+            fig_d = go.Figure()
+            fig_d.add_trace(go.Scatter(x=e["Date"], y=e["DelaiMois"], name=_L("Délai (mois)", "Time (months)"),
+                                       line=dict(color=COLOR_BRICK, width=2), fill="tozeroy", fillcolor=COLOR_BRICK_ZONE))
+            fig_d.add_hline(y=24, line_dash="dash", line_color="grey",
+                            annotation_text=_L("≈ 2 ans", "≈ 2 years"))
+            add_last_value_label(fig_d, e, "Date", "DelaiMois", COLOR_BRICK, lang_code, decimals=0)
+            apply_macro_chart_layout(fig_d, _L("Mois", "Months"))
+            st.plotly_chart(fig_d, use_container_width=True)
+            st.caption(_L("Près de deux fois le niveau de 2018-2022 : sortie de crise repoussée (BPCE L'Observatoire).",
+                          "Nearly double the 2018-2022 level: recovery delayed (BPCE L'Observatoire)."))
+
+        # Row 2: réservations par catégorie d'acquéreurs (barres empilées) | prix au m²
+        er2 = st.columns(2)
+        with er2[0]:
+            macro_chart_title(_L("Réservations par catégorie d'acquéreurs", "Reservations by buyer type"),
+                              _L("logements neufs, par trimestre", "new dwellings, per quarter"))
+            eb = df_ecln.dropna(subset=["Resa_Sociaux"]).sort_values("Date")
+            fig_cat = go.Figure()
+            fig_cat.add_trace(go.Bar(x=eb["Date"], y=eb["Reservations"], name=_L("Particuliers", "Private buyers"),
+                                     marker_color=COLOR_BRICK))
+            fig_cat.add_trace(go.Bar(x=eb["Date"], y=eb["Resa_Sociaux"], name=_L("Bailleurs sociaux", "Social landlords"),
+                                     marker_color=COLOR_BLUE))
+            fig_cat.add_trace(go.Bar(x=eb["Date"], y=eb["Resa_Institutionnels"],
+                                     name=_L("Investisseurs institutionnels", "Institutional investors"),
+                                     marker_color=COLOR_SUNFLOWER))
+            apply_macro_chart_layout(fig_cat, _L("Réservations", "Reservations"))
+            fig_cat.update_layout(barmode="stack")
+            st.plotly_chart(fig_cat, use_container_width=True)
+            st.caption(_L("Réservations en bloc (bailleurs sociaux et institutionnels) via l'enquête ECLN « ventes aux "
+                          "institutionnels » ; la part des particuliers recule (BPCE L'Observatoire). Source : SDES — ECLN.",
+                          "Block sales (social landlords and institutions) from the ECLN 'sales to institutions' survey; the "
+                          "private-buyer share is receding (BPCE L'Observatoire). Source: SDES — ECLN."))
+        with er2[1]:
+            macro_chart_title(_L("Prix des appartements neufs", "New-apartment prices"),
+                              _L("prix moyen au m² (collectif)", "average price per m² (multi-family)"))
+            fig_pm = go.Figure()
+            _pm = e.dropna(subset=["PrixM2_Collectif"])
+            fig_pm.add_trace(go.Scatter(x=_pm["Date"], y=_pm["PrixM2_Collectif"], name=_L("Prix au m²", "Price per m²"),
+                                        line=dict(color=COLOR_GREEN, width=2)))
+            add_last_value_label(fig_pm, _pm, "Date", "PrixM2_Collectif", COLOR_GREEN, lang_code, decimals=0)
+            apply_macro_chart_layout(fig_pm, "€/m²")
+            st.plotly_chart(fig_pm, use_container_width=True)
+            st.caption(_L("Prix du neuf rigides malgré la faiblesse des ventes (SDES — ECLN).",
+                          "New-build prices stay rigid despite weak sales (SDES — ECLN)."))
+
+
+# ==============================================================================
+# TAB 5: PRÉVISION & SCÉNARIOS (nowcast transactions + backtest + scénarios)
+# ==============================================================================
+@st.cache_data(show_spinner=False)
+def _forecast_bundle(macro, dvf):
+    """Fit the (expensive) forecast models once and cache them, so moving the scenario
+    sliders only recomputes the cheap scenario arithmetic, not the lag grid-search."""
+    tx12 = fc.build_target(dvf)
+    rm = fc.fit_rate_model(macro)
+    lags = fc.search_tx_lags(macro, tx12)
+    tm = fc.fit_tx_model(macro, tx12, **lags)
+    return rm, lags, tm
+
+
+with tabs[4]:
+    st.header(_L("📡 Prévision des transactions & scénarios",
+                 "📡 Transaction forecast & scenarios"))
+    st.write(_L(
+        "Formalisation des onglets Time-Lag / Composite en un modèle chiffré « indicateurs "
+        "avancés → transactions », calibré sur les séries réelles (logique BPCE). Deux "
+        "étages : (1) le taux de crédit est modélisé à partir de l'OAT 10 ans et de "
+        "l'Euribor 3 mois ; (2) les ventes de logements anciens (cumul 12 mois) sont "
+        "expliquées par le taux de crédit, les intentions d'achat et le chômage, chacun "
+        "décalé. Un backtest hors échantillon mesure la valeur prédictive.",
+        "The Time-Lag / Composite tabs formalised into a quantified 'leading indicators → "
+        "transactions' model, calibrated on the real series (BPCE logic). Two stages: (1) the "
+        "credit rate is modelled from the 10-year OAT and 3-month Euribor; (2) existing-home "
+        "sales (12-month sum) are explained by the credit rate, purchase intentions and "
+        "unemployment, each lagged. An out-of-sample backtest measures predictive value."))
+
+    _tx12 = fc.build_target(df_dvf_full)
+    _need = {"OAT_10ans", "Euribor_3M", "Credit_Logement_Taux_Interet",
+             "Intentions_Achat_Logement", "Taux_Chomage_BIT"}
+    if _tx12.dropna().empty or not _need.issubset(set(df_macro_full.columns)):
+        st.warning(_L("Séries macro incomplètes — impossible de calibrer le modèle.",
+                      "Incomplete macro series — cannot calibrate the model."))
+    else:
+        _rm, _lags, _tm = _forecast_bundle(df_macro_full, df_dvf_full)
+        _bt = _tm["backtest"]
+        _b = _tm["beta"]
+
+        # ---- 1. Credit-rate model ------------------------------------------------
+        st.markdown("#### " + _L("1. Modèle de taux de crédit (OAT 10 ans + Euribor 3 mois)",
+                                 "1. Credit-rate model (10-year OAT + 3-month Euribor)"))
+        a1, a2 = st.columns([2, 1])
+        with a1:
+            fig_rm = go.Figure()
+            fig_rm.add_trace(go.Scatter(x=_rm["frame"]["Date"], y=_rm["frame"]["obs"],
+                                        name=_L("Taux observé", "Observed rate"), line=dict(color=COLOR_TEXT, width=2)))
+            fig_rm.add_trace(go.Scatter(x=_rm["frame"]["Date"], y=_rm["frame"]["fit"],
+                                        name=_L("Taux modélisé", "Modelled rate"),
+                                        line=dict(color=COLOR_BRICK, width=2, dash="dot")))
+            apply_macro_chart_layout(fig_rm, "%")
+            st.plotly_chart(fig_rm, use_container_width=True)
+        with a2:
+            st.metric("R²", f"{_rm['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_rm['r2']:.2f}")
+            _rb = _rm["beta"]
+            _eq = f"{_rb[0]:.2f} + {_rb[1]:.2f}·OAT + {_rb[2]:.2f}·Euribor"
+            if lang_code == "FR":
+                _eq = _eq.replace(".", ",")
+            st.markdown(f"**{_L('Taux', 'Rate')} ≈ {_eq}**")
+            st.caption(_L(
+                "+1 pt d'OAT ⇒ ~+%.2f pt de taux crédit. L'écart 2023-25 (taux sous l'OAT) reflète des banques qui retiennent leurs barèmes (BPCE)." % _rb[1],
+                "+1pp OAT ⇒ ~+%.2fpp credit rate. The 2023-25 gap (rate below OAT) reflects banks holding their offers (BPCE)." % _rb[1]))
+            st.caption(_L("Sources : Banque de France/BCE (taux, OAT, Euribor).",
+                          "Sources: Banque de France/ECB (rate, OAT, Euribor)."))
+
+        # ---- 2. Transactions nowcast + out-of-sample backtest --------------------
+        st.markdown("#### " + _L("2. Nowcast des transactions & backtest hors échantillon",
+                                 "2. Transactions nowcast & out-of-sample backtest"))
+        m1, m2, m3 = st.columns(3)
+        m1.metric(_L("R² (in-sample)", "R² (in-sample)"),
+                  f"{_tm['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_tm['r2']:.2f}")
+        if "mape" in _bt:
+            m2.metric(_L("Erreur hors échantillon (MAPE, 2022→)", "Out-of-sample error (MAPE, 2022→)"),
+                      (f"{_bt['mape']:.1f}%".replace(".", ",") if lang_code == "FR" else f"{_bt['mape']:.1f}%"))
+        m3.metric(_L("Décalages (taux/intentions/chômage)", "Lags (rate/intentions/unemp.)"),
+                  f"{_lags['kr']} / {_lags['ki']} / {_lags['kc']} " + _L("mois", "mo"))
+
+        fig_tx = go.Figure()
+        fig_tx.add_trace(go.Scatter(x=_tm["frame"]["Date"], y=_tm["frame"]["obs"],
+                                    name=_L("Observé (IGEDD)", "Observed (IGEDD)"), line=dict(color=COLOR_TEXT, width=2.5)))
+        if "frame" in _bt:
+            fig_tx.add_trace(go.Scatter(x=_bt["frame"]["Date"], y=_bt["frame"]["pred"],
+                                        name=_L("Prévision hors échantillon", "Out-of-sample forecast"),
+                                        line=dict(color=COLOR_BRICK, width=2, dash="dot")))
+            fig_tx.add_vline(x=pd.Timestamp(_bt["split"]), line_dash="dash", line_color="grey",
+                             annotation_text=_L("entraînement | test", "train | test"))
+        apply_macro_chart_layout(fig_tx, _L("Ventes sur 12 mois", "12-month sales"))
+        st.plotly_chart(fig_tx, use_container_width=True)
+        st.caption(_L(
+            "Le modèle entraîné uniquement sur les données ≤ 2021 reproduit la contraction 2022-24 et le creux "
+            "de sept-2024 puis la reprise 2025-26 — sans les avoir vues. C'est la preuve que ces indicateurs "
+            "avancés « prévoient » réellement. Sources : IGEDD (ventes), INSEE + BdF/BCE (indicateurs).",
+            "Trained only on ≤2021 data, the model reproduces the 2022-24 contraction, the Sept-2024 trough and "
+            "the 2025-26 rebound — without having seen them. That is the proof the leading indicators genuinely "
+            "'forecast'. Sources: IGEDD (sales), INSEE + BdF/ECB (indicators)."))
+
+        # ---- 3. Scenario panel ---------------------------------------------------
+        st.markdown("#### " + _L("3. Panneau de scénarios : macro → marché → chiffre d'affaires",
+                                 "3. Scenario panel: macro → market → revenue"))
+        _mi = df_macro_full.set_index("Date").sort_index()
+        _oat0 = float(_mi["OAT_10ans"].dropna().iloc[-1])
+        _eur0 = float(_mi["Euribor_3M"].dropna().iloc[-1])
+        _rate0 = float(_mi["Credit_Logement_Taux_Interet"].dropna().iloc[-1])
+        _int0 = float(_mi["Intentions_Achat_Logement"].dropna().iloc[-1])
+        _chom0 = float(_mi["Taux_Chomage_BIT"].dropna().iloc[-1])
+        _tx0 = float(_tx12.dropna().iloc[-1])
+
+        sc1, sc2 = st.columns([1, 2])
+        with sc1:
+            st.caption(_L("Hypothèses (défaut = dernières valeurs connues) :", "Assumptions (default = latest known):"))
+            _oat = st.slider(_L("OAT 10 ans (%)", "10-year OAT (%)"), 0.0, 5.5, round(_oat0, 2), 0.1)
+            _eur = st.slider(_L("Euribor 3 mois (%)", "3-month Euribor (%)"), -0.5, 4.5, round(_eur0, 2), 0.1)
+            _chom = st.slider(_L("Taux de chômage (%)", "Unemployment rate (%)"), 6.5, 11.0, round(_chom0, 1), 0.1)
+        _sc = fc.scenario(_rm["beta"], _b,
+                          {"oat": _oat0, "euribor": _eur0, "intent": _int0, "chom": _chom0,
+                           "rate_now": _rate0, "tx_now": _tx0},
+                          {"oat": _oat, "euribor": _eur, "intent": _int0, "chom": _chom})
+        with sc2:
+            r1c = st.columns(3)
+            r1c[0].metric(_L("Taux de crédit implicite", "Implied credit rate"),
+                          (f"{_sc['rate']:.2f}%".replace(".", ",") if lang_code == "FR" else f"{_sc['rate']:.2f}%"),
+                          (f"{_sc['d_rate']:+.2f} pt".replace(".", ",") if lang_code == "FR" else f"{_sc['d_rate']:+.2f}pp"))
+            r1c[1].metric(_L("Ventes projetées (12 mois)", "Projected sales (12m)"),
+                          f"{_sc['tx']:,.0f}".replace(",", " "),
+                          f"{_sc['d_tx']:+,.0f}".replace(",", " "))
+            r1c[2].metric(_L("Impact relatif", "Relative impact"),
+                          (f"{_sc['d_tx']/_tx0*100:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{_sc['d_tx']/_tx0*100:+.1f}%"))
+            fig_sc = go.Figure()
+            fig_sc.add_trace(go.Bar(x=[_L("Actuel", "Current"), _L("Scénario", "Scenario")],
+                                    y=[_tx0, _sc["tx"]], marker_color=[COLOR_SUBTLE, COLOR_BRICK],
+                                    text=[f"{_tx0:,.0f}".replace(",", " "), f"{_sc['tx']:,.0f}".replace(",", " ")],
+                                    textposition="outside"))
+            fig_sc.update_layout(height=240, template="plotly_white", margin=dict(l=40, r=20, t=10, b=30),
+                                 yaxis_title=_L("Ventes 12 mois", "12m sales"), showlegend=False)
+            st.plotly_chart(fig_sc, use_container_width=True)
+        st.caption(_L(
+            "Lecture : effet à terme (après les décalages estimés) si ces conditions persistent, appliqué au niveau "
+            "actuel réel (approche en écart, robuste au biais de niveau du modèle de taux).",
+            "Reading: steady-state effect (after the estimated lags) if these conditions persist, applied to the actual "
+            "current level (delta approach, robust to the rate model's level bias)."))
+
+        # propagation to benchmarked company revenue
+        if df_revenue_full is not None and not df_revenue_full.empty:
+            st.markdown("**" + _L("→ Propagation au chiffre d'affaires benchmark",
+                                  "→ Propagation to benchmarked revenue") + "**")
+            _co = st.selectbox(_L("Entreprise", "Company"),
+                               sorted(df_revenue_full["Company"].unique().tolist()))
+            _caf = fc.best_tx_to_ca(df_revenue_full, _tx12, _co)
+            if _caf is None:
+                st.info(_L("Trop peu de points pour relier les transactions au CA de cette entreprise.",
+                           "Too few points to link transactions to this company's revenue."))
+            else:
+                _ca_now = float(df_revenue_full[df_revenue_full["Company"] == _co]
+                                .sort_values("Date")["CA_MEUR"].iloc[-1])
+                _d_ca = _caf["beta"][1] * _sc["d_tx"]
+                cc = st.columns(3)
+                cc[0].metric(_L("CA trimestriel récent", "Recent quarterly revenue"), f"{_ca_now:,.0f} M€".replace(",", " "))
+                cc[1].metric(_L("CA projeté (scénario)", "Projected revenue (scenario)"),
+                             f"{_ca_now + _d_ca:,.0f} M€".replace(",", " "),
+                             f"{_d_ca:+,.0f} M€".replace(",", " "))
+                _rtxt = f"{_caf['r2']:.2f}"
+                _rtxt = (_rtxt.replace(".", ",") + f" · {_caf['lag_q']}T") if lang_code == "FR" else (_rtxt + f" · {_caf['lag_q']}q")
+                cc[2].metric(_L("Lien transactions→CA (R², décalage)", "Transactions→revenue (R², lag)"), _rtxt)
+                st.caption(_L(
+                    f"Élasticité estimée sur {_caf['n']} trimestres ; R²={_caf['r2']:.2f} (indicatif — séries "
+                    f"d'entreprise courtes). Hexaom (neuf) et Kingfisher France (rénovation) réagissent aux "
+                    f"transactions avec un décalage.",
+                    f"Elasticity estimated on {_caf['n']} quarters; R²={_caf['r2']:.2f} (indicative — short company "
+                    f"series). Hexaom (new-build) and Kingfisher France (renovation) respond to transactions with a lag."))
+
+
+# ==============================================================================
+# TAB 6: SIMULATION TIME LAG
+# ==============================================================================
+with tabs[5]:
     st.header(T[lang_code]["timelag_header"])
     st.write(T[lang_code]["timelag_desc"])
     
@@ -1250,15 +1774,45 @@ with tabs[2]:
             help=T[lang_code]["time_lag_help"]
         )
         
-        # 3. Choose product sales to compare with
-        selected_product = st.selectbox(
-            T[lang_code]["sales_compare"],
-            df_sales["Product"].unique().tolist()
+        # 3. Choose the sales benchmark to compare against.
+        #    Two families: the synthetic second-œuvre units, or a REAL company revenue
+        #    series (quarterly, in M€) when ca-*.csv files are available. The real series
+        #    is national and quarterly, so the indicator is compared on a quarterly grid.
+        _has_revenue = (df_revenue is not None) and (not df_revenue.empty)
+        _bench_src_opts = [T[lang_code]["bench_src_synth"]]
+        if _has_revenue:
+            _bench_src_opts.append(T[lang_code]["bench_src_revenue"])
+        benchmark_src = st.radio(
+            T[lang_code]["bench_src_label"], _bench_src_opts,
+            help=T[lang_code]["bench_src_help"] if _has_revenue else None,
         )
-        
-        # Aggregate local Sales
-        agg_sales = filtered_sales[filtered_sales["Product"] == selected_product]
-        agg_sales = agg_sales.groupby("Date")["Sales_Units"].sum().reset_index()
+        benchmark_is_revenue = (benchmark_src == T[lang_code]["bench_src_revenue"])
+
+        # Macro rates/levels are averaged per quarter; flows (permits, transactions,
+        # units) are summed.
+        ind_quarterly_agg = "mean" if internal_category == "Indicateur Macro" else "sum"
+
+        if benchmark_is_revenue:
+            company = st.selectbox(
+                T[lang_code]["bench_company"],
+                sorted(df_revenue["Company"].unique().tolist())
+            )
+            agg_sales = (df_revenue[df_revenue["Company"] == company]
+                         [["Date", "CA_MEUR"]]
+                         .groupby("Date")["CA_MEUR"].sum().reset_index())
+            sales_value_col = "CA_MEUR"
+            sales_trace_label = f"CA {company} (M€)"
+            sales_axis_title = "Chiffre d'affaires (M€)"
+        else:
+            selected_product = st.selectbox(
+                T[lang_code]["sales_compare"],
+                df_sales["Product"].unique().tolist()
+            )
+            agg_sales = filtered_sales[filtered_sales["Product"] == selected_product]
+            agg_sales = agg_sales.groupby("Date")["Sales_Units"].sum().reset_index()
+            sales_value_col = "Sales_Units"
+            sales_trace_label = f"Sales - {selected_product}"
+            sales_axis_title = T[lang_code]["scale_sales"]
         
         st.markdown("---")
         # 4. Auto-correlation analysis trigger
@@ -1267,8 +1821,25 @@ with tabs[2]:
         
         if st.button(T[lang_code]["btn_calc_optimal"], key="btn_corr"):
             with st.spinner("Analyse..." if lang_code == "FR" else "Analyzing..."):
-                corr_res = sim.find_optimal_lag(raw_ind_df, agg_sales, "Val", "Sales_Units")
-                
+                if benchmark_is_revenue:
+                    # Real revenue is quarterly: compare on a quarterly grid. Use the
+                    # UN-smoothed monthly indicator (Val_Raw when the 12M rolling is on)
+                    # so the quarterly aggregation isn't stacked on top of a rolling sum.
+                    _mcol = "Val_Raw" if "Val_Raw" in raw_ind_df.columns else "Val"
+                    ind_monthly = raw_ind_df[["Date", _mcol]].rename(columns={_mcol: "Val"})
+                    res_q = sim.find_optimal_lag_quarterly(
+                        ind_monthly, agg_sales, "Val", sales_value_col,
+                        ind_agg=ind_quarterly_agg
+                    )
+                    corr_res = {
+                        "lags": res_q["lags_months"],
+                        "correlations": res_q["correlations"],
+                        "optimal_lag": res_q["optimal_lag_months"],
+                        "max_correlation": res_q["max_correlation"],
+                    }
+                else:
+                    corr_res = sim.find_optimal_lag(raw_ind_df, agg_sales, "Val", "Sales_Units")
+
                 st.session_state["corr_results"] = corr_res
                 st.session_state["optimal_lag"] = corr_res["optimal_lag"]
                 st.session_state["max_correlation"] = corr_res["max_correlation"]
@@ -1315,13 +1886,15 @@ with tabs[2]:
             secondary_y=False
         )
         
-        # Trace 3: Sales (Actual)
+        # Trace 3: Sales / real revenue benchmark (Actual). Quarterly revenue is drawn
+        # with markers so the quarterly cadence is visible against the monthly indicator.
         fig_sim.add_trace(
             go.Scatter(
-                x=agg_sales["Date"], 
-                y=agg_sales["Sales_Units"], 
-                name=f"Sales - {selected_product}",
-                line=dict(color=COLOR_TEXT, width=3)
+                x=agg_sales["Date"],
+                y=agg_sales[sales_value_col],
+                name=sales_trace_label,
+                line=dict(color=COLOR_TEXT, width=3),
+                mode="lines+markers" if benchmark_is_revenue else "lines"
             ),
             secondary_y=True
         )
@@ -1334,7 +1907,7 @@ with tabs[2]:
         )
         
         fig_sim.update_yaxes(title_text=T[lang_code]["scale_ind"], secondary_y=False)
-        fig_sim.update_yaxes(title_text=T[lang_code]["scale_sales"], secondary_y=True)
+        fig_sim.update_yaxes(title_text=sales_axis_title, secondary_y=True)
         
         # Highlight Future Forecasting Zone
         max_sales_date = agg_sales["Date"].max()
@@ -1346,8 +1919,9 @@ with tabs[2]:
         )
         
         st.plotly_chart(fig_sim, use_container_width=True)
-        # Sales are always synthetic; the compared indicator may be real (DVF) or synthetic.
-        st.caption(T[lang_code]["synthetic_note"])
+        # Benchmark is either the real company revenue (public) or the synthetic sales.
+        st.caption(T[lang_code]["revenue_note"] if benchmark_is_revenue
+                   else T[lang_code]["synthetic_note"])
 
         # Save shifted data in session state for export later
         st.session_state["shifted_export_df"] = shifted_ind_df
@@ -1383,13 +1957,14 @@ with tabs[2]:
                 title=T[lang_code]["best_align_title"].format(lag=results["optimal_lag"], r=results["max_correlation"])
             )
             st.plotly_chart(fig_bar, use_container_width=True)
-            st.caption(T[lang_code]["synthetic_note"])
+            st.caption(T[lang_code]["revenue_note"] if benchmark_is_revenue
+                       else T[lang_code]["synthetic_note"])
 
 
 # ==============================================================================
-# TAB 4: MODÈLE COMPOSITE
+# TAB 7: MODÈLE COMPOSITE
 # ==============================================================================
-with tabs[3]:
+with tabs[6]:
     st.header(T[lang_code]["composite_header"])
     st.write(T[lang_code]["composite_desc"])
     
@@ -1582,9 +2157,9 @@ with tabs[3]:
 
 
 # ==============================================================================
-# TAB 5: EXPORT SAP IBP
+# TAB 8: EXPORT SAP IBP
 # ==============================================================================
-with tabs[4]:
+with tabs[7]:
     st.header(T[lang_code]["export_header"])
     st.write(T[lang_code]["export_desc"])
     
@@ -1694,9 +2269,9 @@ with tabs[4]:
 
 
 # ==============================================================================
-# TAB 6: DONNÉES SOURCE
+# TAB 9: DONNÉES SOURCE
 # ==============================================================================
-with tabs[5]:
+with tabs[8]:
     st.header(T[lang_code]["source_header"])
     st.write(T[lang_code]["source_desc"])
     

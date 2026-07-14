@@ -1,11 +1,13 @@
-Ventes dans l'ancien : HousingMarket_v3\data_manual_input\Donnees-mensuelles-nationales-Logements.csv
+Ventes dans l'ancien : HousingMarket_v3\data_manual_input\nombre-vente-maison-appartement-ancien.xls
 Source : IGEDD
 https://www.igedd.developpement-durable.gouv.fr/prix-immobilier-evolution-a-long-terme-a1048.html
+Note : série nationale unique, cumul 12 mois glissant en milliers ; l'app reconstruit des flux mensuels (voir data_manager.build_dvf_ancien_from_igedd).
+[Correction 2026-07-14 : les noms de fichiers des 2 premiers blocs étaient intervertis — rétabli d'après le CONTENU réel des fichiers.]
 
 
 
-Logements autorisés et mis en chantier : HousingMarket_v3\data_manual_input\nombre-vente-maison-appartement-ancien.xls
-Source : SDES
+Logements autorisés et mis en chantier : HousingMarket_v3\data_manual_input\Donnees-mensuelles-nationales-Logements.csv
+Source : SDES — SIT@DEL2 (logements autorisés / commencés, séries mensuelles nationales, données CVS-CJO)
 https://www.data.gouv.fr/datasets/logements-autorises-et-commences-nombre-et-surfaces-series-mensuelles-donnees-estimees-1
 Statut : téléchargé manuellement, API possible : https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=datafile&datafileRid=175486a6-76a3-4c6c-a34b-aeb96758910b&datafileMillesime=2026-07&tab=api
 
@@ -61,3 +63,45 @@ idbank : 001688527
 Page : https://www.insee.fr/fr/statistiques/serie/001688527
 Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001688527
 Couverture : TRIMESTRIEL, 1975-T1 -> 2026-T1 (8,1 %). Chaque trimestre est placé sur le 1er mois du trimestre (janv./avr./juil./oct.) ; les mois hors trimestre restent vides/NaN.
+
+
+
+=== Ajouts 2026-07-14 (soir) — onglets « Prix & Accessibilité » et « Commercialisation Neuf (ECLN) ». Acquisition reproductible : script fetch_new_sources.py (racine du projet), urllib de la bibliothèque standard. ===
+
+
+
+Prix des logements anciens (indices Notaires-INSEE) : HousingMarket_v3\data_manual_input\prix-immobilier-notaires-insee.csv
+Source : INSEE — Indice des prix des logements anciens, France métropolitaine, base 100 = moyenne annuelle 2015, série CVS
+idbanks : 010567059 (Ensemble), 010567057 (Appartements), 010567061 (Maisons)
+Pages : https://www.insee.fr/fr/statistiques/serie/010567059 (+ 010567057 / 010567061)
+Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/010567059
+Couverture : TRIMESTRIEL, 1996-T1 -> 2026-T1. Chaque trimestre placé sur le 1er mois du trimestre ; réindex mensuel laisse NaN 2 mois/3. Colonnes : Date, Prix_Ancien_Ensemble, Prix_Ancien_Appartements, Prix_Ancien_Maisons.
+
+
+
+Prix des logements neufs (indice INSEE) : HousingMarket_v3\data_manual_input\prix-logements-neufs-insee.csv
+Source : INSEE — Indice des prix des logements neufs, France, base 100 = moyenne annuelle 2015, série CVS
+idbank : 010751595
+Page : https://www.insee.fr/fr/statistiques/serie/010751595
+Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/010751595
+Couverture : TRIMESTRIEL, 2000-T1 -> 2026-T1. Colonnes : Date, Prix_Neuf. Même base (2015) que l'ancien → comparaison neuf/ancien directe dans l'onglet Prix & Accessibilité.
+
+
+
+Production de crédits à l'habitat (volume) : HousingMarket_v3\data_manual_input\production-credits-habitat.csv
+Source : BCE — Statistiques de taux d'intérêt des IFM (MIR), VOLUME de crédits nouveaux pour achat de logement, ménages, France (y compris renégociations)
+Série : MIR M.FR.B.A2C.A.B.A.2250.EUR.N (data-api.ecb.europa.eu ; unité d'origine = millions €, convertie en Md€)
+Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.A.B.A.2250.EUR.N?format=csvdata
+Couverture : MENSUEL, 2003-01 -> 2026-05 (13,8 Md€ en mai 2026). Colonnes : Date, Production_Credits_Habitat (Md€). Affiché dans l'onglet Contexte Macro (mensuel + moyenne 12 mois, et cumul 12 mois glissants ~180 Md€/an).
+
+
+
+Commercialisation des logements neufs (ECLN) : HousingMarket_v3\data_manual_input\ecln-commercialisation-neuf.csv
+Source : SDES — Enquête sur la commercialisation des logements neufs (ECLN), national, séries trimestrielles CVS-CJO
+Jeu de données : https://www.data.gouv.fr/datasets/donnees-nationales-sur-la-commercialisation-des-logements-neufs
+Statut : téléchargé via l'API DiDo (data.statistiques.developpement-durable.gouv.fr), fusion de DEUX ressources :
+  - datafile 7e002311-3413-4046-9248-b6e761803fd0 (« 2 - Ventes aux particuliers - CVS-CJO ») : NATURE_PROJET=« Toutes constructions », TYPE_LGT=« Tous logements » → Reservations (= réservations des PARTICULIERS), MisesEnVente, Annulations, Encours, DelaiEcoulement ; prix au m² pris sur la ligne « Collectif ».
+  - datafile 174038f5-67ce-464f-b359-4c3c4034e77c (« 8 - Ventes aux institutionnels (ventes en bloc) - CVS-CJO ») : colonnes RESA_SOCIAL → Resa_Sociaux (bailleurs sociaux) et RESA_NONSOCIAL → Resa_Institutionnels (investisseurs institutionnels). Vérifié : RESA_SOCIAL + RESA_NONSOCIAL = RESA (total ventes en bloc).
+Couverture : TRIMESTRIEL, 2017-T1 -> 2026-T1 (les 2 colonnes acquéreurs « en bloc » commencent en 2018-T1 → NaN en 2017). Colonnes : Date, Reservations, MisesEnVente, Annulations, Encours, DelaiEcoulement, PrixM2_Collectif, Resa_Sociaux, Resa_Institutionnels.
+Usage : les 3 catégories (Reservations=particuliers + Resa_Sociaux + Resa_Institutionnels) alimentent le graphique « Réservations par catégorie d'acquéreurs » (barres empilées) de l'onglet, cf. BPCE L'Observatoire p.13 (au T1-2026 : ~16 502 / 11 134 / 2 184 par trimestre, soit ~55 % / 37 % / 7 % en annualisé).
+ATTENTION unité : DelaiEcoulement est en TRIMESTRES (stock / réservations trimestrielles) — l'app l'affiche en mois (×3), soit ~22 mois au T1-2026 (« près de deux ans », cf. BPCE L'Observatoire).
