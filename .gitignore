@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environnements & secrets
+.env
+.streamlit/secrets.toml
+
+# Fichiers de travail internes (non destinés à la publication)
+.claude/
+session_memory.md
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

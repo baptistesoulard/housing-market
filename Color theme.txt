@@ -1,0 +1,52 @@
+🧱 1. Couleurs de Structure (Bases du site)
+Fond principal (Blanc Éclatant)
+
+Code Hex : #FFFFFF
+
+Usage : Arrière-plan principal des pages pour garder un aspect aéré, propre et moderne.
+
+Fond du Menu & Éléments de structure (Gris Clair)
+
+Code Hex : #F5F5F5 (ou #F0F2F5 pour un gris légèrement plus bleuté/frais)
+
+Usage : Barre de navigation (header), pied de page (footer) ou arrière-plan de certaines sections pour structurer le contenu sans l'alourdir.
+
+Texte Principal (Gris Anthracite)
+
+Code Hex : #2D3748
+
+Usage : Textes longs et titres. Il est plus doux pour les yeux que le noir pur (#000000).
+
+🎨 2. Couleurs d'Accentuation (Inspirées de l'image)
+Ces couleurs colorées doivent être utilisées avec parcimonie pour attirer l'attention (boutons d'action, icônes, liens, surbrillances).
+
+Rouge Brique (Inspiré des stores et des toits)
+
+Code Hex : #E64A19
+
+Usage idéal : Boutons d'appel à l'action principaux (CTA), notifications, prix ou éléments survolés (hover).
+
+Terre Cuite (Inspiré des façades chaleureuses)
+
+Code Hex : #D0A37D
+
+Usage idéal : Sous-titres, encadrés secondaires, badges ou icônes décoratives.
+
+Jaune Tournesol (Inspiré des fleurs du canal)
+
+Code Hex : #FBC02D
+
+Usage idéal : Éléments de mise en valeur, alertes positives, étoiles d'avis clients ou surbrillance.
+
+Bleu Canal / Ciel (Inspiré de l'eau et du ciel)
+
+Code Hex : #64B5F6
+
+Usage idéal : Liens hypertexte textuels, boutons secondaires ou illustrations.
+
+Vert Émeraude (Inspiré de la végétation et des volets)
+
+Code Hex : #388E3C
+
+Usage idéal : Boutons de validation, badges de succès, thématiques liées à la nature ou à l'écologie.
+

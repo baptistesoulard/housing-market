@@ -1,0 +1,12 @@
+# HousingMarket_v3 — dépendances d'exécution (app Streamlit national-only)
+# Revu le 2026-07-14 : inchangé. Les évolutions récentes n'ajoutent aucune dépendance :
+#  - onglet Contexte Macro : 2 graphiques INSEE (intentions d'achat de logement,
+#    taux de chômage BIT) + uniformisation des 4 graphiques → plotly/pandas/numpy.
+#  - anonymisation des produits second-œuvre (renommage) → aucune lib.
+#  - le téléchargement des séries INSEE (API SDMX BDM) est un outillage HORS runtime,
+#    fait via urllib + xml.etree de la bibliothèque standard (pas de requests/httpx).
+streamlit>=1.30.0     # UI de l'application
+pandas>=2.0.0         # manipulation des données (CSV/Excel, séries temporelles)
+numpy>=1.20.0         # calculs numériques / génération synthétique
+plotly>=5.10.0        # graphiques (courbes, KPI)
+xlrd>=2.0.1           # lecture du .xls IGEDD (ventes anciennes) via pandas.read_excel

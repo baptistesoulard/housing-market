@@ -1,0 +1,1269 @@
+Date,Region,Department,Type,Permis,MisesEnChantier
+2000-01-01,France,France,Logement Collectif,10868,8102
+2000-01-01,France,France,Logement en Résidence,1041,1065
+2000-01-01,France,France,Maison Individuelle Groupée,3418,2818
+2000-01-01,France,France,Maison Individuelle Pure,16907,14830
+2000-02-01,France,France,Logement Collectif,9941,10352
+2000-02-01,France,France,Logement en Résidence,1044,930
+2000-02-01,France,France,Maison Individuelle Groupée,3146,3603
+2000-02-01,France,France,Maison Individuelle Pure,16786,15123
+2000-03-01,France,France,Logement Collectif,11757,10736
+2000-03-01,France,France,Logement en Résidence,1278,1049
+2000-03-01,France,France,Maison Individuelle Groupée,3311,2790
+2000-03-01,France,France,Maison Individuelle Pure,16137,15544
+2000-04-01,France,France,Logement Collectif,13005,7711
+2000-04-01,France,France,Logement en Résidence,1721,994
+2000-04-01,France,France,Maison Individuelle Groupée,3204,2772
+2000-04-01,France,France,Maison Individuelle Pure,16422,14821
+2000-05-01,France,France,Logement Collectif,14539,10073
+2000-05-01,France,France,Logement en Résidence,1447,550
+2000-05-01,France,France,Maison Individuelle Groupée,3592,3352
+2000-05-01,France,France,Maison Individuelle Pure,16470,15422
+2000-06-01,France,France,Logement Collectif,12009,9383
+2000-06-01,France,France,Logement en Résidence,1231,834
+2000-06-01,France,France,Maison Individuelle Groupée,3892,2590
+2000-06-01,France,France,Maison Individuelle Pure,15360,14759
+2000-07-01,France,France,Logement Collectif,12932,9687
+2000-07-01,France,France,Logement en Résidence,882,534
+2000-07-01,France,France,Maison Individuelle Groupée,3942,2309
+2000-07-01,France,France,Maison Individuelle Pure,16048,14456
+2000-08-01,France,France,Logement Collectif,12635,11932
+2000-08-01,France,France,Logement en Résidence,1046,1078
+2000-08-01,France,France,Maison Individuelle Groupée,3632,3350
+2000-08-01,France,France,Maison Individuelle Pure,15210,15685
+2000-09-01,France,France,Logement Collectif,10524,10215
+2000-09-01,France,France,Logement en Résidence,1272,644
+2000-09-01,France,France,Maison Individuelle Groupée,3629,2855
+2000-09-01,France,France,Maison Individuelle Pure,15622,14225
+2000-10-01,France,France,Logement Collectif,11585,10098
+2000-10-01,France,France,Logement en Résidence,964,749
+2000-10-01,France,France,Maison Individuelle Groupée,3602,2740
+2000-10-01,France,France,Maison Individuelle Pure,15160,14297
+2000-11-01,France,France,Logement Collectif,13254,9579
+2000-11-01,France,France,Logement en Résidence,971,1389
+2000-11-01,France,France,Maison Individuelle Groupée,4310,2683
+2000-11-01,France,France,Maison Individuelle Pure,15338,14017
+2000-12-01,France,France,Logement Collectif,11069,8851
+2000-12-01,France,France,Logement en Résidence,1265,753
+2000-12-01,France,France,Maison Individuelle Groupée,3679,3112
+2000-12-01,France,France,Maison Individuelle Pure,15835,15555
+2001-01-01,France,France,Logement Collectif,11391,10428
+2001-01-01,France,France,Logement en Résidence,1014,730
+2001-01-01,France,France,Maison Individuelle Groupée,3920,2993
+2001-01-01,France,France,Maison Individuelle Pure,14843,14756
+2001-02-01,France,France,Logement Collectif,12007,9323
+2001-02-01,France,France,Logement en Résidence,1621,1192
+2001-02-01,France,France,Maison Individuelle Groupée,4144,2920
+2001-02-01,France,France,Maison Individuelle Pure,15328,14585
+2001-03-01,France,France,Logement Collectif,11883,8952
+2001-03-01,France,France,Logement en Résidence,1327,981
+2001-03-01,France,France,Maison Individuelle Groupée,4286,3021
+2001-03-01,France,France,Maison Individuelle Pure,15658,13743
+2001-04-01,France,France,Logement Collectif,9018,10826
+2001-04-01,France,France,Logement en Résidence,983,1071
+2001-04-01,France,France,Maison Individuelle Groupée,3169,3102
+2001-04-01,France,France,Maison Individuelle Pure,15402,14083
+2001-05-01,France,France,Logement Collectif,10947,10192
+2001-05-01,France,France,Logement en Résidence,1000,842
+2001-05-01,France,France,Maison Individuelle Groupée,3661,3091
+2001-05-01,France,France,Maison Individuelle Pure,14973,14535
+2001-06-01,France,France,Logement Collectif,10901,8954
+2001-06-01,France,France,Logement en Résidence,1145,840
+2001-06-01,France,France,Maison Individuelle Groupée,3640,3274
+2001-06-01,France,France,Maison Individuelle Pure,15982,14761
+2001-07-01,France,France,Logement Collectif,13097,8988
+2001-07-01,France,France,Logement en Résidence,1094,1302
+2001-07-01,France,France,Maison Individuelle Groupée,3645,3028
+2001-07-01,France,France,Maison Individuelle Pure,15461,14201
+2001-08-01,France,France,Logement Collectif,11340,7826
+2001-08-01,France,France,Logement en Résidence,1434,682
+2001-08-01,France,France,Maison Individuelle Groupée,3779,3577
+2001-08-01,France,France,Maison Individuelle Pure,15206,14850
+2001-09-01,France,France,Logement Collectif,10894,9523
+2001-09-01,France,France,Logement en Résidence,1183,758
+2001-09-01,France,France,Maison Individuelle Groupée,3293,3467
+2001-09-01,France,France,Maison Individuelle Pure,14856,14180
+2001-10-01,France,France,Logement Collectif,12482,10638
+2001-10-01,France,France,Logement en Résidence,2040,1056
+2001-10-01,France,France,Maison Individuelle Groupée,3957,3113
+2001-10-01,France,France,Maison Individuelle Pure,15373,14444
+2001-11-01,France,France,Logement Collectif,11681,9178
+2001-11-01,France,France,Logement en Résidence,1415,162
+2001-11-01,France,France,Maison Individuelle Groupée,3511,3313
+2001-11-01,France,France,Maison Individuelle Pure,15545,14514
+2001-12-01,France,France,Logement Collectif,11102,11129
+2001-12-01,France,France,Logement en Résidence,765,1152
+2001-12-01,France,France,Maison Individuelle Groupée,3485,2995
+2001-12-01,France,France,Maison Individuelle Pure,14881,14305
+2002-01-01,France,France,Logement Collectif,11144,9968
+2002-01-01,France,France,Logement en Résidence,954,808
+2002-01-01,France,France,Maison Individuelle Groupée,3416,3241
+2002-01-01,France,France,Maison Individuelle Pure,15140,14512
+2002-02-01,France,France,Logement Collectif,10268,10490
+2002-02-01,France,France,Logement en Résidence,1156,1245
+2002-02-01,France,France,Maison Individuelle Groupée,3251,3276
+2002-02-01,France,France,Maison Individuelle Pure,15020,14272
+2002-03-01,France,France,Logement Collectif,10388,9404
+2002-03-01,France,France,Logement en Résidence,880,900
+2002-03-01,France,France,Maison Individuelle Groupée,3628,3356
+2002-03-01,France,France,Maison Individuelle Pure,15705,14250
+2002-04-01,France,France,Logement Collectif,12556,10435
+2002-04-01,France,France,Logement en Résidence,1243,1057
+2002-04-01,France,France,Maison Individuelle Groupée,3862,3173
+2002-04-01,France,France,Maison Individuelle Pure,16123,14627
+2002-05-01,France,France,Logement Collectif,10118,8880
+2002-05-01,France,France,Logement en Résidence,644,1241
+2002-05-01,France,France,Maison Individuelle Groupée,3533,3187
+2002-05-01,France,France,Maison Individuelle Pure,15559,14031
+2002-06-01,France,France,Logement Collectif,10914,9401
+2002-06-01,France,France,Logement en Résidence,932,1295
+2002-06-01,France,France,Maison Individuelle Groupée,3229,3159
+2002-06-01,France,France,Maison Individuelle Pure,15255,14265
+2002-07-01,France,France,Logement Collectif,11556,11128
+2002-07-01,France,France,Logement en Résidence,1177,240
+2002-07-01,France,France,Maison Individuelle Groupée,3568,3320
+2002-07-01,France,France,Maison Individuelle Pure,15139,14736
+2002-08-01,France,France,Logement Collectif,9141,10067
+2002-08-01,France,France,Logement en Résidence,884,1035
+2002-08-01,France,France,Maison Individuelle Groupée,3713,3101
+2002-08-01,France,France,Maison Individuelle Pure,15317,14485
+2002-09-01,France,France,Logement Collectif,12512,9158
+2002-09-01,France,France,Logement en Résidence,1018,1176
+2002-09-01,France,France,Maison Individuelle Groupée,3958,2871
+2002-09-01,France,France,Maison Individuelle Pure,15591,14422
+2002-10-01,France,France,Logement Collectif,12363,10411
+2002-10-01,France,France,Logement en Résidence,1135,362
+2002-10-01,France,France,Maison Individuelle Groupée,3990,3331
+2002-10-01,France,France,Maison Individuelle Pure,15520,14510
+2002-11-01,France,France,Logement Collectif,12240,9995
+2002-11-01,France,France,Logement en Résidence,1455,825
+2002-11-01,France,France,Maison Individuelle Groupée,3959,3245
+2002-11-01,France,France,Maison Individuelle Pure,15515,14033
+2002-12-01,France,France,Logement Collectif,11838,11265
+2002-12-01,France,France,Logement en Résidence,956,1470
+2002-12-01,France,France,Maison Individuelle Groupée,3844,3197
+2002-12-01,France,France,Maison Individuelle Pure,15215,14329
+2003-01-01,France,France,Logement Collectif,10969,9898
+2003-01-01,France,France,Logement en Résidence,1362,664
+2003-01-01,France,France,Maison Individuelle Groupée,3592,3261
+2003-01-01,France,France,Maison Individuelle Pure,15344,13883
+2003-02-01,France,France,Logement Collectif,12913,10350
+2003-02-01,France,France,Logement en Résidence,895,581
+2003-02-01,France,France,Maison Individuelle Groupée,4069,3372
+2003-02-01,France,France,Maison Individuelle Pure,14965,14642
+2003-03-01,France,France,Logement Collectif,12223,11779
+2003-03-01,France,France,Logement en Résidence,1723,662
+2003-03-01,France,France,Maison Individuelle Groupée,3684,3456
+2003-03-01,France,France,Maison Individuelle Pure,15063,15428
+2003-04-01,France,France,Logement Collectif,12663,10672
+2003-04-01,France,France,Logement en Résidence,917,705
+2003-04-01,France,France,Maison Individuelle Groupée,4042,3105
+2003-04-01,France,France,Maison Individuelle Pure,15858,14519
+2003-05-01,France,France,Logement Collectif,13081,10632
+2003-05-01,France,France,Logement en Résidence,1572,1396
+2003-05-01,France,France,Maison Individuelle Groupée,3762,3234
+2003-05-01,France,France,Maison Individuelle Pure,15250,14016
+2003-06-01,France,France,Logement Collectif,11874,11895
+2003-06-01,France,France,Logement en Résidence,917,415
+2003-06-01,France,France,Maison Individuelle Groupée,3863,3762
+2003-06-01,France,France,Maison Individuelle Pure,15978,14693
+2003-07-01,France,France,Logement Collectif,13821,12667
+2003-07-01,France,France,Logement en Résidence,1658,565
+2003-07-01,France,France,Maison Individuelle Groupée,4413,3301
+2003-07-01,France,France,Maison Individuelle Pure,16572,15015
+2003-08-01,France,France,Logement Collectif,13206,10025
+2003-08-01,France,France,Logement en Résidence,1528,1015
+2003-08-01,France,France,Maison Individuelle Groupée,3997,3199
+2003-08-01,France,France,Maison Individuelle Pure,16200,13766
+2003-09-01,France,France,Logement Collectif,14133,12234
+2003-09-01,France,France,Logement en Résidence,1640,1185
+2003-09-01,France,France,Maison Individuelle Groupée,4614,3506
+2003-09-01,France,France,Maison Individuelle Pure,16649,14970
+2003-10-01,France,France,Logement Collectif,13361,10957
+2003-10-01,France,France,Logement en Résidence,1219,1094
+2003-10-01,France,France,Maison Individuelle Groupée,4265,3858
+2003-10-01,France,France,Maison Individuelle Pure,16604,14930
+2003-11-01,France,France,Logement Collectif,14448,11275
+2003-11-01,France,France,Logement en Résidence,1017,1391
+2003-11-01,France,France,Maison Individuelle Groupée,4457,3191
+2003-11-01,France,France,Maison Individuelle Pure,17174,15051
+2003-12-01,France,France,Logement Collectif,14492,12046
+2003-12-01,France,France,Logement en Résidence,1354,707
+2003-12-01,France,France,Maison Individuelle Groupée,4531,4069
+2003-12-01,France,France,Maison Individuelle Pure,16900,15750
+2004-01-01,France,France,Logement Collectif,14554,11197
+2004-01-01,France,France,Logement en Résidence,1598,1849
+2004-01-01,France,France,Maison Individuelle Groupée,4881,3791
+2004-01-01,France,France,Maison Individuelle Pure,17329,15508
+2004-02-01,France,France,Logement Collectif,15972,12597
+2004-02-01,France,France,Logement en Résidence,2123,945
+2004-02-01,France,France,Maison Individuelle Groupée,4545,3945
+2004-02-01,France,France,Maison Individuelle Pure,17077,16445
+2004-03-01,France,France,Logement Collectif,15047,12096
+2004-03-01,France,France,Logement en Résidence,1008,1070
+2004-03-01,France,France,Maison Individuelle Groupée,4991,3719
+2004-03-01,France,France,Maison Individuelle Pure,16792,15879
+2004-04-01,France,France,Logement Collectif,17380,12820
+2004-04-01,France,France,Logement en Résidence,1690,1346
+2004-04-01,France,France,Maison Individuelle Groupée,4256,4216
+2004-04-01,France,France,Maison Individuelle Pure,16968,15896
+2004-05-01,France,France,Logement Collectif,16831,12119
+2004-05-01,France,France,Logement en Résidence,1681,1119
+2004-05-01,France,France,Maison Individuelle Groupée,5212,4071
+2004-05-01,France,France,Maison Individuelle Pure,16778,15303
+2004-06-01,France,France,Logement Collectif,17517,13686
+2004-06-01,France,France,Logement en Résidence,2396,1249
+2004-06-01,France,France,Maison Individuelle Groupée,5249,4112
+2004-06-01,France,France,Maison Individuelle Pure,16885,15802
+2004-07-01,France,France,Logement Collectif,17953,13968
+2004-07-01,France,France,Logement en Résidence,1463,1187
+2004-07-01,France,France,Maison Individuelle Groupée,5015,4318
+2004-07-01,France,France,Maison Individuelle Pure,16436,15480
+2004-08-01,France,France,Logement Collectif,17684,13551
+2004-08-01,France,France,Logement en Résidence,2252,1415
+2004-08-01,France,France,Maison Individuelle Groupée,5568,4268
+2004-08-01,France,France,Maison Individuelle Pure,16990,15446
+2004-09-01,France,France,Logement Collectif,18959,13528
+2004-09-01,France,France,Logement en Résidence,1877,1153
+2004-09-01,France,France,Maison Individuelle Groupée,5386,4352
+2004-09-01,France,France,Maison Individuelle Pure,16736,16020
+2004-10-01,France,France,Logement Collectif,18361,12969
+2004-10-01,France,France,Logement en Résidence,2612,1549
+2004-10-01,France,France,Maison Individuelle Groupée,4997,4072
+2004-10-01,France,France,Maison Individuelle Pure,17653,15825
+2004-11-01,France,France,Logement Collectif,18780,16295
+2004-11-01,France,France,Logement en Résidence,2886,1104
+2004-11-01,France,France,Maison Individuelle Groupée,5492,4447
+2004-11-01,France,France,Maison Individuelle Pure,17023,16146
+2004-12-01,France,France,Logement Collectif,19738,14193
+2004-12-01,France,France,Logement en Résidence,2210,1626
+2004-12-01,France,France,Maison Individuelle Groupée,5033,3843
+2004-12-01,France,France,Maison Individuelle Pure,16727,16056
+2005-01-01,France,France,Logement Collectif,19366,15763
+2005-01-01,France,France,Logement en Résidence,2257,1689
+2005-01-01,France,France,Maison Individuelle Groupée,5883,4618
+2005-01-01,France,France,Maison Individuelle Pure,17899,16773
+2005-02-01,France,France,Logement Collectif,17976,15076
+2005-02-01,France,France,Logement en Résidence,1345,1264
+2005-02-01,France,France,Maison Individuelle Groupée,5526,4444
+2005-02-01,France,France,Maison Individuelle Pure,17493,15171
+2005-03-01,France,France,Logement Collectif,18681,15194
+2005-03-01,France,France,Logement en Résidence,1942,1794
+2005-03-01,France,France,Maison Individuelle Groupée,5112,4601
+2005-03-01,France,France,Maison Individuelle Pure,17065,15871
+2005-04-01,France,France,Logement Collectif,19340,14152
+2005-04-01,France,France,Logement en Résidence,2410,1507
+2005-04-01,France,France,Maison Individuelle Groupée,5254,4670
+2005-04-01,France,France,Maison Individuelle Pure,17818,16324
+2005-05-01,France,France,Logement Collectif,17591,18673
+2005-05-01,France,France,Logement en Résidence,1472,1101
+2005-05-01,France,France,Maison Individuelle Groupée,5434,4503
+2005-05-01,France,France,Maison Individuelle Pure,17344,16727
+2005-06-01,France,France,Logement Collectif,23296,15069
+2005-06-01,France,France,Logement en Résidence,1946,2036
+2005-06-01,France,France,Maison Individuelle Groupée,6074,4571
+2005-06-01,France,France,Maison Individuelle Pure,17927,16184
+2005-07-01,France,France,Logement Collectif,19439,14233
+2005-07-01,France,France,Logement en Résidence,2798,2204
+2005-07-01,France,France,Maison Individuelle Groupée,6022,4658
+2005-07-01,France,France,Maison Individuelle Pure,17959,16370
+2005-08-01,France,France,Logement Collectif,20844,16505
+2005-08-01,France,France,Logement en Résidence,2212,1839
+2005-08-01,France,France,Maison Individuelle Groupée,5453,4909
+2005-08-01,France,France,Maison Individuelle Pure,17457,16730
+2005-09-01,France,France,Logement Collectif,21116,17677
+2005-09-01,France,France,Logement en Résidence,2357,1511
+2005-09-01,France,France,Maison Individuelle Groupée,5789,4919
+2005-09-01,France,France,Maison Individuelle Pure,17857,16503
+2005-10-01,France,France,Logement Collectif,19430,15303
+2005-10-01,France,France,Logement en Résidence,2066,1926
+2005-10-01,France,France,Maison Individuelle Groupée,6132,4713
+2005-10-01,France,France,Maison Individuelle Pure,17418,16064
+2005-11-01,France,France,Logement Collectif,21368,14678
+2005-11-01,France,France,Logement en Résidence,2151,1684
+2005-11-01,France,France,Maison Individuelle Groupée,5782,4863
+2005-11-01,France,France,Maison Individuelle Pure,19154,16897
+2005-12-01,France,France,Logement Collectif,26358,17929
+2005-12-01,France,France,Logement en Résidence,2125,1617
+2005-12-01,France,France,Maison Individuelle Groupée,6094,4639
+2005-12-01,France,France,Maison Individuelle Pure,17982,17562
+2006-01-01,France,France,Logement Collectif,22288,16884
+2006-01-01,France,France,Logement en Résidence,2505,1749
+2006-01-01,France,France,Maison Individuelle Groupée,6100,4201
+2006-01-01,France,France,Maison Individuelle Pure,18403,16950
+2006-02-01,France,France,Logement Collectif,23513,16986
+2006-02-01,France,France,Logement en Résidence,2721,2172
+2006-02-01,France,France,Maison Individuelle Groupée,5965,4723
+2006-02-01,France,France,Maison Individuelle Pure,18122,16534
+2006-03-01,France,France,Logement Collectif,24910,18236
+2006-03-01,France,France,Logement en Résidence,1495,1448
+2006-03-01,France,France,Maison Individuelle Groupée,5579,4557
+2006-03-01,France,France,Maison Individuelle Pure,18688,16916
+2006-04-01,France,France,Logement Collectif,24379,18114
+2006-04-01,France,France,Logement en Résidence,3025,1836
+2006-04-01,France,France,Maison Individuelle Groupée,6585,5150
+2006-04-01,France,France,Maison Individuelle Pure,18408,17323
+2006-05-01,France,France,Logement Collectif,21992,18340
+2006-05-01,France,France,Logement en Résidence,3008,2275
+2006-05-01,France,France,Maison Individuelle Groupée,6614,5595
+2006-05-01,France,France,Maison Individuelle Pure,18268,17230
+2006-06-01,France,France,Logement Collectif,25018,18770
+2006-06-01,France,France,Logement en Résidence,2879,1455
+2006-06-01,France,France,Maison Individuelle Groupée,6276,5285
+2006-06-01,France,France,Maison Individuelle Pure,18428,17493
+2006-07-01,France,France,Logement Collectif,22972,16286
+2006-07-01,France,France,Logement en Résidence,2543,1709
+2006-07-01,France,France,Maison Individuelle Groupée,6137,4223
+2006-07-01,France,France,Maison Individuelle Pure,18047,16656
+2006-08-01,France,France,Logement Collectif,22326,20338
+2006-08-01,France,France,Logement en Résidence,3632,1522
+2006-08-01,France,France,Maison Individuelle Groupée,6284,6118
+2006-08-01,France,France,Maison Individuelle Pure,17406,17033
+2006-09-01,France,France,Logement Collectif,19705,17279
+2006-09-01,France,France,Logement en Résidence,2148,2125
+2006-09-01,France,France,Maison Individuelle Groupée,6314,4356
+2006-09-01,France,France,Maison Individuelle Pure,17941,16488
+2006-10-01,France,France,Logement Collectif,23331,18041
+2006-10-01,France,France,Logement en Résidence,2637,1204
+2006-10-01,France,France,Maison Individuelle Groupée,6033,4523
+2006-10-01,France,France,Maison Individuelle Pure,18371,16422
+2006-11-01,France,France,Logement Collectif,25503,17201
+2006-11-01,France,France,Logement en Résidence,1891,2823
+2006-11-01,France,France,Maison Individuelle Groupée,7687,4813
+2006-11-01,France,France,Maison Individuelle Pure,17626,16848
+2006-12-01,France,France,Logement Collectif,24570,16616
+2006-12-01,France,France,Logement en Résidence,2852,1197
+2006-12-01,France,France,Maison Individuelle Groupée,7161,4700
+2006-12-01,France,France,Maison Individuelle Pure,16833,17013
+2007-01-01,France,France,Logement Collectif,22167,17584
+2007-01-01,France,France,Logement en Résidence,1877,1874
+2007-01-01,France,France,Maison Individuelle Groupée,6263,4668
+2007-01-01,France,France,Maison Individuelle Pure,16515,16554
+2007-02-01,France,France,Logement Collectif,23731,17691
+2007-02-01,France,France,Logement en Résidence,2830,2117
+2007-02-01,France,France,Maison Individuelle Groupée,6472,4548
+2007-02-01,France,France,Maison Individuelle Pure,17670,16326
+2007-03-01,France,France,Logement Collectif,24390,17389
+2007-03-01,France,France,Logement en Résidence,3075,2163
+2007-03-01,France,France,Maison Individuelle Groupée,6704,4774
+2007-03-01,France,France,Maison Individuelle Pure,18397,16281
+2007-04-01,France,France,Logement Collectif,21917,18203
+2007-04-01,France,France,Logement en Résidence,2216,1644
+2007-04-01,France,France,Maison Individuelle Groupée,6448,4849
+2007-04-01,France,France,Maison Individuelle Pure,17215,16464
+2007-05-01,France,France,Logement Collectif,22610,18991
+2007-05-01,France,France,Logement en Résidence,3000,2030
+2007-05-01,France,France,Maison Individuelle Groupée,6112,5002
+2007-05-01,France,France,Maison Individuelle Pure,18404,16625
+2007-06-01,France,France,Logement Collectif,23639,18246
+2007-06-01,France,France,Logement en Résidence,1926,1867
+2007-06-01,France,France,Maison Individuelle Groupée,5340,4797
+2007-06-01,France,France,Maison Individuelle Pure,18006,16566
+2007-07-01,France,France,Logement Collectif,21611,20418
+2007-07-01,France,France,Logement en Résidence,2263,2191
+2007-07-01,France,France,Maison Individuelle Groupée,6040,4745
+2007-07-01,France,France,Maison Individuelle Pure,17885,16326
+2007-08-01,France,France,Logement Collectif,22054,15975
+2007-08-01,France,France,Logement en Résidence,1751,1689
+2007-08-01,France,France,Maison Individuelle Groupée,6514,4311
+2007-08-01,France,France,Maison Individuelle Pure,18303,17220
+2007-09-01,France,France,Logement Collectif,18246,17258
+2007-09-01,France,France,Logement en Résidence,2598,1614
+2007-09-01,France,France,Maison Individuelle Groupée,5951,4651
+2007-09-01,France,France,Maison Individuelle Pure,18456,16464
+2007-10-01,France,France,Logement Collectif,20705,18852
+2007-10-01,France,France,Logement en Résidence,2920,2124
+2007-10-01,France,France,Maison Individuelle Groupée,5844,4824
+2007-10-01,France,France,Maison Individuelle Pure,17698,16532
+2007-11-01,France,France,Logement Collectif,18951,16653
+2007-11-01,France,France,Logement en Résidence,2593,1428
+2007-11-01,France,France,Maison Individuelle Groupée,5767,3681
+2007-11-01,France,France,Maison Individuelle Pure,14021,16376
+2007-12-01,France,France,Logement Collectif,19843,15169
+2007-12-01,France,France,Logement en Résidence,3609,1413
+2007-12-01,France,France,Maison Individuelle Groupée,5835,4564
+2007-12-01,France,France,Maison Individuelle Pure,16490,15957
+2008-01-01,France,France,Logement Collectif,21412,18276
+2008-01-01,France,France,Logement en Résidence,2217,987
+2008-01-01,France,France,Maison Individuelle Groupée,6079,4605
+2008-01-01,France,France,Maison Individuelle Pure,16276,16193
+2008-02-01,France,France,Logement Collectif,22882,17700
+2008-02-01,France,France,Logement en Résidence,2836,1862
+2008-02-01,France,France,Maison Individuelle Groupée,6496,4837
+2008-02-01,France,France,Maison Individuelle Pure,15802,16137
+2008-03-01,France,France,Logement Collectif,21882,15121
+2008-03-01,France,France,Logement en Résidence,2563,2330
+2008-03-01,France,France,Maison Individuelle Groupée,7049,4428
+2008-03-01,France,France,Maison Individuelle Pure,15345,14292
+2008-04-01,France,France,Logement Collectif,18873,15431
+2008-04-01,France,France,Logement en Résidence,1958,1741
+2008-04-01,France,France,Maison Individuelle Groupée,6261,3889
+2008-04-01,France,France,Maison Individuelle Pure,15349,14306
+2008-05-01,France,France,Logement Collectif,19420,14710
+2008-05-01,France,France,Logement en Résidence,2939,1672
+2008-05-01,France,France,Maison Individuelle Groupée,6108,3831
+2008-05-01,France,France,Maison Individuelle Pure,14572,14593
+2008-06-01,France,France,Logement Collectif,16525,13804
+2008-06-01,France,France,Logement en Résidence,3335,2130
+2008-06-01,France,France,Maison Individuelle Groupée,5496,4132
+2008-06-01,France,France,Maison Individuelle Pure,14141,14112
+2008-07-01,France,France,Logement Collectif,15096,13005
+2008-07-01,France,France,Logement en Résidence,2793,570
+2008-07-01,France,France,Maison Individuelle Groupée,5364,4198
+2008-07-01,France,France,Maison Individuelle Pure,13817,13947
+2008-08-01,France,France,Logement Collectif,14586,13533
+2008-08-01,France,France,Logement en Résidence,2148,1857
+2008-08-01,France,France,Maison Individuelle Groupée,5347,3788
+2008-08-01,France,France,Maison Individuelle Pure,14227,13498
+2008-09-01,France,France,Logement Collectif,15006,13282
+2008-09-01,France,France,Logement en Résidence,2455,1284
+2008-09-01,France,France,Maison Individuelle Groupée,5018,3998
+2008-09-01,France,France,Maison Individuelle Pure,13258,13268
+2008-10-01,France,France,Logement Collectif,17327,12610
+2008-10-01,France,France,Logement en Résidence,2138,1064
+2008-10-01,France,France,Maison Individuelle Groupée,5643,3662
+2008-10-01,France,France,Maison Individuelle Pure,13024,12955
+2008-11-01,France,France,Logement Collectif,13538,8530
+2008-11-01,France,France,Logement en Résidence,2901,815
+2008-11-01,France,France,Maison Individuelle Groupée,5072,3517
+2008-11-01,France,France,Maison Individuelle Pure,12147,12673
+2008-12-01,France,France,Logement Collectif,12933,9677
+2008-12-01,France,France,Logement en Résidence,1473,1524
+2008-12-01,France,France,Maison Individuelle Groupée,5026,2428
+2008-12-01,France,France,Maison Individuelle Pure,12077,11799
+2009-01-01,France,France,Logement Collectif,14319,11483
+2009-01-01,France,France,Logement en Résidence,2652,1302
+2009-01-01,France,France,Maison Individuelle Groupée,4972,2999
+2009-01-01,France,France,Maison Individuelle Pure,10722,11233
+2009-02-01,France,France,Logement Collectif,11688,9812
+2009-02-01,France,France,Logement en Résidence,2721,1314
+2009-02-01,France,France,Maison Individuelle Groupée,4597,3338
+2009-02-01,France,France,Maison Individuelle Pure,9738,11225
+2009-03-01,France,France,Logement Collectif,12753,11173
+2009-03-01,France,France,Logement en Résidence,2924,1104
+2009-03-01,France,France,Maison Individuelle Groupée,4540,3177
+2009-03-01,France,France,Maison Individuelle Pure,10363,10629
+2009-04-01,France,France,Logement Collectif,12725,13336
+2009-04-01,France,France,Logement en Résidence,2080,1752
+2009-04-01,France,France,Maison Individuelle Groupée,4697,3453
+2009-04-01,France,France,Maison Individuelle Pure,11013,10427
+2009-05-01,France,France,Logement Collectif,10648,12359
+2009-05-01,France,France,Logement en Résidence,2457,1141
+2009-05-01,France,France,Maison Individuelle Groupée,4628,3525
+2009-05-01,France,France,Maison Individuelle Pure,11087,10261
+2009-06-01,France,France,Logement Collectif,10685,13218
+2009-06-01,France,France,Logement en Résidence,2286,1703
+2009-06-01,France,France,Maison Individuelle Groupée,5012,3855
+2009-06-01,France,France,Maison Individuelle Pure,11246,10767
+2009-07-01,France,France,Logement Collectif,13769,15862
+2009-07-01,France,France,Logement en Résidence,2702,1794
+2009-07-01,France,France,Maison Individuelle Groupée,4970,3728
+2009-07-01,France,France,Maison Individuelle Pure,11536,10829
+2009-08-01,France,France,Logement Collectif,11750,16981
+2009-08-01,France,France,Logement en Résidence,2547,2041
+2009-08-01,France,France,Maison Individuelle Groupée,4962,4054
+2009-08-01,France,France,Maison Individuelle Pure,11554,10730
+2009-09-01,France,France,Logement Collectif,13367,12429
+2009-09-01,France,France,Logement en Résidence,2501,1083
+2009-09-01,France,France,Maison Individuelle Groupée,5201,3821
+2009-09-01,France,France,Maison Individuelle Pure,11800,10553
+2009-10-01,France,France,Logement Collectif,15748,11624
+2009-10-01,France,France,Logement en Résidence,1539,1572
+2009-10-01,France,France,Maison Individuelle Groupée,5442,4714
+2009-10-01,France,France,Maison Individuelle Pure,12419,10470
+2009-11-01,France,France,Logement Collectif,13397,13110
+2009-11-01,France,France,Logement en Résidence,3060,501
+2009-11-01,France,France,Maison Individuelle Groupée,5385,4276
+2009-11-01,France,France,Maison Individuelle Pure,12440,10753
+2009-12-01,France,France,Logement Collectif,13262,12900
+2009-12-01,France,France,Logement en Résidence,3465,2615
+2009-12-01,France,France,Maison Individuelle Groupée,5271,4397
+2009-12-01,France,France,Maison Individuelle Pure,12573,11005
+2010-01-01,France,France,Logement Collectif,13948,11845
+2010-01-01,France,France,Logement en Résidence,3570,2154
+2010-01-01,France,France,Maison Individuelle Groupée,5314,3940
+2010-01-01,France,France,Maison Individuelle Pure,12995,10228
+2010-02-01,France,France,Logement Collectif,17633,12764
+2010-02-01,France,France,Logement en Résidence,2207,1511
+2010-02-01,France,France,Maison Individuelle Groupée,5345,3944
+2010-02-01,France,France,Maison Individuelle Pure,12856,10794
+2010-03-01,France,France,Logement Collectif,19621,13035
+2010-03-01,France,France,Logement en Résidence,2731,1395
+2010-03-01,France,France,Maison Individuelle Groupée,5902,4213
+2010-03-01,France,France,Maison Individuelle Pure,13545,11890
+2010-04-01,France,France,Logement Collectif,17235,13552
+2010-04-01,France,France,Logement en Résidence,4715,1550
+2010-04-01,France,France,Maison Individuelle Groupée,5220,4496
+2010-04-01,France,France,Maison Individuelle Pure,13603,12218
+2010-05-01,France,France,Logement Collectif,17615,14244
+2010-05-01,France,France,Logement en Résidence,1901,1898
+2010-05-01,France,France,Maison Individuelle Groupée,5529,4881
+2010-05-01,France,France,Maison Individuelle Pure,14107,12250
+2010-06-01,France,France,Logement Collectif,17873,15361
+2010-06-01,France,France,Logement en Résidence,2206,1449
+2010-06-01,France,France,Maison Individuelle Groupée,5541,4590
+2010-06-01,France,France,Maison Individuelle Pure,14771,12575
+2010-07-01,France,France,Logement Collectif,16639,14653
+2010-07-01,France,France,Logement en Résidence,4504,2548
+2010-07-01,France,France,Maison Individuelle Groupée,6852,4592
+2010-07-01,France,France,Maison Individuelle Pure,15633,13317
+2010-08-01,France,France,Logement Collectif,15911,18191
+2010-08-01,France,France,Logement en Résidence,2593,3059
+2010-08-01,France,France,Maison Individuelle Groupée,5099,5387
+2010-08-01,France,France,Maison Individuelle Pure,14622,13107
+2010-09-01,France,France,Logement Collectif,18769,16953
+2010-09-01,France,France,Logement en Résidence,2484,2210
+2010-09-01,France,France,Maison Individuelle Groupée,5853,4921
+2010-09-01,France,France,Maison Individuelle Pure,13579,13383
+2010-10-01,France,France,Logement Collectif,16729,18138
+2010-10-01,France,France,Logement en Résidence,2201,2847
+2010-10-01,France,France,Maison Individuelle Groupée,6327,4895
+2010-10-01,France,France,Maison Individuelle Pure,13989,13129
+2010-11-01,France,France,Logement Collectif,15584,16978
+2010-11-01,France,France,Logement en Résidence,2222,2701
+2010-11-01,France,France,Maison Individuelle Groupée,5336,5318
+2010-11-01,France,France,Maison Individuelle Pure,14123,12850
+2010-12-01,France,France,Logement Collectif,17209,15298
+2010-12-01,France,France,Logement en Résidence,2227,1790
+2010-12-01,France,France,Maison Individuelle Groupée,5122,4177
+2010-12-01,France,France,Maison Individuelle Pure,14855,14102
+2011-01-01,France,France,Logement Collectif,19170,13500
+2011-01-01,France,France,Logement en Résidence,2267,2309
+2011-01-01,France,France,Maison Individuelle Groupée,6770,4991
+2011-01-01,France,France,Maison Individuelle Pure,14855,13618
+2011-02-01,France,France,Logement Collectif,17945,13325
+2011-02-01,France,France,Logement en Résidence,1825,1491
+2011-02-01,France,France,Maison Individuelle Groupée,5224,4866
+2011-02-01,France,France,Maison Individuelle Pure,14314,13658
+2011-03-01,France,France,Logement Collectif,17416,15079
+2011-03-01,France,France,Logement en Résidence,2161,1441
+2011-03-01,France,France,Maison Individuelle Groupée,5423,4747
+2011-03-01,France,France,Maison Individuelle Pure,13865,13299
+2011-04-01,France,France,Logement Collectif,17476,13739
+2011-04-01,France,France,Logement en Résidence,3391,2305
+2011-04-01,France,France,Maison Individuelle Groupée,5432,4941
+2011-04-01,France,France,Maison Individuelle Pure,14479,13365
+2011-05-01,France,France,Logement Collectif,20677,15808
+2011-05-01,France,France,Logement en Résidence,2756,2895
+2011-05-01,France,France,Maison Individuelle Groupée,5943,4926
+2011-05-01,France,France,Maison Individuelle Pure,15152,13397
+2011-06-01,France,France,Logement Collectif,20642,12100
+2011-06-01,France,France,Logement en Résidence,2197,1576
+2011-06-01,France,France,Maison Individuelle Groupée,6252,4371
+2011-06-01,France,France,Maison Individuelle Pure,14471,12758
+2011-07-01,France,France,Logement Collectif,22461,15181
+2011-07-01,France,France,Logement en Résidence,2978,1501
+2011-07-01,France,France,Maison Individuelle Groupée,6131,4784
+2011-07-01,France,France,Maison Individuelle Pure,13854,12718
+2011-08-01,France,France,Logement Collectif,25274,17310
+2011-08-01,France,France,Logement en Résidence,2249,1810
+2011-08-01,France,France,Maison Individuelle Groupée,5555,4409
+2011-08-01,France,France,Maison Individuelle Pure,13263,13378
+2011-09-01,France,France,Logement Collectif,24793,15533
+2011-09-01,France,France,Logement en Résidence,2581,2685
+2011-09-01,France,France,Maison Individuelle Groupée,6121,4362
+2011-09-01,France,France,Maison Individuelle Pure,13186,13017
+2011-10-01,France,France,Logement Collectif,19534,17919
+2011-10-01,France,France,Logement en Résidence,3879,1483
+2011-10-01,France,France,Maison Individuelle Groupée,5400,4010
+2011-10-01,France,France,Maison Individuelle Pure,13171,11920
+2011-11-01,France,France,Logement Collectif,22219,21560
+2011-11-01,France,France,Logement en Résidence,1794,2818
+2011-11-01,France,France,Maison Individuelle Groupée,6219,5489
+2011-11-01,France,France,Maison Individuelle Pure,13378,12832
+2011-12-01,France,France,Logement Collectif,23448,17069
+2011-12-01,France,France,Logement en Résidence,2057,2987
+2011-12-01,France,France,Maison Individuelle Groupée,6140,5013
+2011-12-01,France,France,Maison Individuelle Pure,13460,12350
+2012-01-01,France,France,Logement Collectif,19647,14388
+2012-01-01,France,France,Logement en Résidence,2017,1053
+2012-01-01,France,France,Maison Individuelle Groupée,5978,3994
+2012-01-01,France,France,Maison Individuelle Pure,13740,12580
+2012-02-01,France,France,Logement Collectif,18147,16489
+2012-02-01,France,France,Logement en Résidence,3487,1639
+2012-02-01,France,France,Maison Individuelle Groupée,5276,4528
+2012-02-01,France,France,Maison Individuelle Pure,13216,10734
+2012-03-01,France,France,Logement Collectif,18959,16469
+2012-03-01,France,France,Logement en Résidence,3857,2100
+2012-03-01,France,France,Maison Individuelle Groupée,4366,4611
+2012-03-01,France,France,Maison Individuelle Pure,12609,12800
+2012-04-01,France,France,Logement Collectif,22380,11566
+2012-04-01,France,France,Logement en Résidence,2863,1001
+2012-04-01,France,France,Maison Individuelle Groupée,5658,3427
+2012-04-01,France,France,Maison Individuelle Pure,12325,11511
+2012-05-01,France,France,Logement Collectif,22533,12513
+2012-05-01,France,France,Logement en Résidence,2410,954
+2012-05-01,France,France,Maison Individuelle Groupée,5257,4073
+2012-05-01,France,France,Maison Individuelle Pure,11316,11456
+2012-06-01,France,France,Logement Collectif,20273,12868
+2012-06-01,France,France,Logement en Résidence,2467,3148
+2012-06-01,France,France,Maison Individuelle Groupée,5338,3846
+2012-06-01,France,France,Maison Individuelle Pure,12272,11474
+2012-07-01,France,France,Logement Collectif,20501,14511
+2012-07-01,France,France,Logement en Résidence,2536,1460
+2012-07-01,France,France,Maison Individuelle Groupée,5080,3737
+2012-07-01,France,France,Maison Individuelle Pure,11712,11121
+2012-08-01,France,France,Logement Collectif,24027,14736
+2012-08-01,France,France,Logement en Résidence,6305,1570
+2012-08-01,France,France,Maison Individuelle Groupée,5830,4115
+2012-08-01,France,France,Maison Individuelle Pure,11985,11152
+2012-09-01,France,France,Logement Collectif,18631,11698
+2012-09-01,France,France,Logement en Résidence,2082,1875
+2012-09-01,France,France,Maison Individuelle Groupée,5395,4051
+2012-09-01,France,France,Maison Individuelle Pure,12194,11127
+2012-10-01,France,France,Logement Collectif,17532,15749
+2012-10-01,France,France,Logement en Résidence,3409,1575
+2012-10-01,France,France,Maison Individuelle Groupée,4979,4294
+2012-10-01,France,France,Maison Individuelle Pure,12450,11010
+2012-11-01,France,France,Logement Collectif,16479,14259
+2012-11-01,France,France,Logement en Résidence,2870,1808
+2012-11-01,France,France,Maison Individuelle Groupée,5007,3775
+2012-11-01,France,France,Maison Individuelle Pure,12336,10606
+2012-12-01,France,France,Logement Collectif,17649,16478
+2012-12-01,France,France,Logement en Résidence,1041,4099
+2012-12-01,France,France,Maison Individuelle Groupée,5903,4778
+2012-12-01,France,France,Maison Individuelle Pure,14235,10782
+2013-01-01,France,France,Logement Collectif,16089,15157
+2013-01-01,France,France,Logement en Résidence,2015,1014
+2013-01-01,France,France,Maison Individuelle Groupée,5910,3624
+2013-01-01,France,France,Maison Individuelle Pure,17604,10704
+2013-02-01,France,France,Logement Collectif,19216,16809
+2013-02-01,France,France,Logement en Résidence,2183,1086
+2013-02-01,France,France,Maison Individuelle Groupée,5801,3978
+2013-02-01,France,France,Maison Individuelle Pure,20646,11748
+2013-03-01,France,France,Logement Collectif,18809,16166
+2013-03-01,France,France,Logement en Résidence,2278,1872
+2013-03-01,France,France,Maison Individuelle Groupée,8707,3866
+2013-03-01,France,France,Maison Individuelle Pure,10319,11961
+2013-04-01,France,France,Logement Collectif,17320,11809
+2013-04-01,France,France,Logement en Résidence,2511,1965
+2013-04-01,France,France,Maison Individuelle Groupée,5184,3926
+2013-04-01,France,France,Maison Individuelle Pure,8789,12268
+2013-05-01,France,France,Logement Collectif,16676,14072
+2013-05-01,France,France,Logement en Résidence,2437,1568
+2013-05-01,France,France,Maison Individuelle Groupée,4594,3951
+2013-05-01,France,France,Maison Individuelle Pure,8546,10992
+2013-06-01,France,France,Logement Collectif,17053,14274
+2013-06-01,France,France,Logement en Résidence,2358,1809
+2013-06-01,France,France,Maison Individuelle Groupée,4205,3956
+2013-06-01,France,France,Maison Individuelle Pure,8959,10453
+2013-07-01,France,France,Logement Collectif,17286,13684
+2013-07-01,France,France,Logement en Résidence,1565,1548
+2013-07-01,France,France,Maison Individuelle Groupée,3694,3885
+2013-07-01,France,France,Maison Individuelle Pure,8673,10150
+2013-08-01,France,France,Logement Collectif,15283,13538
+2013-08-01,France,France,Logement en Résidence,1840,1751
+2013-08-01,France,France,Maison Individuelle Groupée,3750,3728
+2013-08-01,France,France,Maison Individuelle Pure,9166,9969
+2013-09-01,France,France,Logement Collectif,14678,12819
+2013-09-01,France,France,Logement en Résidence,1736,2555
+2013-09-01,France,France,Maison Individuelle Groupée,3814,3938
+2013-09-01,France,France,Maison Individuelle Pure,9613,9275
+2013-10-01,France,France,Logement Collectif,18243,13732
+2013-10-01,France,France,Logement en Résidence,1612,1546
+2013-10-01,France,France,Maison Individuelle Groupée,3845,3766
+2013-10-01,France,France,Maison Individuelle Pure,9977,9268
+2013-11-01,France,France,Logement Collectif,16420,13858
+2013-11-01,France,France,Logement en Résidence,2070,879
+2013-11-01,France,France,Maison Individuelle Groupée,3793,3676
+2013-11-01,France,France,Maison Individuelle Pure,9975,9107
+2013-12-01,France,France,Logement Collectif,16157,13281
+2013-12-01,France,France,Logement en Résidence,1958,1290
+2013-12-01,France,France,Maison Individuelle Groupée,3758,3689
+2013-12-01,France,France,Maison Individuelle Pure,9925,9288
+2014-01-01,France,France,Logement Collectif,16094,13887
+2014-01-01,France,France,Logement en Résidence,2362,2795
+2014-01-01,France,France,Maison Individuelle Groupée,3798,3456
+2014-01-01,France,France,Maison Individuelle Pure,9719,9067
+2014-02-01,France,France,Logement Collectif,17244,12285
+2014-02-01,France,France,Logement en Résidence,2130,1415
+2014-02-01,France,France,Maison Individuelle Groupée,3849,3412
+2014-02-01,France,France,Maison Individuelle Pure,9966,9049
+2014-03-01,France,France,Logement Collectif,18402,13638
+2014-03-01,France,France,Logement en Résidence,3830,2090
+2014-03-01,France,France,Maison Individuelle Groupée,4053,3579
+2014-03-01,France,France,Maison Individuelle Pure,9878,9233
+2014-04-01,France,France,Logement Collectif,12812,14700
+2014-04-01,France,France,Logement en Résidence,1740,2351
+2014-04-01,France,France,Maison Individuelle Groupée,4008,3255
+2014-04-01,France,France,Maison Individuelle Pure,9754,8973
+2014-05-01,France,France,Logement Collectif,15962,14150
+2014-05-01,France,France,Logement en Résidence,2462,1813
+2014-05-01,France,France,Maison Individuelle Groupée,4041,3195
+2014-05-01,France,France,Maison Individuelle Pure,9381,8494
+2014-06-01,France,France,Logement Collectif,15893,11966
+2014-06-01,France,France,Logement en Résidence,2577,3006
+2014-06-01,France,France,Maison Individuelle Groupée,3067,3499
+2014-06-01,France,France,Maison Individuelle Pure,9621,9071
+2014-07-01,France,France,Logement Collectif,16326,15510
+2014-07-01,France,France,Logement en Résidence,3182,2098
+2014-07-01,France,France,Maison Individuelle Groupée,3684,3179
+2014-07-01,France,France,Maison Individuelle Pure,9566,9008
+2014-08-01,France,France,Logement Collectif,13415,11740
+2014-08-01,France,France,Logement en Résidence,3279,2667
+2014-08-01,France,France,Maison Individuelle Groupée,3765,3043
+2014-08-01,France,France,Maison Individuelle Pure,9358,8859
+2014-09-01,France,France,Logement Collectif,14590,15372
+2014-09-01,France,France,Logement en Résidence,1990,1577
+2014-09-01,France,France,Maison Individuelle Groupée,3594,2960
+2014-09-01,France,France,Maison Individuelle Pure,9453,8898
+2014-10-01,France,France,Logement Collectif,14947,13379
+2014-10-01,France,France,Logement en Résidence,2741,2067
+2014-10-01,France,France,Maison Individuelle Groupée,3438,3591
+2014-10-01,France,France,Maison Individuelle Pure,9235,8647
+2014-11-01,France,France,Logement Collectif,14440,13172
+2014-11-01,France,France,Logement en Résidence,1215,2496
+2014-11-01,France,France,Maison Individuelle Groupée,3620,3141
+2014-11-01,France,France,Maison Individuelle Pure,8887,8093
+2014-12-01,France,France,Logement Collectif,15479,14546
+2014-12-01,France,France,Logement en Résidence,2281,2110
+2014-12-01,France,France,Maison Individuelle Groupée,3568,3039
+2014-12-01,France,France,Maison Individuelle Pure,9166,8067
+2015-01-01,France,France,Logement Collectif,15789,13673
+2015-01-01,France,France,Logement en Résidence,2416,1804
+2015-01-01,France,France,Maison Individuelle Groupée,4153,3056
+2015-01-01,France,France,Maison Individuelle Pure,9326,8564
+2015-02-01,France,France,Logement Collectif,14418,13265
+2015-02-01,France,France,Logement en Résidence,2066,2149
+2015-02-01,France,France,Maison Individuelle Groupée,3944,2907
+2015-02-01,France,France,Maison Individuelle Pure,9233,8250
+2015-03-01,France,France,Logement Collectif,16300,14800
+2015-03-01,France,France,Logement en Résidence,2538,2220
+2015-03-01,France,France,Maison Individuelle Groupée,3384,3158
+2015-03-01,France,France,Maison Individuelle Pure,9327,8188
+2015-04-01,France,France,Logement Collectif,17431,13415
+2015-04-01,France,France,Logement en Résidence,1991,1108
+2015-04-01,France,France,Maison Individuelle Groupée,3493,3094
+2015-04-01,France,France,Maison Individuelle Pure,9848,8325
+2015-05-01,France,France,Logement Collectif,15170,11957
+2015-05-01,France,France,Logement en Résidence,1641,1630
+2015-05-01,France,France,Maison Individuelle Groupée,3470,3059
+2015-05-01,France,France,Maison Individuelle Pure,10049,8251
+2015-06-01,France,France,Logement Collectif,16479,15534
+2015-06-01,France,France,Logement en Résidence,3933,1572
+2015-06-01,France,France,Maison Individuelle Groupée,4227,3134
+2015-06-01,France,France,Maison Individuelle Pure,10205,8692
+2015-07-01,France,France,Logement Collectif,16104,14466
+2015-07-01,France,France,Logement en Résidence,2296,2385
+2015-07-01,France,France,Maison Individuelle Groupée,4081,2507
+2015-07-01,France,France,Maison Individuelle Pure,10267,8903
+2015-08-01,France,France,Logement Collectif,17148,16267
+2015-08-01,France,France,Logement en Résidence,2332,1789
+2015-08-01,France,France,Maison Individuelle Groupée,3858,3839
+2015-08-01,France,France,Maison Individuelle Pure,10445,8747
+2015-09-01,France,France,Logement Collectif,15750,15869
+2015-09-01,France,France,Logement en Résidence,2441,2431
+2015-09-01,France,France,Maison Individuelle Groupée,4005,3309
+2015-09-01,France,France,Maison Individuelle Pure,9847,9035
+2015-10-01,France,France,Logement Collectif,18630,14742
+2015-10-01,France,France,Logement en Résidence,1417,2119
+2015-10-01,France,France,Maison Individuelle Groupée,4062,2601
+2015-10-01,France,France,Maison Individuelle Pure,10206,9159
+2015-11-01,France,France,Logement Collectif,19721,15389
+2015-11-01,France,France,Logement en Résidence,3073,1855
+2015-11-01,France,France,Maison Individuelle Groupée,3854,3369
+2015-11-01,France,France,Maison Individuelle Pure,10287,9090
+2015-12-01,France,France,Logement Collectif,18865,14840
+2015-12-01,France,France,Logement en Résidence,3119,3008
+2015-12-01,France,France,Maison Individuelle Groupée,3748,3415
+2015-12-01,France,France,Maison Individuelle Pure,10030,9203
+2016-01-01,France,France,Logement Collectif,17960,12749
+2016-01-01,France,France,Logement en Résidence,2643,2305
+2016-01-01,France,France,Maison Individuelle Groupée,3730,3660
+2016-01-01,France,France,Maison Individuelle Pure,9988,9046
+2016-02-01,France,France,Logement Collectif,20648,16925
+2016-02-01,France,France,Logement en Résidence,3575,2820
+2016-02-01,France,France,Maison Individuelle Groupée,3582,3394
+2016-02-01,France,France,Maison Individuelle Pure,10017,8950
+2016-03-01,France,France,Logement Collectif,16795,12599
+2016-03-01,France,France,Logement en Résidence,2573,1635
+2016-03-01,France,France,Maison Individuelle Groupée,3830,2881
+2016-03-01,France,France,Maison Individuelle Pure,10409,8692
+2016-04-01,France,France,Logement Collectif,19684,15341
+2016-04-01,France,France,Logement en Résidence,3781,2447
+2016-04-01,France,France,Maison Individuelle Groupée,4243,3149
+2016-04-01,France,France,Maison Individuelle Pure,11085,8914
+2016-05-01,France,France,Logement Collectif,19254,18406
+2016-05-01,France,France,Logement en Résidence,3087,2861
+2016-05-01,France,France,Maison Individuelle Groupée,4286,3799
+2016-05-01,France,France,Maison Individuelle Pure,11096,8962
+2016-06-01,France,France,Logement Collectif,18688,15870
+2016-06-01,France,France,Logement en Résidence,2656,1914
+2016-06-01,France,France,Maison Individuelle Groupée,4633,2986
+2016-06-01,France,France,Maison Individuelle Pure,11167,9425
+2016-07-01,France,France,Logement Collectif,20046,14550
+2016-07-01,France,France,Logement en Résidence,3067,2208
+2016-07-01,France,France,Maison Individuelle Groupée,3507,3320
+2016-07-01,France,France,Maison Individuelle Pure,11310,9360
+2016-08-01,France,France,Logement Collectif,20271,15509
+2016-08-01,France,France,Logement en Résidence,2665,2476
+2016-08-01,France,France,Maison Individuelle Groupée,4188,3280
+2016-08-01,France,France,Maison Individuelle Pure,11593,10287
+2016-09-01,France,France,Logement Collectif,22970,16486
+2016-09-01,France,France,Logement en Résidence,2777,2475
+2016-09-01,France,France,Maison Individuelle Groupée,4345,3021
+2016-09-01,France,France,Maison Individuelle Pure,11514,9963
+2016-10-01,France,France,Logement Collectif,20456,16449
+2016-10-01,France,France,Logement en Résidence,2417,3108
+2016-10-01,France,France,Maison Individuelle Groupée,4331,3176
+2016-10-01,France,France,Maison Individuelle Pure,11527,9799
+2016-11-01,France,France,Logement Collectif,23365,15735
+2016-11-01,France,France,Logement en Résidence,2702,2779
+2016-11-01,France,France,Maison Individuelle Groupée,4423,3078
+2016-11-01,France,France,Maison Individuelle Pure,11863,10186
+2016-12-01,France,France,Logement Collectif,23120,16471
+2016-12-01,France,France,Logement en Résidence,3215,2293
+2016-12-01,France,France,Maison Individuelle Groupée,3927,3463
+2016-12-01,France,France,Maison Individuelle Pure,11507,10445
+2017-01-01,France,France,Logement Collectif,17106,18258
+2017-01-01,France,France,Logement en Résidence,2361,3108
+2017-01-01,France,France,Maison Individuelle Groupée,4087,3388
+2017-01-01,France,France,Maison Individuelle Pure,12248,10018
+2017-02-01,France,France,Logement Collectif,19649,19355
+2017-02-01,France,France,Logement en Résidence,2866,1326
+2017-02-01,France,France,Maison Individuelle Groupée,3734,3591
+2017-02-01,France,France,Maison Individuelle Pure,12216,10870
+2017-03-01,France,France,Logement Collectif,21354,20971
+2017-03-01,France,France,Logement en Résidence,4275,2643
+2017-03-01,France,France,Maison Individuelle Groupée,4419,3972
+2017-03-01,France,France,Maison Individuelle Pure,13293,10560
+2017-04-01,France,France,Logement Collectif,20888,18077
+2017-04-01,France,France,Logement en Résidence,2787,2749
+2017-04-01,France,France,Maison Individuelle Groupée,3923,3341
+2017-04-01,France,France,Maison Individuelle Pure,11774,10405
+2017-05-01,France,France,Logement Collectif,21567,17185
+2017-05-01,France,France,Logement en Résidence,2336,2753
+2017-05-01,France,France,Maison Individuelle Groupée,4256,3533
+2017-05-01,France,France,Maison Individuelle Pure,12703,10982
+2017-06-01,France,France,Logement Collectif,22531,17534
+2017-06-01,France,France,Logement en Résidence,2987,3107
+2017-06-01,France,France,Maison Individuelle Groupée,4074,3640
+2017-06-01,France,France,Maison Individuelle Pure,12340,11039
+2017-07-01,France,France,Logement Collectif,24196,18592
+2017-07-01,France,France,Logement en Résidence,2762,2765
+2017-07-01,France,France,Maison Individuelle Groupée,4010,3566
+2017-07-01,France,France,Maison Individuelle Pure,12300,10868
+2017-08-01,France,France,Logement Collectif,22819,18079
+2017-08-01,France,France,Logement en Résidence,2350,2657
+2017-08-01,France,France,Maison Individuelle Groupée,4145,3925
+2017-08-01,France,France,Maison Individuelle Pure,12118,11098
+2017-09-01,France,France,Logement Collectif,24219,17514
+2017-09-01,France,France,Logement en Résidence,3422,3145
+2017-09-01,France,France,Maison Individuelle Groupée,4036,3296
+2017-09-01,France,France,Maison Individuelle Pure,11832,11066
+2017-10-01,France,France,Logement Collectif,20128,18911
+2017-10-01,France,France,Logement en Résidence,3353,1667
+2017-10-01,France,France,Maison Individuelle Groupée,4137,3265
+2017-10-01,France,France,Maison Individuelle Pure,11704,11233
+2017-11-01,France,France,Logement Collectif,19474,18515
+2017-11-01,France,France,Logement en Résidence,2900,3071
+2017-11-01,France,France,Maison Individuelle Groupée,3697,4495
+2017-11-01,France,France,Maison Individuelle Pure,11880,11243
+2017-12-01,France,France,Logement Collectif,21884,21154
+2017-12-01,France,France,Logement en Résidence,1737,4211
+2017-12-01,France,France,Maison Individuelle Groupée,4550,4015
+2017-12-01,France,France,Maison Individuelle Pure,13042,11283
+2018-01-01,France,France,Logement Collectif,18722,16652
+2018-01-01,France,France,Logement en Résidence,2668,2257
+2018-01-01,France,France,Maison Individuelle Groupée,4313,3133
+2018-01-01,France,France,Maison Individuelle Pure,12094,10405
+2018-02-01,France,France,Logement Collectif,23624,16389
+2018-02-01,France,France,Logement en Résidence,2455,2422
+2018-02-01,France,France,Maison Individuelle Groupée,4383,3124
+2018-02-01,France,France,Maison Individuelle Pure,11608,10793
+2018-03-01,France,France,Logement Collectif,21248,17041
+2018-03-01,France,France,Logement en Résidence,2197,2603
+2018-03-01,France,France,Maison Individuelle Groupée,4417,3049
+2018-03-01,France,France,Maison Individuelle Pure,11205,10506
+2018-04-01,France,France,Logement Collectif,21483,17761
+2018-04-01,France,France,Logement en Résidence,2095,2307
+2018-04-01,France,France,Maison Individuelle Groupée,4216,3534
+2018-04-01,France,France,Maison Individuelle Pure,11208,10946
+2018-05-01,France,France,Logement Collectif,23293,19170
+2018-05-01,France,France,Logement en Résidence,3003,2996
+2018-05-01,France,France,Maison Individuelle Groupée,3823,3183
+2018-05-01,France,France,Maison Individuelle Pure,10804,10173
+2018-06-01,France,France,Logement Collectif,19432,18621
+2018-06-01,France,France,Logement en Résidence,1978,2249
+2018-06-01,France,France,Maison Individuelle Groupée,4083,3181
+2018-06-01,France,France,Maison Individuelle Pure,10702,10256
+2018-07-01,France,France,Logement Collectif,18062,16831
+2018-07-01,France,France,Logement en Résidence,2691,2279
+2018-07-01,France,France,Maison Individuelle Groupée,4317,2991
+2018-07-01,France,France,Maison Individuelle Pure,10458,10083
+2018-08-01,France,France,Logement Collectif,20026,15851
+2018-08-01,France,France,Logement en Résidence,4617,2423
+2018-08-01,France,France,Maison Individuelle Groupée,3373,3396
+2018-08-01,France,France,Maison Individuelle Pure,10489,9657
+2018-09-01,France,France,Logement Collectif,20631,17148
+2018-09-01,France,France,Logement en Résidence,3613,2680
+2018-09-01,France,France,Maison Individuelle Groupée,4798,3598
+2018-09-01,France,France,Maison Individuelle Pure,10818,9725
+2018-10-01,France,France,Logement Collectif,21798,19829
+2018-10-01,France,France,Logement en Résidence,1334,2451
+2018-10-01,France,France,Maison Individuelle Groupée,4180,3667
+2018-10-01,France,France,Maison Individuelle Pure,11096,10152
+2018-11-01,France,France,Logement Collectif,19100,19366
+2018-11-01,France,France,Logement en Résidence,2810,586
+2018-11-01,France,France,Maison Individuelle Groupée,4078,3276
+2018-11-01,France,France,Maison Individuelle Pure,10797,9982
+2018-12-01,France,France,Logement Collectif,18323,16090
+2018-12-01,France,France,Logement en Résidence,2504,2662
+2018-12-01,France,France,Maison Individuelle Groupée,4208,3010
+2018-12-01,France,France,Maison Individuelle Pure,10898,9960
+2019-01-01,France,France,Logement Collectif,20458,18100
+2019-01-01,France,France,Logement en Résidence,2626,2145
+2019-01-01,France,France,Maison Individuelle Groupée,3654,3312
+2019-01-01,France,France,Maison Individuelle Pure,10910,10005
+2019-02-01,France,France,Logement Collectif,17004,16545
+2019-02-01,France,France,Logement en Résidence,1914,2763
+2019-02-01,France,France,Maison Individuelle Groupée,3812,3351
+2019-02-01,France,France,Maison Individuelle Pure,10954,9954
+2019-03-01,France,France,Logement Collectif,19890,15125
+2019-03-01,France,France,Logement en Résidence,2862,2261
+2019-03-01,France,France,Maison Individuelle Groupée,3623,3124
+2019-03-01,France,France,Maison Individuelle Pure,11086,10033
+2019-04-01,France,France,Logement Collectif,19976,17669
+2019-04-01,France,France,Logement en Résidence,3681,2868
+2019-04-01,France,France,Maison Individuelle Groupée,3889,3381
+2019-04-01,France,France,Maison Individuelle Pure,11386,9845
+2019-05-01,France,France,Logement Collectif,18068,16724
+2019-05-01,France,France,Logement en Résidence,2572,1443
+2019-05-01,France,France,Maison Individuelle Groupée,4155,3014
+2019-05-01,France,France,Maison Individuelle Pure,11630,9732
+2019-06-01,France,France,Logement Collectif,18970,14694
+2019-06-01,France,France,Logement en Résidence,3176,2197
+2019-06-01,France,France,Maison Individuelle Groupée,3813,3263
+2019-06-01,France,France,Maison Individuelle Pure,10789,9643
+2019-07-01,France,France,Logement Collectif,18923,17556
+2019-07-01,France,France,Logement en Résidence,1740,2852
+2019-07-01,France,France,Maison Individuelle Groupée,3981,3598
+2019-07-01,France,France,Maison Individuelle Pure,11536,9880
+2019-08-01,France,France,Logement Collectif,16239,13351
+2019-08-01,France,France,Logement en Résidence,3061,1700
+2019-08-01,France,France,Maison Individuelle Groupée,4163,2859
+2019-08-01,France,France,Maison Individuelle Pure,11370,8909
+2019-09-01,France,France,Logement Collectif,17235,16987
+2019-09-01,France,France,Logement en Résidence,1765,2026
+2019-09-01,France,France,Maison Individuelle Groupée,3880,3416
+2019-09-01,France,France,Maison Individuelle Pure,11781,10245
+2019-10-01,France,France,Logement Collectif,20624,16087
+2019-10-01,France,France,Logement en Résidence,4786,3024
+2019-10-01,France,France,Maison Individuelle Groupée,4120,3186
+2019-10-01,France,France,Maison Individuelle Pure,11672,10385
+2019-11-01,France,France,Logement Collectif,18989,17464
+2019-11-01,France,France,Logement en Résidence,2256,2379
+2019-11-01,France,France,Maison Individuelle Groupée,4593,2975
+2019-11-01,France,France,Maison Individuelle Pure,12054,9839
+2019-12-01,France,France,Logement Collectif,21031,16586
+2019-12-01,France,France,Logement en Résidence,3905,2941
+2019-12-01,France,France,Maison Individuelle Groupée,4189,2980
+2019-12-01,France,France,Maison Individuelle Pure,12003,10306
+2020-01-01,France,France,Logement Collectif,21272,16452
+2020-01-01,France,France,Logement en Résidence,2884,3026
+2020-01-01,France,France,Maison Individuelle Groupée,4638,3846
+2020-01-01,France,France,Maison Individuelle Pure,11691,10949
+2020-02-01,France,France,Logement Collectif,20427,16057
+2020-02-01,France,France,Logement en Résidence,3468,2446
+2020-02-01,France,France,Maison Individuelle Groupée,4338,3210
+2020-02-01,France,France,Maison Individuelle Pure,11686,10836
+2020-03-01,France,France,Logement Collectif,18383,13140
+2020-03-01,France,France,Logement en Résidence,3827,2423
+2020-03-01,France,France,Maison Individuelle Groupée,3697,2526
+2020-03-01,France,France,Maison Individuelle Pure,9332,6404
+2020-04-01,France,France,Logement Collectif,5937,7828
+2020-04-01,France,France,Logement en Résidence,1393,1089
+2020-04-01,France,France,Maison Individuelle Groupée,2144,1701
+2020-04-01,France,France,Maison Individuelle Pure,6522,6285
+2020-05-01,France,France,Logement Collectif,9715,13909
+2020-05-01,France,France,Logement en Résidence,2967,1505
+2020-05-01,France,France,Maison Individuelle Groupée,2243,2646
+2020-05-01,France,France,Maison Individuelle Pure,7642,9157
+2020-06-01,France,France,Logement Collectif,15717,16869
+2020-06-01,France,France,Logement en Résidence,3118,2580
+2020-06-01,France,France,Maison Individuelle Groupée,2729,3240
+2020-06-01,France,France,Maison Individuelle Pure,9273,10040
+2020-07-01,France,France,Logement Collectif,12271,18720
+2020-07-01,France,France,Logement en Résidence,2803,2573
+2020-07-01,France,France,Maison Individuelle Groupée,3333,3511
+2020-07-01,France,France,Maison Individuelle Pure,10961,10354
+2020-08-01,France,France,Logement Collectif,14767,20699
+2020-08-01,France,France,Logement en Résidence,2633,3435
+2020-08-01,France,France,Maison Individuelle Groupée,4333,3439
+2020-08-01,France,France,Maison Individuelle Pure,10717,10930
+2020-09-01,France,France,Logement Collectif,16436,16928
+2020-09-01,France,France,Logement en Résidence,3010,2474
+2020-09-01,France,France,Maison Individuelle Groupée,4032,3544
+2020-09-01,France,France,Maison Individuelle Pure,10920,9929
+2020-10-01,France,France,Logement Collectif,16445,17861
+2020-10-01,France,France,Logement en Résidence,4033,2206
+2020-10-01,France,France,Maison Individuelle Groupée,3859,3428
+2020-10-01,France,France,Maison Individuelle Pure,11960,9948
+2020-11-01,France,France,Logement Collectif,19063,15161
+2020-11-01,France,France,Logement en Résidence,3606,3662
+2020-11-01,France,France,Maison Individuelle Groupée,4079,3731
+2020-11-01,France,France,Maison Individuelle Pure,12679,10564
+2020-12-01,France,France,Logement Collectif,17437,14895
+2020-12-01,France,France,Logement en Résidence,3357,2910
+2020-12-01,France,France,Maison Individuelle Groupée,4035,3025
+2020-12-01,France,France,Maison Individuelle Pure,12257,10273
+2021-01-01,France,France,Logement Collectif,16352,16118
+2021-01-01,France,France,Logement en Résidence,4460,2589
+2021-01-01,France,France,Maison Individuelle Groupée,4104,3673
+2021-01-01,France,France,Maison Individuelle Pure,12783,10480
+2021-02-01,France,France,Logement Collectif,18146,17156
+2021-02-01,France,France,Logement en Résidence,3084,3235
+2021-02-01,France,France,Maison Individuelle Groupée,3933,3651
+2021-02-01,France,France,Maison Individuelle Pure,12632,10464
+2021-03-01,France,France,Logement Collectif,17792,18413
+2021-03-01,France,France,Logement en Résidence,2879,4284
+2021-03-01,France,France,Maison Individuelle Groupée,4443,3276
+2021-03-01,France,France,Maison Individuelle Pure,12584,10696
+2021-04-01,France,France,Logement Collectif,17382,17895
+2021-04-01,France,France,Logement en Résidence,3513,3405
+2021-04-01,France,France,Maison Individuelle Groupée,4688,3072
+2021-04-01,France,France,Maison Individuelle Pure,13401,10937
+2021-05-01,France,France,Logement Collectif,18473,18121
+2021-05-01,France,France,Logement en Résidence,2609,3901
+2021-05-01,France,France,Maison Individuelle Groupée,4654,3234
+2021-05-01,France,France,Maison Individuelle Pure,13174,10643
+2021-06-01,France,France,Logement Collectif,17397,15621
+2021-06-01,France,France,Logement en Résidence,2707,3040
+2021-06-01,France,France,Maison Individuelle Groupée,4634,3143
+2021-06-01,France,France,Maison Individuelle Pure,13721,10786
+2021-07-01,France,France,Logement Collectif,17926,16762
+2021-07-01,France,France,Logement en Résidence,3758,2707
+2021-07-01,France,France,Maison Individuelle Groupée,3899,3282
+2021-07-01,France,France,Maison Individuelle Pure,14062,10852
+2021-08-01,France,France,Logement Collectif,15200,17368
+2021-08-01,France,France,Logement en Résidence,2849,3274
+2021-08-01,France,France,Maison Individuelle Groupée,4475,3784
+2021-08-01,France,France,Maison Individuelle Pure,14082,10894
+2021-09-01,France,France,Logement Collectif,19685,16712
+2021-09-01,France,France,Logement en Résidence,4419,2597
+2021-09-01,France,France,Maison Individuelle Groupée,4360,3541
+2021-09-01,France,France,Maison Individuelle Pure,13705,11479
+2021-10-01,France,France,Logement Collectif,18080,18228
+2021-10-01,France,France,Logement en Résidence,2956,3780
+2021-10-01,France,France,Maison Individuelle Groupée,4730,3621
+2021-10-01,France,France,Maison Individuelle Pure,13354,11596
+2021-11-01,France,France,Logement Collectif,18191,15982
+2021-11-01,France,France,Logement en Résidence,4258,3258
+2021-11-01,France,France,Maison Individuelle Groupée,4413,3517
+2021-11-01,France,France,Maison Individuelle Pure,12907,11503
+2021-12-01,France,France,Logement Collectif,18066,15177
+2021-12-01,France,France,Logement en Résidence,3746,2614
+2021-12-01,France,France,Maison Individuelle Groupée,4458,3495
+2021-12-01,France,France,Maison Individuelle Pure,12916,11348
+2022-01-01,France,France,Logement Collectif,17879,16580
+2022-01-01,France,France,Logement en Résidence,2675,3226
+2022-01-01,France,France,Maison Individuelle Groupée,4533,3592
+2022-01-01,France,France,Maison Individuelle Pure,15965,11643
+2022-02-01,France,France,Logement Collectif,20581,16419
+2022-02-01,France,France,Logement en Résidence,4274,2668
+2022-02-01,France,France,Maison Individuelle Groupée,5912,3669
+2022-02-01,France,France,Maison Individuelle Pure,19476,11529
+2022-03-01,France,France,Logement Collectif,24242,16838
+2022-03-01,France,France,Logement en Résidence,4424,4803
+2022-03-01,France,France,Maison Individuelle Groupée,7259,3737
+2022-03-01,France,France,Maison Individuelle Pure,13675,11262
+2022-04-01,France,France,Logement Collectif,24161,15521
+2022-04-01,France,France,Logement en Résidence,4037,1354
+2022-04-01,France,France,Maison Individuelle Groupée,5849,3633
+2022-04-01,France,France,Maison Individuelle Pure,11280,11208
+2022-05-01,France,France,Logement Collectif,23675,13772
+2022-05-01,France,France,Logement en Résidence,4849,4011
+2022-05-01,France,France,Maison Individuelle Groupée,5415,3377
+2022-05-01,France,France,Maison Individuelle Pure,10926,10982
+2022-06-01,France,France,Logement Collectif,21337,14856
+2022-06-01,France,France,Logement en Résidence,4537,3317
+2022-06-01,France,France,Maison Individuelle Groupée,5018,3582
+2022-06-01,France,France,Maison Individuelle Pure,10373,10984
+2022-07-01,France,France,Logement Collectif,22909,13876
+2022-07-01,France,France,Logement en Résidence,3608,3430
+2022-07-01,France,France,Maison Individuelle Groupée,4530,2846
+2022-07-01,France,France,Maison Individuelle Pure,9694,10644
+2022-08-01,France,France,Logement Collectif,28444,17180
+2022-08-01,France,France,Logement en Résidence,6791,3448
+2022-08-01,France,France,Maison Individuelle Groupée,3872,3331
+2022-08-01,France,France,Maison Individuelle Pure,9920,10621
+2022-09-01,France,France,Logement Collectif,16899,14671
+2022-09-01,France,France,Logement en Résidence,3651,3552
+2022-09-01,France,France,Maison Individuelle Groupée,3753,3027
+2022-09-01,France,France,Maison Individuelle Pure,10010,9990
+2022-10-01,France,France,Logement Collectif,13334,15767
+2022-10-01,France,France,Logement en Résidence,2871,2045
+2022-10-01,France,France,Maison Individuelle Groupée,3630,3154
+2022-10-01,France,France,Maison Individuelle Pure,10007,9828
+2022-11-01,France,France,Logement Collectif,14798,15773
+2022-11-01,France,France,Logement en Résidence,3077,2283
+2022-11-01,France,France,Maison Individuelle Groupée,3617,3104
+2022-11-01,France,France,Maison Individuelle Pure,9741,9557
+2022-12-01,France,France,Logement Collectif,15488,14994
+2022-12-01,France,France,Logement en Résidence,3013,3228
+2022-12-01,France,France,Maison Individuelle Groupée,3493,3505
+2022-12-01,France,France,Maison Individuelle Pure,9075,9323
+2023-01-01,France,France,Logement Collectif,15181,15536
+2023-01-01,France,France,Logement en Résidence,5138,2822
+2023-01-01,France,France,Maison Individuelle Groupée,3731,2792
+2023-01-01,France,France,Maison Individuelle Pure,9073,8849
+2023-02-01,France,France,Logement Collectif,17388,13078
+2023-02-01,France,France,Logement en Résidence,5021,2212
+2023-02-01,France,France,Maison Individuelle Groupée,3609,2834
+2023-02-01,France,France,Maison Individuelle Pure,8643,8659
+2023-03-01,France,France,Logement Collectif,16238,13580
+2023-03-01,France,France,Logement en Résidence,3007,1626
+2023-03-01,France,France,Maison Individuelle Groupée,3499,2804
+2023-03-01,France,France,Maison Individuelle Pure,8801,8331
+2023-04-01,France,France,Logement Collectif,16070,12076
+2023-04-01,France,France,Logement en Résidence,4497,3384
+2023-04-01,France,France,Maison Individuelle Groupée,3381,2548
+2023-04-01,France,France,Maison Individuelle Pure,8497,8154
+2023-05-01,France,France,Logement Collectif,14868,13515
+2023-05-01,France,France,Logement en Résidence,2973,2076
+2023-05-01,France,France,Maison Individuelle Groupée,3451,2856
+2023-05-01,France,France,Maison Individuelle Pure,8523,7977
+2023-06-01,France,France,Logement Collectif,17656,10786
+2023-06-01,France,France,Logement en Résidence,3680,3691
+2023-06-01,France,France,Maison Individuelle Groupée,3524,2703
+2023-06-01,France,France,Maison Individuelle Pure,8176,7973
+2023-07-01,France,France,Logement Collectif,14454,11772
+2023-07-01,France,France,Logement en Résidence,3949,2175
+2023-07-01,France,France,Maison Individuelle Groupée,3702,2662
+2023-07-01,France,France,Maison Individuelle Pure,7870,7727
+2023-08-01,France,France,Logement Collectif,15891,9033
+2023-08-01,France,France,Logement en Résidence,4269,1380
+2023-08-01,France,France,Maison Individuelle Groupée,3711,2739
+2023-08-01,France,France,Maison Individuelle Pure,7592,7515
+2023-09-01,France,France,Logement Collectif,13391,11258
+2023-09-01,France,France,Logement en Résidence,2949,2761
+2023-09-01,France,France,Maison Individuelle Groupée,3668,2796
+2023-09-01,France,France,Maison Individuelle Pure,7214,7093
+2023-10-01,France,France,Logement Collectif,16533,9662
+2023-10-01,France,France,Logement en Résidence,3254,3165
+2023-10-01,France,France,Maison Individuelle Groupée,3908,2538
+2023-10-01,France,France,Maison Individuelle Pure,7257,6792
+2023-11-01,France,France,Logement Collectif,16204,10268
+2023-11-01,France,France,Logement en Résidence,3978,2798
+2023-11-01,France,France,Maison Individuelle Groupée,3650,2680
+2023-11-01,France,France,Maison Individuelle Pure,7108,6497
+2023-12-01,France,France,Logement Collectif,15924,10881
+2023-12-01,France,France,Logement en Résidence,4388,1936
+2023-12-01,France,France,Maison Individuelle Groupée,3635,3203
+2023-12-01,France,France,Maison Individuelle Pure,7067,6750
+2024-01-01,France,France,Logement Collectif,15111,9493
+2024-01-01,France,France,Logement en Résidence,3381,2662
+2024-01-01,France,France,Maison Individuelle Groupée,3524,2388
+2024-01-01,France,France,Maison Individuelle Pure,6396,6113
+2024-02-01,France,France,Logement Collectif,15242,9639
+2024-02-01,France,France,Logement en Résidence,4065,3248
+2024-02-01,France,France,Maison Individuelle Groupée,3480,2549
+2024-02-01,France,France,Maison Individuelle Pure,6359,5906
+2024-03-01,France,France,Logement Collectif,13083,10460
+2024-03-01,France,France,Logement en Résidence,4075,2266
+2024-03-01,France,France,Maison Individuelle Groupée,2933,2562
+2024-03-01,France,France,Maison Individuelle Pure,6077,5573
+2024-04-01,France,France,Logement Collectif,12965,10842
+2024-04-01,France,France,Logement en Résidence,3049,2076
+2024-04-01,France,France,Maison Individuelle Groupée,3269,2652
+2024-04-01,France,France,Maison Individuelle Pure,6586,5804
+2024-05-01,France,France,Logement Collectif,12906,12416
+2024-05-01,France,France,Logement en Résidence,2768,3050
+2024-05-01,France,France,Maison Individuelle Groupée,3721,2445
+2024-05-01,France,France,Maison Individuelle Pure,6250,5312
+2024-06-01,France,France,Logement Collectif,12499,10696
+2024-06-01,France,France,Logement en Résidence,3394,2352
+2024-06-01,France,France,Maison Individuelle Groupée,3438,2256
+2024-06-01,France,France,Maison Individuelle Pure,6060,5366
+2024-07-01,France,France,Logement Collectif,13460,11937
+2024-07-01,France,France,Logement en Résidence,4028,3374
+2024-07-01,France,France,Maison Individuelle Groupée,3300,2097
+2024-07-01,France,France,Maison Individuelle Pure,6340,5441
+2024-08-01,France,France,Logement Collectif,13627,11056
+2024-08-01,France,France,Logement en Résidence,3541,3151
+2024-08-01,France,France,Maison Individuelle Groupée,3617,2733
+2024-08-01,France,France,Maison Individuelle Pure,6081,5555
+2024-09-01,France,France,Logement Collectif,11965,9835
+2024-09-01,France,France,Logement en Résidence,3393,1983
+2024-09-01,France,France,Maison Individuelle Groupée,3658,2450
+2024-09-01,France,France,Maison Individuelle Pure,6035,5048
+2024-10-01,France,France,Logement Collectif,11958,12464
+2024-10-01,France,France,Logement en Résidence,5487,1843
+2024-10-01,France,France,Maison Individuelle Groupée,3453,2514
+2024-10-01,France,France,Maison Individuelle Pure,6316,4869
+2024-11-01,France,France,Logement Collectif,14176,11361
+2024-11-01,France,France,Logement en Résidence,3352,2259
+2024-11-01,France,France,Maison Individuelle Groupée,3599,2557
+2024-11-01,France,France,Maison Individuelle Pure,6249,5059
+2024-12-01,France,France,Logement Collectif,13514,11173
+2024-12-01,France,France,Logement en Résidence,3350,3016
+2024-12-01,France,France,Maison Individuelle Groupée,3614,2714
+2024-12-01,France,France,Maison Individuelle Pure,6297,5049
+2025-01-01,France,France,Logement Collectif,13759,10867
+2025-01-01,France,France,Logement en Résidence,3620,2932
+2025-01-01,France,France,Maison Individuelle Groupée,3516,2556
+2025-01-01,France,France,Maison Individuelle Pure,6335,4988
+2025-02-01,France,France,Logement Collectif,13886,10049
+2025-02-01,France,France,Logement en Résidence,3653,2686
+2025-02-01,France,France,Maison Individuelle Groupée,3475,2457
+2025-02-01,France,France,Maison Individuelle Pure,6452,4753
+2025-03-01,France,France,Logement Collectif,15115,9402
+2025-03-01,France,France,Logement en Résidence,4019,2994
+2025-03-01,France,France,Maison Individuelle Groupée,3816,2266
+2025-03-01,France,France,Maison Individuelle Pure,6731,4890
+2025-04-01,France,France,Logement Collectif,17647,10689
+2025-04-01,France,France,Logement en Résidence,6782,1841
+2025-04-01,France,France,Maison Individuelle Groupée,3835,2501
+2025-04-01,France,France,Maison Individuelle Pure,6702,4972
+2025-05-01,France,France,Logement Collectif,15908,8143
+2025-05-01,France,France,Logement en Résidence,4320,1942
+2025-05-01,France,France,Maison Individuelle Groupée,3401,2353
+2025-05-01,France,France,Maison Individuelle Pure,6889,4868
+2025-06-01,France,France,Logement Collectif,17738,11442
+2025-06-01,France,France,Logement en Résidence,5596,4230
+2025-06-01,France,France,Maison Individuelle Groupée,4174,2617
+2025-06-01,France,France,Maison Individuelle Pure,7043,5116
+2025-07-01,France,France,Logement Collectif,16458,11526
+2025-07-01,France,France,Logement en Résidence,4332,2817
+2025-07-01,France,France,Maison Individuelle Groupée,3836,2768
+2025-07-01,France,France,Maison Individuelle Pure,7327,5443
+2025-08-01,France,France,Logement Collectif,16235,9246
+2025-08-01,France,France,Logement en Résidence,2797,2695
+2025-08-01,France,France,Maison Individuelle Groupée,3460,2523
+2025-08-01,France,France,Maison Individuelle Pure,7264,5188
+2025-09-01,France,France,Logement Collectif,15296,10469
+2025-09-01,France,France,Logement en Résidence,5762,3238
+2025-09-01,France,France,Maison Individuelle Groupée,3523,2421
+2025-09-01,France,France,Maison Individuelle Pure,7532,5563
+2025-10-01,France,France,Logement Collectif,14582,11613
+2025-10-01,France,France,Logement en Résidence,4768,3531
+2025-10-01,France,France,Maison Individuelle Groupée,3493,2789
+2025-10-01,France,France,Maison Individuelle Pure,7536,5602
+2025-11-01,France,France,Logement Collectif,13592,11349
+2025-11-01,France,France,Logement en Résidence,4270,3361
+2025-11-01,France,France,Maison Individuelle Groupée,3622,2609
+2025-11-01,France,France,Maison Individuelle Pure,7721,5743
+2025-12-01,France,France,Logement Collectif,14792,11526
+2025-12-01,France,France,Logement en Résidence,4599,5859
+2025-12-01,France,France,Maison Individuelle Groupée,3515,3197
+2025-12-01,France,France,Maison Individuelle Pure,7978,6235
+2026-01-01,France,France,Logement Collectif,15518,13028
+2026-01-01,France,France,Logement en Résidence,4059,3520
+2026-01-01,France,France,Maison Individuelle Groupée,3604,2998
+2026-01-01,France,France,Maison Individuelle Pure,8340,6230
+2026-02-01,France,France,Logement Collectif,14963,12842
+2026-02-01,France,France,Logement en Résidence,3797,2295
+2026-02-01,France,France,Maison Individuelle Groupée,3563,2851
+2026-02-01,France,France,Maison Individuelle Pure,8291,6539
+2026-03-01,France,France,Logement Collectif,21102,14165
+2026-03-01,France,France,Logement en Résidence,7374,6231
+2026-03-01,France,France,Maison Individuelle Groupée,3664,3030
+2026-03-01,France,France,Maison Individuelle Pure,8833,6868
+2026-04-01,France,France,Logement Collectif,12021,12511
+2026-04-01,France,France,Logement en Résidence,4049,4000
+2026-04-01,France,France,Maison Individuelle Groupée,3392,3307
+2026-04-01,France,France,Maison Individuelle Pure,8692,7004
+2026-05-01,France,France,Logement Collectif,15851,13257
+2026-05-01,France,France,Logement en Résidence,6311,3757
+2026-05-01,France,France,Maison Individuelle Groupée,3764,3088
+2026-05-01,France,France,Maison Individuelle Pure,8906,7013
