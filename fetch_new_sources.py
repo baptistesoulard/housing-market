@@ -110,6 +110,38 @@ def build_credit_volume():
     print(f"credit -> {path} ({len(df)} mois, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
 
 
+def build_credit_demand_bls():
+    """Enquête sur la distribution du crédit bancaire (Bank Lending Survey, BLS) — demande
+    de crédits à l'habitat des ménages en France, en pourcentage net (net percentage of
+    banks reporting an increase). Deux horizons (comme BPCE p.23, « perspectives à 3 mois ») :
+      * réalisé sur les 3 derniers mois (TIME_HORIZON=B3) ;
+      * attendu sur les 3 prochains mois (TIME_HORIZON=F3) — le « perspectives ».
+    ECB SDMX dataset BLS, ménages (H) / achat de logement (H), item Z (demande globale),
+    pourcentage net (FNET). Trimestriel, 2003-Q1→. """
+    keys = {
+        "Demande_Credit_Realisee": "Q.FR.ALL.Z.H.H.B3.ZZ.D.FNET",
+        "Demande_Credit_Perspectives": "Q.FR.ALL.Z.H.H.F3.ZZ.D.FNET",
+    }
+
+    def _fetch_bls_q(key):
+        url = f"https://data-api.ecb.europa.eu/service/data/BLS/{key}?format=csvdata"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "text/csv"})
+        raw = urllib.request.urlopen(req, timeout=120, context=CTX).read().decode("utf-8-sig", "replace")
+        out = {}
+        for r in csv.DictReader(io.StringIO(raw)):
+            y, q = r["TIME_PERIOD"].split("-Q")
+            out[pd.Timestamp(int(y), (int(q) - 1) * 3 + 1, 1)] = float(r["OBS_VALUE"])
+        return pd.Series(out).sort_index()
+
+    df = pd.DataFrame({c: _fetch_bls_q(k) for c, k in keys.items()})
+    df.index.name = "Date"
+    df = df.reset_index().sort_values("Date")
+    df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
+    path = os.path.join(OUT_DIR, "credit-demand-bls.csv")
+    df.to_csv(path, index=False, encoding="utf-8")
+    print(f"bls -> {path} ({len(df)} trimestres, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+
+
 def build_ecln():
     # (2) ventes aux particuliers CVS-CJO ; (8) ventes aux institutionnels (ventes en
     # bloc) CVS-CJO — cette dernière ventile les réservations SOCIAL (bailleurs sociaux)
@@ -166,4 +198,5 @@ if __name__ == "__main__":
     build_prices()
     build_neuf_price()
     build_credit_volume()
+    build_credit_demand_bls()
     build_ecln()

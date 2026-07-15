@@ -66,6 +66,10 @@ PRIX_NEUF_CSV = os.path.join("data_manual_input",
 # Housing-loan production (new business, €bn, MONTHLY) — ECB MIR M.FR.B.A2C.A.B.A.2250.EUR.N.
 CREDIT_VOLUME_CSV = os.path.join("data_manual_input",
                                  "production-credits-habitat.csv")
+# Housing-loan DEMAND (Bank Lending Survey, ECB) — net % of banks reporting rising demand
+# for household house-purchase loans, France, QUARTERLY. Realised (past 3 months) and
+# expected (next 3 months, BPCE's "perspectives à 3 mois"). A soft leading indicator.
+CREDIT_DEMAND_BLS_CSV = os.path.join("data_manual_input", "credit-demand-bls.csv")
 # --- Commercialisation des logements neufs (ECLN, SDES) — national quarterly CVS-CJO
 # "ventes aux particuliers": réservations, mises en vente, annulations, encours, délai
 # d'écoulement (en trimestres) et prix au m² du collectif. Its own dataset (data/ecln.csv).
@@ -100,6 +104,9 @@ _MACRO_OPTIONAL = [
     (PRIX_NEUF_CSV, "Prix_Neuf"),
     # Housing-loan production (new business, €bn) — monthly, no gaps from 2003.
     (CREDIT_VOLUME_CSV, "Production_Credits_Habitat"),
+    # Housing-loan demand (BLS, net %) — quarterly, realised + expected ("perspectives").
+    (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Realisee"),
+    (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Perspectives"),
 ]
 
 

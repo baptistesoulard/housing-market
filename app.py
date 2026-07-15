@@ -201,8 +201,8 @@ T = {
         "tab_prix": "🏷️ Prix & Accessibilité",
         "tab_ecln": "🏗️ Commercialisation Neuf",
         "tab_forecast": "📡 Prévision & Scénarios",
-        "tab_timelag": "🔮 Simulation Time Lag",
-        "tab_composite": "🧪 Modèle Composite",
+        "tab_timelag": "🔬 Atelier — Time Lag",
+        "tab_composite": "🔬 Atelier — Composite",
         "tab_export": "💾 Export SAP IBP",
         "tab_source": "📂 Données Source",
         
@@ -404,8 +404,8 @@ T = {
         "tab_prix": "🏷️ Prices & Affordability",
         "tab_ecln": "🏗️ New-Build Sales (ECLN)",
         "tab_forecast": "📡 Forecast & Scenarios",
-        "tab_timelag": "🔮 Time Lag Simulation",
-        "tab_composite": "🧪 Composite Model",
+        "tab_timelag": "🔬 Workshop — Time Lag",
+        "tab_composite": "🔬 Workshop — Composite",
         "tab_export": "💾 Export SAP IBP",
         "tab_source": "📂 Source Data",
         
@@ -899,6 +899,21 @@ with tabs[0]:
     kpi_mises = ana.calculate_kpis(rolling_sitadel_total, "MisesEnChantier")
     kpi_transactions = ana.calculate_kpis(rolling_dvf_total, "Transactions")
 
+    # Momentum (BPCE style): 3 derniers mois vs mêmes mois n-1, computed from the
+    # monthly national series (independent of the year slicer). Surfaces inflections
+    # ("coup d'arrêt") faster than the 12m rolling YoY.
+    _mom_sitadel = ana.aggregate_sitadel(df_sitadel_full)
+    _mom_dvf = ana.aggregate_dvf(df_dvf_full)
+    mom_permis = ana.momentum_metrics(_mom_sitadel, "Permis")
+    mom_mises = ana.momentum_metrics(_mom_sitadel, "MisesEnChantier")
+    mom_transactions = ana.momentum_metrics(_mom_dvf, "Transactions")
+
+    def _mom_caption(m):
+        """'3 derniers mois vs n-1' momentum line for a KPI card (— if unavailable)."""
+        v = m.get("last3_yoy")
+        txt = "—" if v is None else (f"{v:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{v:+.1f}%")
+        return f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {txt}"
+
     # Last available month behind each headline figure (SIT@DEL vs IGEDD can differ).
     _kpi_sitadel_month = format_month_year(last_valid_month(rolling_sitadel_total, "Permis"), lang_code)
     _kpi_dvf_month = format_month_year(last_valid_month(rolling_dvf_total, "Transactions"), lang_code)
@@ -915,6 +930,7 @@ with tabs[0]:
             delta_color="normal"
         )
         st.caption(f"{T[lang_code]['mensuel']} : {kpi_permis['current_val']:,} ({kpi_permis['yoy_monthly_pct']}% YoY)")
+        st.caption(_mom_caption(mom_permis))
         st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_sitadel_month}")
 
     with kpi_cols[1]:
@@ -925,6 +941,7 @@ with tabs[0]:
             delta_color="normal"
         )
         st.caption(f"{T[lang_code]['mensuel']} : {kpi_mises['current_val']:,} ({kpi_mises['yoy_monthly_pct']}% YoY)")
+        st.caption(_mom_caption(mom_mises))
         st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_sitadel_month}")
 
     with kpi_cols[2]:
@@ -935,6 +952,7 @@ with tabs[0]:
             delta_color="normal"
         )
         st.caption(f"{T[lang_code]['mensuel']} : {kpi_transactions['current_val']:,} ({kpi_transactions['yoy_monthly_pct']}% YoY)")
+        st.caption(_mom_caption(mom_transactions))
         st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_dvf_month}")
 
     # Charts are displayed "en milliers" (values / 1000) to match the IGEDD/SDES
@@ -1049,6 +1067,64 @@ with tabs[0]:
             f"{T[lang_code]['source_label']} : {T[lang_code]['source_dvf']}  \n"
             f"{T[lang_code]['last_point_label']} : {format_month_year(dvf_last, lang_code)}"
         )
+
+    # --- Individual vs collective new-build dynamics --------------------------------
+    # The single most important new-build signal for a second-œuvre building actor: an
+    # individual house carries far more equipment content than a collective dwelling, and
+    # BPCE flags the individual-pur segment as the strongest rebound (p.11-12). Isolate it
+    # here with its own momentum, rather than leaving it buried in the segmentation picker.
+    st.markdown("### " + _L("🏠 Dynamique Individuel vs Collectif (neuf)",
+                            "🏠 Individual vs collective new-build dynamics"))
+    st.caption(_L(
+        "Le logement individuel — surtout l'individuel pur — porte bien plus de contenu "
+        "second œuvre (fermetures, menuiseries, sécurité, domotique) qu'un logement "
+        "collectif. C'est le driver de volume le plus direct pour un acteur du bâtiment.",
+        "Individual housing — especially detached houses — carries far more second-œuvre "
+        "content (closures, joinery, security, home automation) than collective dwellings. "
+        "It is the most direct volume driver for a building-materials actor."))
+
+    _iv_metric = st.radio(
+        _L("Indicateur", "Indicator"),
+        [T[lang_code]["mises_trace"], T[lang_code]["permis_trace"]],
+        horizontal=True, key="indiv_collectif_metric")
+    _iv_col = "MisesEnChantier" if _iv_metric == T[lang_code]["mises_trace"] else "Permis"
+
+    # Groups: individual-pur (strongest second-œuvre content), all individual, collective.
+    _iv_groups = [
+        (_L("Maison individuelle pure", "Detached houses"), ana.SITADEL_INDIVIDUEL_PUR, COLOR_BRICK),
+        (_L("Individuel total (pur + groupé)", "All individual (detached + terraced)"), ana.SITADEL_INDIVIDUEL, COLOR_TERRACOTTA),
+        (_L("Collectif", "Collective"), ana.SITADEL_COLLECTIF, COLOR_BLUE),
+    ]
+
+    iv_cols = st.columns(3)
+    for _i, (_lbl, _types, _clr) in enumerate(_iv_groups):
+        _full_g = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel_full, _types), [_iv_col])
+        _val12 = _full_g[f"{_iv_col}_12M"].dropna()
+        _mom_g = ana.momentum_metrics(ana.aggregate_sitadel(df_sitadel_full, _types), _iv_col)
+        with iv_cols[_i]:
+            st.metric(
+                _lbl,
+                f"{int(_val12.iloc[-1]):,}".replace(",", " ") if not _val12.empty else "—",
+                delta=(f"{_mom_g['roll12_yoy']:+.1f}% " + _L("sur 12 mois", "over 12 months")
+                       if _mom_g["roll12_yoy"] is not None else None))
+            _l3 = _mom_g.get("last3_yoy")
+            _l3txt = "—" if _l3 is None else (f"{_l3:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{_l3:+.1f}%")
+            st.caption(f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {_l3txt}")
+
+    # Rolling-12m lines: individual-pur vs collective (year-sliced), in thousands.
+    fig_iv = go.Figure()
+    for _lbl, _types, _clr in [_iv_groups[0], _iv_groups[2]]:
+        _g = ana.calculate_rolling_12m(ana.aggregate_sitadel(filtered_sitadel, _types), [_iv_col])
+        fig_iv.add_trace(go.Scatter(x=_g["Date"], y=_g[f"{_iv_col}_12M"] / 1000.0,
+                                    name=_lbl, line=dict(color=_clr, width=3)))
+    fig_iv.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Thousands of dwellings" if lang_code == "EN" else "Milliers de logements",
+        template="plotly_white",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    st.plotly_chart(fig_iv, use_container_width=True)
+    st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']} — "
+               f"{_L('cumul 12 mois glissant', '12-month rolling sum')}")
 
     # --- Monthly comparison by year (grouped bars, like the IGEDD monthly chart) ---
     # Compares the selected months across the years kept by the "Période (années)"
@@ -1255,6 +1331,45 @@ with tabs[1]:
             st.plotly_chart(fig_cc, use_container_width=True)
             st.caption(_L("Rythme annuel de production (~175 Md€ attendus en 2026 par BPCE L'Observatoire).",
                           "Annual production run-rate (~€175bn expected in 2026 by BPCE L'Observatoire)."))
+
+    # --- Demande de crédits à l'habitat (enquête BLS, BdF/BCE) — indicateur avancé ---
+    # Volume de crédits = ce qui a été distribué (réalisé) ; la demande BLS anticipe le
+    # tournant AVANT la production. Le solde « perspectives à 3 mois » (BPCE p.23) est
+    # passé nettement négatif fin 2025 / début 2026 → signal avancé de repli.
+    if ("Demande_Credit_Perspectives" in df_macro.columns
+            and df_macro["Demande_Credit_Perspectives"].notna().any()):
+        st.markdown("---")
+        st.markdown("#### " + _L("Demande de crédits à l'habitat (enquête BLS)",
+                                 "Housing-loan demand (Bank Lending Survey)"))
+        macro_chart_title(
+            _L("Demande de crédits à l'habitat des ménages",
+               "Household housing-loan demand"),
+            _L("solde d'opinion net des banques, en % — >0 = demande en hausse",
+               "net balance of banks' opinion, % — >0 = rising demand"))
+        _bls = df_macro.copy()
+        fig_bls = go.Figure()
+        _r = _bls.dropna(subset=["Demande_Credit_Realisee"])
+        fig_bls.add_trace(go.Scatter(
+            x=_r["Date"], y=_r["Demande_Credit_Realisee"],
+            name=_L("Réalisé (3 derniers mois)", "Realised (past 3 months)"),
+            line=dict(color=COLOR_SUBTLE, width=2)))
+        _f = _bls.dropna(subset=["Demande_Credit_Perspectives"])
+        fig_bls.add_trace(go.Scatter(
+            x=_f["Date"], y=_f["Demande_Credit_Perspectives"],
+            name=_L("Perspectives (3 prochains mois)", "Expected (next 3 months)"),
+            line=dict(color=COLOR_BRICK, width=2.5)))
+        add_last_value_label(fig_bls, _f, "Date", "Demande_Credit_Perspectives",
+                             COLOR_BRICK, lang_code, decimals=0)
+        fig_bls.add_hline(y=0, line_dash="dash", line_color="grey")
+        apply_macro_chart_layout(fig_bls, _L("Solde net (%)", "Net balance (%)"))
+        st.plotly_chart(fig_bls, use_container_width=True)
+        st.caption(_L(
+            "Source : BCE / Banque de France — enquête sur la distribution du crédit bancaire "
+            "(Bank Lending Survey), demande de crédits à l'habitat des ménages, France, "
+            "pourcentage net. Indicateur avancé de la production de crédits (BPCE p.23).",
+            "Source: ECB / Banque de France — Bank Lending Survey, demand for household "
+            "house-purchase loans, France, net percentage. A leading indicator of loan "
+            "production (BPCE p.23)."))
 
 
 # ==============================================================================
@@ -1541,6 +1656,14 @@ def _forecast_bundle(macro, dvf):
     return rm, lags, tm
 
 
+# Published BPCE L'Observatoire targets for 2026 (RDV Immobilier press conference,
+# 2 June 2026) — used as an external validation benchmark for our own model.
+BPCE_TX_ANCIEN_2026 = 890_000      # existing-home transactions in 2026 (−6% vs 2025)
+BPCE_TX_TOTAL_2026 = 1_026_000     # total (new + existing) transactions (−5% vs 2025)
+BPCE_RATE_Q4_2026 = 3.43           # credit rate at Q4 2026 (%, +34 bp YoY)
+BPCE_PRICE_YOY_Q4_2026 = -0.1      # existing-home price, YoY at Q4 2026 (%)
+
+
 with tabs[4]:
     st.header(_L("📡 Prévision des transactions & scénarios",
                  "📡 Transaction forecast & scenarios"))
@@ -1615,6 +1738,12 @@ with tabs[4]:
                                         line=dict(color=COLOR_BRICK, width=2, dash="dot")))
             fig_tx.add_vline(x=pd.Timestamp(_bt["split"]), line_dash="dash", line_color="grey",
                              annotation_text=_L("entraînement | test", "train | test"))
+        # Published BPCE L'Observatoire 2026 target (RDV Immobilier, 2 juin 2026): existing-home
+        # transactions of 890 000 in 2026 (−6% after +13% in 2025). Shown as an external
+        # validation reference for our own model's trajectory.
+        fig_tx.add_hline(y=BPCE_TX_ANCIEN_2026, line_dash="dot", line_color=COLOR_SUNFLOWER,
+                         annotation_text=_L("Cible BPCE 2026 : 890k", "BPCE 2026 target: 890k"),
+                         annotation_position="bottom right")
         apply_macro_chart_layout(fig_tx, _L("Ventes sur 12 mois", "12-month sales"))
         st.plotly_chart(fig_tx, use_container_width=True)
         st.caption(_L(
@@ -1624,6 +1753,34 @@ with tabs[4]:
             "Trained only on ≤2021 data, the model reproduces the 2022-24 contraction, the Sept-2024 trough and "
             "the 2025-26 rebound — without having seen them. That is the proof the leading indicators genuinely "
             "'forecast'. Sources: IGEDD (sales), INSEE + BdF/ECB (indicators)."))
+
+        # ---- BPCE 2026 published targets (external validation benchmark) ----------
+        st.markdown("**" + _L("📌 Repère : prévisions publiées BPCE L'Observatoire 2026",
+                              "📌 Benchmark: BPCE L'Observatoire published 2026 forecasts") + "**")
+        _last_tx12 = float(_tx12.dropna().iloc[-1])
+        bp = st.columns(4)
+        bp[0].metric(_L("Transactions ancien 2026", "Existing-home transactions 2026"),
+                     f"{BPCE_TX_ANCIEN_2026:,.0f}".replace(",", " "),
+                     _L("−6 % vs 2025", "−6% vs 2025"), delta_color="off")
+        bp[1].metric(_L("Total neuf + ancien", "Total new + existing"),
+                     f"{BPCE_TX_TOTAL_2026:,.0f}".replace(",", " "),
+                     _L("−5 % vs 2025", "−5% vs 2025"), delta_color="off")
+        bp[2].metric(_L("Taux de crédit T4 2026", "Credit rate Q4 2026"),
+                     (f"{BPCE_RATE_Q4_2026:.2f} %".replace(".", ",") if lang_code == "FR" else f"{BPCE_RATE_Q4_2026:.2f}%"),
+                     _L("+34 pdb sur un an", "+34bp YoY"), delta_color="off")
+        bp[3].metric(_L("Prix ancien T4 2026", "Existing-home price Q4 2026"),
+                     (f"{BPCE_PRICE_YOY_Q4_2026:+.1f} %".replace(".", ",") if lang_code == "FR" else f"{BPCE_PRICE_YOY_Q4_2026:+.1f}%"),
+                     _L("glissement annuel", "year-on-year"), delta_color="off")
+        _gap = (_last_tx12 - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
+        st.caption(_L(
+            f"Dernier point réel du modèle (ventes sur 12 mois) : {_last_tx12:,.0f} — soit "
+            f"{_gap:+.1f} % au-dessus de la cible annuelle BPCE 890 000 ; l'écart mesure "
+            f"l'infléchissement attendu par BPCE d'ici fin 2026. Source : RDV Immobilier "
+            f"BPCE L'Observatoire, 2 juin 2026.",
+            f"Model's latest real point (12-month sales): {_last_tx12:,.0f} — i.e. "
+            f"{_gap:+.1f}% above BPCE's 890,000 annual target; the gap measures the slowdown "
+            f"BPCE expects by end-2026. Source: RDV Immobilier BPCE L'Observatoire, 2 June 2026.")
+            .replace(",", " "))
 
         # ---- 3. Scenario panel ---------------------------------------------------
         st.markdown("#### " + _L("3. Panneau de scénarios : macro → marché → chiffre d'affaires",
@@ -1705,8 +1862,17 @@ with tabs[4]:
 # ==============================================================================
 with tabs[5]:
     st.header(T[lang_code]["timelag_header"])
+    st.info(_L(
+        "🔬 **Atelier exploratoire.** Testez à la main le décalage d'un indicateur unique "
+        "et sa corrélation aux ventes. Le modèle chiffré et backtesté de référence (calibré "
+        "automatiquement) se trouve dans l'onglet **📡 Prévision & Scénarios** ; cet atelier "
+        "sert à comprendre et calibrer les décalages qui l'alimentent.",
+        "🔬 **Exploratory workshop.** Manually test a single indicator's lag and its "
+        "correlation with sales. The reference, backtested quantified model (auto-calibrated) "
+        "lives in the **📡 Forecast & Scenarios** tab; this workshop helps understand and "
+        "calibrate the lags that feed it."))
     st.write(T[lang_code]["timelag_desc"])
-    
+
     col_sim1, col_sim2 = st.columns([1, 2])
     
     with col_sim1:
@@ -1966,8 +2132,15 @@ with tabs[5]:
 # ==============================================================================
 with tabs[6]:
     st.header(T[lang_code]["composite_header"])
+    st.info(_L(
+        "🔬 **Atelier exploratoire.** Combinez plusieurs indicateurs pondérés/décalés pour "
+        "façonner un signal composite à la main. Pour une prévision chiffrée, backtestée et "
+        "calibrée automatiquement, voir l'onglet **📡 Prévision & Scénarios**.",
+        "🔬 **Exploratory workshop.** Combine several weighted/lagged indicators to shape a "
+        "composite signal by hand. For a quantified, backtested, auto-calibrated forecast, "
+        "see the **📡 Forecast & Scenarios** tab."))
     st.write(T[lang_code]["composite_desc"])
-    
+
     st.markdown(f"#### {T[lang_code]['composite_config']}")
     
     comp_cols = st.columns(3)
