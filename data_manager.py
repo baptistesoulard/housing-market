@@ -3,6 +3,13 @@ import glob
 import pandas as pd
 import numpy as np
 
+# Reusable data layer (typed contracts + Parquet/DuckDB warehouse). Imported guardedly so
+# the app still runs on plain CSV if the optional deps (pandera/duckdb/pyarrow) are absent.
+try:
+    import housing_data as hd
+except Exception:  # pragma: no cover - optional layer
+    hd = None
+
 # Set random seed for reproducibility
 np.random.seed(42)
 
@@ -208,9 +215,9 @@ def _synthetic_rate(year, month):
 
 def generate_sitadel_and_macro():
     """Build the REAL national SIT@DEL construction series (from the manual-input CSV) and
-    the REAL macro dataframe (build_macro_from_files, with a synthetic fallback). No DVF,
-    no sales here: DVF is the real IGEDD series (ensure_dvf_ancien) and second-œuvre sales
-    are derived from real SIT@DEL + real DVF in build_sales().
+    the REAL macro dataframe (build_macro_from_files, with a synthetic fallback). No
+    existing-home sales here: those come from the real IGEDD series (ensure_ventes_ancien)
+    and second-œuvre sales are derived from real SIT@DEL + real IGEDD in build_sales().
 
     Coverage is DYNAMIC — no hardcoded end. SIT@DEL comes straight from its CSV (its own
     real extent). The macro monthly index spans 2001 to SIT@DEL's last month plus a short
@@ -258,7 +265,7 @@ def generate_sitadel_and_macro():
     return df_sitadel, df_macro
 
 
-def build_sales(df_sitadel, df_dvf):
+def build_sales(df_sitadel, df_ventes_ancien):
     """Synthetic national sales of second-œuvre building products, driven by the REAL
     leading indicators the app actually displays: individual-house & collective permits
     (SIT@DEL) and existing-home transactions (IGEDD). Three generic building-trade
@@ -271,14 +278,14 @@ def build_sales(df_sitadel, df_dvf):
     only remaining synthetic dataset, pending a real second-œuvre source.
     """
     np.random.seed(42)  # reproducible synthetic noise, independent of prior RNG use
-    end = min(df_sitadel["Date"].max(), df_dvf["Date"].max())
+    end = min(df_sitadel["Date"].max(), df_ventes_ancien["Date"].max())
     date_range = pd.date_range("2001-01-01", end, freq="MS")
 
     permits_house = df_sitadel[df_sitadel["Type"] == "Maison Individuelle Pure"].groupby("Date")["Permis"].sum()
     permits_coll = df_sitadel[df_sitadel["Type"] == "Logement Collectif"].groupby("Date")["Permis"].sum()
     # REAL IGEDD monthly transaction flows (the exact series shown to the user), not a
     # discarded synthetic proxy.
-    tx_total = df_dvf.groupby("Date")["Transactions"].sum()
+    tx_total = df_ventes_ancien.groupby("Date")["Transactions"].sum()
 
     sales_data = []
     for date in date_range:
@@ -311,26 +318,29 @@ class DataManager:
         
         self.paths = {
             "sitadel": os.path.join(self.data_dir, "sitadel.csv"),
-            "dvf": os.path.join(self.data_dir, "dvf.csv"),
+            "ventes_ancien": os.path.join(self.data_dir, "ventes_ancien.csv"),
             "macro": os.path.join(self.data_dir, "macro.csv"),
             "sales": os.path.join(self.data_dir, "sales.csv"),
             "revenue": os.path.join(self.data_dir, "revenue.csv"),
-            "ecln": os.path.join(self.data_dir, "ecln.csv")
+            "ecln": os.path.join(self.data_dir, "ecln.csv"),
+            # User-imported MONTHLY company sales (one company at a time, overwritten on
+            # each import). Optional benchmark for the forecast / correlation engines.
+            "company_sales": os.path.join(self.data_dir, "company_sales.csv"),
         }
         
     def load_or_generate_all(self, force_regenerate=False):
         """
         Loads the datasets. SIT@DEL is real (manual-input CSV), macro is real
-        (build_macro_from_files) and the "ventes dans l'ancien" series (df_dvf) is the real
-        IGEDD national series (ensure_dvf_ancien) — none are synthetic. Only the
+        (build_macro_from_files) and the "ventes dans l'ancien" series (df_ventes_ancien) is the real
+        IGEDD national series (ensure_ventes_ancien) — none are synthetic. Only the
         second-œuvre `sales` remain synthetic, and they are now DERIVED FROM the real
         SIT@DEL permits and the real IGEDD transactions (build_sales), so the modelled
         series is consistent with the data the app shows.
         """
         # 1. Real IGEDD "ventes dans l'ancien" first — it anchors both the display and the
         #    transaction-linked synthetic sales, so it must exist before sales are built.
-        self.ensure_dvf_ancien(force_rebuild=force_regenerate)
-        df_dvf = pd.read_csv(self.paths["dvf"], parse_dates=["Date"])
+        self.ensure_ventes_ancien(force_rebuild=force_regenerate)
+        df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
 
         # 2. Real SIT@DEL + macro, generated & cached together.
         if not (os.path.exists(self.paths["sitadel"]) and os.path.exists(self.paths["macro"])) \
@@ -343,14 +353,14 @@ class DataManager:
             df_macro = pd.read_csv(self.paths["macro"], parse_dates=["Date"])
 
         # 3. Synthetic second-œuvre sales, DERIVED FROM real SIT@DEL permits + real IGEDD
-        #    transactions. Rebuild when forced, missing, or when a driver (dvf/sitadel) is
+        #    transactions. Rebuild when forced, missing, or when a driver (ventes_ancien/sitadel) is
         #    newer than the cache (so a data refresh propagates).
         _sales_stale = (force_regenerate or not os.path.exists(self.paths["sales"])
                         or os.path.getmtime(self.paths["sales"]) < max(
-                            os.path.getmtime(self.paths["dvf"]),
+                            os.path.getmtime(self.paths["ventes_ancien"]),
                             os.path.getmtime(self.paths["sitadel"])))
         if _sales_stale:
-            df_sales = build_sales(df_sitadel, df_dvf)
+            df_sales = build_sales(df_sitadel, df_ventes_ancien)
             df_sales.to_csv(self.paths["sales"], index=False, encoding="utf-8")
         else:
             df_sales = pd.read_csv(self.paths["sales"], parse_dates=["Date"])
@@ -374,7 +384,79 @@ class DataManager:
                 "Encours", "DelaiEcoulement", "PrixM2_Collectif",
                 "Resa_Sociaux", "Resa_Institutionnels"])
 
-        return df_sitadel, df_dvf, df_macro, df_sales, df_revenue, df_ecln
+        # User-imported monthly company sales (optional benchmark). Empty frame when the
+        # user hasn't imported any yet.
+        if os.path.exists(self.paths["company_sales"]):
+            df_company_sales = pd.read_csv(self.paths["company_sales"], parse_dates=["Date"])
+        else:
+            df_company_sales = pd.DataFrame(columns=["Date", "Company", "Sales"])
+
+        # Mirror the loaded frames to the typed Parquet/DuckDB warehouse (validated,
+        # non-fatal). CSV stays the runtime source of truth during the migration.
+        self._mirror_to_warehouse({
+            "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
+            "sales": df_sales, "revenue": df_revenue, "ecln": df_ecln,
+            "company_sales": df_company_sales,
+        })
+
+        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
+
+    def _mirror_to_warehouse(self, frames):
+        """Validate the datasets against their contracts and persist them as Parquet next
+        to the CSVs (the reusable, typed warehouse consumed by DuckDB/other apps).
+
+        Best-effort and non-fatal: if the optional data layer is unavailable the app just
+        keeps running on CSV. A contract breach (bad column, stray NaN, non-national row)
+        does NOT crash the app, but the failing dataset is reported via `warehouse_status`
+        so it surfaces instead of corrupting the warehouse silently.
+        """
+        self.warehouse_status = {}
+        if hd is None:
+            return
+        for name, df in frames.items():
+            try:
+                hd.write_dataset(name, df, data_dir=self.data_dir)
+                self.warehouse_status[name] = (True, "ok")
+            except Exception as e:  # validation or write failure — surface, don't crash
+                first = str(e).splitlines()[0] if str(e) else e.__class__.__name__
+                self.warehouse_status[name] = (False, first)
+
+    def import_company_sales(self, uploaded_file, company_name="Ma société"):
+        """Import a company's MONTHLY sales from an uploaded CSV into data/company_sales.csv
+        (overwrite — one company at a time). The CSV must expose a 'Date' column and a
+        numeric sales column: 'Sales' (or 'Ventes' / 'Sales_Units' / 'Valeur' / 'Value' /
+        'CA' — first match), or, failing that, the single remaining non-Date column. The
+        company name comes from a 'Company' column if present, else from `company_name`.
+        Returns (success, message)."""
+        try:
+            df = pd.read_csv(uploaded_file)
+            if "Date" not in df.columns:
+                return False, "Colonne « Date » manquante dans le fichier."
+            val_col = next((c for c in ["Sales", "Ventes", "Sales_Units", "Valeur",
+                                        "Value", "CA", "CA_MEUR"] if c in df.columns), None)
+            if val_col is None:
+                others = [c for c in df.columns if c not in ("Date", "Company")]
+                val_col = others[0] if len(others) == 1 else None
+            if val_col is None:
+                return False, ("Colonne de ventes introuvable : nommez-la « Sales » "
+                               "(ou « Ventes »), ou ne laissez qu'une seule colonne en plus de « Date ».")
+            out = pd.DataFrame()
+            out["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+            out["Sales"] = pd.to_numeric(df[val_col], errors="coerce")
+            out = out.dropna(subset=["Date", "Sales"]).sort_values("Date")
+            if out.empty:
+                return False, "Aucune ligne valide (Date + valeur de ventes) trouvée."
+            if "Company" in df.columns and df["Company"].notna().any():
+                name = str(df["Company"].dropna().iloc[0])
+            else:
+                name = (company_name or "Ma société").strip() or "Ma société"
+            out.insert(1, "Company", name)
+            out.to_csv(self.paths["company_sales"], index=False, encoding="utf-8")
+            dmin, dmax = out["Date"].min().strftime("%Y-%m"), out["Date"].max().strftime("%Y-%m")
+            return True, (f"Ventes « {name} » importées : {len(out)} mois "
+                          f"({dmin} → {dmax}).")
+        except Exception as e:
+            return False, f"Erreur lors de l'import : {e}"
 
     @staticmethod
     def build_revenue_from_manual_inputs(pattern=REVENUE_GLOB):
@@ -463,7 +545,7 @@ class DataManager:
                       f"({dmin} → {dmax}).")
 
     @staticmethod
-    def build_dvf_ancien_from_igedd(xls_path=IGEDD_ANCIEN_XLS):
+    def build_ventes_ancien_from_igedd(xls_path=IGEDD_ANCIEN_XLS):
         """
         Reads the IGEDD national "ventes de logements anciens" .xls and returns a
         national, app-shaped dataframe [Date, Region, Department, Type, Transactions]
@@ -503,17 +585,17 @@ class DataManager:
             "Transactions": np.rint(f).astype(int),
         })
 
-    def ensure_dvf_ancien(self, force_rebuild=False):
+    def ensure_ventes_ancien(self, force_rebuild=False):
         """
-        Guarantees data/dvf.csv holds the real IGEDD "ventes dans l'ancien" series
+        Guarantees data/ventes_ancien.csv holds the real IGEDD "ventes dans l'ancien" series
         (national, monthly flows reconstructed from the 12-month cumulative). Builds
-        it from the IGEDD .xls when data/dvf.csv is missing or force_rebuild is set.
-        Returns (success, message). Never writes synthetic DVF.
+        it from the IGEDD .xls when data/ventes_ancien.csv is missing or force_rebuild is set.
+        Returns (success, message). Never writes synthetic sales.
         """
-        if os.path.exists(self.paths["dvf"]) and not force_rebuild:
+        if os.path.exists(self.paths["ventes_ancien"]) and not force_rebuild:
             return True, "Ventes ancien (IGEDD) déjà présentes."
         try:
-            df = self.build_dvf_ancien_from_igedd()
+            df = self.build_ventes_ancien_from_igedd()
         except FileNotFoundError:
             return False, (f"Fichier IGEDD introuvable : « {IGEDD_ANCIEN_XLS} ».")
         except ImportError:
@@ -522,7 +604,7 @@ class DataManager:
         except Exception as e:
             return False, f"Erreur lecture IGEDD : {e}"
 
-        df.to_csv(self.paths["dvf"], index=False, encoding="utf-8")
+        df.to_csv(self.paths["ventes_ancien"], index=False, encoding="utf-8")
         dmin, dmax = df["Date"].min().strftime("%Y-%m"), df["Date"].max().strftime("%Y-%m")
         return True, (f"Ventes ancien (IGEDD) importées : {len(df)} mois "
                       f"({dmin} → {dmax}).")
@@ -538,7 +620,7 @@ class DataManager:
             # Validation based on category
             if category == "sitadel":
                 required = {"Date", "Region", "Department", "Type", "Permis", "MisesEnChantier"}
-            elif category == "dvf":
+            elif category == "ventes_ancien":
                 required = {"Date", "Region", "Department", "Type", "Transactions"}
             elif category == "macro":
                 required = {"Date", "Insee_Confiance_Menages", "Credit_Logement_Taux_Interet"}

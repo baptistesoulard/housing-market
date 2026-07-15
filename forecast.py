@@ -6,7 +6,7 @@ Two-stage econometrics (plain OLS via numpy — no extra dependency):
   Stage 1  credit rate  ~ OAT 10y + Euribor 3M               (scenario lever on financing)
   Stage 2  transactions ~ credit rate(lag) + purchase-intentions(lag) + unemployment(lag)
 
-Everything is fit on the app's REAL national series (macro.csv + IGEDD dvf.csv). The
+Everything is fit on the app's REAL national series (macro.csv + IGEDD ventes_ancien.csv). The
 transactions target is the 12-month rolling sum (the published "ventes sur un an").
 A train/test split (fit ≤2021, predict 2022→) provides an honest out-of-sample backtest.
 """
@@ -32,10 +32,10 @@ def ols(X, y):
     return beta, r2, rmse, pred
 
 
-def build_target(df_dvf):
+def build_target(df_ventes_ancien):
     """12-month rolling sum of national existing-home transactions (IGEDD), indexed by
     Date. Reproduces the published 'ventes sur un an' series."""
-    tx = df_dvf.groupby("Date")["Transactions"].sum().sort_index()
+    tx = df_ventes_ancien.groupby("Date")["Transactions"].sum().sort_index()
     return tx.rolling(12).sum().rename("tx12")
 
 
@@ -156,6 +156,33 @@ def best_tx_to_ca(df_revenue, tx12, company, lags=range(0, 7)):
     best = None
     for lg in lags:
         fit = fit_tx_to_ca(df_revenue, tx12, company, lag_q=lg)
+        if fit and (best is None or fit["r2"] > best["r2"]):
+            best = fit
+    return best
+
+
+def fit_tx_to_monthly(df_series, tx12, value_col="Sales", lag_m=0):
+    """Elasticity of a MONTHLY company series (e.g. user-imported sales) to the 12-month
+    transactions run-rate, at `lag_m` months. `tx12` is a Date-indexed Series (build_target).
+    The driver is shifted forward by `lag_m` so transactions at t explain sales at t+lag_m.
+    Returns {beta, r2, lag_m, n} or None if too few overlapping months."""
+    s = (df_series[["Date", value_col]].dropna()
+         .assign(Date=lambda d: pd.to_datetime(d["Date"]))
+         .groupby("Date")[value_col].sum().sort_index())
+    drv = tx12.copy()
+    drv.index = pd.to_datetime(drv.index) + pd.DateOffset(months=lag_m)
+    d = pd.DataFrame({"y": s}).join(drv.rename("x")).dropna()
+    if len(d) < 8:
+        return None
+    beta, r2, _, _ = ols(d["x"].values.reshape(-1, 1), d["y"].values)
+    return {"beta": beta, "r2": r2, "lag_m": lag_m, "n": len(d)}
+
+
+def best_tx_to_monthly(df_series, tx12, value_col="Sales", lags=range(0, 19)):
+    """Pick the transactions→monthly-series month lag with the highest R² (0..18 months)."""
+    best = None
+    for lg in lags:
+        fit = fit_tx_to_monthly(df_series, tx12, value_col, lag_m=lg)
         if fit and (best is None or fit["r2"] > best["r2"]):
             best = fit
     return best

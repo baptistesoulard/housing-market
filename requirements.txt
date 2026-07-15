@@ -1,15 +1,23 @@
 # HousingMarket_v3 — dépendances d'exécution (app Streamlit national-only)
-# Revu le 2026-07-14 (soir) : inchangé. Les onglets « Prix & Accessibilité »,
-# « Commercialisation Neuf (ECLN) » et « Prévision & Scénarios » n'ajoutent AUCUNE
-# dépendance d'exécution :
-#  - prix Notaires-INSEE/neuf, ECLN et volume de crédits sont lus depuis des CSV (pandas)
-#    et tracés via plotly ; capacité d'emprunt / accessibilité = numpy.
+# Revu le 2026-07-15 : ajout de matplotlib + reportlab pour le RAPPORT PDF (report.py).
+# Notes :
+#  - prix Notaires-INSEE/neuf, ECLN, volume/demande de crédits sont lus depuis des CSV
+#    (pandas) et tracés via plotly ; capacité d'emprunt / accessibilité = numpy.
 #  - le module de prévision (forecast.py : régressions OLS taux + transactions, backtest,
-#    scénarios) est en numpy pur (np.linalg.lstsq) — pas de statsmodels/scikit-learn.
-#  - l'acquisition des séries (INSEE SDMX BDM + SDES/data.gouv + BCE SDMX) est un outillage
-#    HORS runtime : fetch_new_sources.py, via urllib de la bibliothèque standard.
+#    scénarios, élasticité transactions→CA/ventes) est en numpy pur (np.linalg.lstsq).
+#  - l'acquisition des séries (INSEE SDMX BDM + SDES/data.gouv + BCE SDMX/BLS) est un
+#    outillage HORS runtime : fetch_new_sources.py, via urllib de la bibliothèque standard.
+#  - matplotlib (backend Agg) + reportlab servent UNIQUEMENT au rapport PDF, importés à la
+#    demande (lazy) dans le handler du bouton ; l'app reste utilisable sans les solliciter.
 streamlit>=1.30.0     # UI de l'application
 pandas>=2.0.0         # manipulation des données (CSV/Excel, séries temporelles)
 numpy>=1.20.0         # calculs numériques / accessibilité / régressions de prévision
 plotly>=5.10.0        # graphiques (courbes, KPI)
 xlrd>=2.0.1           # lecture du .xls IGEDD (ventes anciennes) via pandas.read_excel
+matplotlib>=3.7.0     # graphiques du rapport PDF (rendu PNG en mémoire, backend Agg)
+reportlab>=4.0.0      # génération du rapport PDF (module report.py, bouton sidebar)
+# --- Couche données réutilisable (housing_data/) : contrats typés + entrepôt Parquet/SQL.
+# Import gardé dans data_manager.py : l'app tourne encore sur CSV si ces libs manquent.
+pandera>=0.20.0       # contrats de schéma (validation des datasets avant écriture)
+pyarrow>=12.0.0       # moteur Parquet (format d'échange typé, colonnaire)
+duckdb>=1.0.0         # moteur SQL embarqué (zéro serveur) au-dessus des Parquet

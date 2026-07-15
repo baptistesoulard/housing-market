@@ -134,10 +134,10 @@ st.markdown("""
 @st.cache_resource
 def get_data_manager():
     dm = DataManager()
-    # A first run without a built data/dvf.csv triggers the (multi-minute)
-    # geolocated DVF ingestion; show a spinner so the app isn't seen as frozen.
-    if not os.path.exists(dm.paths["dvf"]):
-        with st.spinner("Construction de la base DVF réelle (géolocalisées, 2014→2025)… quelques minutes."):
+    # A first run without a built data/ventes_ancien.csv triggers the IGEDD
+    # reconstruction; show a spinner so the app isn't seen as frozen.
+    if not os.path.exists(dm.paths["ventes_ancien"]):
+        with st.spinner("Construction des ventes de logements anciens (IGEDD)…"):
             dm.load_or_generate_all()
     else:
         dm.load_or_generate_all()
@@ -146,7 +146,7 @@ def get_data_manager():
 dm = get_data_manager()
 
 # Load initial datasets (national-level series)
-df_sitadel, df_dvf, df_macro, df_sales, df_revenue, df_ecln = dm.load_or_generate_all()
+df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales = dm.load_or_generate_all()
 
 # Untouched full-history macro (before the year slicer below). The affordability index
 # rebases borrowing capacity to its 2015 mean from the FULL history, so the sidebar year
@@ -156,9 +156,11 @@ df_macro_full = df_macro
 # Keep untouched references to the full national series. The "Chiffres Clés" cards
 # use these so the headline figures stay independent of the sidebar year slicer and
 # the on-chart segment selector (which reassign / filter the working dataframes below).
-df_sitadel_full, df_dvf_full = df_sitadel, df_dvf
+df_sitadel_full, df_ventes_ancien_full = df_sitadel, df_ventes_ancien
 # Full-history macro & revenue for the forecast models (they must not depend on the slicer).
 df_revenue_full = df_revenue
+# Full-history user-imported company sales (forecast propagation uses the untouched series).
+df_company_sales_full = df_company_sales
 
 # --- Handle parameter application from state (placed before any widget render) ---
 if "opt_applied" in st.session_state and st.session_state["opt_applied"]:
@@ -210,7 +212,7 @@ T = {
         "lookback_header": "📈 Visualisation Conjoncturelle des Marchés",
         "lookback_desc": "Analyse rétrospective des indicateurs de construction neuve (SIT@DEL) et des ventes de logements anciens (IGEDD), au niveau national.",
         "seg_neuf": "Segmentation Neuf (SIT@DEL)",
-        "seg_ancien": "Segmentation Ancien (DVF)",
+        "seg_ancien": "Segmentation Ancien (IGEDD)",
         "kpis_title": "🔑 Chiffres Clés",
         "kpi_last_month": "Dernier mois disponible",
         "permis_12m": "Permis de Construire (Cumul 12m glissant)",
@@ -232,7 +234,7 @@ T = {
         "chart_sitadel_main": "Logements autorisés et commencés",
         "chart_sitadel_permis": "Logements autorisés",
         "chart_sitadel_mises": "Logements commencés",
-        "chart_dvf_main": "Transactions de logements anciens",
+        "chart_ventes_ancien_main": "Transactions de logements anciens",
         "extra_params_title": "⚙️ Paramètres supplémentaires (neuf)",
         "neuf_metric_label": "Indicateurs neuf à afficher",
         "neuf_metric_both": "Les deux",
@@ -243,7 +245,7 @@ T = {
         "sub_raw": "données mensuelles brutes, en milliers",
         "source_label": "Source",
         "source_sitadel": "SIT@DEL (SDES)",
-        "source_dvf": "IGEDD",
+        "source_ventes_ancien": "IGEDD",
         "last_point_label": "Dernier point",
         "monthly_compare_title": "📅 Comparaison Mensuelle par Année",
         "monthly_compare_desc": "Sélectionnez un ou plusieurs mois pour comparer leurs valeurs d'une année à l'autre. Les années affichées correspondent au filtre « Période (années) » de la barre latérale.",
@@ -251,7 +253,7 @@ T = {
         "monthly_metric_label": "Indicateur neuf (SIT@DEL)",
         "chart_sitadel_monthly_permis": "Permis de construire mensuels",
         "chart_sitadel_monthly_mises": "Mises en chantier mensuelles",
-        "chart_dvf_monthly_main": "Transactions mensuelles de logements anciens",
+        "chart_ventes_ancien_monthly_main": "Transactions mensuelles de logements anciens",
         "sub_monthly": "en milliers",
         "no_month_selected": "Sélectionnez au moins un mois pour afficher la comparaison.",
         "macro_context": "🏦 Contexte Macroéconomique et Financement",
@@ -379,8 +381,8 @@ T = {
         "reset_spinner": "Rétablissement des données en cours...",
         "reset_success": "Toutes les bases ont été réinitialisées aux données d'origine !",
         "synthetic_note": "⚠️ Données synthétiques, en attente de source officielle.",
-        "map_caption": "🗺️ Transactions DVF 2025 par département (foncé = plus de transactions). Cliquez un département pour filtrer.",
-        "map_caption_region": "🗺️ Transactions DVF 2025 par région (foncé = plus de transactions). Cliquez une région pour filtrer.",
+        "map_caption": "🗺️ Transactions de logements anciens 2025 par département (foncé = plus de transactions). Cliquez un département pour filtrer.",
+        "map_caption_region": "🗺️ Transactions de logements anciens 2025 par région (foncé = plus de transactions). Cliquez une région pour filtrer.",
         "map_hover_tx": "Transactions 2025",
         "igedd_header": "🏛️ Ventes dans l'ancien (source IGEDD)",
         "igedd_desc": "La série des ventes de logements anciens provient du fichier national IGEDD « data_manual_input/nombre-vente-maison-appartement-ancien.xls » (cumul 12 mois glissant, national). Cliquez pour la reconstruire si vous avez mis à jour le fichier.",
@@ -413,7 +415,7 @@ T = {
         "lookback_header": "📈 Market Economic Visualization",
         "lookback_desc": "Retrospective analysis of new construction metrics (SIT@DEL) and existing-home sales volumes (IGEDD), at the national level.",
         "seg_neuf": "New Construction Segment (SIT@DEL)",
-        "seg_ancien": "Existing Housing Segment (DVF)",
+        "seg_ancien": "Existing Housing Segment (IGEDD)",
         "kpis_title": "🔑 Key Performance Indicators",
         "kpi_last_month": "Last available month",
         "permis_12m": "Building Permits (12M Rolling Cumulative)",
@@ -435,7 +437,7 @@ T = {
         "chart_sitadel_main": "Housing permits and starts",
         "chart_sitadel_permis": "Housing permits",
         "chart_sitadel_mises": "Housing starts",
-        "chart_dvf_main": "Existing-home sales",
+        "chart_ventes_ancien_main": "Existing-home sales",
         "extra_params_title": "⚙️ Additional settings (new-build)",
         "neuf_metric_label": "New-build indicators to display",
         "neuf_metric_both": "Both",
@@ -446,7 +448,7 @@ T = {
         "sub_raw": "raw monthly data, in thousands",
         "source_label": "Source",
         "source_sitadel": "SIT@DEL (SDES)",
-        "source_dvf": "IGEDD",
+        "source_ventes_ancien": "IGEDD",
         "last_point_label": "Last data point",
         "monthly_compare_title": "📅 Monthly Comparison by Year",
         "monthly_compare_desc": "Select one or more months to compare their values year over year. The years shown follow the “Période (années)” filter in the sidebar.",
@@ -454,7 +456,7 @@ T = {
         "monthly_metric_label": "New-build indicator (SIT@DEL)",
         "chart_sitadel_monthly_permis": "Monthly building permits",
         "chart_sitadel_monthly_mises": "Monthly construction starts",
-        "chart_dvf_monthly_main": "Monthly existing-home sales",
+        "chart_ventes_ancien_monthly_main": "Monthly existing-home sales",
         "sub_monthly": "in thousands",
         "no_month_selected": "Select at least one month to display the comparison.",
         "macro_context": "🏦 Macroeconomics and Financing Context",
@@ -582,8 +584,8 @@ T = {
         "reset_spinner": "Restoring data, please wait...",
         "reset_success": "All databases have been successfully restored to factory defaults!",
         "synthetic_note": "⚠️ Synthetic data, pending an official source.",
-        "map_caption": "🗺️ 2025 DVF transactions by department (darker = more transactions). Click a department to filter.",
-        "map_caption_region": "🗺️ 2025 DVF transactions by region (darker = more transactions). Click a region to filter.",
+        "map_caption": "🗺️ 2025 existing-home transactions by department (darker = more transactions). Click a department to filter.",
+        "map_caption_region": "🗺️ 2025 existing-home transactions by region (darker = more transactions). Click a region to filter.",
         "map_hover_tx": "2025 transactions",
         "igedd_header": "🏛️ Existing-home sales (IGEDD source)",
         "igedd_desc": "The existing-home sales series comes from the IGEDD national file 'data_manual_input/nombre-vente-maison-appartement-ancien.xls' (12-month rolling total, national). Click to rebuild it if you have updated the file.",
@@ -602,7 +604,7 @@ selected_regions = []
 selected_departments = []
 
 # --- Year range slicer: filters every series to the chosen period ---
-_all_dates = pd.concat([df_sitadel["Date"], df_dvf["Date"], df_sales["Date"], df_macro["Date"]])
+_all_dates = pd.concat([df_sitadel["Date"], df_ventes_ancien["Date"], df_sales["Date"], df_macro["Date"]])
 _ymin, _ymax = int(_all_dates.dt.year.min()), int(_all_dates.dt.year.max())
 year_range = st.sidebar.slider(
     T[lang_code]["year_filter"], _ymin, _ymax, (_ymin, _ymax), step=1
@@ -612,22 +614,42 @@ def _filter_years(df):
     return df[(df["Date"].dt.year >= year_range[0]) & (df["Date"].dt.year <= year_range[1])]
 
 df_sitadel = _filter_years(df_sitadel)
-df_dvf = _filter_years(df_dvf)
+df_ventes_ancien = _filter_years(df_ventes_ancien)
 df_macro = _filter_years(df_macro)
 df_sales = _filter_years(df_sales)
 if not df_revenue.empty:
     df_revenue = _filter_years(df_revenue)
 if not df_ecln.empty:
     df_ecln = _filter_years(df_ecln)
+if not df_company_sales.empty:
+    df_company_sales = _filter_years(df_company_sales)
 
 st.sidebar.info(T[lang_code]["sidebar_info"])
+
+# --- Sidebar: PDF report generator ---
+# Builds a concise "bilan" PDF (KPIs, commentary, key charts, BPCE benchmark) from the
+# full-history national frames. Generated on click only (heavy imports stay lazy), then
+# offered as a download. Uses the untouched full series so the report is slicer-independent.
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 📄 " + _L("Rapport PDF", "PDF report"))
+if st.sidebar.button(_L("Générer le rapport", "Generate report"), key="btn_gen_pdf"):
+    with st.spinner(_L("Génération du PDF…", "Generating PDF…")):
+        import report as _rep
+        st.session_state["pdf_report_bytes"] = _rep.build_pdf_report(
+            df_sitadel_full, df_ventes_ancien_full, df_macro_full, lang_code)
+if "pdf_report_bytes" in st.session_state:
+    st.sidebar.download_button(
+        _L("📥 Télécharger le bilan (PDF)", "📥 Download the review (PDF)"),
+        data=st.session_state["pdf_report_bytes"],
+        file_name="bilan_marche_immobilier.pdf", mime="application/pdf",
+        key="dl_pdf_report")
 
 # --- Main Page Title ---
 st.title(T[lang_code]["title"])
 
 # Filter dataframes according to geographical choices
 filtered_sitadel = ana.filter_by_geography(df_sitadel, internal_geo_level, selected_regions, selected_departments)
-filtered_dvf = ana.filter_by_geography(df_dvf, internal_geo_level, selected_regions, selected_departments)
+filtered_ventes_ancien = ana.filter_by_geography(df_ventes_ancien, internal_geo_level, selected_regions, selected_departments)
 filtered_sales = ana.filter_by_geography(df_sales, internal_geo_level, selected_regions, selected_departments)
 
 _FR_MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin",
@@ -878,20 +900,20 @@ with tabs[0]:
     # Aggregate data according to segment selections. The year-filtered aggregates feed the
     # month-by-year comparison bars below.
     agg_sitadel = ana.aggregate_sitadel(filtered_sitadel, sitadel_types)
-    agg_dvf = ana.aggregate_dvf(filtered_dvf)
+    agg_ventes_ancien = ana.aggregate_ventes_ancien(filtered_ventes_ancien)
 
     # Rolling 12m + 6m sums (and the moving-average overlays) are computed on the FULL
     # history, then the DISPLAY is clipped to the selected years — so a 12m cumul / moving
     # average at Jan 2023 uses its real Feb 2022→Jan 2023 window instead of showing an empty
     # first-12-months gap after the year slicer moves the start.
     agg_sitadel_full = ana.aggregate_sitadel(df_sitadel_full, sitadel_types)
-    agg_dvf_full = ana.aggregate_dvf(df_dvf_full)
+    agg_ventes_ancien_full = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
     rolling_sitadel = ana.calculate_rolling_12m(agg_sitadel_full, ["Permis", "MisesEnChantier"])
     rolling_sitadel = ana.calculate_rolling(rolling_sitadel, ["Permis", "MisesEnChantier"], 6)
-    rolling_dvf = ana.calculate_rolling_12m(agg_dvf_full, ["Transactions"])
-    rolling_dvf = ana.calculate_rolling(rolling_dvf, ["Transactions"], 6)
+    rolling_ventes_ancien = ana.calculate_rolling_12m(agg_ventes_ancien_full, ["Transactions"])
+    rolling_ventes_ancien = ana.calculate_rolling(rolling_ventes_ancien, ["Transactions"], 6)
     rolling_sitadel = _filter_years(rolling_sitadel)
-    rolling_dvf = _filter_years(rolling_dvf)
+    rolling_ventes_ancien = _filter_years(rolling_ventes_ancien)
 
     # KPI Calculations. The "Chiffres Clés" cards always reflect the full national
     # total (all housing types, full history) for the last available month, independent
@@ -900,21 +922,21 @@ with tabs[0]:
     rolling_sitadel_total = ana.calculate_rolling_12m(
         ana.aggregate_sitadel(df_sitadel_full), ["Permis", "MisesEnChantier"]
     )
-    rolling_dvf_total = ana.calculate_rolling_12m(
-        ana.aggregate_dvf(df_dvf_full), ["Transactions"]
+    rolling_ventes_ancien_total = ana.calculate_rolling_12m(
+        ana.aggregate_ventes_ancien(df_ventes_ancien_full), ["Transactions"]
     )
     kpi_permis = ana.calculate_kpis(rolling_sitadel_total, "Permis")
     kpi_mises = ana.calculate_kpis(rolling_sitadel_total, "MisesEnChantier")
-    kpi_transactions = ana.calculate_kpis(rolling_dvf_total, "Transactions")
+    kpi_transactions = ana.calculate_kpis(rolling_ventes_ancien_total, "Transactions")
 
     # Momentum (BPCE style): 3 derniers mois vs mêmes mois n-1, computed from the
     # monthly national series (independent of the year slicer). Surfaces inflections
     # ("coup d'arrêt") faster than the 12m rolling YoY.
     _mom_sitadel = ana.aggregate_sitadel(df_sitadel_full)
-    _mom_dvf = ana.aggregate_dvf(df_dvf_full)
+    _mom_ventes_ancien = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
     mom_permis = ana.momentum_metrics(_mom_sitadel, "Permis")
     mom_mises = ana.momentum_metrics(_mom_sitadel, "MisesEnChantier")
-    mom_transactions = ana.momentum_metrics(_mom_dvf, "Transactions")
+    mom_transactions = ana.momentum_metrics(_mom_ventes_ancien, "Transactions")
 
     def _mom_caption(m):
         """'3 derniers mois vs n-1' momentum line for a KPI card (— if unavailable)."""
@@ -924,7 +946,7 @@ with tabs[0]:
 
     # Last available month behind each headline figure (SIT@DEL vs IGEDD can differ).
     _kpi_sitadel_month = format_month_year(last_valid_month(rolling_sitadel_total, "Permis"), lang_code)
-    _kpi_dvf_month = format_month_year(last_valid_month(rolling_dvf_total, "Transactions"), lang_code)
+    _kpi_ventes_ancien_month = format_month_year(last_valid_month(rolling_ventes_ancien_total, "Transactions"), lang_code)
 
     # --- KPI Row (rendered into the reserved container above the charts) ---
     kpi_container.markdown(f"### {T[lang_code]['kpis_title']}")
@@ -961,16 +983,26 @@ with tabs[0]:
         )
         st.caption(f"{T[lang_code]['mensuel']} : {kpi_transactions['current_val']:,} ({kpi_transactions['yoy_monthly_pct']}% YoY)")
         st.caption(_mom_caption(mom_transactions))
-        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_dvf_month}")
+        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_ventes_ancien_month}")
+
+    # Auto-generated data-driven commentary under the KPI cards (BPCE « à retenir » style).
+    # Reuses the individual-pur momentum as the second-œuvre demand driver. The same helper
+    # feeds the PDF report, so the narrative stays consistent.
+    _mom_indiv_pur = ana.momentum_metrics(
+        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+    _commentary = ana.build_market_commentary(
+        kpi_permis, kpi_mises, kpi_transactions,
+        mom_permis, mom_mises, mom_transactions, _mom_indiv_pur, lang_code)
+    kpi_container.info("📝 " + _commentary)
 
     # Charts are displayed "en milliers" (values / 1000) to match the IGEDD/SDES
     # presentation; the extrema labels therefore no longer divide again (text_divisor=1).
     disp_sitadel = rolling_sitadel.copy()
     for _c in ["Permis", "MisesEnChantier", "Permis_12M", "MisesEnChantier_12M", "Permis_6M", "MisesEnChantier_6M"]:
         disp_sitadel[_c] = disp_sitadel[_c] / 1000.0
-    disp_dvf = rolling_dvf.copy()
+    disp_ventes_ancien = rolling_ventes_ancien.copy()
     for _c in ["Transactions", "Transactions_12M", "Transactions_6M"]:
-        disp_dvf[_c] = disp_dvf[_c] / 1000.0
+        disp_ventes_ancien[_c] = disp_ventes_ancien[_c] / 1000.0
 
     # Resolve the selected view once: rolling 12m, rolling 6m, or raw monthly.
     _is_rolling = chart_view in (T[lang_code]["chart_view_rolling"], T[lang_code]["chart_view_rolling6"])
@@ -1044,24 +1076,24 @@ with tabs[0]:
 
     with c_col2:
         st.markdown(
-            f"**{T[lang_code]['chart_dvf_main']}** "
+            f"**{T[lang_code]['chart_ventes_ancien_main']}** "
             f"<span style='color:#6c757d;font-weight:400'>({_sub})</span>",
             unsafe_allow_html=True
         )
         fig2 = go.Figure()
         if _is_rolling:
             _tcol = f"Transactions{_roll_suffix}"
-            fig2.add_trace(go.Scatter(x=disp_dvf["Date"], y=disp_dvf[_tcol], name=T[lang_code]["transactions_trace"], line=dict(color=COLOR_GREEN, width=3)))
-            find_and_add_extrema_trace(fig2, disp_dvf, "Date", _tcol, COLOR_GREEN, text_divisor=1)
-            dvf_last = last_valid_month(disp_dvf, _tcol)
+            fig2.add_trace(go.Scatter(x=disp_ventes_ancien["Date"], y=disp_ventes_ancien[_tcol], name=T[lang_code]["transactions_trace"], line=dict(color=COLOR_GREEN, width=3)))
+            find_and_add_extrema_trace(fig2, disp_ventes_ancien, "Date", _tcol, COLOR_GREEN, text_divisor=1)
+            ventes_ancien_last = last_valid_month(disp_ventes_ancien, _tcol)
         else:
             _draw_raw = show_raw or not (show_ma6 or show_ma12)
             if _draw_raw:
                 # Light/translucent bars so overlaid curves (moving averages) stay readable.
-                fig2.add_trace(go.Bar(x=disp_dvf["Date"], y=disp_dvf["Transactions"], name=T[lang_code]["transactions_trace"], marker_color=COLOR_GREEN_FILL))
-            dvf_last = last_valid_month(disp_dvf, "Transactions")
+                fig2.add_trace(go.Bar(x=disp_ventes_ancien["Date"], y=disp_ventes_ancien["Transactions"], name=T[lang_code]["transactions_trace"], marker_color=COLOR_GREEN_FILL))
+            ventes_ancien_last = last_valid_month(disp_ventes_ancien, "Transactions")
             # Moving averages (6m and/or 12m) on the raw monthly scale, same axis.
-            add_moving_average_traces(fig2, disp_dvf, "Transactions", T[lang_code]["transactions_trace"],
+            add_moving_average_traces(fig2, disp_ventes_ancien, "Transactions", T[lang_code]["transactions_trace"],
                                       COLOR_GREEN_DARK, show_ma12, show_ma6, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
 
         fig2.update_layout(
@@ -1072,8 +1104,8 @@ with tabs[0]:
         )
         st.plotly_chart(fig2, use_container_width=True)
         st.caption(
-            f"{T[lang_code]['source_label']} : {T[lang_code]['source_dvf']}  \n"
-            f"{T[lang_code]['last_point_label']} : {format_month_year(dvf_last, lang_code)}"
+            f"{T[lang_code]['source_label']} : {T[lang_code]['source_ventes_ancien']}  \n"
+            f"{T[lang_code]['last_point_label']} : {format_month_year(ventes_ancien_last, lang_code)}"
         )
 
     # --- Individual vs collective new-build dynamics --------------------------------
@@ -1150,7 +1182,7 @@ with tabs[0]:
     # Default: the 3 months ending at the last available data point (inclusive), e.g.
     # if the last point is May, default to March / April / May.
     _last_dates = [d for d in [agg_sitadel["Date"].max() if not agg_sitadel.empty else None,
-                               agg_dvf["Date"].max() if not agg_dvf.empty else None] if pd.notna(d)]
+                               agg_ventes_ancien["Date"].max() if not agg_ventes_ancien.empty else None] if pd.notna(d)]
     _last_month_num = pd.Timestamp(max(_last_dates)).month if _last_dates else 12
     _default_month_nums = sorted(((_last_month_num - k - 1) % 12) + 1 for k in range(3))
     _default_month_labels = [_month_labels_all[m - 1] for m in _default_month_nums]
@@ -1196,16 +1228,16 @@ with tabs[0]:
             st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']}")
         with m_col2:
             st.markdown(
-                f"**{T[lang_code]['chart_dvf_monthly_main']}** "
+                f"**{T[lang_code]['chart_ventes_ancien_monthly_main']}** "
                 f"<span style='color:#6c757d;font-weight:400'>({T[lang_code]['sub_monthly']})</span>",
                 unsafe_allow_html=True
             )
-            figm2 = build_monthly_year_bars(agg_dvf, "Transactions",
+            figm2 = build_monthly_year_bars(agg_ventes_ancien, "Transactions",
                                             selected_month_nums, ordered_month_labels, (56, 142, 60))
             figm2.update_layout(yaxis_title="Thousands of transactions" if lang_code == "EN"
                                 else "Milliers de transactions")
             st.plotly_chart(figm2, use_container_width=True)
-            st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_dvf']}")
+            st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_ventes_ancien']}")
 
 # ==============================================================================
 # TAB 2: CONTEXTE MACRO ÉCONOMIQUE ET FINANCEMENT
@@ -1689,10 +1721,10 @@ with tabs[3]:
 # TAB 5: PRÉVISION & SCÉNARIOS (nowcast transactions + backtest + scénarios)
 # ==============================================================================
 @st.cache_data(show_spinner=False)
-def _forecast_bundle(macro, dvf):
+def _forecast_bundle(macro, ventes_ancien):
     """Fit the (expensive) forecast models once and cache them, so moving the scenario
     sliders only recomputes the cheap scenario arithmetic, not the lag grid-search."""
-    tx12 = fc.build_target(dvf)
+    tx12 = fc.build_target(ventes_ancien)
     rm = fc.fit_rate_model(macro)
     lags = fc.search_tx_lags(macro, tx12)
     tm = fc.fit_tx_model(macro, tx12, **lags)
@@ -1723,14 +1755,14 @@ with tabs[4]:
         "sales (12-month sum) are explained by the credit rate, purchase intentions and "
         "unemployment, each lagged. An out-of-sample backtest measures predictive value."))
 
-    _tx12 = fc.build_target(df_dvf_full)
+    _tx12 = fc.build_target(df_ventes_ancien_full)
     _need = {"OAT_10ans", "Euribor_3M", "Credit_Logement_Taux_Interet",
              "Intentions_Achat_Logement", "Taux_Chomage_BIT"}
     if _tx12.dropna().empty or not _need.issubset(set(df_macro_full.columns)):
         st.warning(_L("Séries macro incomplètes — impossible de calibrer le modèle.",
                       "Incomplete macro series — cannot calibrate the model."))
     else:
-        _rm, _lags, _tm = _forecast_bundle(df_macro_full, df_dvf_full)
+        _rm, _lags, _tm = _forecast_bundle(df_macro_full, df_ventes_ancien_full)
         _bt = _tm["backtest"]
         _b = _tm["beta"]
 
@@ -1899,6 +1931,36 @@ with tabs[4]:
                     f"Elasticity estimated on {_caf['n']} quarters; R²={_caf['r2']:.2f} (indicative — short company "
                     f"series). Hexaom (new-build) and Kingfisher France (renovation) respond to transactions with a lag."))
 
+        # propagation to the user-imported MONTHLY company sales (own series)
+        if df_company_sales_full is not None and not df_company_sales_full.empty:
+            _co_s = str(df_company_sales_full["Company"].iloc[0])
+            st.markdown("**" + _L(f"→ Propagation à vos ventes importées ({_co_s})",
+                                  f"→ Propagation to your imported sales ({_co_s})") + "**")
+            _sf = fc.best_tx_to_monthly(df_company_sales_full, _tx12, "Sales")
+            if _sf is None:
+                st.info(_L("Trop peu de points pour relier les transactions à vos ventes importées.",
+                           "Too few points to link transactions to your imported sales."))
+            else:
+                _sales_now = float(df_company_sales_full.sort_values("Date")["Sales"].iloc[-1])
+                _d_sales = _sf["beta"][1] * _sc["d_tx"]
+                sc_cols = st.columns(3)
+                sc_cols[0].metric(_L("Ventes mensuelles récentes", "Recent monthly sales"),
+                                  f"{_sales_now:,.0f}".replace(",", " "))
+                sc_cols[1].metric(_L("Ventes projetées (scénario)", "Projected sales (scenario)"),
+                                  f"{_sales_now + _d_sales:,.0f}".replace(",", " "),
+                                  f"{_d_sales:+,.0f}".replace(",", " "))
+                _srtxt = (f"{_sf['r2']:.2f}".replace(".", ",") + f" · {_sf['lag_m']} mois") \
+                    if lang_code == "FR" else (f"{_sf['r2']:.2f} · {_sf['lag_m']}mo")
+                sc_cols[2].metric(_L("Lien transactions→ventes (R², décalage)",
+                                     "Transactions→sales (R², lag)"), _srtxt)
+                st.caption(_L(
+                    f"Élasticité estimée sur {_sf['n']} mois ; R²={_sf['r2']:.2f}. Vos ventes réagissent "
+                    f"aux transactions (IGEDD, cumul 12 mois) avec ~{_sf['lag_m']} mois de décalage. "
+                    f"Propagation du même choc de transactions que ci-dessus.",
+                    f"Elasticity over {_sf['n']} months; R²={_sf['r2']:.2f}. Your sales respond to "
+                    f"transactions (IGEDD, 12-month sum) with a ~{_sf['lag_m']}-month lag. Same "
+                    f"transactions shock propagated as above."))
+
 
 # ==============================================================================
 # TAB 6: SIMULATION TIME LAG
@@ -1924,12 +1986,12 @@ with tabs[5]:
         # 1. Choose indicator to lag
         indicator_category = st.selectbox(
             T[lang_code]["src_indicator"],
-            ["Construction (SIT@DEL)", "Transactions (DVF)", "Indicateur Macro"] if lang_code == "FR" else ["Construction (SIT@DEL)", "Transactions (DVF)", "Macro Indicator"]
+            ["Construction (SIT@DEL)", "Transactions (ventes anciennes)", "Indicateur Macro"] if lang_code == "FR" else ["Construction (SIT@DEL)", "Transactions (ventes anciennes)", "Macro Indicator"]
         )
         
         internal_category = "Construction (SIT@DEL)"
-        if indicator_category in ["Transactions (DVF)"]:
-            internal_category = "Transactions (DVF)"
+        if indicator_category in ["Transactions (ventes anciennes)"]:
+            internal_category = "Transactions (ventes anciennes)"
         elif indicator_category in ["Indicateur Macro", "Macro Indicator"]:
             internal_category = "Indicateur Macro"
             
@@ -1942,9 +2004,9 @@ with tabs[5]:
             raw_ind_df = raw_ind_df.rename(columns={ind_metric: "Val"})
             ind_label = f"{ind_metric} - {ind_sub_type}"
             
-        elif internal_category == "Transactions (DVF)":
+        elif internal_category == "Transactions (ventes anciennes)":
             # Single national IGEDD "ventes anciennes" series — no sub-type choice.
-            raw_ind_df = filtered_dvf.groupby("Date")["Transactions"].sum().reset_index()
+            raw_ind_df = filtered_ventes_ancien.groupby("Date")["Transactions"].sum().reset_index()
             raw_ind_df = raw_ind_df.rename(columns={"Transactions": "Val"})
             ind_label = "Ventes anciennes (IGEDD)"
             
@@ -1988,7 +2050,12 @@ with tabs[5]:
         #    series (quarterly, in M€) when ca-*.csv files are available. The real series
         #    is national and quarterly, so the indicator is compared on a quarterly grid.
         _has_revenue = (df_revenue is not None) and (not df_revenue.empty)
+        _has_company = (df_company_sales is not None) and (not df_company_sales.empty)
+        _bench_company_lbl = _L("Ventes société importées (mensuel)",
+                                "Imported company sales (monthly)")
         _bench_src_opts = [T[lang_code]["bench_src_synth"]]
+        if _has_company:
+            _bench_src_opts.append(_bench_company_lbl)
         if _has_revenue:
             _bench_src_opts.append(T[lang_code]["bench_src_revenue"])
         benchmark_src = st.radio(
@@ -1996,12 +2063,21 @@ with tabs[5]:
             help=T[lang_code]["bench_src_help"] if _has_revenue else None,
         )
         benchmark_is_revenue = (benchmark_src == T[lang_code]["bench_src_revenue"])
+        benchmark_is_company = (benchmark_src == _bench_company_lbl)
 
         # Macro rates/levels are averaged per quarter; flows (permits, transactions,
         # units) are summed.
         ind_quarterly_agg = "mean" if internal_category == "Indicateur Macro" else "sum"
 
-        if benchmark_is_revenue:
+        if benchmark_is_company:
+            # User-imported MONTHLY company sales — compared on the monthly grid like the
+            # synthetic sales (finer lag resolution than the quarterly revenue benchmark).
+            _co = str(df_company_sales["Company"].iloc[0])
+            agg_sales = (df_company_sales.groupby("Date")["Sales"].sum().reset_index())
+            sales_value_col = "Sales"
+            sales_trace_label = _L(f"Ventes {_co}", f"{_co} sales")
+            sales_axis_title = _L("Ventes (mensuel, importées)", "Sales (monthly, imported)")
+        elif benchmark_is_revenue:
             company = st.selectbox(
                 T[lang_code]["bench_company"],
                 sorted(df_revenue["Company"].unique().tolist())
@@ -2047,7 +2123,8 @@ with tabs[5]:
                         "max_correlation": res_q["max_correlation"],
                     }
                 else:
-                    corr_res = sim.find_optimal_lag(raw_ind_df, agg_sales, "Val", "Sales_Units")
+                    # Monthly benchmark (synthetic units OR imported company sales).
+                    corr_res = sim.find_optimal_lag(raw_ind_df, agg_sales, "Val", sales_value_col)
 
                 st.session_state["corr_results"] = corr_res
                 st.session_state["optimal_lag"] = corr_res["optimal_lag"]
@@ -2128,16 +2205,21 @@ with tabs[5]:
         )
         
         st.plotly_chart(fig_sim, use_container_width=True)
-        # Benchmark is either the real company revenue (public) or the synthetic sales.
-        st.caption(T[lang_code]["revenue_note"] if benchmark_is_revenue
-                   else T[lang_code]["synthetic_note"])
+        # Benchmark: real company revenue (public), imported user sales, or synthetic sales.
+        if benchmark_is_revenue:
+            st.caption(T[lang_code]["revenue_note"])
+        elif benchmark_is_company:
+            st.caption(_L("✅ Ventes réelles importées (données utilisateur, mensuel).",
+                          "✅ Imported real sales (user data, monthly)."))
+        else:
+            st.caption(T[lang_code]["synthetic_note"])
 
         # Save shifted data in session state for export later
         st.session_state["shifted_export_df"] = shifted_ind_df
         st.session_state["shifted_export_col"] = col_shifted_val
         st.session_state["shifted_export_name"] = f"KF_SITADEL_{ind_label.replace(' ', '_').upper()}_LAG{time_lag}"
         # All three indicator sources are now real: SIT@DEL construction (manual CSV),
-        # DVF/IGEDD transactions, and macro (INSEE confidence + Banque de France rate).
+        # IGEDD existing-home transactions, and macro (INSEE confidence + Banque de France rate).
         # The exported shifted indicator is therefore never synthetic.
         st.session_state["shifted_export_synthetic"] = False
         
@@ -2166,8 +2248,13 @@ with tabs[5]:
                 title=T[lang_code]["best_align_title"].format(lag=results["optimal_lag"], r=results["max_correlation"])
             )
             st.plotly_chart(fig_bar, use_container_width=True)
-            st.caption(T[lang_code]["revenue_note"] if benchmark_is_revenue
-                       else T[lang_code]["synthetic_note"])
+            if benchmark_is_revenue:
+                st.caption(T[lang_code]["revenue_note"])
+            elif benchmark_is_company:
+                st.caption(_L("✅ Ventes réelles importées (données utilisateur, mensuel).",
+                              "✅ Imported real sales (user data, monthly)."))
+            else:
+                st.caption(T[lang_code]["synthetic_note"])
 
 
 # ==============================================================================
@@ -2241,13 +2328,32 @@ with tabs[6]:
     ]
     
     df_composite = sim.create_composite_indicator(components)
-    
-    bench_product = st.selectbox(
-        T[lang_code]["bench_product"],
-        df_sales["Product"].unique().tolist(),
-        key="comp_bench_product"
-    )
-    df_sales_bench = filtered_sales[filtered_sales["Product"] == bench_product].groupby("Date")["Sales_Units"].sum().reset_index()
+
+    # Benchmark target: synthetic product sales, or the user-imported company sales.
+    _has_company_comp = (df_company_sales is not None) and (not df_company_sales.empty)
+    _comp_use_company = False
+    if _has_company_comp:
+        _comp_company_lbl = _L("Ventes société importées", "Imported company sales")
+        _comp_bench_src = st.radio(
+            _L("Cible du modèle (benchmark)", "Model target (benchmark)"),
+            [_L("Ventes synthétiques", "Synthetic sales"), _comp_company_lbl],
+            horizontal=True, key="comp_bench_src")
+        _comp_use_company = (_comp_bench_src == _comp_company_lbl)
+
+    if _comp_use_company:
+        _co_c = str(df_company_sales["Company"].iloc[0])
+        df_sales_bench = df_company_sales.groupby("Date")["Sales"].sum().reset_index()
+        bench_col = "Sales"
+        bench_label = _L(f"Ventes {_co_c}", f"{_co_c} sales")
+    else:
+        bench_product = st.selectbox(
+            T[lang_code]["bench_product"],
+            df_sales["Product"].unique().tolist(),
+            key="comp_bench_product"
+        )
+        df_sales_bench = filtered_sales[filtered_sales["Product"] == bench_product].groupby("Date")["Sales_Units"].sum().reset_index()
+        bench_col = "Sales_Units"
+        bench_label = f"Sales - {bench_product}"
     
     # --- AUTOMATED PARAMETER OPTIMIZATION ---
     st.markdown("---")
@@ -2266,7 +2372,7 @@ with tabs[6]:
                 df_c1=df_c1, col_c1=comp1_metric,
                 df_c2=df_c2, col_c2=comp2_metric,
                 df_c3=df_c3, col_c3=comp3_metric,
-                df_sales=df_sales_bench,
+                df_sales=df_sales_bench, sales_col=bench_col,
                 invert_c3=comp3_invert
             )
             st.session_state["opt_composite_res"] = opt_res
@@ -2325,12 +2431,12 @@ with tabs[6]:
         secondary_y=False
     )
     
-    # 2. Benchmark Sales
+    # 2. Benchmark Sales (synthetic product or imported company sales)
     fig_comp.add_trace(
         go.Scatter(
             x=df_sales_bench["Date"],
-            y=df_sales_bench["Sales_Units"],
-            name=f"Sales - {bench_product}",
+            y=df_sales_bench[bench_col],
+            name=bench_label,
             line=dict(color=COLOR_TEXT, width=3)
         ),
         secondary_y=True
@@ -2356,20 +2462,22 @@ with tabs[6]:
     )
     
     st.plotly_chart(fig_comp, use_container_width=True)
-    st.caption(T[lang_code]["synthetic_note"])
+    st.caption(_L("✅ Cible = ventes réelles importées.", "✅ Target = imported real sales.")
+               if _comp_use_company else T[lang_code]["synthetic_note"])
 
     # Measure correlation between composite indicator and historical sales
     merged_comp_sales = pd.merge(df_sales_bench, df_composite, on="Date", how="inner")
     if len(merged_comp_sales) > 5:
-        r_composite = merged_comp_sales["Composite_Indicator"].corr(merged_comp_sales["Sales_Units"])
-        st.info(T[lang_code]["composite_perf"].format(product=bench_product, r=r_composite))
-    
+        r_composite = merged_comp_sales["Composite_Indicator"].corr(merged_comp_sales[bench_col])
+        st.info(T[lang_code]["composite_perf"].format(product=bench_label, r=r_composite))
+
     # Save composite data in session state for export
     st.session_state["composite_export_df"] = df_composite
     st.session_state["composite_export_col"] = "Composite_Indicator"
-    st.session_state["composite_export_name"] = f"KF_COMPOSITE_{bench_product.replace(' ', '_').upper()}"
-    # The composite blends synthetic indicators (SIT@DEL / sales / macro), so it is synthetic.
-    st.session_state["composite_export_synthetic"] = True
+    st.session_state["composite_export_name"] = f"KF_COMPOSITE_{bench_label.replace(' ', '_').upper()}"
+    # Synthetic unless the target is the user's imported real company sales (the composite
+    # still blends indicators, but flag it real-targeted when benchmarked on real sales).
+    st.session_state["composite_export_synthetic"] = not _comp_use_company
 
 
 # ==============================================================================
@@ -2493,15 +2601,15 @@ with tabs[8]:
     
     st.markdown(f"### {T[lang_code]['source_status']}")
     
-    db_cat_opts = ["SIT@DEL (Construction neuve)", "DVF (Transactions immobilières)", "Indicateurs Macro", "Ventes réelles"] if lang_code == "FR" else ["SIT@DEL (New Construction)", "DVF (Real Estate Transactions)", "Macro Indicators", "Actual Sales"]
+    db_cat_opts = ["SIT@DEL (Construction neuve)", "Ventes anciennes (IGEDD)", "Indicateurs Macro", "Ventes réelles"] if lang_code == "FR" else ["SIT@DEL (New Construction)", "Existing-home sales (IGEDD)", "Macro Indicators", "Actual Sales"]
     db_cat = st.selectbox(
         T[lang_code]["select_db_view"],
         db_cat_opts
     )
     
     internal_cat = "sitadel"
-    if db_cat in ["DVF (Transactions immobilières)", "DVF (Real Estate Transactions)"]:
-        internal_cat = "dvf"
+    if db_cat in ["Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"]:
+        internal_cat = "ventes_ancien"
     elif db_cat in ["Indicateurs Macro", "Macro Indicators"]:
         internal_cat = "macro"
     elif db_cat in ["Ventes réelles", "Actual Sales"]:
@@ -2510,8 +2618,8 @@ with tabs[8]:
     if internal_cat == "sitadel":
         display_df = df_sitadel
         req_cols = ["Date", "Region", "Department", "Type", "Permis", "MisesEnChantier"]
-    elif internal_cat == "dvf":
-        display_df = df_dvf
+    elif internal_cat == "ventes_ancien":
+        display_df = df_ventes_ancien
         req_cols = ["Date", "Region", "Department", "Type", "Transactions"]
     elif internal_cat == "macro":
         display_df = df_macro
@@ -2525,7 +2633,7 @@ with tabs[8]:
     with col_db1:
         st.write(T[lang_code]["db_preview_label"].format(name=internal_cat.upper(), count=len(display_df)))
         st.dataframe(display_df.head(100), use_container_width=True)
-        if internal_cat not in ("dvf", "sitadel", "macro"):
+        if internal_cat not in ("ventes_ancien", "sitadel", "macro"):
             st.caption(T[lang_code]["synthetic_note"])
         
         csv_template = display_df.to_csv(index=False).encode('utf-8')
@@ -2563,6 +2671,25 @@ with tabs[8]:
                 st.success(T[lang_code]["reset_success"])
                 st.rerun()
 
+        # --- Entrepôt typé (housing_data) : statut de validation des datasets ---
+        wh_status = getattr(dm, "warehouse_status", None)
+        if wh_status:
+            n_ok = sum(1 for ok, _ in wh_status.values() if ok)
+            n_tot = len(wh_status)
+            with st.expander(f"🗄️ Entrepôt typé (Parquet/DuckDB) — {n_ok}/{n_tot} datasets validés",
+                             expanded=(n_ok < n_tot)):
+                st.caption("Chaque dataset est validé (schéma typé, pandera) avant d'être "
+                           "écrit en Parquet, miroir réutilisable interrogeable en SQL "
+                           "(DuckDB, zéro serveur). Les CSV restent la source au runtime.")
+                for name, (ok, msg) in wh_status.items():
+                    if ok:
+                        st.markdown(f"- ✅ **{name}** — écrit et validé")
+                    else:
+                        st.markdown(f"- ❌ **{name}** — contrat non respecté : `{msg}`")
+        elif getattr(dm, "warehouse_status", None) == {}:
+            st.caption("🗄️ Entrepôt typé indisponible (pandera/duckdb/pyarrow non installés). "
+                       "L'app fonctionne sur CSV.")
+
     # --- Section: rebuild "ventes dans l'ancien" from the IGEDD national file ---
     st.markdown("---")
     st.header(T[lang_code]["igedd_header"])
@@ -2570,10 +2697,70 @@ with tabs[8]:
 
     if st.button(T[lang_code]["igedd_btn"], key="btn_igedd_import"):
         with st.spinner(T[lang_code]["igedd_spinner"]):
-            success, msg = dm.ensure_dvf_ancien(force_rebuild=True)
+            success, msg = dm.ensure_ventes_ancien(force_rebuild=True)
             if success:
                 st.success(msg)
                 st.cache_resource.clear()
                 st.rerun()
             else:
                 st.error(msg)
+
+    # --- Section: import a company's MONTHLY sales (benchmark for the engines) ---
+    st.markdown("---")
+    st.header(_L("🏢 Ventes mensuelles d'une société (benchmark)",
+                 "🏢 Company monthly sales (benchmark)"))
+    st.write(_L(
+        "Importez les ventes mensuelles de votre société (CSV) pour les utiliser comme cible "
+        "dans les moteurs de corrélation et de prévision : Atelier Time-Lag, Modèle Composite "
+        "et Prévision & Scénarios. Une seule société à la fois — chaque import remplace le précédent.",
+        "Import your company's monthly sales (CSV) to use as a target in the correlation and "
+        "forecast engines: Time-Lag workshop, Composite model and Forecast & Scenarios. One "
+        "company at a time — each import replaces the previous one."))
+    st.info(_L(
+        "**Format attendu :** un CSV avec une colonne **`Date`** (mensuelle, ex. `2023-01-01` ou "
+        "`2023-01`) et une colonne de ventes nommée **`Sales`** (ou `Ventes`). Colonne `Company` "
+        "facultative (sinon le nom saisi ci-dessous est utilisé).",
+        "**Expected format:** a CSV with a **`Date`** column (monthly, e.g. `2023-01-01` or "
+        "`2023-01`) and a sales column named **`Sales`** (or `Ventes`). Optional `Company` column "
+        "(otherwise the name entered below is used)."))
+
+    if df_company_sales_full is not None and not df_company_sales_full.empty:
+        _cs_name = str(df_company_sales_full["Company"].iloc[0])
+        _cs_min = df_company_sales_full["Date"].min().strftime("%Y-%m")
+        _cs_max = df_company_sales_full["Date"].max().strftime("%Y-%m")
+        st.success(_L(
+            f"Série active : « {_cs_name} » — {len(df_company_sales_full)} mois ({_cs_min} → {_cs_max}). "
+            f"Sélectionnable comme benchmark dans les onglets Time-Lag / Composite / Prévision.",
+            f"Active series: '{_cs_name}' — {len(df_company_sales_full)} months ({_cs_min} → {_cs_max}). "
+            f"Selectable as a benchmark in the Time-Lag / Composite / Forecast tabs."))
+        st.dataframe(df_company_sales_full.tail(12), use_container_width=True)
+
+    _cs_col1, _cs_col2 = st.columns([2, 1])
+    with _cs_col1:
+        _cs_file = st.file_uploader(_L("Choisir un CSV de ventes mensuelles", "Choose a monthly-sales CSV"),
+                                    type="csv", key="company_sales_upload")
+        _cs_template = pd.DataFrame(
+            {"Date": ["2023-01-01", "2023-02-01", "2023-03-01"], "Sales": [1200, 1350, 1280]}
+        ).to_csv(index=False).encode("utf-8")
+        st.download_button(_L("📥 Modèle CSV (Date, Sales)", "📥 CSV template (Date, Sales)"),
+                           data=_cs_template, file_name="company_sales_template.csv",
+                           mime="text/csv", key="dl_company_sales_template")
+    with _cs_col2:
+        _cs_company = st.text_input(_L("Nom de la société", "Company name"),
+                                    value=_L("Ma société", "My company"), key="company_sales_name")
+        if _cs_file is not None and st.button(_L("Importer les ventes", "Import sales"),
+                                              key="btn_company_sales_import"):
+            ok, msg = dm.import_company_sales(_cs_file, _cs_company)
+            if ok:
+                st.success(msg)
+                st.cache_resource.clear()
+                st.rerun()
+            else:
+                st.error(msg)
+        if df_company_sales_full is not None and not df_company_sales_full.empty:
+            if st.button(_L("🗑️ Retirer les ventes importées", "🗑️ Remove imported sales"),
+                         key="btn_company_sales_del"):
+                if os.path.exists(dm.paths["company_sales"]):
+                    os.remove(dm.paths["company_sales"])
+                st.cache_resource.clear()
+                st.rerun()

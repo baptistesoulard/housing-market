@@ -1,10 +1,12 @@
 # HousingMarket — Market Intelligence Immobilier
 
-Dashboard **Streamlit** d'analyse conjoncturelle du marché immobilier français (national) et d'aide à la prévision. Il met en regard la construction neuve (SIT@DEL / SDES), la commercialisation du neuf (ECLN), les ventes dans l'ancien (IGEDD), les prix (Notaires-INSEE), l'accessibilité, le contexte macro-financier (confiance, taux, Euribor, OAT, intentions d'achat, chômage, volume de crédits) et un module de **prévision des transactions** avec scénarios.
+Dashboard **Streamlit** d'analyse conjoncturelle du marché immobilier français (national) et d'aide à la prévision. Il met en regard la construction neuve (SIT@DEL / SDES), la commercialisation du neuf (ECLN), les ventes dans l'ancien (IGEDD), les prix (Notaires-INSEE), l'accessibilité, le contexte macro-financier (confiance, taux, Euribor, OAT, intentions d'achat, chômage, volume et demande de crédits) et un module de **prévision des transactions** avec scénarios.
+
+L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) pour les corréler aux indicateurs de marché dans les moteurs Time-Lag / Composite / Prévision, et de **générer un bilan PDF** (chiffres clés, commentaire d'analyse, graphiques, repère BPCE) depuis la barre latérale.
 
 ## Aperçu des onglets
 
-1. **Conjoncture rétrospective** — permis, mises en chantier et ventes dans l'ancien (cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1) et **dynamique Individuel vs Collectif** (driver du second œuvre).
+1. **Conjoncture rétrospective** — permis, mises en chantier et ventes dans l'ancien (cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1), **commentaire d'analyse auto-généré** sous les chiffres clés et **dynamique Individuel vs Collectif** (driver du second œuvre).
 2. **Contexte Macro & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois) et **demande de crédits (enquête BLS)** — indicateur avancé.
 3. **Prix & Accessibilité** — indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
 4. **Commercialisation Neuf (ECLN)** — encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
@@ -12,7 +14,7 @@ Dashboard **Streamlit** d'analyse conjoncturelle du marché immobilier français
 6. **Atelier — Time Lag** — atelier exploratoire : décalage d'un indicateur avancé et corrélation avec les ventes (ou un CA d'entreprise réel).
 7. **Atelier — Composite** — atelier exploratoire : indicateur composite pondéré (grid-search des lags/poids).
 8. **Export SAP IBP** — export de l'indicateur avancé.
-9. **Données Source** — inspection / upload des jeux de données.
+9. **Données Source** — inspection / upload des jeux de données, et **import des ventes mensuelles d'une société** (CSV `Date, Sales`) réutilisables comme cible/benchmark dans les moteurs Time-Lag, Composite et Prévision.
 
 ## Lancer en local
 
@@ -34,10 +36,13 @@ Toutes les séries de `data/` sont **réelles**, issues de sources publiques off
 | Commercialisation des logements neufs (ECLN : réservations, mises en vente, encours, délai, prix, acquéreurs) | SDES | data.gouv / API DiDo |
 | Prix des logements anciens (Notaires-INSEE) & neufs | INSEE | API SDMX BDM |
 | Confiance des ménages, intentions d'achat, chômage BIT | INSEE | API SDMX BDM |
-| Taux de crédit habitat & **volume de crédits nouveaux** | Banque de France / BCE | API SDMX BCE (MIR) |
+| Taux de crédit habitat & **volume de crédits** (décomposé hors renégociations / renégociations) | Banque de France / BCE | API SDMX BCE (MIR) |
+| **Demande de crédits habitat** (enquête BLS, réalisé + perspectives 3 mois) | BCE / Banque de France | API SDMX BCE (BLS) |
 | Euribor 3 mois, OAT 10 ans | BCE | API SDMX BCE |
 
 Les identifiants de séries (idbanks INSEE, clés BCE, ressources DiDo) sont documentés dans [`data_manual_input/Data source.txt`](data_manual_input/Data%20source.txt).
+
+Les **ventes mensuelles d'une société** importées via l'onglet Données Source sont des **données utilisateur** (stockées dans `data/company_sales.csv`, non versionnées / `.gitignore`) ; elles ne sont pas une source publique. Le **rapport PDF** est généré localement (aucun appel réseau).
 
 ## Limitations connues & feuille de route
 
@@ -45,7 +50,7 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 
 ### P0 — correction & fiabilité de base
 
-- ✅ **Cohérence ventes ↔ transactions (résolu 2026-07-15).** Les ventes synthétiques de second œuvre sont désormais construites (`build_sales`) à partir des **permis SIT@DEL réels** et des **transactions IGEDD réelles** — la série que l'app affiche —, via un DVF réel chargé *avant* la génération des ventes. Le DVF synthétique (jeté) et `macro_model` ont été supprimés. Corrélation « Sécurité & Domotique » ↔ IGEDD décalé 2 mois = 0,99.
+- ✅ **Cohérence ventes ↔ transactions (résolu 2026-07-15).** Les ventes synthétiques de second œuvre sont désormais construites (`build_sales`) à partir des **permis SIT@DEL réels** et des **transactions IGEDD réelles** — la série que l'app affiche —, via la série des ventes anciennes réelle (IGEDD) chargée *avant* la génération des ventes. L'ancienne série de transactions synthétique (jetée) et `macro_model` ont été supprimés. Corrélation « Sécurité & Domotique » ↔ IGEDD décalé 2 mois = 0,99.
 - ✅ **Couverture temporelle alignée (résolu 2026-07-15).** Plus de `date_range` hardcodé : `generate_sitadel_and_macro` dérive la borne de la donnée réelle (SIT@DEL + buffer, puis trim des mois de queue tout-NaN → macro se termine sur la dernière observation réelle, ex. 2026-06 pour confiance/Euribor/OAT/intentions) ; `build_sales` est borné à `min(SIT@DEL, IGEDD)` (2026-05) — plus aucun mois fabriqué sans donnée marché.
 - **🟠 Validation de schéma & logging.** Aucun contrôle au chargement (types, dates mensuelles uniques/ordonnées, doublons, plages plausibles) ; `update_with_custom_csv` ne couvre que 4 catégories sur 6 (pas `ecln`/`revenue`). Ajouter un validateur léger exécuté au chargement + un `logging` fichier (remplacer les `print` et les erreurs avalées dans les tuples `(bool, message)`).
 
@@ -66,13 +71,14 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 ## Modules
 
 - `app.py` — interface Streamlit (9 onglets, bilingue FR/EN).
-- `data_manager.py` — chargement / génération / cache des jeux de données.
-- `analysis.py` — filtres et agrégations.
+- `data_manager.py` — chargement / génération / cache des jeux de données (dont import des ventes société).
+- `analysis.py` — filtres, agrégations, cumuls glissants, momentum et commentaire d'analyse auto-généré.
 - `simulation.py` — décalage temporel et indicateur composite.
-- `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios).
+- `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→CA/ventes).
 - `export.py` — export SAP IBP.
 - `fetch_new_sources.py` — acquisition des sources réelles (INSEE / SDES / BCE).
+- `report.py` — génération du **rapport PDF** (bilan : chiffres clés, commentaire, graphiques, repère BPCE) via reportlab + matplotlib. Bouton « 📄 Rapport PDF » dans la barre latérale.
 
 ## Stack
 
-Python · Streamlit · pandas · numpy · plotly · xlrd
+Python · Streamlit · pandas · numpy · plotly · xlrd · matplotlib · reportlab

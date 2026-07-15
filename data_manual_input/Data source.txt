@@ -1,7 +1,7 @@
 Ventes dans l'ancien : HousingMarket_v3\data_manual_input\nombre-vente-maison-appartement-ancien.xls
 Source : IGEDD
 https://www.igedd.developpement-durable.gouv.fr/prix-immobilier-evolution-a-long-terme-a1048.html
-Note : série nationale unique, cumul 12 mois glissant en milliers ; l'app reconstruit des flux mensuels (voir data_manager.build_dvf_ancien_from_igedd).
+Note : série nationale unique, cumul 12 mois glissant en milliers ; l'app reconstruit des flux mensuels (voir data_manager.build_ventes_ancien_from_igedd).
 [Correction 2026-07-14 : les noms de fichiers des 2 premiers blocs étaient intervertis — rétabli d'après le CONTENU réel des fichiers.]
 
 
@@ -88,11 +88,26 @@ Couverture : TRIMESTRIEL, 2000-T1 -> 2026-T1. Colonnes : Date, Prix_Neuf. Même 
 
 
 
-Production de crédits à l'habitat (volume) : HousingMarket_v3\data_manual_input\production-credits-habitat.csv
-Source : BCE — Statistiques de taux d'intérêt des IFM (MIR), VOLUME de crédits nouveaux pour achat de logement, ménages, France (y compris renégociations)
-Série : MIR M.FR.B.A2C.A.B.A.2250.EUR.N (data-api.ecb.europa.eu ; unité d'origine = millions €, convertie en Md€)
-Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.A.B.A.2250.EUR.N?format=csvdata
-Couverture : MENSUEL, 2003-01 -> 2026-05 (13,8 Md€ en mai 2026). Colonnes : Date, Production_Credits_Habitat (Md€). Affiché dans l'onglet Contexte Macro (mensuel + moyenne 12 mois, et cumul 12 mois glissants ~180 Md€/an).
+Production de crédits à l'habitat (volume, DÉCOMPOSÉE) : HousingMarket_v3\data_manual_input\production-credits-habitat.csv
+Source : BCE — Statistiques de taux d'intérêt des IFM (MIR), VOLUME de crédits nouveaux pour achat de logement, ménages, France (unité d'origine = millions €, convertie en Md€)
+Séries (3 variantes ne différant que par la dernière lettre = couverture) :
+  - M.FR.B.A2C.A.B.A.2250.EUR.N  = « new business », total Y COMPRIS renégociations -> colonne Production_Credits_Habitat (MENSUEL, 2003-01 ->)
+  - M.FR.B.A2C.A.B.A.2250.EUR.P  = « pure new loans », HORS renégociations              -> colonne Production_Credits_Pure  (MENSUEL, 2019-09 -> seulement)
+  - M.FR.B.A2C.A.B.A.2250.EUR.R  = renégociations seules                                -> colonne Production_Credits_Renego (MENSUEL, 2019-09 -> seulement)
+Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.A.B.A.2250.EUR.N?format=csvdata (idem .P et .R)
+Couverture : MENSUEL. Total 2003-01 -> 2026-05 (~13,8 Md€ en mai 2026) ; décomposition P/R seulement à partir de 2019-09 (indicateur BCE tardif) -> NaN avant. Colonnes : Date, Production_Credits_Habitat, Production_Credits_Pure, Production_Credits_Renego (Md€).
+Affichage (onglet Contexte Macro) : graphique mensuel = barres empilées « hors renégo. + renégo. » (style BPCE p.24, 2019+) ; cumul 12 mois = total (2003+) + courbe « hors renégociations ». Motivation : les renégociations ne déclenchent aucune transaction/construction (bruit pour la prévision bâtiment), donc isolées.
+
+
+
+Demande de crédits à l'habitat (enquête BLS) : HousingMarket_v3\data_manual_input\credit-demand-bls.csv
+Source : BCE / Banque de France — Enquête sur la distribution du crédit bancaire (Bank Lending Survey, BLS), demande de crédits à l'habitat des ménages, France, pourcentage net (solde d'opinion des banques ; >0 = demande en hausse)
+Séries (dataset SDMX « BLS », ménages H / achat de logement H, item Z = demande globale, FNET = pourcentage net) :
+  - Q.FR.ALL.Z.H.H.B3.ZZ.D.FNET = réalisé sur les 3 derniers mois     -> colonne Demande_Credit_Realisee
+  - Q.FR.ALL.Z.H.H.F3.ZZ.D.FNET = attendu sur les 3 prochains mois     -> colonne Demande_Credit_Perspectives (= le « perspectives à 3 mois » BPCE p.23)
+Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/BLS/Q.FR.ALL.Z.H.H.F3.ZZ.D.FNET?format=csvdata (idem B3)
+Couverture : TRIMESTRIEL, 2003-T1 -> 2026-T2 (94 points). Chaque trimestre placé sur le 1er mois du trimestre ; réindex mensuel laisse NaN 2 mois/3. Colonnes : Date, Demande_Credit_Realisee, Demande_Credit_Perspectives.
+Usage : indicateur AVANCÉ de la production de crédit (onglet Contexte Macro, section « Demande de crédits à l'habitat (enquête BLS) »). Le solde « perspectives » est passé nettement négatif fin 2025 / début 2026 (signal de repli, cf. BPCE p.23).
 
 
 
