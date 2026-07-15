@@ -99,11 +99,24 @@ def build_neuf_price():
 
 
 def build_credit_volume():
-    """Production de crédits à l'habitat aux ménages (crédits nouveaux, en Md€), mensuel :
-    ECB MFI Interest Rate statistics (MIR), volume de nouveaux crédits pour achat de
-    logement, France, série M.FR.B.A2C.A.B.A.2250.EUR.N (millions € -> Md€)."""
-    s = _fetch_ecb("MIR", "M.FR.B.A2C.A.B.A.2250.EUR.N") / 1000.0  # M€ -> Md€
-    df = s.rename("Production_Credits_Habitat").reset_index().rename(columns={"index": "Date"})
+    """Production de crédits à l'habitat aux ménages (en Md€), mensuel, DÉCOMPOSÉE comme
+    BPCE p.24 — ECB MIR (MFI Interest Rate statistics), achat de logement, France :
+      * pure new loans (hors renégociations), série ...2250.EUR.**P** ;
+      * renégociations seules,                série ...2250.EUR.**R**.
+    Le total « new business » (...EUR.N) = P + R ; on le recalcule pour garder le rythme
+    de production comparable au chiffre publié BPCE (~175 Md€). Les renégociations sont
+    isolées car décorrélées des transactions/constructions (aucune activité second œuvre).
+    """
+    tot = _fetch_ecb("MIR", "M.FR.B.A2C.A.B.A.2250.EUR.N") / 1000.0   # M€ -> Md€ (2003+)
+    pur = _fetch_ecb("MIR", "M.FR.B.A2C.A.B.A.2250.EUR.P") / 1000.0   # pure new loans (2019+)
+    ren = _fetch_ecb("MIR", "M.FR.B.A2C.A.B.A.2250.EUR.R") / 1000.0   # renégociations (2019+)
+    # Total = N (long history, 2003+, authoritative — matches BPCE's ~175 Md€ headline);
+    # Pure + Renego decompose it from 2019 only (N ≈ P + R over the overlap).
+    df = pd.DataFrame({"Production_Credits_Habitat": tot,
+                       "Production_Credits_Pure": pur,
+                       "Production_Credits_Renego": ren})
+    df.index.name = "Date"
+    df = df.reset_index().sort_values("Date")
     df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
     path = os.path.join(OUT_DIR, "production-credits-habitat.csv")
     df.to_csv(path, index=False, encoding="utf-8")

@@ -1303,34 +1303,64 @@ with tabs[1]:
         st.markdown("---")
         st.markdown("#### " + _L("Volume de crédits à l'habitat", "Housing-loan volumes"))
         _cr = df_macro.dropna(subset=["Production_Credits_Habitat"]).copy()
-        _cr["_mm12"] = _cr["Production_Credits_Habitat"].rolling(12).mean()
         _cr["_cum12"] = _cr["Production_Credits_Habitat"].rolling(12).sum()
+        # Pure new loans (HORS renégociations) = the transaction-relevant part. The BCE
+        # only publishes this decomposition from 2019 (NaN before) — so it drives the
+        # monthly stacked bars and a cumulative overlay, while the long total stays 2003+.
+        _has_split = ("Production_Credits_Pure" in df_macro.columns
+                      and df_macro["Production_Credits_Pure"].notna().any())
+        if _has_split:
+            _cr["_pure_cum12"] = _cr["Production_Credits_Pure"].rolling(12).sum()
         cr_cols = st.columns(2)
         with cr_cols[0]:
-            macro_chart_title(_L("Production de crédits à l'habitat", "Housing-loan production"),
-                              _L("crédits nouveaux, Md€ par mois", "new loans, €bn per month"))
+            macro_chart_title(_L("Production mensuelle de crédits à l'habitat", "Monthly housing-loan production"),
+                              _L("dont renégociations, Md€ par mois", "of which renegotiations, €bn per month"))
             fig_cv = go.Figure()
-            fig_cv.add_trace(go.Bar(x=_cr["Date"], y=_cr["Production_Credits_Habitat"],
-                                    name=_L("Mensuel", "Monthly"), marker_color=COLOR_BLUE, opacity=0.45))
-            fig_cv.add_trace(go.Scatter(x=_cr["Date"], y=_cr["_mm12"], name=_L("Moyenne 12 mois", "12-month average"),
-                                        line=dict(color=COLOR_BRICK, width=2)))
+            if _has_split:
+                # Stacked, BPCE p.24 style: purchase-related lending vs renegotiations.
+                _sp = df_macro.dropna(subset=["Production_Credits_Pure"])
+                fig_cv.add_trace(go.Bar(x=_sp["Date"], y=_sp["Production_Credits_Pure"],
+                                        name=_L("Crédits nouveaux (hors renégo.)", "New loans (excl. reneg.)"),
+                                        marker_color=COLOR_BLUE))
+                fig_cv.add_trace(go.Bar(x=_sp["Date"], y=_sp["Production_Credits_Renego"],
+                                        name=_L("Renégociations", "Renegotiations"),
+                                        marker_color=COLOR_TERRACOTTA))
+                fig_cv.update_layout(barmode="stack")
+            else:
+                fig_cv.add_trace(go.Bar(x=_cr["Date"], y=_cr["Production_Credits_Habitat"],
+                                        name=_L("Mensuel", "Monthly"), marker_color=COLOR_BLUE, opacity=0.45))
             apply_macro_chart_layout(fig_cv, "Md€")
             st.plotly_chart(fig_cv, use_container_width=True)
-            st.caption(_L("Source : BCE — statistiques MIR (crédits nouveaux à l'habitat aux ménages, y.c. renégociations).",
-                          "Source: ECB — MIR statistics (new housing loans to households, incl. renegotiations)."))
+            st.caption(_L(
+                "Source : BCE — statistiques MIR (achat de logement, France). Les renégociations, "
+                "sans lien avec une transaction ou une construction, sont isolées (décomposition "
+                "BPCE p.24 ; publiée depuis 2019).",
+                "Source: ECB — MIR statistics (house purchase, France). Renegotiations, unrelated to "
+                "any transaction or construction, are split out (BPCE p.24 decomposition; published "
+                "from 2019)."))
         with cr_cols[1]:
             macro_chart_title(_L("Production cumulée sur 12 mois", "12-month cumulative production"),
-                              _L("crédits nouveaux, Md€ / an", "new loans, €bn / year"))
+                              _L("Md€ / an", "€bn / year"))
             fig_cc = go.Figure()
             _c12 = _cr.dropna(subset=["_cum12"])
-            fig_cc.add_trace(go.Scatter(x=_c12["Date"], y=_c12["_cum12"], name=_L("Cumul 12 mois", "12-month sum"),
+            fig_cc.add_trace(go.Scatter(x=_c12["Date"], y=_c12["_cum12"],
+                                        name=_L("Total (y.c. renégo.)", "Total (incl. reneg.)"),
                                         line=dict(color=COLOR_GREEN, width=2),
                                         fill="tozeroy", fillcolor="rgba(56,142,60,0.12)"))
             add_last_value_label(fig_cc, _c12, "Date", "_cum12", COLOR_GREEN, lang_code, decimals=0)
+            if _has_split:
+                _p12 = _cr.dropna(subset=["_pure_cum12"])
+                fig_cc.add_trace(go.Scatter(x=_p12["Date"], y=_p12["_pure_cum12"],
+                                            name=_L("Hors renégociations", "Excl. renegotiations"),
+                                            line=dict(color=COLOR_BRICK, width=2, dash="dot")))
+                add_last_value_label(fig_cc, _p12, "Date", "_pure_cum12", COLOR_BRICK, lang_code, decimals=0)
             apply_macro_chart_layout(fig_cc, "Md€")
             st.plotly_chart(fig_cc, use_container_width=True)
-            st.caption(_L("Rythme annuel de production (~175 Md€ attendus en 2026 par BPCE L'Observatoire).",
-                          "Annual production run-rate (~€175bn expected in 2026 by BPCE L'Observatoire)."))
+            st.caption(_L(
+                "Rythme annuel : total ~175 Md€ attendus en 2026 par BPCE L'Observatoire ; « hors "
+                "renégociations » isole la part réellement liée aux achats.",
+                "Annual run-rate: total ~€175bn expected in 2026 by BPCE L'Observatoire; 'excl. "
+                "renegotiations' isolates the genuinely purchase-related part."))
 
     # --- Demande de crédits à l'habitat (enquête BLS, BdF/BCE) — indicateur avancé ---
     # Volume de crédits = ce qui a été distribué (réalisé) ; la demande BLS anticipe le

@@ -63,7 +63,12 @@ PRIX_ANCIEN_CSV = os.path.join("data_manual_input",
 # 010751595) — same base as the ancien indices, for a neuf/ancien comparison.
 PRIX_NEUF_CSV = os.path.join("data_manual_input",
                              "prix-logements-neufs-insee.csv")
-# Housing-loan production (new business, €bn, MONTHLY) — ECB MIR M.FR.B.A2C.A.B.A.2250.EUR.N.
+# Housing-loan production (€bn, MONTHLY) — ECB MIR, house purchase, France. Three columns:
+#   Production_Credits_Habitat = new business total (...EUR.N, 2003+);
+#   Production_Credits_Pure     = pure new loans, i.e. HORS renégociations (...EUR.P, 2019+);
+#   Production_Credits_Renego   = renegotiations only (...EUR.R, 2019+).
+# Renegotiations are split out because they trigger no transaction/construction (no second-
+# œuvre demand) and are volatile (BPCE decomposes them likewise, p.24).
 CREDIT_VOLUME_CSV = os.path.join("data_manual_input",
                                  "production-credits-habitat.csv")
 # Housing-loan DEMAND (Bank Lending Survey, ECB) — net % of banks reporting rising demand
@@ -102,8 +107,11 @@ _MACRO_OPTIONAL = [
     (PRIX_ANCIEN_CSV, "Prix_Ancien_Appartements"),
     (PRIX_ANCIEN_CSV, "Prix_Ancien_Maisons"),
     (PRIX_NEUF_CSV, "Prix_Neuf"),
-    # Housing-loan production (new business, €bn) — monthly, no gaps from 2003.
+    # Housing-loan production (€bn), monthly. Total ("new business", 2003+) plus the
+    # BPCE-style decomposition pure-new-loans / renegotiations (2019+ only, NaN before).
     (CREDIT_VOLUME_CSV, "Production_Credits_Habitat"),
+    (CREDIT_VOLUME_CSV, "Production_Credits_Pure"),
+    (CREDIT_VOLUME_CSV, "Production_Credits_Renego"),
     # Housing-loan demand (BLS, net %) — quarterly, realised + expected ("perspectives").
     (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Realisee"),
     (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Perspectives"),
