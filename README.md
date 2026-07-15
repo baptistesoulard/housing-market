@@ -45,8 +45,8 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 
 ### P0 — correction & fiabilité de base
 
-- **🔴 Cohérence ventes ↔ transactions.** Les ventes synthétiques de second œuvre (famille « Sécurité & Domotique ») sont calées sur les transactions **synthétiques** de `generate_historical_data`, ensuite jetées, alors que l'app affiche les ventes **IGEDD réelles**. À recaler sur la série IGEDD réelle. *(Les familles « Fermetures » et « Équipements » sont déjà calées sur les permis SIT@DEL réels.)*
-- **🟠 Couverture temporelle désalignée.** `sitadel` va jusqu'à 2026-05, `macro`/`sales` jusqu'à 2026-06 (mois « fantôme » NaN) ; aligner le `date_range` sur l'étendue réelle des données.
+- ✅ **Cohérence ventes ↔ transactions (résolu 2026-07-15).** Les ventes synthétiques de second œuvre sont désormais construites (`build_sales`) à partir des **permis SIT@DEL réels** et des **transactions IGEDD réelles** — la série que l'app affiche —, via un DVF réel chargé *avant* la génération des ventes. Le DVF synthétique (jeté) et `macro_model` ont été supprimés. Corrélation « Sécurité & Domotique » ↔ IGEDD décalé 2 mois = 0,99.
+- ✅ **Couverture temporelle alignée (résolu 2026-07-15).** Plus de `date_range` hardcodé : `generate_sitadel_and_macro` dérive la borne de la donnée réelle (SIT@DEL + buffer, puis trim des mois de queue tout-NaN → macro se termine sur la dernière observation réelle, ex. 2026-06 pour confiance/Euribor/OAT/intentions) ; `build_sales` est borné à `min(SIT@DEL, IGEDD)` (2026-05) — plus aucun mois fabriqué sans donnée marché.
 - **🟠 Validation de schéma & logging.** Aucun contrôle au chargement (types, dates mensuelles uniques/ordonnées, doublons, plages plausibles) ; `update_with_custom_csv` ne couvre que 4 catégories sur 6 (pas `ecln`/`revenue`). Ajouter un validateur léger exécuté au chargement + un `logging` fichier (remplacer les `print` et les erreurs avalées dans les tuples `(bool, message)`).
 
 ### P1 — consolidation

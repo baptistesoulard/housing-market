@@ -1,919 +1,916 @@
 Date,Region,Department,Product,Sales_Units
-2001-01-01,France,France,Fermetures & Menuiseries,100567
-2001-01-01,France,France,Équipements Extérieurs,16549
-2001-01-01,France,France,Sécurité & Domotique,9128
-2001-02-01,France,France,Fermetures & Menuiseries,99926
-2001-02-01,France,France,Équipements Extérieurs,16557
-2001-02-01,France,France,Sécurité & Domotique,8784
-2001-03-01,France,France,Fermetures & Menuiseries,96952
-2001-03-01,France,France,Équipements Extérieurs,15952
-2001-03-01,France,France,Sécurité & Domotique,8481
-2001-04-01,France,France,Fermetures & Menuiseries,98316
-2001-04-01,France,France,Équipements Extérieurs,16389
-2001-04-01,France,France,Sécurité & Domotique,9653
-2001-05-01,France,France,Fermetures & Menuiseries,98995
-2001-05-01,France,France,Équipements Extérieurs,16195
-2001-05-01,France,France,Sécurité & Domotique,8512
-2001-06-01,France,France,Fermetures & Menuiseries,92979
-2001-06-01,France,France,Équipements Extérieurs,15197
-2001-06-01,France,France,Sécurité & Domotique,9373
-2001-07-01,France,France,Fermetures & Menuiseries,95655
-2001-07-01,France,France,Équipements Extérieurs,15998
-2001-07-01,France,France,Sécurité & Domotique,7964
-2001-08-01,France,France,Fermetures & Menuiseries,90748
-2001-08-01,France,France,Équipements Extérieurs,14948
-2001-08-01,France,France,Sécurité & Domotique,6797
-2001-09-01,France,France,Fermetures & Menuiseries,95950
-2001-09-01,France,France,Équipements Extérieurs,15448
-2001-09-01,France,France,Sécurité & Domotique,6171
-2001-10-01,France,France,Fermetures & Menuiseries,94757
-2001-10-01,France,France,Équipements Extérieurs,14968
-2001-10-01,France,France,Sécurité & Domotique,6210
-2001-11-01,France,France,Fermetures & Menuiseries,98327
-2001-11-01,France,France,Équipements Extérieurs,15020
-2001-11-01,France,France,Sécurité & Domotique,6015
-2001-12-01,France,France,Fermetures & Menuiseries,96912
-2001-12-01,France,France,Équipements Extérieurs,15373
-2001-12-01,France,France,Sécurité & Domotique,5735
-2002-01-01,France,France,Fermetures & Menuiseries,93552
-2002-01-01,France,France,Équipements Extérieurs,14770
-2002-01-01,France,France,Sécurité & Domotique,7395
-2002-02-01,France,France,Fermetures & Menuiseries,95977
-2002-02-01,France,France,Équipements Extérieurs,15134
-2002-02-01,France,France,Sécurité & Domotique,6665
-2002-03-01,France,France,Fermetures & Menuiseries,94973
-2002-03-01,France,France,Équipements Extérieurs,15481
-2002-03-01,France,France,Sécurité & Domotique,7566
-2002-04-01,France,France,Fermetures & Menuiseries,94297
-2002-04-01,France,France,Équipements Extérieurs,15251
-2002-04-01,France,France,Sécurité & Domotique,7801
-2002-05-01,France,France,Fermetures & Menuiseries,94521
-2002-05-01,France,France,Équipements Extérieurs,14769
-2002-05-01,France,France,Sécurité & Domotique,7900
-2002-06-01,France,France,Fermetures & Menuiseries,96099
-2002-06-01,France,France,Équipements Extérieurs,15711
-2002-06-01,France,France,Sécurité & Domotique,8256
-2002-07-01,France,France,Fermetures & Menuiseries,94197
-2002-07-01,France,France,Équipements Extérieurs,15438
-2002-07-01,France,France,Sécurité & Domotique,6964
-2002-08-01,France,France,Fermetures & Menuiseries,94435
-2002-08-01,France,France,Équipements Extérieurs,15170
-2002-08-01,France,France,Sécurité & Domotique,6708
-2002-09-01,France,France,Fermetures & Menuiseries,91996
-2002-09-01,France,France,Équipements Extérieurs,14676
-2002-09-01,France,France,Sécurité & Domotique,5871
-2002-10-01,France,France,Fermetures & Menuiseries,90006
-2002-10-01,France,France,Équipements Extérieurs,15093
-2002-10-01,France,France,Sécurité & Domotique,6382
-2002-11-01,France,France,Fermetures & Menuiseries,94410
-2002-11-01,France,France,Équipements Extérieurs,15494
-2002-11-01,France,France,Sécurité & Domotique,6449
-2002-12-01,France,France,Fermetures & Menuiseries,90328
-2002-12-01,France,France,Équipements Extérieurs,14684
-2002-12-01,France,France,Sécurité & Domotique,6238
-2003-01-01,France,France,Fermetures & Menuiseries,94828
-2003-01-01,France,France,Équipements Extérieurs,15054
-2003-01-01,France,France,Sécurité & Domotique,5983
-2003-02-01,France,France,Fermetures & Menuiseries,91956
-2003-02-01,France,France,Équipements Extérieurs,14940
-2003-02-01,France,France,Sécurité & Domotique,7297
-2003-03-01,France,France,Fermetures & Menuiseries,94580
-2003-03-01,France,France,Équipements Extérieurs,15635
-2003-03-01,France,France,Sécurité & Domotique,6697
-2003-04-01,France,France,Fermetures & Menuiseries,99359
-2003-04-01,France,France,Équipements Extérieurs,15976
-2003-04-01,France,France,Sécurité & Domotique,7310
-2003-05-01,France,France,Fermetures & Menuiseries,95335
-2003-05-01,France,France,Équipements Extérieurs,15255
-2003-05-01,France,France,Sécurité & Domotique,7567
-2003-06-01,France,France,Fermetures & Menuiseries,92803
+2001-01-01,France,France,Fermetures & Menuiseries,100654
+2001-01-01,France,France,Équipements Extérieurs,16647
+2001-01-01,France,France,Sécurité & Domotique,8989
+2001-02-01,France,France,Fermetures & Menuiseries,100484
+2001-02-01,France,France,Équipements Extérieurs,16523
+2001-02-01,France,France,Sécurité & Domotique,8813
+2001-03-01,France,France,Fermetures & Menuiseries,97391
+2001-03-01,France,France,Équipements Extérieurs,16006
+2001-03-01,France,France,Sécurité & Domotique,8766
+2001-04-01,France,France,Fermetures & Menuiseries,98344
+2001-04-01,France,France,Équipements Extérieurs,16154
+2001-04-01,France,France,Sécurité & Domotique,8766
+2001-05-01,France,France,Fermetures & Menuiseries,98454
+2001-05-01,France,France,Équipements Extérieurs,16055
+2001-05-01,France,France,Sécurité & Domotique,8515
+2001-06-01,France,France,Fermetures & Menuiseries,92805
+2001-06-01,France,France,Équipements Extérieurs,15090
+2001-06-01,France,France,Sécurité & Domotique,8922
+2001-07-01,France,France,Fermetures & Menuiseries,95969
+2001-07-01,France,France,Équipements Extérieurs,15704
+2001-07-01,France,France,Sécurité & Domotique,9153
+2001-08-01,France,France,Fermetures & Menuiseries,90829
+2001-08-01,France,France,Équipements Extérieurs,15056
+2001-08-01,France,France,Sécurité & Domotique,8575
+2001-09-01,France,France,Fermetures & Menuiseries,95403
+2001-09-01,France,France,Équipements Extérieurs,15451
+2001-09-01,France,France,Sécurité & Domotique,8629
+2001-10-01,France,France,Fermetures & Menuiseries,95425
+2001-10-01,France,France,Équipements Extérieurs,14941
+2001-10-01,France,France,Sécurité & Domotique,8801
+2001-11-01,France,France,Fermetures & Menuiseries,98190
+2001-11-01,France,France,Équipements Extérieurs,15356
+2001-11-01,France,France,Sécurité & Domotique,8857
+2001-12-01,France,France,Fermetures & Menuiseries,96598
+2001-12-01,France,France,Équipements Extérieurs,15725
+2001-12-01,France,France,Sécurité & Domotique,8615
+2002-01-01,France,France,Fermetures & Menuiseries,93727
+2002-01-01,France,France,Équipements Extérieurs,14504
+2002-01-01,France,France,Sécurité & Domotique,8594
+2002-02-01,France,France,Fermetures & Menuiseries,95605
+2002-02-01,France,France,Équipements Extérieurs,15235
+2002-02-01,France,France,Sécurité & Domotique,8894
+2002-03-01,France,France,Fermetures & Menuiseries,93898
+2002-03-01,France,France,Équipements Extérieurs,15444
+2002-03-01,France,France,Sécurité & Domotique,8204
+2002-04-01,France,France,Fermetures & Menuiseries,94019
+2002-04-01,France,France,Équipements Extérieurs,15185
+2002-04-01,France,France,Sécurité & Domotique,10631
+2002-05-01,France,France,Fermetures & Menuiseries,94888
+2002-05-01,France,France,Équipements Extérieurs,14648
+2002-05-01,France,France,Sécurité & Domotique,8804
+2002-06-01,France,France,Fermetures & Menuiseries,96163
+2002-06-01,France,France,Équipements Extérieurs,15715
+2002-06-01,France,France,Sécurité & Domotique,8862
+2002-07-01,France,France,Fermetures & Menuiseries,94711
+2002-07-01,France,France,Équipements Extérieurs,15381
+2002-07-01,France,France,Sécurité & Domotique,9412
+2002-08-01,France,France,Fermetures & Menuiseries,93875
+2002-08-01,France,France,Équipements Extérieurs,15078
+2002-08-01,France,France,Sécurité & Domotique,9175
+2002-09-01,France,France,Fermetures & Menuiseries,91941
+2002-09-01,France,France,Équipements Extérieurs,14694
+2002-09-01,France,France,Sécurité & Domotique,9358
+2002-10-01,France,France,Fermetures & Menuiseries,89838
+2002-10-01,France,France,Équipements Extérieurs,15285
+2002-10-01,France,France,Sécurité & Domotique,9851
+2002-11-01,France,France,Fermetures & Menuiseries,94007
+2002-11-01,France,France,Équipements Extérieurs,15468
+2002-11-01,France,France,Sécurité & Domotique,7972
+2002-12-01,France,France,Fermetures & Menuiseries,90522
+2002-12-01,France,France,Équipements Extérieurs,14773
+2002-12-01,France,France,Sécurité & Domotique,9527
+2003-01-01,France,France,Fermetures & Menuiseries,95303
+2003-01-01,France,France,Équipements Extérieurs,15139
+2003-01-01,France,France,Sécurité & Domotique,8696
+2003-02-01,France,France,Fermetures & Menuiseries,92434
+2003-02-01,France,France,Équipements Extérieurs,14877
+2003-02-01,France,France,Sécurité & Domotique,9040
+2003-03-01,France,France,Fermetures & Menuiseries,94761
+2003-03-01,France,France,Équipements Extérieurs,15320
+2003-03-01,France,France,Sécurité & Domotique,8336
+2003-04-01,France,France,Fermetures & Menuiseries,99256
+2003-04-01,France,France,Équipements Extérieurs,16064
+2003-04-01,France,France,Sécurité & Domotique,9476
+2003-05-01,France,France,Fermetures & Menuiseries,94881
+2003-05-01,France,France,Équipements Extérieurs,15330
+2003-05-01,France,France,Sécurité & Domotique,8443
+2003-06-01,France,France,Fermetures & Menuiseries,93008
 2003-06-01,France,France,Équipements Extérieurs,15039
-2003-06-01,France,France,Sécurité & Domotique,8147
-2003-07-01,France,France,Fermetures & Menuiseries,92101
-2003-07-01,France,France,Équipements Extérieurs,14841
-2003-07-01,France,France,Sécurité & Domotique,6751
-2003-08-01,France,France,Fermetures & Menuiseries,92166
-2003-08-01,France,France,Équipements Extérieurs,15023
-2003-08-01,France,France,Sécurité & Domotique,7642
-2003-09-01,France,France,Fermetures & Menuiseries,92586
-2003-09-01,France,France,Équipements Extérieurs,15581
-2003-09-01,France,France,Sécurité & Domotique,6482
-2003-10-01,France,France,Fermetures & Menuiseries,96291
-2003-10-01,France,France,Équipements Extérieurs,15289
-2003-10-01,France,France,Sécurité & Domotique,5830
-2003-11-01,France,France,Fermetures & Menuiseries,92633
-2003-11-01,France,France,Équipements Extérieurs,15449
-2003-11-01,France,France,Sécurité & Domotique,6791
-2003-12-01,France,France,Fermetures & Menuiseries,92463
-2003-12-01,France,France,Équipements Extérieurs,15017
-2003-12-01,France,France,Sécurité & Domotique,6487
-2004-01-01,France,France,Fermetures & Menuiseries,94108
-2004-01-01,France,France,Équipements Extérieurs,15005
-2004-01-01,France,France,Sécurité & Domotique,6193
-2004-02-01,France,France,Fermetures & Menuiseries,88840
-2004-02-01,France,France,Équipements Extérieurs,14833
-2004-02-01,France,France,Sécurité & Domotique,7465
-2004-03-01,France,France,Fermetures & Menuiseries,94077
-2004-03-01,France,France,Équipements Extérieurs,14944
-2004-03-01,France,France,Sécurité & Domotique,7800
-2004-04-01,France,France,Fermetures & Menuiseries,97351
-2004-04-01,France,France,Équipements Extérieurs,15684
-2004-04-01,France,France,Sécurité & Domotique,7136
-2004-05-01,France,France,Fermetures & Menuiseries,94723
-2004-05-01,France,France,Équipements Extérieurs,14917
-2004-05-01,France,France,Sécurité & Domotique,8126
-2004-06-01,France,France,Fermetures & Menuiseries,97640
-2004-06-01,France,France,Équipements Extérieurs,15804
-2004-06-01,France,France,Sécurité & Domotique,7697
-2004-07-01,France,France,Fermetures & Menuiseries,99665
-2004-07-01,France,France,Équipements Extérieurs,16444
-2004-07-01,France,France,Sécurité & Domotique,7443
-2004-08-01,France,France,Fermetures & Menuiseries,99617
-2004-08-01,France,France,Équipements Extérieurs,15927
-2004-08-01,France,France,Sécurité & Domotique,7453
-2004-09-01,France,France,Fermetures & Menuiseries,101456
-2004-09-01,France,France,Équipements Extérieurs,16343
-2004-09-01,France,France,Sécurité & Domotique,6464
-2004-10-01,France,France,Fermetures & Menuiseries,101391
-2004-10-01,France,France,Équipements Extérieurs,16312
-2004-10-01,France,France,Sécurité & Domotique,6513
-2004-11-01,France,France,Fermetures & Menuiseries,104687
-2004-11-01,France,France,Équipements Extérieurs,16780
-2004-11-01,France,France,Sécurité & Domotique,6254
-2004-12-01,France,France,Fermetures & Menuiseries,102352
-2004-12-01,France,France,Équipements Extérieurs,16560
-2004-12-01,France,France,Sécurité & Domotique,7342
-2005-01-01,France,France,Fermetures & Menuiseries,107108
-2005-01-01,France,France,Équipements Extérieurs,17081
-2005-01-01,France,France,Sécurité & Domotique,6413
-2005-02-01,France,France,Fermetures & Menuiseries,105058
-2005-02-01,France,France,Équipements Extérieurs,16765
-2005-02-01,France,France,Sécurité & Domotique,6923
-2005-03-01,France,France,Fermetures & Menuiseries,105825
-2005-03-01,France,France,Équipements Extérieurs,16542
-2005-03-01,France,France,Sécurité & Domotique,8091
-2005-04-01,France,France,Fermetures & Menuiseries,104206
-2005-04-01,France,France,Équipements Extérieurs,16716
-2005-04-01,France,France,Sécurité & Domotique,8522
-2005-05-01,France,France,Fermetures & Menuiseries,104955
-2005-05-01,France,France,Équipements Extérieurs,16720
-2005-05-01,France,France,Sécurité & Domotique,8036
-2005-06-01,France,France,Fermetures & Menuiseries,105561
-2005-06-01,France,France,Équipements Extérieurs,16703
-2005-06-01,France,France,Sécurité & Domotique,8140
-2005-07-01,France,France,Fermetures & Menuiseries,103972
-2005-07-01,France,France,Équipements Extérieurs,16057
-2005-07-01,France,France,Sécurité & Domotique,7690
-2005-08-01,France,France,Fermetures & Menuiseries,108410
-2005-08-01,France,France,Équipements Extérieurs,16733
-2005-08-01,France,France,Sécurité & Domotique,7917
-2005-09-01,France,France,Fermetures & Menuiseries,105974
-2005-09-01,France,France,Équipements Extérieurs,16365
-2005-09-01,France,France,Sécurité & Domotique,6991
-2005-10-01,France,France,Fermetures & Menuiseries,114048
-2005-10-01,France,France,Équipements Extérieurs,17426
-2005-10-01,France,France,Sécurité & Domotique,6264
-2005-11-01,France,France,Fermetures & Menuiseries,110290
-2005-11-01,France,France,Équipements Extérieurs,16817
-2005-11-01,France,France,Sécurité & Domotique,7083
-2005-12-01,France,France,Fermetures & Menuiseries,108900
-2005-12-01,France,France,Équipements Extérieurs,16533
-2005-12-01,France,France,Sécurité & Domotique,6625
-2006-01-01,France,France,Fermetures & Menuiseries,115953
-2006-01-01,France,France,Équipements Extérieurs,17476
-2006-01-01,France,France,Sécurité & Domotique,6391
-2006-02-01,France,France,Fermetures & Menuiseries,113913
-2006-02-01,France,France,Équipements Extérieurs,17214
-2006-02-01,France,France,Sécurité & Domotique,8194
-2006-03-01,France,France,Fermetures & Menuiseries,113361
-2006-03-01,France,France,Équipements Extérieurs,16814
-2006-03-01,France,France,Sécurité & Domotique,8338
-2006-04-01,France,France,Fermetures & Menuiseries,115861
-2006-04-01,France,France,Équipements Extérieurs,17536
-2006-04-01,France,France,Sécurité & Domotique,8365
-2006-05-01,France,France,Fermetures & Menuiseries,114247
-2006-05-01,France,France,Équipements Extérieurs,17045
-2006-05-01,France,France,Sécurité & Domotique,9320
-2006-06-01,France,France,Fermetures & Menuiseries,118465
-2006-06-01,France,France,Équipements Extérieurs,17756
-2006-06-01,France,France,Sécurité & Domotique,7754
-2006-07-01,France,France,Fermetures & Menuiseries,118177
-2006-07-01,France,France,Équipements Extérieurs,17617
-2006-07-01,France,France,Sécurité & Domotique,8025
-2006-08-01,France,France,Fermetures & Menuiseries,113836
-2006-08-01,France,France,Équipements Extérieurs,17287
-2006-08-01,France,France,Sécurité & Domotique,6696
-2006-09-01,France,France,Fermetures & Menuiseries,116841
-2006-09-01,France,France,Équipements Extérieurs,17653
-2006-09-01,France,France,Sécurité & Domotique,6829
-2006-10-01,France,France,Fermetures & Menuiseries,116042
-2006-10-01,France,France,Équipements Extérieurs,17095
-2006-10-01,France,France,Sécurité & Domotique,7001
-2006-11-01,France,France,Fermetures & Menuiseries,122245
-2006-11-01,France,France,Équipements Extérieurs,18760
-2006-11-01,France,France,Sécurité & Domotique,6021
-2006-12-01,France,France,Fermetures & Menuiseries,124838
-2006-12-01,France,France,Équipements Extérieurs,17840
-2006-12-01,France,France,Sécurité & Domotique,6226
-2007-01-01,France,France,Fermetures & Menuiseries,120324
-2007-01-01,France,France,Équipements Extérieurs,18054
-2007-01-01,France,France,Sécurité & Domotique,6895
-2007-02-01,France,France,Fermetures & Menuiseries,120884
-2007-02-01,France,France,Équipements Extérieurs,17715
-2007-02-01,France,France,Sécurité & Domotique,6623
-2007-03-01,France,France,Fermetures & Menuiseries,124362
-2007-03-01,France,France,Équipements Extérieurs,18377
-2007-03-01,France,France,Sécurité & Domotique,8231
-2007-04-01,France,France,Fermetures & Menuiseries,120104
-2007-04-01,France,France,Équipements Extérieurs,18186
-2007-04-01,France,France,Sécurité & Domotique,7294
-2007-05-01,France,France,Fermetures & Menuiseries,122718
+2003-06-01,France,France,Sécurité & Domotique,9082
+2003-07-01,France,France,Fermetures & Menuiseries,92422
+2003-07-01,France,France,Équipements Extérieurs,15078
+2003-07-01,France,France,Sécurité & Domotique,9439
+2003-08-01,France,France,Fermetures & Menuiseries,91792
+2003-08-01,France,France,Équipements Extérieurs,15111
+2003-08-01,France,France,Sécurité & Domotique,7967
+2003-09-01,France,France,Fermetures & Menuiseries,93537
+2003-09-01,France,France,Équipements Extérieurs,15437
+2003-09-01,France,France,Sécurité & Domotique,10421
+2003-10-01,France,France,Fermetures & Menuiseries,96236
+2003-10-01,France,France,Équipements Extérieurs,15202
+2003-10-01,France,France,Sécurité & Domotique,9255
+2003-11-01,France,France,Fermetures & Menuiseries,92511
+2003-11-01,France,France,Équipements Extérieurs,15259
+2003-11-01,France,France,Sécurité & Domotique,8827
+2003-12-01,France,France,Fermetures & Menuiseries,92564
+2003-12-01,France,France,Équipements Extérieurs,15242
+2003-12-01,France,France,Sécurité & Domotique,10094
+2004-01-01,France,France,Fermetures & Menuiseries,94088
+2004-01-01,France,France,Équipements Extérieurs,15169
+2004-01-01,France,France,Sécurité & Domotique,8956
+2004-02-01,France,France,Fermetures & Menuiseries,88532
+2004-02-01,France,France,Équipements Extérieurs,14822
+2004-02-01,France,France,Sécurité & Domotique,9592
+2004-03-01,France,France,Fermetures & Menuiseries,93993
+2004-03-01,France,France,Équipements Extérieurs,14940
+2004-03-01,France,France,Sécurité & Domotique,9093
+2004-04-01,France,France,Fermetures & Menuiseries,97195
+2004-04-01,France,France,Équipements Extérieurs,15779
+2004-04-01,France,France,Sécurité & Domotique,9610
+2004-05-01,France,France,Fermetures & Menuiseries,94876
+2004-05-01,France,France,Équipements Extérieurs,14996
+2004-05-01,France,France,Sécurité & Domotique,9140
+2004-06-01,France,France,Fermetures & Menuiseries,96890
+2004-06-01,France,France,Équipements Extérieurs,15837
+2004-06-01,France,France,Sécurité & Domotique,10138
+2004-07-01,France,France,Fermetures & Menuiseries,98602
+2004-07-01,France,France,Équipements Extérieurs,16286
+2004-07-01,France,France,Sécurité & Domotique,9359
+2004-08-01,France,France,Fermetures & Menuiseries,99928
+2004-08-01,France,France,Équipements Extérieurs,15834
+2004-08-01,France,France,Sécurité & Domotique,9233
+2004-09-01,France,France,Fermetures & Menuiseries,100824
+2004-09-01,France,France,Équipements Extérieurs,16463
+2004-09-01,France,France,Sécurité & Domotique,9996
+2004-10-01,France,France,Fermetures & Menuiseries,102313
+2004-10-01,France,France,Équipements Extérieurs,16295
+2004-10-01,France,France,Sécurité & Domotique,8435
+2004-11-01,France,France,Fermetures & Menuiseries,105382
+2004-11-01,France,France,Équipements Extérieurs,16792
+2004-11-01,France,France,Sécurité & Domotique,8905
+2004-12-01,France,France,Fermetures & Menuiseries,102453
+2004-12-01,France,France,Équipements Extérieurs,16494
+2004-12-01,France,France,Sécurité & Domotique,9976
+2005-01-01,France,France,Fermetures & Menuiseries,107014
+2005-01-01,France,France,Équipements Extérieurs,17140
+2005-01-01,France,France,Sécurité & Domotique,8852
+2005-02-01,France,France,Fermetures & Menuiseries,104250
+2005-02-01,France,France,Équipements Extérieurs,16875
+2005-02-01,France,France,Sécurité & Domotique,9039
+2005-03-01,France,France,Fermetures & Menuiseries,104901
+2005-03-01,France,France,Équipements Extérieurs,16587
+2005-03-01,France,France,Sécurité & Domotique,8963
+2005-04-01,France,France,Fermetures & Menuiseries,104580
+2005-04-01,France,France,Équipements Extérieurs,16748
+2005-04-01,France,France,Sécurité & Domotique,9557
+2005-05-01,France,France,Fermetures & Menuiseries,105952
+2005-05-01,France,France,Équipements Extérieurs,16586
+2005-05-01,France,France,Sécurité & Domotique,8741
+2005-06-01,France,France,Fermetures & Menuiseries,106048
+2005-06-01,France,France,Équipements Extérieurs,16543
+2005-06-01,France,France,Sécurité & Domotique,9377
+2005-07-01,France,France,Fermetures & Menuiseries,104187
+2005-07-01,France,France,Équipements Extérieurs,16132
+2005-07-01,France,France,Sécurité & Domotique,8692
+2005-08-01,France,France,Fermetures & Menuiseries,108675
+2005-08-01,France,France,Équipements Extérieurs,16822
+2005-08-01,France,France,Sécurité & Domotique,9719
+2005-09-01,France,France,Fermetures & Menuiseries,105805
+2005-09-01,France,France,Équipements Extérieurs,16423
+2005-09-01,France,France,Sécurité & Domotique,10482
+2005-10-01,France,France,Fermetures & Menuiseries,113478
+2005-10-01,France,France,Équipements Extérieurs,17362
+2005-10-01,France,France,Sécurité & Domotique,8448
+2005-11-01,France,France,Fermetures & Menuiseries,110067
+2005-11-01,France,France,Équipements Extérieurs,16854
+2005-11-01,France,France,Sécurité & Domotique,9102
+2005-12-01,France,France,Fermetures & Menuiseries,110146
+2005-12-01,France,France,Équipements Extérieurs,16464
+2005-12-01,France,France,Sécurité & Domotique,10844
+2006-01-01,France,France,Fermetures & Menuiseries,116094
+2006-01-01,France,France,Équipements Extérieurs,17518
+2006-01-01,France,France,Sécurité & Domotique,9485
+2006-02-01,France,France,Fermetures & Menuiseries,113685
+2006-02-01,France,France,Équipements Extérieurs,17196
+2006-02-01,France,France,Sécurité & Domotique,9122
+2006-03-01,France,France,Fermetures & Menuiseries,113539
+2006-03-01,France,France,Équipements Extérieurs,16804
+2006-03-01,France,France,Sécurité & Domotique,9290
+2006-04-01,France,France,Fermetures & Menuiseries,115461
+2006-04-01,France,France,Équipements Extérieurs,17482
+2006-04-01,France,France,Sécurité & Domotique,9871
+2006-05-01,France,France,Fermetures & Menuiseries,114506
+2006-05-01,France,France,Équipements Extérieurs,16952
+2006-05-01,France,France,Sécurité & Domotique,9254
+2006-06-01,France,France,Fermetures & Menuiseries,118810
+2006-06-01,France,France,Équipements Extérieurs,17542
+2006-06-01,France,France,Sécurité & Domotique,9370
+2006-07-01,France,France,Fermetures & Menuiseries,118275
+2006-07-01,France,France,Équipements Extérieurs,17546
+2006-07-01,France,France,Sécurité & Domotique,8811
+2006-08-01,France,France,Fermetures & Menuiseries,113981
+2006-08-01,France,France,Équipements Extérieurs,17292
+2006-08-01,France,France,Sécurité & Domotique,9430
+2006-09-01,France,France,Fermetures & Menuiseries,116184
+2006-09-01,France,France,Équipements Extérieurs,17470
+2006-09-01,France,France,Sécurité & Domotique,10043
+2006-10-01,France,France,Fermetures & Menuiseries,115821
+2006-10-01,France,France,Équipements Extérieurs,17198
+2006-10-01,France,France,Sécurité & Domotique,9630
+2006-11-01,France,France,Fermetures & Menuiseries,121554
+2006-11-01,France,France,Équipements Extérieurs,18909
+2006-11-01,France,France,Sécurité & Domotique,9050
+2006-12-01,France,France,Fermetures & Menuiseries,124518
+2006-12-01,France,France,Équipements Extérieurs,17651
+2006-12-01,France,France,Sécurité & Domotique,9731
+2007-01-01,France,France,Fermetures & Menuiseries,120183
+2007-01-01,France,France,Équipements Extérieurs,18059
+2007-01-01,France,France,Sécurité & Domotique,9362
+2007-02-01,France,France,Fermetures & Menuiseries,121284
+2007-02-01,France,France,Équipements Extérieurs,18047
+2007-02-01,France,France,Sécurité & Domotique,8246
+2007-03-01,France,France,Fermetures & Menuiseries,124650
+2007-03-01,France,France,Équipements Extérieurs,18192
+2007-03-01,France,France,Sécurité & Domotique,8765
+2007-04-01,France,France,Fermetures & Menuiseries,120938
+2007-04-01,France,France,Équipements Extérieurs,18094
+2007-04-01,France,France,Sécurité & Domotique,9364
+2007-05-01,France,France,Fermetures & Menuiseries,122452
 2007-05-01,France,France,Équipements Extérieurs,18022
-2007-05-01,France,France,Sécurité & Domotique,8143
-2007-06-01,France,France,Fermetures & Menuiseries,131144
-2007-06-01,France,France,Équipements Extérieurs,18123
-2007-06-01,France,France,Sécurité & Domotique,8346
-2007-07-01,France,France,Fermetures & Menuiseries,123173
-2007-07-01,France,France,Équipements Extérieurs,17990
-2007-07-01,France,France,Sécurité & Domotique,7878
-2007-08-01,France,France,Fermetures & Menuiseries,121605
-2007-08-01,France,France,Équipements Extérieurs,17073
-2007-08-01,France,France,Sécurité & Domotique,7346
-2007-09-01,France,France,Fermetures & Menuiseries,126226
-2007-09-01,France,France,Équipements Extérieurs,17762
-2007-09-01,France,France,Sécurité & Domotique,7791
-2007-10-01,France,France,Fermetures & Menuiseries,127521
-2007-10-01,France,France,Équipements Extérieurs,17969
-2007-10-01,France,France,Sécurité & Domotique,6251
-2007-11-01,France,France,Fermetures & Menuiseries,120371
-2007-11-01,France,France,Équipements Extérieurs,17407
-2007-11-01,France,France,Sécurité & Domotique,5946
-2007-12-01,France,France,Fermetures & Menuiseries,120719
-2007-12-01,France,France,Équipements Extérieurs,16746
-2007-12-01,France,France,Sécurité & Domotique,6326
-2008-01-01,France,France,Fermetures & Menuiseries,116484
-2008-01-01,France,France,Équipements Extérieurs,16250
-2008-01-01,France,France,Sécurité & Domotique,6308
-2008-02-01,France,France,Fermetures & Menuiseries,121438
-2008-02-01,France,France,Équipements Extérieurs,17452
-2008-02-01,France,France,Sécurité & Domotique,7389
-2008-03-01,France,France,Fermetures & Menuiseries,120792
-2008-03-01,France,France,Équipements Extérieurs,17997
-2008-03-01,France,France,Sécurité & Domotique,5833
-2008-04-01,France,France,Fermetures & Menuiseries,120336
-2008-04-01,France,France,Équipements Extérieurs,16950
-2008-04-01,France,France,Sécurité & Domotique,6602
-2008-05-01,France,France,Fermetures & Menuiseries,129386
-2008-05-01,France,France,Équipements Extérieurs,18106
-2008-05-01,France,France,Sécurité & Domotique,6793
-2008-06-01,France,France,Fermetures & Menuiseries,126759
-2008-06-01,France,France,Équipements Extérieurs,17958
-2008-06-01,France,France,Sécurité & Domotique,6759
-2008-07-01,France,France,Fermetures & Menuiseries,121902
-2008-07-01,France,France,Équipements Extérieurs,17695
-2008-07-01,France,France,Sécurité & Domotique,6667
-2008-08-01,France,France,Fermetures & Menuiseries,127189
-2008-08-01,France,France,Équipements Extérieurs,18046
-2008-08-01,France,France,Sécurité & Domotique,6199
-2008-09-01,France,France,Fermetures & Menuiseries,128410
-2008-09-01,France,France,Équipements Extérieurs,18244
-2008-09-01,France,France,Sécurité & Domotique,5282
-2008-10-01,France,France,Fermetures & Menuiseries,121028
-2008-10-01,France,France,Équipements Extérieurs,17519
-2008-10-01,France,France,Sécurité & Domotique,5021
-2008-11-01,France,France,Fermetures & Menuiseries,104768
-2008-11-01,France,France,Équipements Extérieurs,13984
-2008-11-01,France,France,Sécurité & Domotique,4956
-2008-12-01,France,France,Fermetures & Menuiseries,117669
-2008-12-01,France,France,Équipements Extérieurs,16386
-2008-12-01,France,France,Sécurité & Domotique,4720
-2009-01-01,France,France,Fermetures & Menuiseries,113688
-2009-01-01,France,France,Équipements Extérieurs,16022
-2009-01-01,France,France,Sécurité & Domotique,4489
-2009-02-01,France,France,Fermetures & Menuiseries,112441
-2009-02-01,France,France,Équipements Extérieurs,15631
-2009-02-01,France,France,Sécurité & Domotique,5471
-2009-03-01,France,France,Fermetures & Menuiseries,103481
-2009-03-01,France,France,Équipements Extérieurs,15252
-2009-03-01,France,France,Sécurité & Domotique,5702
-2009-04-01,France,France,Fermetures & Menuiseries,108598
-2009-04-01,France,France,Équipements Extérieurs,15150
-2009-04-01,France,France,Sécurité & Domotique,6386
-2009-05-01,France,France,Fermetures & Menuiseries,101471
-2009-05-01,France,France,Équipements Extérieurs,14601
-2009-05-01,France,France,Sécurité & Domotique,6235
-2009-06-01,France,France,Fermetures & Menuiseries,100752
-2009-06-01,France,France,Équipements Extérieurs,14094
-2009-06-01,France,France,Sécurité & Domotique,6409
-2009-07-01,France,France,Fermetures & Menuiseries,101261
-2009-07-01,France,France,Équipements Extérieurs,13745
-2009-07-01,France,France,Sécurité & Domotique,6993
-2009-08-01,France,France,Fermetures & Menuiseries,105201
-2009-08-01,France,France,Équipements Extérieurs,14128
-2009-08-01,France,France,Sécurité & Domotique,6814
-2009-09-01,France,France,Fermetures & Menuiseries,99939
-2009-09-01,France,France,Équipements Extérieurs,13042
-2009-09-01,France,France,Sécurité & Domotique,5338
-2009-10-01,France,France,Fermetures & Menuiseries,93975
-2009-10-01,France,France,Équipements Extérieurs,13129
-2009-10-01,France,France,Sécurité & Domotique,6066
-2009-11-01,France,France,Fermetures & Menuiseries,90213
-2009-11-01,France,France,Équipements Extérieurs,12327
-2009-11-01,France,France,Sécurité & Domotique,6647
-2009-12-01,France,France,Fermetures & Menuiseries,84877
-2009-12-01,France,France,Équipements Extérieurs,12117
-2009-12-01,France,France,Sécurité & Domotique,6275
-2010-01-01,France,France,Fermetures & Menuiseries,76701
-2010-01-01,France,France,Équipements Extérieurs,10856
-2010-01-01,France,France,Sécurité & Domotique,6938
-2010-02-01,France,France,Fermetures & Menuiseries,71395
-2010-02-01,France,France,Équipements Extérieurs,9723
-2010-02-01,France,France,Sécurité & Domotique,7312
-2010-03-01,France,France,Fermetures & Menuiseries,75511
-2010-03-01,France,France,Équipements Extérieurs,10434
-2010-03-01,France,France,Sécurité & Domotique,7668
-2010-04-01,France,France,Fermetures & Menuiseries,81424
-2010-04-01,France,France,Équipements Extérieurs,10909
-2010-04-01,France,France,Sécurité & Domotique,7457
-2010-05-01,France,France,Fermetures & Menuiseries,76506
-2010-05-01,France,France,Équipements Extérieurs,11156
-2010-05-01,France,France,Sécurité & Domotique,7796
-2010-06-01,France,France,Fermetures & Menuiseries,76521
-2010-06-01,France,France,Équipements Extérieurs,11158
-2010-06-01,France,France,Sécurité & Domotique,7638
-2010-07-01,France,France,Fermetures & Menuiseries,79818
-2010-07-01,France,France,Équipements Extérieurs,11670
-2010-07-01,France,France,Sécurité & Domotique,7521
-2010-08-01,France,France,Fermetures & Menuiseries,76173
-2010-08-01,France,France,Équipements Extérieurs,11633
-2010-08-01,France,France,Sécurité & Domotique,6624
-2010-09-01,France,France,Fermetures & Menuiseries,79026
-2010-09-01,France,France,Équipements Extérieurs,11942
-2010-09-01,France,France,Sécurité & Domotique,6463
-2010-10-01,France,France,Fermetures & Menuiseries,81982
-2010-10-01,France,France,Équipements Extérieurs,12389
-2010-10-01,France,France,Sécurité & Domotique,6503
-2010-11-01,France,France,Fermetures & Menuiseries,78413
-2010-11-01,France,France,Équipements Extérieurs,12598
-2010-11-01,France,France,Sécurité & Domotique,6112
-2010-12-01,France,France,Fermetures & Menuiseries,78805
-2010-12-01,France,France,Équipements Extérieurs,12557
-2010-12-01,France,France,Sécurité & Domotique,7090
-2011-01-01,France,France,Fermetures & Menuiseries,86365
-2011-01-01,France,France,Équipements Extérieurs,12879
-2011-01-01,France,France,Sécurité & Domotique,6515
-2011-02-01,France,France,Fermetures & Menuiseries,81577
-2011-02-01,France,France,Équipements Extérieurs,12767
-2011-02-01,France,France,Sécurité & Domotique,6934
-2011-03-01,France,France,Fermetures & Menuiseries,87432
-2011-03-01,France,France,Équipements Extérieurs,13543
-2011-03-01,France,France,Sécurité & Domotique,7561
-2011-04-01,France,France,Fermetures & Menuiseries,92086
-2011-04-01,France,France,Équipements Extérieurs,13426
-2011-04-01,France,France,Sécurité & Domotique,8282
-2011-05-01,France,France,Fermetures & Menuiseries,90807
-2011-05-01,France,France,Équipements Extérieurs,13885
-2011-05-01,France,France,Sécurité & Domotique,7627
-2011-06-01,France,France,Fermetures & Menuiseries,94144
-2011-06-01,France,France,Équipements Extérieurs,14610
-2011-06-01,France,France,Sécurité & Domotique,7159
-2011-07-01,France,France,Fermetures & Menuiseries,99043
-2011-07-01,France,France,Équipements Extérieurs,15247
-2011-07-01,France,France,Sécurité & Domotique,7578
-2011-08-01,France,France,Fermetures & Menuiseries,99362
-2011-08-01,France,France,Équipements Extérieurs,14390
-2011-08-01,France,France,Sécurité & Domotique,6501
-2011-09-01,France,France,Fermetures & Menuiseries,98329
-2011-09-01,France,France,Équipements Extérieurs,13564
-2011-09-01,France,France,Sécurité & Domotique,7015
-2011-10-01,France,France,Fermetures & Menuiseries,96228
-2011-10-01,France,France,Équipements Extérieurs,14029
-2011-10-01,France,France,Sécurité & Domotique,5445
-2011-11-01,France,France,Fermetures & Menuiseries,97236
-2011-11-01,France,France,Équipements Extérieurs,13952
-2011-11-01,France,France,Sécurité & Domotique,5807
-2011-12-01,France,France,Fermetures & Menuiseries,101270
-2011-12-01,France,France,Équipements Extérieurs,14801
-2011-12-01,France,France,Sécurité & Domotique,6269
-2012-01-01,France,France,Fermetures & Menuiseries,99682
-2012-01-01,France,France,Équipements Extérieurs,14658
-2012-01-01,France,France,Sécurité & Domotique,5964
-2012-02-01,France,France,Fermetures & Menuiseries,95652
-2012-02-01,France,France,Équipements Extérieurs,14405
-2012-02-01,France,France,Sécurité & Domotique,5031
-2012-03-01,France,France,Fermetures & Menuiseries,98399
-2012-03-01,France,France,Équipements Extérieurs,13791
-2012-03-01,France,France,Sécurité & Domotique,6185
-2012-04-01,France,France,Fermetures & Menuiseries,97399
-2012-04-01,France,France,Équipements Extérieurs,14323
-2012-04-01,France,France,Sécurité & Domotique,7126
-2012-05-01,France,France,Fermetures & Menuiseries,99314
-2012-05-01,France,France,Équipements Extérieurs,14937
-2012-05-01,France,France,Sécurité & Domotique,7343
-2012-06-01,France,France,Fermetures & Menuiseries,99131
-2012-06-01,France,France,Équipements Extérieurs,14520
-2012-06-01,France,France,Sécurité & Domotique,7505
-2012-07-01,France,France,Fermetures & Menuiseries,98269
-2012-07-01,France,France,Équipements Extérieurs,13773
-2012-07-01,France,France,Sécurité & Domotique,7795
-2012-08-01,France,France,Fermetures & Menuiseries,93170
-2012-08-01,France,France,Équipements Extérieurs,13174
-2012-08-01,France,France,Sécurité & Domotique,6517
-2012-09-01,France,France,Fermetures & Menuiseries,92576
-2012-09-01,France,France,Équipements Extérieurs,13191
-2012-09-01,France,France,Sécurité & Domotique,6208
-2012-10-01,France,France,Fermetures & Menuiseries,93064
-2012-10-01,France,France,Équipements Extérieurs,12989
-2012-10-01,France,France,Sécurité & Domotique,5608
-2012-11-01,France,France,Fermetures & Menuiseries,98319
-2012-11-01,France,France,Équipements Extérieurs,13413
-2012-11-01,France,France,Sécurité & Domotique,6338
-2012-12-01,France,France,Fermetures & Menuiseries,98387
-2012-12-01,France,France,Équipements Extérieurs,13494
-2012-12-01,France,France,Sécurité & Domotique,6028
-2013-01-01,France,France,Fermetures & Menuiseries,102574
-2013-01-01,France,France,Équipements Extérieurs,13741
-2013-01-01,France,France,Sécurité & Domotique,6499
-2013-02-01,France,France,Fermetures & Menuiseries,103717
-2013-02-01,France,France,Équipements Extérieurs,13302
-2013-02-01,France,France,Sécurité & Domotique,7424
-2013-03-01,France,France,Fermetures & Menuiseries,100462
-2013-03-01,France,France,Équipements Extérieurs,12618
-2013-03-01,France,France,Sécurité & Domotique,7413
-2013-04-01,France,France,Fermetures & Menuiseries,91565
-2013-04-01,France,France,Équipements Extérieurs,12253
-2013-04-01,France,France,Sécurité & Domotique,7517
-2013-05-01,France,France,Fermetures & Menuiseries,90635
-2013-05-01,France,France,Équipements Extérieurs,11467
-2013-05-01,France,France,Sécurité & Domotique,7977
-2013-06-01,France,France,Fermetures & Menuiseries,96929
-2013-06-01,France,France,Équipements Extérieurs,12335
-2013-06-01,France,France,Sécurité & Domotique,7125
-2013-07-01,France,France,Fermetures & Menuiseries,89147
-2013-07-01,France,France,Équipements Extérieurs,11552
-2013-07-01,France,France,Sécurité & Domotique,7512
-2013-08-01,France,France,Fermetures & Menuiseries,87300
-2013-08-01,France,France,Équipements Extérieurs,11856
-2013-08-01,France,France,Sécurité & Domotique,7456
-2013-09-01,France,France,Fermetures & Menuiseries,89782
-2013-09-01,France,France,Équipements Extérieurs,12218
-2013-09-01,France,France,Sécurité & Domotique,6367
-2013-10-01,France,France,Fermetures & Menuiseries,96520
-2013-10-01,France,France,Équipements Extérieurs,12435
-2013-10-01,France,France,Sécurité & Domotique,6614
-2013-11-01,France,France,Fermetures & Menuiseries,96410
-2013-11-01,France,France,Équipements Extérieurs,12269
-2013-11-01,France,France,Sécurité & Domotique,6142
-2013-12-01,France,France,Fermetures & Menuiseries,101566
-2013-12-01,France,France,Équipements Extérieurs,14273
-2013-12-01,France,France,Sécurité & Domotique,6948
-2014-01-01,France,France,Fermetures & Menuiseries,118111
-2014-01-01,France,France,Équipements Extérieurs,17288
-2014-01-01,France,France,Sécurité & Domotique,6778
-2014-02-01,France,France,Fermetures & Menuiseries,138971
-2014-02-01,France,France,Équipements Extérieurs,20251
-2014-02-01,France,France,Sécurité & Domotique,7564
-2014-03-01,France,France,Fermetures & Menuiseries,80889
-2014-03-01,France,France,Équipements Extérieurs,10426
-2014-03-01,France,France,Sécurité & Domotique,8181
-2014-04-01,France,France,Fermetures & Menuiseries,71406
-2014-04-01,France,France,Équipements Extérieurs,8942
-2014-04-01,France,France,Sécurité & Domotique,8326
-2014-05-01,France,France,Fermetures & Menuiseries,69030
-2014-05-01,France,France,Équipements Extérieurs,8723
-2014-05-01,France,France,Sécurité & Domotique,8645
-2014-06-01,France,France,Fermetures & Menuiseries,72444
-2014-06-01,France,France,Équipements Extérieurs,9118
-2014-06-01,France,France,Sécurité & Domotique,7730
-2014-07-01,France,France,Fermetures & Menuiseries,69130
-2014-07-01,France,France,Équipements Extérieurs,8873
-2014-07-01,France,France,Sécurité & Domotique,8291
-2014-08-01,France,France,Fermetures & Menuiseries,74662
-2014-08-01,France,France,Équipements Extérieurs,9516
-2014-08-01,France,France,Sécurité & Domotique,7849
-2014-09-01,France,France,Fermetures & Menuiseries,77799
-2014-09-01,France,France,Équipements Extérieurs,9628
-2014-09-01,France,France,Sécurité & Domotique,6749
-2014-10-01,France,France,Fermetures & Menuiseries,76448
-2014-10-01,France,France,Équipements Extérieurs,10015
-2014-10-01,France,France,Sécurité & Domotique,7795
-2014-11-01,France,France,Fermetures & Menuiseries,75817
-2014-11-01,France,France,Équipements Extérieurs,10097
-2014-11-01,France,France,Sécurité & Domotique,7277
-2014-12-01,France,France,Fermetures & Menuiseries,76417
-2014-12-01,France,France,Équipements Extérieurs,10043
-2014-12-01,France,France,Sécurité & Domotique,6860
-2015-01-01,France,France,Fermetures & Menuiseries,76541
-2015-01-01,France,France,Équipements Extérieurs,9827
-2015-01-01,France,France,Sécurité & Domotique,7547
-2015-02-01,France,France,Fermetures & Menuiseries,74181
-2015-02-01,France,France,Équipements Extérieurs,10178
-2015-02-01,France,France,Sécurité & Domotique,8935
-2015-03-01,France,France,Fermetures & Menuiseries,72686
-2015-03-01,France,France,Équipements Extérieurs,9869
-2015-03-01,France,France,Sécurité & Domotique,9210
-2015-04-01,France,France,Fermetures & Menuiseries,76725
-2015-04-01,France,France,Équipements Extérieurs,9896
-2015-04-01,France,France,Sécurité & Domotique,9756
-2015-05-01,France,France,Fermetures & Menuiseries,72633
-2015-05-01,France,France,Équipements Extérieurs,9544
-2015-05-01,France,France,Sécurité & Domotique,10470
-2015-06-01,France,France,Fermetures & Menuiseries,73585
-2015-06-01,France,France,Équipements Extérieurs,9901
-2015-06-01,France,France,Sécurité & Domotique,10671
-2015-07-01,France,France,Fermetures & Menuiseries,72960
-2015-07-01,France,France,Équipements Extérieurs,9784
-2015-07-01,France,France,Sécurité & Domotique,10438
-2015-08-01,France,France,Fermetures & Menuiseries,73293
-2015-08-01,France,France,Équipements Extérieurs,9549
-2015-08-01,France,France,Sécurité & Domotique,9222
-2015-09-01,France,France,Fermetures & Menuiseries,75858
-2015-09-01,France,France,Équipements Extérieurs,9717
-2015-09-01,France,France,Sécurité & Domotique,8938
-2015-10-01,France,France,Fermetures & Menuiseries,66596
-2015-10-01,France,France,Équipements Extérieurs,9355
-2015-10-01,France,France,Sécurité & Domotique,9199
-2015-11-01,France,France,Fermetures & Menuiseries,69162
-2015-11-01,France,France,Équipements Extérieurs,8898
-2015-11-01,France,France,Sécurité & Domotique,9193
-2015-12-01,France,France,Fermetures & Menuiseries,70497
-2015-12-01,France,France,Équipements Extérieurs,9208
-2015-12-01,France,France,Sécurité & Domotique,8017
-2016-01-01,France,France,Fermetures & Menuiseries,71998
-2016-01-01,France,France,Équipements Extérieurs,9327
-2016-01-01,France,France,Sécurité & Domotique,9228
-2016-02-01,France,France,Fermetures & Menuiseries,67844
-2016-02-01,France,France,Équipements Extérieurs,9302
-2016-02-01,France,France,Sécurité & Domotique,10006
-2016-03-01,France,France,Fermetures & Menuiseries,70047
-2016-03-01,France,France,Équipements Extérieurs,9428
-2016-03-01,France,France,Sécurité & Domotique,10515
-2016-04-01,France,France,Fermetures & Menuiseries,73607
-2016-04-01,France,France,Équipements Extérieurs,9816
-2016-04-01,France,France,Sécurité & Domotique,10652
-2016-05-01,France,France,Fermetures & Menuiseries,73304
-2016-05-01,France,France,Équipements Extérieurs,10390
-2016-05-01,France,France,Sécurité & Domotique,11542
-2016-06-01,France,France,Fermetures & Menuiseries,75428
-2016-06-01,France,France,Équipements Extérieurs,10354
-2016-06-01,France,France,Sécurité & Domotique,11535
-2016-07-01,France,France,Fermetures & Menuiseries,76268
-2016-07-01,France,France,Équipements Extérieurs,10381
-2016-07-01,France,France,Sécurité & Domotique,11451
-2016-08-01,France,France,Fermetures & Menuiseries,74737
-2016-08-01,France,France,Équipements Extérieurs,10447
-2016-08-01,France,France,Sécurité & Domotique,11165
-2016-09-01,France,France,Fermetures & Menuiseries,74038
-2016-09-01,France,France,Équipements Extérieurs,9944
-2016-09-01,France,France,Sécurité & Domotique,10908
-2016-10-01,France,France,Fermetures & Menuiseries,77693
-2016-10-01,France,France,Équipements Extérieurs,10313
-2016-10-01,France,France,Sécurité & Domotique,10785
-2016-11-01,France,France,Fermetures & Menuiseries,75499
-2016-11-01,France,France,Équipements Extérieurs,10215
-2016-11-01,France,France,Sécurité & Domotique,10277
-2016-12-01,France,France,Fermetures & Menuiseries,76238
-2016-12-01,France,France,Équipements Extérieurs,10030
-2016-12-01,France,France,Sécurité & Domotique,11099
-2017-01-01,France,France,Fermetures & Menuiseries,75318
-2017-01-01,France,France,Équipements Extérieurs,9991
-2017-01-01,France,France,Sécurité & Domotique,11394
-2017-02-01,France,France,Fermetures & Menuiseries,76269
-2017-02-01,France,France,Équipements Extérieurs,10056
-2017-02-01,France,France,Sécurité & Domotique,12437
-2017-03-01,France,France,Fermetures & Menuiseries,75951
-2017-03-01,France,France,Équipements Extérieurs,10532
-2017-03-01,France,France,Sécurité & Domotique,13781
-2017-04-01,France,France,Fermetures & Menuiseries,84373
-2017-04-01,France,France,Équipements Extérieurs,11153
-2017-04-01,France,France,Sécurité & Domotique,15349
-2017-05-01,France,France,Fermetures & Menuiseries,85892
-2017-05-01,France,France,Équipements Extérieurs,11098
-2017-05-01,France,France,Sécurité & Domotique,14824
-2017-06-01,France,France,Fermetures & Menuiseries,85116
-2017-06-01,France,France,Équipements Extérieurs,11213
-2017-06-01,France,France,Sécurité & Domotique,14116
-2017-07-01,France,France,Fermetures & Menuiseries,83947
-2017-07-01,France,France,Équipements Extérieurs,11278
-2017-07-01,France,France,Sécurité & Domotique,13466
-2017-08-01,France,France,Fermetures & Menuiseries,90318
-2017-08-01,France,France,Équipements Extérieurs,11488
-2017-08-01,France,France,Sécurité & Domotique,13290
-2017-09-01,France,France,Fermetures & Menuiseries,83172
-2017-09-01,France,France,Équipements Extérieurs,11627
-2017-09-01,France,France,Sécurité & Domotique,11787
-2017-10-01,France,France,Fermetures & Menuiseries,88354
-2017-10-01,France,France,Équipements Extérieurs,11483
-2017-10-01,France,France,Sécurité & Domotique,11390
-2017-11-01,France,France,Fermetures & Menuiseries,88489
-2017-11-01,France,France,Équipements Extérieurs,12084
-2017-11-01,France,France,Sécurité & Domotique,9919
-2017-12-01,France,France,Fermetures & Menuiseries,86389
-2017-12-01,France,France,Équipements Extérieurs,11595
-2017-12-01,France,France,Sécurité & Domotique,10796
-2018-01-01,France,France,Fermetures & Menuiseries,91785
-2018-01-01,France,France,Équipements Extérieurs,12222
-2018-01-01,France,France,Sécurité & Domotique,11771
-2018-02-01,France,France,Fermetures & Menuiseries,91984
-2018-02-01,France,France,Équipements Extérieurs,12301
-2018-02-01,France,France,Sécurité & Domotique,13244
-2018-03-01,France,France,Fermetures & Menuiseries,101038
-2018-03-01,France,France,Équipements Extérieurs,13091
-2018-03-01,France,France,Sécurité & Domotique,13980
-2018-04-01,France,France,Fermetures & Menuiseries,91231
-2018-04-01,France,France,Équipements Extérieurs,11704
-2018-04-01,France,France,Sécurité & Domotique,14171
-2018-05-01,France,France,Fermetures & Menuiseries,99692
-2018-05-01,France,France,Équipements Extérieurs,12612
-2018-05-01,France,France,Sécurité & Domotique,14460
-2018-06-01,France,France,Fermetures & Menuiseries,97563
-2018-06-01,France,France,Équipements Extérieurs,12285
-2018-06-01,France,France,Sécurité & Domotique,14157
-2018-07-01,France,France,Fermetures & Menuiseries,87466
-2018-07-01,France,France,Équipements Extérieurs,12183
-2018-07-01,France,France,Sécurité & Domotique,13577
-2018-08-01,France,France,Fermetures & Menuiseries,90150
-2018-08-01,France,France,Équipements Extérieurs,12115
-2018-08-01,France,France,Sécurité & Domotique,12457
-2018-09-01,France,France,Fermetures & Menuiseries,91918
-2018-09-01,France,France,Équipements Extérieurs,11684
-2018-09-01,France,France,Sécurité & Domotique,12540
-2018-10-01,France,France,Fermetures & Menuiseries,90844
-2018-10-01,France,France,Équipements Extérieurs,11519
-2018-10-01,France,France,Sécurité & Domotique,11201
-2018-11-01,France,France,Fermetures & Menuiseries,92865
-2018-11-01,France,France,Équipements Extérieurs,11765
-2018-11-01,France,France,Sécurité & Domotique,11338
-2018-12-01,France,France,Fermetures & Menuiseries,99565
-2018-12-01,France,France,Équipements Extérieurs,12919
-2018-12-01,France,France,Sécurité & Domotique,10747
-2019-01-01,France,France,Fermetures & Menuiseries,97568
-2019-01-01,France,France,Équipements Extérieurs,12096
-2019-01-01,France,France,Sécurité & Domotique,11028
-2019-02-01,France,France,Fermetures & Menuiseries,92578
-2019-02-01,France,France,Équipements Extérieurs,11644
-2019-02-01,France,France,Sécurité & Domotique,10467
-2019-03-01,France,France,Fermetures & Menuiseries,93068
-2019-03-01,France,France,Équipements Extérieurs,11154
-2019-03-01,France,France,Sécurité & Domotique,13022
-2019-04-01,France,France,Fermetures & Menuiseries,87484
-2019-04-01,France,France,Équipements Extérieurs,11356
-2019-04-01,France,France,Sécurité & Domotique,14368
-2019-05-01,France,France,Fermetures & Menuiseries,83633
-2019-05-01,France,France,Équipements Extérieurs,10832
-2019-05-01,France,France,Sécurité & Domotique,14547
-2019-06-01,France,France,Fermetures & Menuiseries,87252
-2019-06-01,France,France,Équipements Extérieurs,10998
-2019-06-01,France,France,Sécurité & Domotique,13900
-2019-07-01,France,France,Fermetures & Menuiseries,81358
-2019-07-01,France,France,Équipements Extérieurs,10504
-2019-07-01,France,France,Sécurité & Domotique,14255
-2019-08-01,France,France,Fermetures & Menuiseries,88722
-2019-08-01,France,France,Équipements Extérieurs,10635
-2019-08-01,France,France,Sécurité & Domotique,13306
-2019-09-01,France,France,Fermetures & Menuiseries,86484
-2019-09-01,France,France,Équipements Extérieurs,10743
-2019-09-01,France,France,Sécurité & Domotique,12587
-2019-10-01,France,France,Fermetures & Menuiseries,88688
+2007-05-01,France,France,Sécurité & Domotique,8953
+2007-06-01,France,France,Fermetures & Menuiseries,131077
+2007-06-01,France,France,Équipements Extérieurs,18111
+2007-06-01,France,France,Sécurité & Domotique,9209
+2007-07-01,France,France,Fermetures & Menuiseries,123915
+2007-07-01,France,France,Équipements Extérieurs,17808
+2007-07-01,France,France,Sécurité & Domotique,9294
+2007-08-01,France,France,Fermetures & Menuiseries,121892
+2007-08-01,France,France,Équipements Extérieurs,17069
+2007-08-01,France,France,Sécurité & Domotique,9510
+2007-09-01,France,France,Fermetures & Menuiseries,126164
+2007-09-01,France,France,Équipements Extérieurs,17632
+2007-09-01,France,France,Sécurité & Domotique,9320
+2007-10-01,France,France,Fermetures & Menuiseries,128095
+2007-10-01,France,France,Équipements Extérieurs,17932
+2007-10-01,France,France,Sécurité & Domotique,9633
+2007-11-01,France,France,Fermetures & Menuiseries,120402
+2007-11-01,France,France,Équipements Extérieurs,17279
+2007-11-01,France,France,Sécurité & Domotique,8973
+2007-12-01,France,France,Fermetures & Menuiseries,121487
+2007-12-01,France,France,Équipements Extérieurs,16465
+2007-12-01,France,France,Sécurité & Domotique,8923
+2008-01-01,France,France,Fermetures & Menuiseries,117578
+2008-01-01,France,France,Équipements Extérieurs,16392
+2008-01-01,France,France,Sécurité & Domotique,8916
+2008-02-01,France,France,Fermetures & Menuiseries,121111
+2008-02-01,France,France,Équipements Extérieurs,17513
+2008-02-01,France,France,Sécurité & Domotique,8238
+2008-03-01,France,France,Fermetures & Menuiseries,121040
+2008-03-01,France,France,Équipements Extérieurs,18154
+2008-03-01,France,France,Sécurité & Domotique,7354
+2008-04-01,France,France,Fermetures & Menuiseries,120604
+2008-04-01,France,France,Équipements Extérieurs,16630
+2008-04-01,France,France,Sécurité & Domotique,9735
+2008-05-01,France,France,Fermetures & Menuiseries,129492
+2008-05-01,France,France,Équipements Extérieurs,17959
+2008-05-01,France,France,Sécurité & Domotique,8706
+2008-06-01,France,France,Fermetures & Menuiseries,125711
+2008-06-01,France,France,Équipements Extérieurs,17661
+2008-06-01,France,France,Sécurité & Domotique,8166
+2008-07-01,France,France,Fermetures & Menuiseries,122675
+2008-07-01,France,France,Équipements Extérieurs,17447
+2008-07-01,France,France,Sécurité & Domotique,8732
+2008-08-01,France,France,Fermetures & Menuiseries,126454
+2008-08-01,France,France,Équipements Extérieurs,17889
+2008-08-01,France,France,Sécurité & Domotique,7272
+2008-09-01,France,France,Fermetures & Menuiseries,128253
+2008-09-01,France,France,Équipements Extérieurs,18073
+2008-09-01,France,France,Sécurité & Domotique,8513
+2008-10-01,France,France,Fermetures & Menuiseries,120671
+2008-10-01,France,France,Équipements Extérieurs,17424
+2008-10-01,France,France,Sécurité & Domotique,8032
+2008-11-01,France,France,Fermetures & Menuiseries,104850
+2008-11-01,France,France,Équipements Extérieurs,13796
+2008-11-01,France,France,Sécurité & Domotique,6646
+2008-12-01,France,France,Fermetures & Menuiseries,116829
+2008-12-01,France,France,Équipements Extérieurs,16250
+2008-12-01,France,France,Sécurité & Domotique,7897
+2009-01-01,France,France,Fermetures & Menuiseries,113653
+2009-01-01,France,France,Équipements Extérieurs,15999
+2009-01-01,France,France,Sécurité & Domotique,7018
+2009-02-01,France,France,Fermetures & Menuiseries,111733
+2009-02-01,France,France,Équipements Extérieurs,15552
+2009-02-01,France,France,Sécurité & Domotique,6509
+2009-03-01,France,France,Fermetures & Menuiseries,104167
+2009-03-01,France,France,Équipements Extérieurs,15108
+2009-03-01,France,France,Sécurité & Domotique,5559
+2009-04-01,France,France,Fermetures & Menuiseries,107855
+2009-04-01,France,France,Équipements Extérieurs,15262
+2009-04-01,France,France,Sécurité & Domotique,6825
+2009-05-01,France,France,Fermetures & Menuiseries,101040
+2009-05-01,France,France,Équipements Extérieurs,14387
+2009-05-01,France,France,Sécurité & Domotique,6129
+2009-06-01,France,France,Fermetures & Menuiseries,100885
+2009-06-01,France,France,Équipements Extérieurs,14031
+2009-06-01,France,France,Sécurité & Domotique,6963
+2009-07-01,France,France,Fermetures & Menuiseries,101950
+2009-07-01,France,France,Équipements Extérieurs,13666
+2009-07-01,France,France,Sécurité & Domotique,6809
+2009-08-01,France,France,Fermetures & Menuiseries,105531
+2009-08-01,France,France,Équipements Extérieurs,14093
+2009-08-01,France,France,Sécurité & Domotique,6559
+2009-09-01,France,France,Fermetures & Menuiseries,99791
+2009-09-01,France,France,Équipements Extérieurs,13276
+2009-09-01,France,France,Sécurité & Domotique,7921
+2009-10-01,France,France,Fermetures & Menuiseries,93833
+2009-10-01,France,France,Équipements Extérieurs,13040
+2009-10-01,France,France,Sécurité & Domotique,6997
+2009-11-01,France,France,Fermetures & Menuiseries,90565
+2009-11-01,France,France,Équipements Extérieurs,12126
+2009-11-01,France,France,Sécurité & Domotique,6719
+2009-12-01,France,France,Fermetures & Menuiseries,85995
+2009-12-01,France,France,Équipements Extérieurs,11991
+2009-12-01,France,France,Sécurité & Domotique,9038
+2010-01-01,France,France,Fermetures & Menuiseries,76707
+2010-01-01,France,France,Équipements Extérieurs,10664
+2010-01-01,France,France,Sécurité & Domotique,8491
+2010-02-01,France,France,Fermetures & Menuiseries,71938
+2010-02-01,France,France,Équipements Extérieurs,9913
+2010-02-01,France,France,Sécurité & Domotique,7545
+2010-03-01,France,France,Fermetures & Menuiseries,75246
+2010-03-01,France,France,Équipements Extérieurs,10355
+2010-03-01,France,France,Sécurité & Domotique,8635
+2010-04-01,France,France,Fermetures & Menuiseries,81582
+2010-04-01,France,France,Équipements Extérieurs,11159
+2010-04-01,France,France,Sécurité & Domotique,8710
+2010-05-01,France,France,Fermetures & Menuiseries,76194
+2010-05-01,France,France,Équipements Extérieurs,11100
+2010-05-01,France,France,Sécurité & Domotique,8222
+2010-06-01,France,France,Fermetures & Menuiseries,76154
+2010-06-01,France,France,Équipements Extérieurs,11201
+2010-06-01,France,France,Sécurité & Domotique,8068
+2010-07-01,France,France,Fermetures & Menuiseries,79949
+2010-07-01,France,France,Équipements Extérieurs,11508
+2010-07-01,France,France,Sécurité & Domotique,8765
+2010-08-01,France,France,Fermetures & Menuiseries,76084
+2010-08-01,France,France,Équipements Extérieurs,11431
+2010-08-01,France,France,Sécurité & Domotique,7978
+2010-09-01,France,France,Fermetures & Menuiseries,78482
+2010-09-01,France,France,Équipements Extérieurs,11788
+2010-09-01,France,France,Sécurité & Domotique,9642
+2010-10-01,France,France,Fermetures & Menuiseries,82288
+2010-10-01,France,France,Équipements Extérieurs,12483
+2010-10-01,France,France,Sécurité & Domotique,8108
+2010-11-01,France,France,Fermetures & Menuiseries,78676
+2010-11-01,France,France,Équipements Extérieurs,12317
+2010-11-01,France,France,Sécurité & Domotique,8256
+2010-12-01,France,France,Fermetures & Menuiseries,79262
+2010-12-01,France,France,Équipements Extérieurs,12576
+2010-12-01,France,France,Sécurité & Domotique,9774
+2011-01-01,France,France,Fermetures & Menuiseries,86237
+2011-01-01,France,France,Équipements Extérieurs,13098
+2011-01-01,France,France,Sécurité & Domotique,9678
+2011-02-01,France,France,Fermetures & Menuiseries,82494
+2011-02-01,France,France,Équipements Extérieurs,12882
+2011-02-01,France,France,Sécurité & Domotique,9259
+2011-03-01,France,France,Fermetures & Menuiseries,88156
+2011-03-01,France,France,Équipements Extérieurs,13469
+2011-03-01,France,France,Sécurité & Domotique,8999
+2011-04-01,France,France,Fermetures & Menuiseries,91607
+2011-04-01,France,France,Équipements Extérieurs,13525
+2011-04-01,France,France,Sécurité & Domotique,9559
+2011-05-01,France,France,Fermetures & Menuiseries,91389
+2011-05-01,France,France,Équipements Extérieurs,14097
+2011-05-01,France,France,Sécurité & Domotique,10010
+2011-06-01,France,France,Fermetures & Menuiseries,93486
+2011-06-01,France,France,Équipements Extérieurs,14719
+2011-06-01,France,France,Sécurité & Domotique,8536
+2011-07-01,France,France,Fermetures & Menuiseries,99836
+2011-07-01,France,France,Équipements Extérieurs,15370
+2011-07-01,France,France,Sécurité & Domotique,8452
+2011-08-01,France,France,Fermetures & Menuiseries,99395
+2011-08-01,France,France,Équipements Extérieurs,14278
+2011-08-01,France,France,Sécurité & Domotique,9234
+2011-09-01,France,France,Fermetures & Menuiseries,97307
+2011-09-01,France,France,Équipements Extérieurs,13515
+2011-09-01,France,France,Sécurité & Domotique,10488
+2011-10-01,France,France,Fermetures & Menuiseries,96750
+2011-10-01,France,France,Équipements Extérieurs,13984
+2011-10-01,France,France,Sécurité & Domotique,8504
+2011-11-01,France,France,Fermetures & Menuiseries,96853
+2011-11-01,France,France,Équipements Extérieurs,14066
+2011-11-01,France,France,Sécurité & Domotique,8355
+2011-12-01,France,France,Fermetures & Menuiseries,101846
+2011-12-01,France,France,Équipements Extérieurs,14830
+2011-12-01,France,France,Sécurité & Domotique,8526
+2012-01-01,France,France,Fermetures & Menuiseries,98577
+2012-01-01,France,France,Équipements Extérieurs,14847
+2012-01-01,France,France,Sécurité & Domotique,8957
+2012-02-01,France,France,Fermetures & Menuiseries,96068
+2012-02-01,France,France,Équipements Extérieurs,14038
+2012-02-01,France,France,Sécurité & Domotique,8860
+2012-03-01,France,France,Fermetures & Menuiseries,97707
+2012-03-01,France,France,Équipements Extérieurs,13776
+2012-03-01,France,France,Sécurité & Domotique,12729
+2012-04-01,France,France,Fermetures & Menuiseries,97841
+2012-04-01,France,France,Équipements Extérieurs,14248
+2012-04-01,France,France,Sécurité & Domotique,9671
+2012-05-01,France,France,Fermetures & Menuiseries,99153
+2012-05-01,France,France,Équipements Extérieurs,15045
+2012-05-01,France,France,Sécurité & Domotique,7442
+2012-06-01,France,France,Fermetures & Menuiseries,97824
+2012-06-01,France,France,Équipements Extérieurs,14194
+2012-06-01,France,France,Sécurité & Domotique,7075
+2012-07-01,France,France,Fermetures & Menuiseries,98387
+2012-07-01,France,France,Équipements Extérieurs,13686
+2012-07-01,France,France,Sécurité & Domotique,6770
+2012-08-01,France,France,Fermetures & Menuiseries,93626
+2012-08-01,France,France,Équipements Extérieurs,13317
+2012-08-01,France,France,Sécurité & Domotique,9113
+2012-09-01,France,France,Fermetures & Menuiseries,93241
+2012-09-01,France,France,Équipements Extérieurs,13302
+2012-09-01,France,France,Sécurité & Domotique,7490
+2012-10-01,France,France,Fermetures & Menuiseries,92823
+2012-10-01,France,France,Équipements Extérieurs,13176
+2012-10-01,France,France,Sécurité & Domotique,6373
+2012-11-01,France,France,Fermetures & Menuiseries,97843
+2012-11-01,France,France,Équipements Extérieurs,13377
+2012-11-01,France,France,Sécurité & Domotique,8591
+2012-12-01,France,France,Fermetures & Menuiseries,97867
+2012-12-01,France,France,Équipements Extérieurs,13268
+2012-12-01,France,France,Sécurité & Domotique,7492
+2013-01-01,France,France,Fermetures & Menuiseries,102535
+2013-01-01,France,France,Équipements Extérieurs,13724
+2013-01-01,France,France,Sécurité & Domotique,7960
+2013-02-01,France,France,Fermetures & Menuiseries,104377
+2013-02-01,France,France,Équipements Extérieurs,13318
+2013-02-01,France,France,Sécurité & Domotique,7503
+2013-03-01,France,France,Fermetures & Menuiseries,100031
+2013-03-01,France,France,Équipements Extérieurs,12572
+2013-03-01,France,France,Sécurité & Domotique,7136
+2013-04-01,France,France,Fermetures & Menuiseries,91447
+2013-04-01,France,France,Équipements Extérieurs,12102
+2013-04-01,France,France,Sécurité & Domotique,8842
+2013-05-01,France,France,Fermetures & Menuiseries,90123
+2013-05-01,France,France,Équipements Extérieurs,11417
+2013-05-01,France,France,Sécurité & Domotique,8333
+2013-06-01,France,France,Fermetures & Menuiseries,96701
+2013-06-01,France,France,Équipements Extérieurs,12207
+2013-06-01,France,France,Sécurité & Domotique,6968
+2013-07-01,France,France,Fermetures & Menuiseries,88663
+2013-07-01,France,France,Équipements Extérieurs,11821
+2013-07-01,France,France,Sécurité & Domotique,6142
+2013-08-01,France,France,Fermetures & Menuiseries,87950
+2013-08-01,France,France,Équipements Extérieurs,11932
+2013-08-01,France,France,Sécurité & Domotique,10381
+2013-09-01,France,France,Fermetures & Menuiseries,89926
+2013-09-01,France,France,Équipements Extérieurs,12080
+2013-09-01,France,France,Sécurité & Domotique,7549
+2013-10-01,France,France,Fermetures & Menuiseries,95850
+2013-10-01,France,France,Équipements Extérieurs,12623
+2013-10-01,France,France,Sécurité & Domotique,6467
+2013-11-01,France,France,Fermetures & Menuiseries,95732
+2013-11-01,France,France,Équipements Extérieurs,12340
+2013-11-01,France,France,Sécurité & Domotique,9317
+2013-12-01,France,France,Fermetures & Menuiseries,101649
+2013-12-01,France,France,Équipements Extérieurs,14184
+2013-12-01,France,France,Sécurité & Domotique,8291
+2014-01-01,France,France,Fermetures & Menuiseries,118038
+2014-01-01,France,France,Équipements Extérieurs,17266
+2014-01-01,France,France,Sécurité & Domotique,9644
+2014-02-01,France,France,Fermetures & Menuiseries,137220
+2014-02-01,France,France,Équipements Extérieurs,20062
+2014-02-01,France,France,Sécurité & Domotique,9253
+2014-03-01,France,France,Fermetures & Menuiseries,81135
+2014-03-01,France,France,Équipements Extérieurs,10378
+2014-03-01,France,France,Sécurité & Domotique,7535
+2014-04-01,France,France,Fermetures & Menuiseries,71609
+2014-04-01,France,France,Équipements Extérieurs,9257
+2014-04-01,France,France,Sécurité & Domotique,11123
+2014-05-01,France,France,Fermetures & Menuiseries,68688
+2014-05-01,France,France,Équipements Extérieurs,8623
+2014-05-01,France,France,Sécurité & Domotique,7698
+2014-06-01,France,France,Fermetures & Menuiseries,72558
+2014-06-01,France,France,Équipements Extérieurs,9035
+2014-06-01,France,France,Sécurité & Domotique,6895
+2014-07-01,France,France,Fermetures & Menuiseries,68505
+2014-07-01,France,France,Équipements Extérieurs,8731
+2014-07-01,France,France,Sécurité & Domotique,7517
+2014-08-01,France,France,Fermetures & Menuiseries,76173
+2014-08-01,France,France,Équipements Extérieurs,9306
+2014-08-01,France,France,Sécurité & Domotique,9875
+2014-09-01,France,France,Fermetures & Menuiseries,77386
+2014-09-01,France,France,Équipements Extérieurs,9646
+2014-09-01,France,France,Sécurité & Domotique,7604
+2014-10-01,France,France,Fermetures & Menuiseries,77085
+2014-10-01,France,France,Équipements Extérieurs,9974
+2014-10-01,France,France,Sécurité & Domotique,6661
+2014-11-01,France,France,Fermetures & Menuiseries,75543
+2014-11-01,France,France,Équipements Extérieurs,9937
+2014-11-01,France,France,Sécurité & Domotique,8325
+2014-12-01,France,France,Fermetures & Menuiseries,76983
+2014-12-01,France,France,Équipements Extérieurs,9888
+2014-12-01,France,France,Sécurité & Domotique,7652
+2015-01-01,France,France,Fermetures & Menuiseries,75319
+2015-01-01,France,France,Équipements Extérieurs,9784
+2015-01-01,France,France,Sécurité & Domotique,7901
+2015-02-01,France,France,Fermetures & Menuiseries,73415
+2015-02-01,France,France,Équipements Extérieurs,10072
+2015-02-01,France,France,Sécurité & Domotique,7133
+2015-03-01,France,France,Fermetures & Menuiseries,72539
+2015-03-01,France,France,Équipements Extérieurs,9979
+2015-03-01,France,France,Sécurité & Domotique,7732
+2015-04-01,France,France,Fermetures & Menuiseries,76820
+2015-04-01,France,France,Équipements Extérieurs,9808
+2015-04-01,France,France,Sécurité & Domotique,10211
+2015-05-01,France,France,Fermetures & Menuiseries,72859
+2015-05-01,France,France,Équipements Extérieurs,9414
+2015-05-01,France,France,Sécurité & Domotique,8759
+2015-06-01,France,France,Fermetures & Menuiseries,73716
+2015-06-01,France,France,Équipements Extérieurs,9573
+2015-06-01,France,France,Sécurité & Domotique,7288
+2015-07-01,France,France,Fermetures & Menuiseries,72792
+2015-07-01,France,France,Équipements Extérieurs,9744
+2015-07-01,France,France,Sécurité & Domotique,7507
+2015-08-01,France,France,Fermetures & Menuiseries,73062
+2015-08-01,France,France,Équipements Extérieurs,9327
+2015-08-01,France,France,Sécurité & Domotique,11389
+2015-09-01,France,France,Fermetures & Menuiseries,76081
+2015-09-01,France,France,Équipements Extérieurs,9489
+2015-09-01,France,France,Sécurité & Domotique,8867
+2015-10-01,France,France,Fermetures & Menuiseries,65881
+2015-10-01,France,France,Équipements Extérieurs,9366
+2015-10-01,France,France,Sécurité & Domotique,7897
+2015-11-01,France,France,Fermetures & Menuiseries,69339
+2015-11-01,France,France,Équipements Extérieurs,9047
+2015-11-01,France,France,Sécurité & Domotique,9887
+2015-12-01,France,France,Fermetures & Menuiseries,70682
+2015-12-01,France,France,Équipements Extérieurs,9408
+2015-12-01,France,France,Sécurité & Domotique,9704
+2016-01-01,France,France,Fermetures & Menuiseries,72588
+2016-01-01,France,France,Équipements Extérieurs,9346
+2016-01-01,France,France,Sécurité & Domotique,10765
+2016-02-01,France,France,Fermetures & Menuiseries,68017
+2016-02-01,France,France,Équipements Extérieurs,9124
+2016-02-01,France,France,Sécurité & Domotique,7740
+2016-03-01,France,France,Fermetures & Menuiseries,69885
+2016-03-01,France,France,Équipements Extérieurs,9440
+2016-03-01,France,France,Sécurité & Domotique,8574
+2016-04-01,France,France,Fermetures & Menuiseries,72449
+2016-04-01,France,France,Équipements Extérieurs,9964
+2016-04-01,France,France,Sécurité & Domotique,10268
+2016-05-01,France,France,Fermetures & Menuiseries,73362
+2016-05-01,France,France,Équipements Extérieurs,10171
+2016-05-01,France,France,Sécurité & Domotique,9287
+2016-06-01,France,France,Fermetures & Menuiseries,75037
+2016-06-01,France,France,Équipements Extérieurs,10245
+2016-06-01,France,France,Sécurité & Domotique,8293
+2016-07-01,France,France,Fermetures & Menuiseries,76122
+2016-07-01,France,France,Équipements Extérieurs,10311
+2016-07-01,France,France,Sécurité & Domotique,8317
+2016-08-01,France,France,Fermetures & Menuiseries,75593
+2016-08-01,France,France,Équipements Extérieurs,10609
+2016-08-01,France,France,Sécurité & Domotique,10714
+2016-09-01,France,France,Fermetures & Menuiseries,75196
+2016-09-01,France,France,Équipements Extérieurs,9913
+2016-09-01,France,France,Sécurité & Domotique,9532
+2016-10-01,France,France,Fermetures & Menuiseries,77732
+2016-10-01,France,France,Équipements Extérieurs,10108
+2016-10-01,France,France,Sécurité & Domotique,8189
+2016-11-01,France,France,Fermetures & Menuiseries,75139
+2016-11-01,France,France,Équipements Extérieurs,10540
+2016-11-01,France,France,Sécurité & Domotique,9525
+2016-12-01,France,France,Fermetures & Menuiseries,75774
+2016-12-01,France,France,Équipements Extérieurs,10211
+2016-12-01,France,France,Sécurité & Domotique,9977
+2017-01-01,France,France,Fermetures & Menuiseries,75192
+2017-01-01,France,France,Équipements Extérieurs,10165
+2017-01-01,France,France,Sécurité & Domotique,10604
+2017-02-01,France,France,Fermetures & Menuiseries,77261
+2017-02-01,France,France,Équipements Extérieurs,10149
+2017-02-01,France,France,Sécurité & Domotique,9496
+2017-03-01,France,France,Fermetures & Menuiseries,76841
+2017-03-01,France,France,Équipements Extérieurs,10715
+2017-03-01,France,France,Sécurité & Domotique,9256
+2017-04-01,France,France,Fermetures & Menuiseries,84252
+2017-04-01,France,France,Équipements Extérieurs,11084
+2017-04-01,France,France,Sécurité & Domotique,12410
+2017-05-01,France,France,Fermetures & Menuiseries,86174
+2017-05-01,France,France,Équipements Extérieurs,11055
+2017-05-01,France,France,Sécurité & Domotique,10074
+2017-06-01,France,France,Fermetures & Menuiseries,84708
+2017-06-01,France,France,Équipements Extérieurs,11256
+2017-06-01,France,France,Sécurité & Domotique,10126
+2017-07-01,France,France,Fermetures & Menuiseries,84643
+2017-07-01,France,France,Équipements Extérieurs,11293
+2017-07-01,France,France,Sécurité & Domotique,9646
+2017-08-01,France,France,Fermetures & Menuiseries,89226
+2017-08-01,France,France,Équipements Extérieurs,11568
+2017-08-01,France,France,Sécurité & Domotique,12655
+2017-09-01,France,France,Fermetures & Menuiseries,83762
+2017-09-01,France,France,Équipements Extérieurs,11446
+2017-09-01,France,France,Sécurité & Domotique,11553
+2017-10-01,France,France,Fermetures & Menuiseries,88397
+2017-10-01,France,France,Équipements Extérieurs,11591
+2017-10-01,France,France,Sécurité & Domotique,9355
+2017-11-01,France,France,Fermetures & Menuiseries,88513
+2017-11-01,France,France,Équipements Extérieurs,11745
+2017-11-01,France,France,Sécurité & Domotique,10904
+2017-12-01,France,France,Fermetures & Menuiseries,86864
+2017-12-01,France,France,Équipements Extérieurs,11597
+2017-12-01,France,France,Sécurité & Domotique,11008
+2018-01-01,France,France,Fermetures & Menuiseries,91971
+2018-01-01,France,France,Équipements Extérieurs,12123
+2018-01-01,France,France,Sécurité & Domotique,11509
+2018-02-01,France,France,Fermetures & Menuiseries,92094
+2018-02-01,France,France,Équipements Extérieurs,12216
+2018-02-01,France,France,Sécurité & Domotique,10805
+2018-03-01,France,France,Fermetures & Menuiseries,101453
+2018-03-01,France,France,Équipements Extérieurs,13250
+2018-03-01,France,France,Sécurité & Domotique,9301
+2018-04-01,France,France,Fermetures & Menuiseries,90387
+2018-04-01,France,France,Équipements Extérieurs,11973
+2018-04-01,France,France,Sécurité & Domotique,12129
+2018-05-01,France,France,Fermetures & Menuiseries,99659
+2018-05-01,France,France,Équipements Extérieurs,12616
+2018-05-01,France,France,Sécurité & Domotique,10102
+2018-06-01,France,France,Fermetures & Menuiseries,96861
+2018-06-01,France,France,Équipements Extérieurs,12328
+2018-06-01,France,France,Sécurité & Domotique,10038
+2018-07-01,France,France,Fermetures & Menuiseries,87022
+2018-07-01,France,France,Équipements Extérieurs,12437
+2018-07-01,France,France,Sécurité & Domotique,9068
+2018-08-01,France,France,Fermetures & Menuiseries,90469
+2018-08-01,France,France,Équipements Extérieurs,12010
+2018-08-01,France,France,Sécurité & Domotique,12609
+2018-09-01,France,France,Fermetures & Menuiseries,92153
+2018-09-01,France,France,Équipements Extérieurs,11847
+2018-09-01,France,France,Sécurité & Domotique,10882
+2018-10-01,France,France,Fermetures & Menuiseries,89993
+2018-10-01,France,France,Équipements Extérieurs,11685
+2018-10-01,France,France,Sécurité & Domotique,8953
+2018-11-01,France,France,Fermetures & Menuiseries,92270
+2018-11-01,France,France,Équipements Extérieurs,11735
+2018-11-01,France,France,Sécurité & Domotique,12530
+2018-12-01,France,France,Fermetures & Menuiseries,99289
+2018-12-01,France,France,Équipements Extérieurs,12720
+2018-12-01,France,France,Sécurité & Domotique,11369
+2019-01-01,France,France,Fermetures & Menuiseries,97252
+2019-01-01,France,France,Équipements Extérieurs,12158
+2019-01-01,France,France,Sécurité & Domotique,12349
+2019-02-01,France,France,Fermetures & Menuiseries,93397
+2019-02-01,France,France,Équipements Extérieurs,11600
+2019-02-01,France,France,Sécurité & Domotique,10438
+2019-03-01,France,France,Fermetures & Menuiseries,94141
+2019-03-01,France,France,Équipements Extérieurs,11250
+2019-03-01,France,France,Sécurité & Domotique,9822
+2019-04-01,France,France,Fermetures & Menuiseries,86980
+2019-04-01,France,France,Équipements Extérieurs,11267
+2019-04-01,France,France,Sécurité & Domotique,12551
+2019-05-01,France,France,Fermetures & Menuiseries,83840
+2019-05-01,France,France,Équipements Extérieurs,10809
+2019-05-01,France,France,Sécurité & Domotique,11373
+2019-06-01,France,France,Fermetures & Menuiseries,86978
+2019-06-01,France,France,Équipements Extérieurs,10695
+2019-06-01,France,France,Sécurité & Domotique,10321
+2019-07-01,France,France,Fermetures & Menuiseries,81179
+2019-07-01,France,France,Équipements Extérieurs,10685
+2019-07-01,France,France,Sécurité & Domotique,9529
+2019-08-01,France,France,Fermetures & Menuiseries,89219
+2019-08-01,France,France,Équipements Extérieurs,10689
+2019-08-01,France,France,Sécurité & Domotique,15045
+2019-09-01,France,France,Fermetures & Menuiseries,86661
+2019-09-01,France,France,Équipements Extérieurs,10839
+2019-09-01,France,France,Sécurité & Domotique,11578
+2019-10-01,France,France,Fermetures & Menuiseries,88174
 2019-10-01,France,France,Équipements Extérieurs,11030
-2019-10-01,France,France,Sécurité & Domotique,12054
-2019-11-01,France,France,Fermetures & Menuiseries,89920
-2019-11-01,France,France,Équipements Extérieurs,11106
-2019-11-01,France,France,Sécurité & Domotique,12314
-2019-12-01,France,France,Fermetures & Menuiseries,84793
-2019-12-01,France,France,Équipements Extérieurs,10961
-2019-12-01,France,France,Sécurité & Domotique,13477
-2020-01-01,France,France,Fermetures & Menuiseries,82828
-2020-01-01,France,France,Équipements Extérieurs,10935
-2020-01-01,France,France,Sécurité & Domotique,14443
-2020-02-01,France,France,Fermetures & Menuiseries,85746
-2020-02-01,France,France,Équipements Extérieurs,10939
-2020-02-01,France,France,Sécurité & Domotique,15128
-2020-03-01,France,France,Fermetures & Menuiseries,87089
-2020-03-01,France,France,Équipements Extérieurs,11056
-2020-03-01,France,France,Sécurité & Domotique,16442
-2020-04-01,France,France,Fermetures & Menuiseries,89990
-2020-04-01,France,France,Équipements Extérieurs,11419
-2020-04-01,France,France,Sécurité & Domotique,16800
-2020-05-01,France,France,Fermetures & Menuiseries,87908
-2020-05-01,France,France,Équipements Extérieurs,11695
-2020-05-01,France,France,Sécurité & Domotique,17708
-2020-06-01,France,France,Fermetures & Menuiseries,82598
-2020-06-01,France,France,Équipements Extérieurs,10988
-2020-06-01,France,France,Sécurité & Domotique,4919
-2020-07-01,France,France,Fermetures & Menuiseries,89063
-2020-07-01,France,France,Équipements Extérieurs,11428
-2020-07-01,France,France,Sécurité & Domotique,4490
-2020-08-01,France,France,Fermetures & Menuiseries,82959
-2020-08-01,France,France,Équipements Extérieurs,11340
-2020-08-01,France,France,Sécurité & Domotique,16994
-2020-09-01,France,France,Fermetures & Menuiseries,89406
-2020-09-01,France,France,Équipements Extérieurs,11844
-2020-09-01,France,France,Sécurité & Domotique,14836
-2020-10-01,France,France,Fermetures & Menuiseries,89184
-2020-10-01,France,France,Équipements Extérieurs,11694
-2020-10-01,France,France,Sécurité & Domotique,10447
-2020-11-01,France,France,Fermetures & Menuiseries,87585
-2020-11-01,France,France,Équipements Extérieurs,12036
-2020-11-01,France,France,Sécurité & Domotique,11321
-2020-12-01,France,France,Fermetures & Menuiseries,89309
-2020-12-01,France,France,Équipements Extérieurs,12155
-2020-12-01,France,France,Sécurité & Domotique,12261
-2021-01-01,France,France,Fermetures & Menuiseries,87415
-2021-01-01,France,France,Équipements Extérieurs,11855
-2021-01-01,France,France,Sécurité & Domotique,12066
-2021-02-01,France,France,Fermetures & Menuiseries,83316
-2021-02-01,France,France,Équipements Extérieurs,11640
-2021-02-01,France,France,Sécurité & Domotique,14789
-2021-03-01,France,France,Fermetures & Menuiseries,73490
-2021-03-01,France,France,Équipements Extérieurs,9482
-2021-03-01,France,France,Sécurité & Domotique,14082
-2021-04-01,France,France,Fermetures & Menuiseries,65242
-2021-04-01,France,France,Équipements Extérieurs,6839
-2021-04-01,France,France,Sécurité & Domotique,14999
-2021-05-01,France,France,Fermetures & Menuiseries,68544
-2021-05-01,France,France,Équipements Extérieurs,7711
-2021-05-01,France,France,Sécurité & Domotique,15136
-2021-06-01,France,France,Fermetures & Menuiseries,79430
-2021-06-01,France,France,Équipements Extérieurs,9272
-2021-06-01,France,France,Sécurité & Domotique,15865
-2021-07-01,France,France,Fermetures & Menuiseries,87052
-2021-07-01,France,France,Équipements Extérieurs,10832
-2021-07-01,France,France,Sécurité & Domotique,16748
-2021-08-01,France,France,Fermetures & Menuiseries,85385
-2021-08-01,France,France,Équipements Extérieurs,10723
-2021-08-01,France,France,Sécurité & Domotique,15847
-2021-09-01,France,France,Fermetures & Menuiseries,82772
-2021-09-01,France,France,Équipements Extérieurs,11013
-2021-09-01,France,France,Sécurité & Domotique,14071
-2021-10-01,France,France,Fermetures & Menuiseries,69386
-2021-10-01,France,France,Équipements Extérieurs,11960
-2021-10-01,France,France,Sécurité & Domotique,14030
-2021-11-01,France,France,Fermetures & Menuiseries,78479
-2021-11-01,France,France,Équipements Extérieurs,12547
-2021-11-01,France,France,Sécurité & Domotique,13347
-2021-12-01,France,France,Fermetures & Menuiseries,85345
-2021-12-01,France,France,Équipements Extérieurs,12241
-2021-12-01,France,France,Sécurité & Domotique,12561
-2022-01-01,France,France,Fermetures & Menuiseries,82587
-2022-01-01,France,France,Équipements Extérieurs,12655
-2022-01-01,France,France,Sécurité & Domotique,14757
-2022-02-01,France,France,Fermetures & Menuiseries,86468
-2022-02-01,France,France,Équipements Extérieurs,12463
-2022-02-01,France,France,Sécurité & Domotique,14916
-2022-03-01,France,France,Fermetures & Menuiseries,88645
-2022-03-01,France,France,Équipements Extérieurs,12533
-2022-03-01,France,France,Sécurité & Domotique,15596
-2022-04-01,France,France,Fermetures & Menuiseries,92408
-2022-04-01,France,France,Équipements Extérieurs,13270
-2022-04-01,France,France,Sécurité & Domotique,16523
-2022-05-01,France,France,Fermetures & Menuiseries,95100
-2022-05-01,France,France,Équipements Extérieurs,13066
-2022-05-01,France,France,Sécurité & Domotique,15641
-2022-06-01,France,France,Fermetures & Menuiseries,94774
-2022-06-01,France,France,Équipements Extérieurs,13709
-2022-06-01,France,France,Sécurité & Domotique,14737
-2022-07-01,France,France,Fermetures & Menuiseries,95546
-2022-07-01,France,France,Équipements Extérieurs,14115
-2022-07-01,France,France,Sécurité & Domotique,12911
-2022-08-01,France,France,Fermetures & Menuiseries,97511
-2022-08-01,France,France,Équipements Extérieurs,14023
-2022-08-01,France,France,Sécurité & Domotique,11409
-2022-09-01,France,France,Fermetures & Menuiseries,96277
-2022-09-01,France,France,Équipements Extérieurs,13633
-2022-09-01,France,France,Sécurité & Domotique,9813
-2022-10-01,France,France,Fermetures & Menuiseries,93246
-2022-10-01,France,France,Équipements Extérieurs,13151
-2022-10-01,France,France,Sécurité & Domotique,9363
-2022-11-01,France,France,Fermetures & Menuiseries,93143
-2022-11-01,France,France,Équipements Extérieurs,12795
-2022-11-01,France,France,Sécurité & Domotique,8077
-2022-12-01,France,France,Fermetures & Menuiseries,91306
-2022-12-01,France,France,Équipements Extérieurs,12988
-2022-12-01,France,France,Sécurité & Domotique,8784
-2023-01-01,France,France,Fermetures & Menuiseries,106919
-2023-01-01,France,France,Équipements Extérieurs,15691
-2023-01-01,France,France,Sécurité & Domotique,7874
-2023-02-01,France,France,Fermetures & Menuiseries,119885
-2023-02-01,France,France,Équipements Extérieurs,19069
-2023-02-01,France,France,Sécurité & Domotique,8559
-2023-03-01,France,France,Fermetures & Menuiseries,98698
-2023-03-01,France,France,Équipements Extérieurs,13646
-2023-03-01,France,France,Sécurité & Domotique,9011
-2023-04-01,France,France,Fermetures & Menuiseries,85130
-2023-04-01,France,France,Équipements Extérieurs,11251
-2023-04-01,France,France,Sécurité & Domotique,9048
-2023-05-01,France,France,Fermetures & Menuiseries,82754
-2023-05-01,France,France,Équipements Extérieurs,11006
-2023-05-01,France,France,Sécurité & Domotique,8761
-2023-06-01,France,France,Fermetures & Menuiseries,80092
-2023-06-01,France,France,Équipements Extérieurs,10508
-2023-06-01,France,France,Sécurité & Domotique,8688
-2023-07-01,France,France,Fermetures & Menuiseries,76203
-2023-07-01,France,France,Équipements Extérieurs,9725
-2023-07-01,France,France,Sécurité & Domotique,7447
-2023-08-01,France,France,Fermetures & Menuiseries,80700
-2023-08-01,France,France,Équipements Extérieurs,10229
-2023-08-01,France,France,Sécurité & Domotique,7345
-2023-09-01,France,France,Fermetures & Menuiseries,87322
-2023-09-01,France,France,Équipements Extérieurs,10081
-2023-09-01,France,France,Sécurité & Domotique,6802
-2023-10-01,France,France,Fermetures & Menuiseries,87601
-2023-10-01,France,France,Équipements Extérieurs,10192
-2023-10-01,France,France,Sécurité & Domotique,6673
-2023-11-01,France,France,Fermetures & Menuiseries,85202
-2023-11-01,France,France,Équipements Extérieurs,9882
-2023-11-01,France,France,Sécurité & Domotique,5184
-2023-12-01,France,France,Fermetures & Menuiseries,79208
-2023-12-01,France,France,Équipements Extérieurs,9270
-2023-12-01,France,France,Sécurité & Domotique,6324
-2024-01-01,France,France,Fermetures & Menuiseries,81179
-2024-01-01,France,France,Équipements Extérieurs,9336
-2024-01-01,France,France,Sécurité & Domotique,6537
-2024-02-01,France,France,Fermetures & Menuiseries,86633
-2024-02-01,France,France,Équipements Extérieurs,8850
-2024-02-01,France,France,Sécurité & Domotique,6788
-2024-03-01,France,France,Fermetures & Menuiseries,70381
-2024-03-01,France,France,Équipements Extérieurs,9019
-2024-03-01,France,France,Sécurité & Domotique,8136
-2024-04-01,France,France,Fermetures & Menuiseries,63795
-2024-04-01,France,France,Équipements Extérieurs,8703
-2024-04-01,France,France,Sécurité & Domotique,8132
-2024-05-01,France,France,Fermetures & Menuiseries,66203
-2024-05-01,France,France,Équipements Extérieurs,8957
-2024-05-01,France,France,Sécurité & Domotique,7992
-2024-06-01,France,France,Fermetures & Menuiseries,64772
-2024-06-01,France,France,Équipements Extérieurs,8442
-2024-06-01,France,France,Sécurité & Domotique,7981
-2024-07-01,France,France,Fermetures & Menuiseries,64063
-2024-07-01,France,France,Équipements Extérieurs,8143
-2024-07-01,France,France,Sécurité & Domotique,8276
-2024-08-01,France,France,Fermetures & Menuiseries,65033
-2024-08-01,France,France,Équipements Extérieurs,7791
-2024-08-01,France,France,Sécurité & Domotique,7217
-2024-09-01,France,France,Fermetures & Menuiseries,61751
-2024-09-01,France,France,Équipements Extérieurs,7512
-2024-09-01,France,France,Sécurité & Domotique,7406
-2024-10-01,France,France,Fermetures & Menuiseries,62096
-2024-10-01,France,France,Équipements Extérieurs,7374
-2024-10-01,France,France,Sécurité & Domotique,5964
-2024-11-01,France,France,Fermetures & Menuiseries,59899
-2024-11-01,France,France,Équipements Extérieurs,7291
-2024-11-01,France,France,Sécurité & Domotique,6158
-2024-12-01,France,France,Fermetures & Menuiseries,63411
-2024-12-01,France,France,Équipements Extérieurs,7235
-2024-12-01,France,France,Sécurité & Domotique,7335
-2025-01-01,France,France,Fermetures & Menuiseries,55333
-2025-01-01,France,France,Équipements Extérieurs,6718
-2025-01-01,France,France,Sécurité & Domotique,6876
-2025-02-01,France,France,Fermetures & Menuiseries,57184
-2025-02-01,France,France,Équipements Extérieurs,6713
-2025-02-01,France,France,Sécurité & Domotique,6946
-2025-03-01,France,France,Fermetures & Menuiseries,52946
-2025-03-01,France,France,Équipements Extérieurs,6333
-2025-03-01,France,France,Sécurité & Domotique,8489
-2025-04-01,France,France,Fermetures & Menuiseries,59785
-2025-04-01,France,France,Équipements Extérieurs,6714
-2025-04-01,France,France,Sécurité & Domotique,8479
-2025-05-01,France,France,Fermetures & Menuiseries,56695
-2025-05-01,France,France,Équipements Extérieurs,6663
-2025-05-01,France,France,Sécurité & Domotique,8637
-2025-06-01,France,France,Fermetures & Menuiseries,56997
-2025-06-01,France,France,Équipements Extérieurs,6300
-2025-06-01,France,France,Sécurité & Domotique,9561
-2025-07-01,France,France,Fermetures & Menuiseries,56715
-2025-07-01,France,France,Équipements Extérieurs,6823
-2025-07-01,France,France,Sécurité & Domotique,8680
-2025-08-01,France,France,Fermetures & Menuiseries,55535
-2025-08-01,France,France,Équipements Extérieurs,6479
-2025-08-01,France,France,Sécurité & Domotique,7451
-2025-09-01,France,France,Fermetures & Menuiseries,51903
-2025-09-01,France,France,Équipements Extérieurs,6278
-2025-09-01,France,France,Sécurité & Domotique,6976
-2025-10-01,France,France,Fermetures & Menuiseries,52762
-2025-10-01,France,France,Équipements Extérieurs,6583
-2025-10-01,France,France,Sécurité & Domotique,6537
-2025-11-01,France,France,Fermetures & Menuiseries,52632
-2025-11-01,France,France,Équipements Extérieurs,6632
-2025-11-01,France,France,Sécurité & Domotique,6854
-2025-12-01,France,France,Fermetures & Menuiseries,52565
-2025-12-01,France,France,Équipements Extérieurs,6467
-2025-12-01,France,France,Sécurité & Domotique,6968
-2026-01-01,France,France,Fermetures & Menuiseries,53311
-2026-01-01,France,France,Équipements Extérieurs,6431
-2026-01-01,France,France,Sécurité & Domotique,6839
-2026-02-01,France,France,Fermetures & Menuiseries,54361
-2026-02-01,France,France,Équipements Extérieurs,6880
-2026-02-01,France,France,Sécurité & Domotique,7898
-2026-03-01,France,France,Fermetures & Menuiseries,52846
-2026-03-01,France,France,Équipements Extérieurs,7179
-2026-03-01,France,France,Sécurité & Domotique,8288
-2026-04-01,France,France,Fermetures & Menuiseries,53339
-2026-04-01,France,France,Équipements Extérieurs,6944
-2026-04-01,France,France,Sécurité & Domotique,8945
-2026-05-01,France,France,Fermetures & Menuiseries,57182
-2026-05-01,France,France,Équipements Extérieurs,7253
-2026-05-01,France,France,Sécurité & Domotique,9510
-2026-06-01,France,France,Fermetures & Menuiseries,57694
-2026-06-01,France,France,Équipements Extérieurs,7241
-2026-06-01,France,France,Sécurité & Domotique,7220
+2019-10-01,France,France,Sécurité & Domotique,10530
+2019-11-01,France,France,Fermetures & Menuiseries,90139
+2019-11-01,France,France,Équipements Extérieurs,10984
+2019-11-01,France,France,Sécurité & Domotique,13804
+2019-12-01,France,France,Fermetures & Menuiseries,84006
+2019-12-01,France,France,Équipements Extérieurs,10900
+2019-12-01,France,France,Sécurité & Domotique,11957
+2020-01-01,France,France,Fermetures & Menuiseries,81972
+2020-01-01,France,France,Équipements Extérieurs,11035
+2020-01-01,France,France,Sécurité & Domotique,13851
+2020-02-01,France,France,Fermetures & Menuiseries,85468
+2020-02-01,France,France,Équipements Extérieurs,11077
+2020-02-01,France,France,Sécurité & Domotique,11468
+2020-03-01,France,France,Fermetures & Menuiseries,87014
+2020-03-01,France,France,Équipements Extérieurs,11247
+2020-03-01,France,France,Sécurité & Domotique,10323
+2020-04-01,France,France,Fermetures & Menuiseries,90596
+2020-04-01,France,France,Équipements Extérieurs,11476
+2020-04-01,France,France,Sécurité & Domotique,12038
+2020-05-01,France,France,Fermetures & Menuiseries,87604
+2020-05-01,France,France,Équipements Extérieurs,11523
+2020-05-01,France,France,Sécurité & Domotique,7604
+2020-06-01,France,France,Fermetures & Menuiseries,82197
+2020-06-01,France,France,Équipements Extérieurs,10797
+2020-06-01,France,France,Sécurité & Domotique,6909
+2020-07-01,France,France,Fermetures & Menuiseries,88778
+2020-07-01,France,France,Équipements Extérieurs,11418
+2020-07-01,France,France,Sécurité & Domotique,12268
+2020-08-01,France,France,Fermetures & Menuiseries,83324
+2020-08-01,France,France,Équipements Extérieurs,11273
+2020-08-01,France,France,Sécurité & Domotique,13170
+2020-09-01,France,France,Fermetures & Menuiseries,88551
+2020-09-01,France,France,Équipements Extérieurs,11961
+2020-09-01,France,France,Sécurité & Domotique,8662
+2020-10-01,France,France,Fermetures & Menuiseries,88950
+2020-10-01,France,France,Équipements Extérieurs,11633
+2020-10-01,France,France,Sécurité & Domotique,10619
+2020-11-01,France,France,Fermetures & Menuiseries,87946
+2020-11-01,France,France,Équipements Extérieurs,12161
+2020-11-01,France,France,Sécurité & Domotique,13922
+2020-12-01,France,France,Fermetures & Menuiseries,89129
+2020-12-01,France,France,Équipements Extérieurs,11966
+2020-12-01,France,France,Sécurité & Domotique,14128
+2021-01-01,France,France,Fermetures & Menuiseries,87624
+2021-01-01,France,France,Équipements Extérieurs,11535
+2021-01-01,France,France,Sécurité & Domotique,15670
+2021-02-01,France,France,Fermetures & Menuiseries,83748
+2021-02-01,France,France,Équipements Extérieurs,11718
+2021-02-01,France,France,Sécurité & Domotique,11463
+2021-03-01,France,France,Fermetures & Menuiseries,73653
+2021-03-01,France,France,Équipements Extérieurs,9500
+2021-03-01,France,France,Sécurité & Domotique,11032
+2021-04-01,France,France,Fermetures & Menuiseries,64930
+2021-04-01,France,France,Équipements Extérieurs,6815
+2021-04-01,France,France,Sécurité & Domotique,13584
+2021-05-01,France,France,Fermetures & Menuiseries,68328
+2021-05-01,France,France,Équipements Extérieurs,7689
+2021-05-01,France,France,Sécurité & Domotique,12785
+2021-06-01,France,France,Fermetures & Menuiseries,79245
+2021-06-01,France,France,Équipements Extérieurs,9434
+2021-06-01,France,France,Sécurité & Domotique,11696
+2021-07-01,France,France,Fermetures & Menuiseries,88186
+2021-07-01,France,France,Équipements Extérieurs,11114
+2021-07-01,France,France,Sécurité & Domotique,13291
+2021-08-01,France,France,Fermetures & Menuiseries,84570
+2021-08-01,France,France,Équipements Extérieurs,10718
+2021-08-01,France,France,Sécurité & Domotique,17265
+2021-09-01,France,France,Fermetures & Menuiseries,83197
+2021-09-01,France,France,Équipements Extérieurs,10901
+2021-09-01,France,France,Sécurité & Domotique,13817
+2021-10-01,France,France,Fermetures & Menuiseries,69011
+2021-10-01,France,France,Équipements Extérieurs,11900
+2021-10-01,France,France,Sécurité & Domotique,12658
+2021-11-01,France,France,Fermetures & Menuiseries,78062
+2021-11-01,France,France,Équipements Extérieurs,12509
+2021-11-01,France,France,Sécurité & Domotique,13344
+2021-12-01,France,France,Fermetures & Menuiseries,85830
+2021-12-01,France,France,Équipements Extérieurs,12149
+2021-12-01,France,France,Sécurité & Domotique,13346
+2022-01-01,France,France,Fermetures & Menuiseries,82962
+2022-01-01,France,France,Équipements Extérieurs,12762
+2022-01-01,France,France,Sécurité & Domotique,15888
+2022-02-01,France,France,Fermetures & Menuiseries,86064
+2022-02-01,France,France,Équipements Extérieurs,12542
+2022-02-01,France,France,Sécurité & Domotique,10564
+2022-03-01,France,France,Fermetures & Menuiseries,89081
+2022-03-01,France,France,Équipements Extérieurs,12545
+2022-03-01,France,France,Sécurité & Domotique,11249
+2022-04-01,France,France,Fermetures & Menuiseries,91711
+2022-04-01,France,France,Équipements Extérieurs,13327
+2022-04-01,France,France,Sécurité & Domotique,15574
+2022-05-01,France,France,Fermetures & Menuiseries,94578
+2022-05-01,France,France,Équipements Extérieurs,13296
+2022-05-01,France,France,Sécurité & Domotique,12241
+2022-06-01,France,France,Fermetures & Menuiseries,94791
+2022-06-01,France,France,Équipements Extérieurs,13698
+2022-06-01,France,France,Sécurité & Domotique,12654
+2022-07-01,France,France,Fermetures & Menuiseries,95274
+2022-07-01,France,France,Équipements Extérieurs,13801
+2022-07-01,France,France,Sécurité & Domotique,12914
+2022-08-01,France,France,Fermetures & Menuiseries,97713
+2022-08-01,France,France,Équipements Extérieurs,13970
+2022-08-01,France,France,Sécurité & Domotique,15344
+2022-09-01,France,France,Fermetures & Menuiseries,95543
+2022-09-01,France,France,Équipements Extérieurs,13486
+2022-09-01,France,France,Sécurité & Domotique,13376
+2022-10-01,France,France,Fermetures & Menuiseries,93416
+2022-10-01,France,France,Équipements Extérieurs,13342
+2022-10-01,France,France,Sécurité & Domotique,11956
+2022-11-01,France,France,Fermetures & Menuiseries,92996
+2022-11-01,France,France,Équipements Extérieurs,12907
+2022-11-01,France,France,Sécurité & Domotique,11125
+2022-12-01,France,France,Fermetures & Menuiseries,90427
+2022-12-01,France,France,Équipements Extérieurs,12913
+2022-12-01,France,France,Sécurité & Domotique,11541
+2023-01-01,France,France,Fermetures & Menuiseries,106629
+2023-01-01,France,France,Équipements Extérieurs,15639
+2023-01-01,France,France,Sécurité & Domotique,15363
+2023-02-01,France,France,Fermetures & Menuiseries,119706
+2023-02-01,France,France,Équipements Extérieurs,19098
+2023-02-01,France,France,Sécurité & Domotique,9716
+2023-03-01,France,France,Fermetures & Menuiseries,98178
+2023-03-01,France,France,Équipements Extérieurs,13594
+2023-03-01,France,France,Sécurité & Domotique,10247
+2023-04-01,France,France,Fermetures & Menuiseries,84057
+2023-04-01,France,France,Équipements Extérieurs,11325
+2023-04-01,France,France,Sécurité & Domotique,13687
+2023-05-01,France,France,Fermetures & Menuiseries,82557
+2023-05-01,France,France,Équipements Extérieurs,10948
+2023-05-01,France,France,Sécurité & Domotique,10344
+2023-06-01,France,France,Fermetures & Menuiseries,79697
+2023-06-01,France,France,Équipements Extérieurs,10579
+2023-06-01,France,France,Sécurité & Domotique,9761
+2023-07-01,France,France,Fermetures & Menuiseries,76274
+2023-07-01,France,France,Équipements Extérieurs,9765
+2023-07-01,France,France,Sécurité & Domotique,10709
+2023-08-01,France,France,Fermetures & Menuiseries,81566
+2023-08-01,France,France,Équipements Extérieurs,10127
+2023-08-01,France,France,Sécurité & Domotique,12642
+2023-09-01,France,France,Fermetures & Menuiseries,87517
+2023-09-01,France,France,Équipements Extérieurs,10198
+2023-09-01,France,France,Sécurité & Domotique,9596
+2023-10-01,France,France,Fermetures & Menuiseries,87701
+2023-10-01,France,France,Équipements Extérieurs,10054
+2023-10-01,France,France,Sécurité & Domotique,9501
+2023-11-01,France,France,Fermetures & Menuiseries,86188
+2023-11-01,France,France,Équipements Extérieurs,9817
+2023-11-01,France,France,Sécurité & Domotique,7690
+2023-12-01,France,France,Fermetures & Menuiseries,79146
+2023-12-01,France,France,Équipements Extérieurs,9379
+2023-12-01,France,France,Sécurité & Domotique,9595
+2024-01-01,France,France,Fermetures & Menuiseries,80745
+2024-01-01,France,France,Équipements Extérieurs,9191
+2024-01-01,France,France,Sécurité & Domotique,13151
+2024-02-01,France,France,Fermetures & Menuiseries,86784
+2024-02-01,France,France,Équipements Extérieurs,8710
+2024-02-01,France,France,Sécurité & Domotique,6546
+2024-03-01,France,France,Fermetures & Menuiseries,70579
+2024-03-01,France,France,Équipements Extérieurs,8984
+2024-03-01,France,France,Sécurité & Domotique,8330
+2024-04-01,France,France,Fermetures & Menuiseries,63387
+2024-04-01,France,France,Équipements Extérieurs,8770
+2024-04-01,France,France,Sécurité & Domotique,11937
+2024-05-01,France,France,Fermetures & Menuiseries,66087
+2024-05-01,France,France,Équipements Extérieurs,8764
+2024-05-01,France,France,Sécurité & Domotique,7075
+2024-06-01,France,France,Fermetures & Menuiseries,65629
+2024-06-01,France,France,Équipements Extérieurs,8383
+2024-06-01,France,France,Sécurité & Domotique,9438
+2024-07-01,France,France,Fermetures & Menuiseries,63663
+2024-07-01,France,France,Équipements Extérieurs,8322
+2024-07-01,France,France,Sécurité & Domotique,8612
+2024-08-01,France,France,Fermetures & Menuiseries,65311
+2024-08-01,France,France,Équipements Extérieurs,7750
+2024-08-01,France,France,Sécurité & Domotique,10548
+2024-09-01,France,France,Fermetures & Menuiseries,61729
+2024-09-01,France,France,Équipements Extérieurs,7572
+2024-09-01,France,France,Sécurité & Domotique,9864
+2024-10-01,France,France,Fermetures & Menuiseries,61710
+2024-10-01,France,France,Équipements Extérieurs,7410
+2024-10-01,France,France,Sécurité & Domotique,8834
+2024-11-01,France,France,Fermetures & Menuiseries,59199
+2024-11-01,France,France,Équipements Extérieurs,7415
+2024-11-01,France,France,Sécurité & Domotique,7700
+2024-12-01,France,France,Fermetures & Menuiseries,62799
+2024-12-01,France,France,Équipements Extérieurs,7468
+2024-12-01,France,France,Sécurité & Domotique,10419
+2025-01-01,France,France,Fermetures & Menuiseries,55136
+2025-01-01,France,France,Équipements Extérieurs,6637
+2025-01-01,France,France,Sécurité & Domotique,13477
+2025-02-01,France,France,Fermetures & Menuiseries,57493
+2025-02-01,France,France,Équipements Extérieurs,6706
+2025-02-01,France,France,Sécurité & Domotique,8302
+2025-03-01,France,France,Fermetures & Menuiseries,52185
+2025-03-01,France,France,Équipements Extérieurs,6293
+2025-03-01,France,France,Sécurité & Domotique,8704
+2025-04-01,France,France,Fermetures & Menuiseries,59119
+2025-04-01,France,France,Équipements Extérieurs,6853
+2025-04-01,France,France,Sécurité & Domotique,13178
+2025-05-01,France,France,Fermetures & Menuiseries,57098
+2025-05-01,France,France,Équipements Extérieurs,6559
+2025-05-01,France,France,Sécurité & Domotique,9936
+2025-06-01,France,France,Fermetures & Menuiseries,56449
+2025-06-01,France,France,Équipements Extérieurs,6609
+2025-06-01,France,France,Sécurité & Domotique,11153
+2025-07-01,France,France,Fermetures & Menuiseries,55902
+2025-07-01,France,France,Équipements Extérieurs,6727
+2025-07-01,France,France,Sécurité & Domotique,8876
+2025-08-01,France,France,Fermetures & Menuiseries,55790
+2025-08-01,France,France,Équipements Extérieurs,6435
+2025-08-01,France,France,Sécurité & Domotique,11668
+2025-09-01,France,France,Fermetures & Menuiseries,51828
+2025-09-01,France,France,Équipements Extérieurs,6444
+2025-09-01,France,France,Sécurité & Domotique,10944
+2025-10-01,France,France,Fermetures & Menuiseries,52967
+2025-10-01,France,France,Équipements Extérieurs,6706
+2025-10-01,France,France,Sécurité & Domotique,9093
+2025-11-01,France,France,Fermetures & Menuiseries,52907
+2025-11-01,France,France,Équipements Extérieurs,6601
+2025-11-01,France,France,Sécurité & Domotique,8586
+2025-12-01,France,France,Fermetures & Menuiseries,52032
+2025-12-01,France,France,Équipements Extérieurs,6702
+2025-12-01,France,France,Sécurité & Domotique,10976
+2026-01-01,France,France,Fermetures & Menuiseries,53745
+2026-01-01,France,France,Équipements Extérieurs,6578
+2026-01-01,France,France,Sécurité & Domotique,14385
+2026-02-01,France,France,Fermetures & Menuiseries,54921
+2026-02-01,France,France,Équipements Extérieurs,6748
+2026-02-01,France,France,Sécurité & Domotique,8989
+2026-03-01,France,France,Fermetures & Menuiseries,52712
+2026-03-01,France,France,Équipements Extérieurs,7069
+2026-03-01,France,France,Sécurité & Domotique,9469
+2026-04-01,France,France,Fermetures & Menuiseries,53971
+2026-04-01,France,France,Équipements Extérieurs,6936
+2026-04-01,France,France,Sécurité & Domotique,13223
+2026-05-01,France,France,Fermetures & Menuiseries,57430
+2026-05-01,France,France,Équipements Extérieurs,7302
+2026-05-01,France,France,Sécurité & Domotique,9200
