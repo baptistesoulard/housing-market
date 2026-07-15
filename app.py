@@ -875,15 +875,23 @@ with tabs[0]:
 
     c_col1, c_col2 = st.columns(2)
 
-    # Aggregate data according to segment selections
+    # Aggregate data according to segment selections. The year-filtered aggregates feed the
+    # month-by-year comparison bars below.
     agg_sitadel = ana.aggregate_sitadel(filtered_sitadel, sitadel_types)
     agg_dvf = ana.aggregate_dvf(filtered_dvf)
 
-    # Calculate rolling 12m + 6m sums for the smoothed visualizations
-    rolling_sitadel = ana.calculate_rolling_12m(agg_sitadel, ["Permis", "MisesEnChantier"])
+    # Rolling 12m + 6m sums (and the moving-average overlays) are computed on the FULL
+    # history, then the DISPLAY is clipped to the selected years — so a 12m cumul / moving
+    # average at Jan 2023 uses its real Feb 2022→Jan 2023 window instead of showing an empty
+    # first-12-months gap after the year slicer moves the start.
+    agg_sitadel_full = ana.aggregate_sitadel(df_sitadel_full, sitadel_types)
+    agg_dvf_full = ana.aggregate_dvf(df_dvf_full)
+    rolling_sitadel = ana.calculate_rolling_12m(agg_sitadel_full, ["Permis", "MisesEnChantier"])
     rolling_sitadel = ana.calculate_rolling(rolling_sitadel, ["Permis", "MisesEnChantier"], 6)
-    rolling_dvf = ana.calculate_rolling_12m(agg_dvf, ["Transactions"])
+    rolling_dvf = ana.calculate_rolling_12m(agg_dvf_full, ["Transactions"])
     rolling_dvf = ana.calculate_rolling(rolling_dvf, ["Transactions"], 6)
+    rolling_sitadel = _filter_years(rolling_sitadel)
+    rolling_dvf = _filter_years(rolling_dvf)
 
     # KPI Calculations. The "Chiffres Clés" cards always reflect the full national
     # total (all housing types, full history) for the last available month, independent
@@ -1111,10 +1119,12 @@ with tabs[0]:
             _l3txt = "—" if _l3 is None else (f"{_l3:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{_l3:+.1f}%")
             st.caption(f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {_l3txt}")
 
-    # Rolling-12m lines: individual-pur vs collective (year-sliced), in thousands.
+    # Rolling-12m lines: individual-pur vs collective, in thousands. Computed on the full
+    # history then clipped to the selected years (12m window keeps its real look-back).
     fig_iv = go.Figure()
     for _lbl, _types, _clr in [_iv_groups[0], _iv_groups[2]]:
-        _g = ana.calculate_rolling_12m(ana.aggregate_sitadel(filtered_sitadel, _types), [_iv_col])
+        _g = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel_full, _types), [_iv_col])
+        _g = _filter_years(_g)
         fig_iv.add_trace(go.Scatter(x=_g["Date"], y=_g[f"{_iv_col}_12M"] / 1000.0,
                                     name=_lbl, line=dict(color=_clr, width=3)))
     fig_iv.update_layout(
@@ -1302,7 +1312,9 @@ with tabs[1]:
     if "Production_Credits_Habitat" in df_macro.columns and df_macro["Production_Credits_Habitat"].notna().any():
         st.markdown("---")
         st.markdown("#### " + _L("Volume de crédits à l'habitat", "Housing-loan volumes"))
-        _cr = df_macro.dropna(subset=["Production_Credits_Habitat"]).copy()
+        # 12m cumulatives are rolled on the FULL history then clipped to the selected years
+        # (a cumul at Jan of the start year keeps its real prior-12-months window).
+        _cr = df_macro_full.dropna(subset=["Production_Credits_Habitat"]).copy()
         _cr["_cum12"] = _cr["Production_Credits_Habitat"].rolling(12).sum()
         # Pure new loans (HORS renégociations) = the transaction-relevant part. The BCE
         # only publishes this decomposition from 2019 (NaN before) — so it drives the
@@ -1311,6 +1323,7 @@ with tabs[1]:
                       and df_macro["Production_Credits_Pure"].notna().any())
         if _has_split:
             _cr["_pure_cum12"] = _cr["Production_Credits_Pure"].rolling(12).sum()
+        _cr = _filter_years(_cr)
         cr_cols = st.columns(2)
         with cr_cols[0]:
             macro_chart_title(_L("Production mensuelle de crédits à l'habitat", "Monthly housing-loan production"),
