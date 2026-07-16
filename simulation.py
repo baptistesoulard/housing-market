@@ -28,43 +28,55 @@ def find_optimal_lag(df_indicator, df_sales, ind_col, sales_col, max_lag=24):
     # Align dates and aggregate sales to monthly national level if they are detailed
     ind_clean = df_indicator[["Date", ind_col]].groupby("Date").sum().reset_index()
     sales_clean = df_sales[["Date", sales_col]].groupby("Date").sum().reset_index()
-    
-    correlations = []
+
+    correlations = []       # on levels (the historical behaviour)
+    correlations_yoy = []   # on year-on-year changes (guards against spurious trend fit)
+    n_points = []           # overlapping months per lag (a small n inflates |r|)
     lags = list(range(0, max_lag + 1))
-    
+
     for lag in lags:
         # Shift the indicator forward by 'lag' months
         ind_shifted = ind_clean.copy()
         ind_shifted["Date"] = ind_shifted["Date"] + pd.DateOffset(months=lag)
-        
+
         # Merge contemporaneous sales with shifted indicator
-        merged = pd.merge(sales_clean, ind_shifted, on="Date", how="inner")
-        
-        if len(merged) > 6: # Need enough data points for a meaningful correlation
-            # Calculate correlation
+        merged = pd.merge(sales_clean, ind_shifted, on="Date", how="inner").sort_values("Date")
+        n_points.append(len(merged))
+
+        if len(merged) > 6:  # Need enough data points for a meaningful correlation
             r = merged[ind_col].corr(merged[sales_col])
-            if pd.isna(r):
-                r = 0.0
-            correlations.append(r)
+            correlations.append(0.0 if pd.isna(r) else r)
+            # Year-on-year change decorrelates the shared trend that makes two rising,
+            # smoothed series look correlated even without a real lead-lag link.
+            _iy = merged[ind_col].pct_change(12)
+            _sy = merged[sales_col].pct_change(12)
+            r_yoy = _iy.corr(_sy)
+            correlations_yoy.append(0.0 if pd.isna(r_yoy) else r_yoy)
         else:
             correlations.append(0.0)
-            
+            correlations_yoy.append(0.0)
+
     # Find the lag with the highest absolute correlation (could be negative, e.g. interest rates,
     # but we usually look for positive correlation with permits, and negative with interest rates)
     abs_correlations = [abs(r) for r in correlations]
     if len(abs_correlations) > 0 and max(abs_correlations) > 0:
-        opt_idx = np.argmax(abs_correlations)
+        opt_idx = int(np.argmax(abs_correlations))
         optimal_lag = lags[opt_idx]
         max_corr = correlations[opt_idx]
     else:
+        opt_idx = 0
         optimal_lag = 0
         max_corr = 0.0
-        
+
     return {
         "lags": lags,
         "correlations": [round(r, 3) for r in correlations],
+        "correlations_yoy": [round(r, 3) for r in correlations_yoy],
+        "n_points": n_points,
         "optimal_lag": optimal_lag,
-        "max_correlation": round(max_corr, 3)
+        "max_correlation": round(max_corr, 3),
+        "max_correlation_yoy": round(correlations_yoy[opt_idx], 3) if correlations_yoy else 0.0,
+        "n_at_optimal": n_points[opt_idx] if n_points else 0,
     }
 
 def resample_quarterly(df, date_col, value_col, agg="sum"):
@@ -95,16 +107,22 @@ def find_optimal_lag_quarterly(df_indicator, df_sales, ind_col, sales_col,
     sales_q = df_sales[["Date", sales_col]].groupby("Date").sum().reset_index()
 
     correlations = []
+    correlations_yoy = []   # on year-on-year (4-quarter) changes
+    n_points = []
     lags_q = list(range(0, max_lag_q + 1))
     for q in lags_q:
         shifted = ind_q.copy()
         shifted["Date"] = shifted["Date"] + pd.DateOffset(months=3 * q)
-        merged = pd.merge(sales_q, shifted, on="Date", how="inner")
+        merged = pd.merge(sales_q, shifted, on="Date", how="inner").sort_values("Date")
+        n_points.append(len(merged))
         if len(merged) > 4:
             r = merged[ind_col].corr(merged[sales_col])
             correlations.append(0.0 if pd.isna(r) else r)
+            r_yoy = merged[ind_col].pct_change(4).corr(merged[sales_col].pct_change(4))
+            correlations_yoy.append(0.0 if pd.isna(r_yoy) else r_yoy)
         else:
             correlations.append(0.0)
+            correlations_yoy.append(0.0)
 
     abs_corr = [abs(r) for r in correlations]
     if abs_corr and max(abs_corr) > 0:
@@ -112,6 +130,7 @@ def find_optimal_lag_quarterly(df_indicator, df_sales, ind_col, sales_col,
         optimal_lag_q = lags_q[opt_idx]
         max_corr = correlations[opt_idx]
     else:
+        opt_idx = 0
         optimal_lag_q = 0
         max_corr = 0.0
 
@@ -119,9 +138,13 @@ def find_optimal_lag_quarterly(df_indicator, df_sales, ind_col, sales_col,
         "lags_q": lags_q,
         "lags_months": [3 * q for q in lags_q],
         "correlations": [round(r, 3) for r in correlations],
+        "correlations_yoy": [round(r, 3) for r in correlations_yoy],
+        "n_points": n_points,
         "optimal_lag_q": optimal_lag_q,
         "optimal_lag_months": 3 * optimal_lag_q,
         "max_correlation": round(max_corr, 3),
+        "max_correlation_yoy": round(correlations_yoy[opt_idx], 3) if correlations_yoy else 0.0,
+        "n_at_optimal": n_points[opt_idx] if n_points else 0,
     }
 
 

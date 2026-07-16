@@ -136,6 +136,35 @@ def test_forecast_path_uses_observed_lags_and_bounds_horizon():
     assert abs(path["pred"].iloc[0] - exp) < 1e-6
 
 
+def test_search_tx_lags_split_avoids_leakage():
+    """With a train/test split, the lag search must use the TRAIN window only. Build a
+    series whose intentions lead transactions by 6 months IN TRAIN, but by 2 months (more
+    strongly) IN TEST. Full-sample search is pulled toward 2; split search must return 6."""
+    n = 240
+    idx = pd.date_range("2005-01-01", periods=n, freq="MS")
+    rng = np.random.default_rng(0)
+    intent = rng.normal(0, 1, n)
+    split = "2015-12-01"
+    split_i = int((pd.DatetimeIndex(idx) <= split).sum())
+    tx = np.empty(n)
+    for t in range(n):
+        if t < split_i:
+            tx[t] = 100_000 + 5_000 * (intent[t - 6] if t >= 6 else 0.0)      # train: lag 6
+        else:
+            tx[t] = 100_000 + 20_000 * (intent[t - 2] if t >= 2 else 0.0)     # test: lag 2, strong
+    macro = pd.DataFrame({
+        "Date": idx,
+        "Credit_Logement_Taux_Interet": np.full(n, 2.0),   # flat -> irrelevant predictor
+        "Intentions_Achat_Logement": intent,
+        "Taux_Chomage_BIT": np.full(n, 8.0),               # flat -> irrelevant predictor
+    })
+    tx12 = pd.Series(tx, index=idx, name="tx12")
+    full = fc.search_tx_lags(macro, tx12)                       # may lock onto lag 2 (leak)
+    train = fc.search_tx_lags(macro, tx12, split=split)         # must see only the train lag
+    assert train["ki"] == 6, f"split search leaked (ki={train['ki']})"
+    assert full["ki"] != train["ki"] or full["ki"] == 2         # sanity: full is pulled to test
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     passed = 0

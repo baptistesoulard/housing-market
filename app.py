@@ -1550,14 +1550,19 @@ with tab_ecln:
 # ==============================================================================
 # TAB 5: PRÉVISION & SCÉNARIOS (nowcast transactions + backtest + scénarios)
 # ==============================================================================
+# Train/test split for the transactions model: the lag search AND the backtest train use
+# data ≤ this date, so the out-of-sample MAPE is measured on a period the lags never saw.
+_FORECAST_SPLIT = "2021-12-01"
+
 @st.cache_data(show_spinner=False)
 def _forecast_bundle(macro, ventes_ancien):
     """Fit the (expensive) forecast models once and cache them, so moving the scenario
     sliders only recomputes the cheap scenario arithmetic, not the lag grid-search."""
     tx12 = fc.build_target(ventes_ancien)
     rm = fc.fit_rate_model(macro)
-    lags = fc.search_tx_lags(macro, tx12)
-    tm = fc.fit_tx_model(macro, tx12, **lags)
+    # Lags searched on the TRAIN window only (no leakage into the backtest period).
+    lags = fc.search_tx_lags(macro, tx12, split=_FORECAST_SPLIT)
+    tm = fc.fit_tx_model(macro, tx12, split=_FORECAST_SPLIT, **lags)
     return rm, lags, tm
 
 
@@ -1763,6 +1768,11 @@ with tab_forecast:
         _int0 = float(_mi["Intentions_Achat_Logement"].dropna().iloc[-1])
         _chom0 = float(_mi["Taux_Chomage_BIT"].dropna().iloc[-1])
         _tx0 = float(_tx12.dropna().iloc[-1])
+        # Intentions are an unintuitive raw response balance; expose the lever in standard
+        # deviations (like the chart's centrées-réduites view) and convert back to raw.
+        _int_ser = _mi["Intentions_Achat_Logement"].dropna()
+        _int_mu, _int_sd = float(_int_ser.mean()), float(_int_ser.std())
+        _int0_z = (_int0 - _int_mu) / _int_sd if _int_sd > 0 else 0.0
 
         sc1, sc2 = st.columns([1, 2])
         with sc1:
@@ -1770,10 +1780,17 @@ with tab_forecast:
             _oat = st.slider(_L("OAT 10 ans (%)", "10-year OAT (%)"), 0.0, 5.5, round(_oat0, 2), 0.1)
             _eur = st.slider(_L("Euribor 3 mois (%)", "3-month Euribor (%)"), -0.5, 4.5, round(_eur0, 2), 0.1)
             _chom = st.slider(_L("Taux de chômage (%)", "Unemployment rate (%)"), 6.5, 11.0, round(_chom0, 1), 0.1)
+            _int_z = st.slider(_L("Intentions d'achat (écarts-types)", "Purchase intentions (std dev)"),
+                               -2.5, 2.5, round(_int0_z, 1), 0.1,
+                               help=_L("0 = moyenne de long terme ; +1 = un écart-type au-dessus. "
+                                       "Troisième prédicteur du modèle, au même titre que le taux et le chômage.",
+                                       "0 = long-term mean; +1 = one std dev above. The model's third "
+                                       "predictor, alongside the rate and unemployment."))
+            _int = _int_mu + _int_z * _int_sd
         _sc = fc.scenario(_rm["beta"], _b,
                           {"oat": _oat0, "euribor": _eur0, "intent": _int0, "chom": _chom0,
                            "rate_now": _rate0, "tx_now": _tx0},
-                          {"oat": _oat, "euribor": _eur, "intent": _int0, "chom": _chom})
+                          {"oat": _oat, "euribor": _eur, "intent": _int, "chom": _chom})
         with sc2:
             r1c = st.columns(3)
             r1c[0].metric(_L("Taux de crédit implicite", "Implied credit rate"),
@@ -2023,8 +2040,12 @@ with tab_timelag:
                     corr_res = {
                         "lags": res_q["lags_months"],
                         "correlations": res_q["correlations"],
+                        "correlations_yoy": res_q["correlations_yoy"],
+                        "n_points": res_q["n_points"],
                         "optimal_lag": res_q["optimal_lag_months"],
                         "max_correlation": res_q["max_correlation"],
+                        "max_correlation_yoy": res_q["max_correlation_yoy"],
+                        "n_at_optimal": res_q["n_at_optimal"],
                     }
                 else:
                     # Monthly benchmark (synthetic units OR imported company sales).
@@ -2038,9 +2059,33 @@ with tab_timelag:
         if "corr_results" in st.session_state:
             opt_lag = st.session_state["optimal_lag"]
             max_r = st.session_state["max_correlation"]
+            _cres = st.session_state["corr_results"]
             st.success(f"**{T[lang_code]['optimal_found']} : {opt_lag} {'mois' if lang_code == 'FR' else 'months'}**")
-            st.metric(T[lang_code]["max_corr"], f"r = {max_r}")
-            
+            _rc1, _rc2 = st.columns(2)
+            _rc1.metric(T[lang_code]["max_corr"], f"r = {max_r}")
+            # Honest companion metric: correlation on YEAR-ON-YEAR changes, which strips the
+            # shared trend that inflates the level correlation of two smoothed rising series.
+            if "max_correlation_yoy" in _cres:
+                _rc2.metric(_L("r sur variations annuelles", "r on year-on-year changes"),
+                            f"r = {_cres['max_correlation_yoy']}")
+            _n_opt = _cres.get("n_at_optimal")
+            if _n_opt is not None:
+                st.caption(_L(
+                    f"{_n_opt} mois de recouvrement à ce décalage. La corrélation sur niveaux "
+                    f"({max_r}) capte en partie la tendance commune ; celle sur variations annuelles "
+                    f"({_cres.get('max_correlation_yoy', '—')}) est un test plus sévère du lien réel.",
+                    f"{_n_opt} overlapping months at this lag. The level correlation ({max_r}) partly "
+                    f"reflects the shared trend; the year-on-year one "
+                    f"({_cres.get('max_correlation_yoy', '—')}) is a stricter test of a genuine link."))
+            if smooth_ind:
+                st.warning(_L(
+                    "⚠️ Indicateur lissé (cumul 12M) : les séries lissées sont fortement "
+                    "auto-corrélées, ce qui gonfle mécaniquement la corrélation sur niveaux. "
+                    "Fiez-vous surtout au r sur variations annuelles.",
+                    "⚠️ Smoothed indicator (12M rolling): smoothed series are strongly "
+                    "autocorrelated, which mechanically inflates the level correlation. Rely "
+                    "mostly on the year-on-year r."))
+
             # Option to apply the optimal lag
             if st.button(T[lang_code]["btn_apply_lag"].format(lag=opt_lag)):
                 time_lag = opt_lag
@@ -2142,9 +2187,16 @@ with tab_timelag:
                     x=results["lags"],
                     y=results["correlations"],
                     marker_color=colors,
-                    name="Correlation"
+                    name=_L("Corrélation (niveaux)", "Correlation (levels)")
                 )
             )
+            # Overlay the stricter year-on-year correlation curve, when available.
+            if "correlations_yoy" in results:
+                fig_bar.add_trace(go.Scatter(
+                    x=results["lags"], y=results["correlations_yoy"],
+                    mode="lines+markers", name=_L("Variations annuelles", "Year-on-year"),
+                    line=dict(color=COLOR_TEXT, width=2)))
+                fig_bar.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
             fig_bar.update_layout(
                 xaxis_title="Lags (months)" if lang_code == "EN" else "Décalage (Lags en mois)",
                 yaxis_title="Pearson Correlation (r)" if lang_code == "EN" else "Coefficient de corrélation de Pearson (r)",

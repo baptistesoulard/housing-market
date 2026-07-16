@@ -74,14 +74,22 @@ def _design(m, tx12, kr, ki, kc):
 
 
 def search_tx_lags(df_macro, tx12, kr_range=range(0, 13), ki_range=range(0, 19, 2),
-                   kc_range=range(0, 13, 2), min_obs=60):
-    """Grid-search the predictor lead-lags that maximise in-sample R² for Stage 2."""
+                   kc_range=range(0, 13, 2), min_obs=60, split=None):
+    """Grid-search the predictor lead-lags that maximise R² for Stage 2.
+
+    When `split` is given (a date string), the search is run on the TRAIN window only
+    (index ≤ split) — exactly the window the backtest then trains on. This avoids the
+    leakage of picking the lags on the full sample (including the test period) and then
+    reporting an out-of-sample MAPE on that same period, which flatters the metric.
+    """
     m = _macro_indexed(df_macro)
     best = None
     for kr in kr_range:
         for ki in ki_range:
             for kc in kc_range:
                 d = _design(m, tx12, kr, ki, kc)
+                if split is not None:
+                    d = d[d.index <= split]
                 if len(d) < min_obs:
                     continue
                 _, r2, _, _ = ols(d[["rate", "intent", "chom"]].values, d["tx12"].values)
