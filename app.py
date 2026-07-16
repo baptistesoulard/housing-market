@@ -2376,12 +2376,24 @@ with tab_composite:
             
     if "opt_composite_res" in st.session_state:
         res = st.session_state["opt_composite_res"]
+        _test_r = res.get("test_correlation")
+        _test_txt = "—" if _test_r is None else f"{_test_r:.3f}"
         st.success(
-            f"**Meilleure configuration trouvée !** Corrélation maximale : **r = {res['max_correlation']:.3f}**"
+            f"**Meilleure configuration trouvée !** r (train) = **{res['max_correlation']:.3f}** · "
+            f"r (test, hors échantillon) = **{_test_txt}**"
             if lang_code == "FR" else
-            f"**Best configuration found!** Maximum correlation: **r = {res['max_correlation']:.3f}**"
+            f"**Best configuration found!** r (train) = **{res['max_correlation']:.3f}** · "
+            f"r (test, out-of-sample) = **{_test_txt}**"
         )
-        
+        st.caption(_L(
+            "La configuration est choisie sur les ~70 % premiers mois (train) puis mesurée "
+            "sur les mois restants (test). Avec ~9 500 combinaisons testées, seul le **r hors "
+            "échantillon** est un indicateur honnête de pouvoir prédictif ; un r (train) élevé "
+            "mais un r (test) faible = sur-apprentissage.",
+            "The configuration is chosen on the first ~70% of months (train) then measured on "
+            "the rest (test). With ~9,500 combinations tried, only the **out-of-sample r** is an "
+            "honest read of predictive power; high train r but low test r = overfitting."))
+
         c_opt1, c_opt2, c_opt3 = st.columns(3)
         with c_opt1:
             st.markdown(f"**SIT@DEL (Comp. 1) :**")

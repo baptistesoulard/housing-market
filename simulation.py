@@ -241,11 +241,18 @@ def create_composite_indicator(components, target_start_date=None, target_end_da
         
     return result_df.sort_values('Date').reset_index(drop=True)
 
-def optimize_composite_parameters(df_c1, col_c1, df_c2, col_c2, df_c3, col_c3, df_sales, sales_col="Sales_Units", invert_c3=True):
+def optimize_composite_parameters(df_c1, col_c1, df_c2, col_c2, df_c3, col_c3, df_sales,
+                                  sales_col="Sales_Units", invert_c3=True, train_frac=0.7):
     """
-    Grid search to find the optimal lags and weights that maximize Pearson correlation 
-    with benchmark sales.
-    Executes in under 0.5s by using aligned NumPy vectors.
+    Grid search over lags & weights, selected on a TRAIN split and reported on a held-out
+    TEST split so the headline correlation isn't the in-sample overfit of ~9 500 configs.
+
+    The best (lags, weights) is chosen to maximise the Pearson correlation on the first
+    `train_frac` of the aligned months; the returned `max_correlation` is that TRAIN value,
+    and `test_correlation` is the SAME configuration measured on the remaining (later)
+    months — the honest, out-of-sample number to trust. Falls back to the in-sample value
+    for `test_correlation` when the overlap is too short to split.
+    Executes in well under a second on aligned NumPy vectors.
     """
     # 1. Clean and normalize inputs
     c1_clean = df_c1[['Date', col_c1]].groupby('Date').sum().reset_index()
@@ -275,55 +282,68 @@ def optimize_composite_parameters(df_c1, col_c1, df_c2, col_c2, df_c3, col_c3, d
             if round(w1_r + w2_r + w3_r, 2) == 1.0:
                 weight_combos.append((w1_r, w2_r, w3_r))
                 
-    max_r = -1.0
+    max_r = -1.0          # best TRAIN correlation
+    best_test_r = None    # its TEST correlation
     best_lags = [12, 4, 6]
     best_weights = [0.6, 0.2, 0.2]
-    
+
+    def _corr(a, b):
+        if len(a) < 3:
+            return float("nan")
+        m = np.corrcoef(a, b)
+        return m[0, 1] if m.shape[0] > 1 else float("nan")
+
     # Fast Grid Search
     for l1 in lags_1:
         # Pre-shift component 1
         df_shift1 = c1_clean.copy()
         df_shift1['Date'] = df_shift1['Date'] + pd.DateOffset(months=l1)
         df_shift1 = df_shift1.rename(columns={'val': 'v1'})
-        
+
         for l2 in lags_2:
             # Pre-shift component 2
             df_shift2 = c2_clean.copy()
             df_shift2['Date'] = df_shift2['Date'] + pd.DateOffset(months=l2)
             df_shift2 = df_shift2.rename(columns={'val': 'v2'})
-            
+
             for l3 in lags_3:
                 # Pre-shift component 3
                 df_shift3 = c3_clean.copy()
                 df_shift3['Date'] = df_shift3['Date'] + pd.DateOffset(months=l3)
                 df_shift3 = df_shift3.rename(columns={'val': 'v3'})
-                
-                # Merge aligned
+
+                # Merge aligned (sorted chronologically so the split is a true holdout)
                 merged = df_s_clean.copy()
                 merged = pd.merge(merged, df_shift1[['Date', 'v1']], on='Date', how='inner')
                 merged = pd.merge(merged, df_shift2[['Date', 'v2']], on='Date', how='inner')
                 merged = pd.merge(merged, df_shift3[['Date', 'v3']], on='Date', how='inner')
-                
+                merged = merged.sort_values('Date')
+
                 if len(merged) > 6:
                     y = merged[sales_col].values
                     v1 = merged['v1'].values
                     v2 = merged['v2'].values
                     v3 = merged['v3'].values
-                    
+                    n = len(y)
+                    cut = int(n * train_frac)
+                    # Need a usable train and test slice; else fall back to whole-sample.
+                    has_split = (cut >= 3) and (n - cut >= 3)
+
                     for w1, w2, w3 in weight_combos:
                         composite = w1 * v1 + w2 * v2 + w3 * v3
-                        # Calculate Pearson correlation
-                        r_matrix = np.corrcoef(composite, y)
-                        if r_matrix.shape[0] > 1:
-                            r = r_matrix[0, 1]
-                            if not np.isnan(r) and r > max_r:
-                                max_r = r
-                                best_lags = [l1, l2, l3]
-                                best_weights = [w1, w2, w3]
-                                
+                        r_train = _corr(composite[:cut], y[:cut]) if has_split else _corr(composite, y)
+                        if not np.isnan(r_train) and r_train > max_r:
+                            max_r = r_train
+                            best_lags = [l1, l2, l3]
+                            best_weights = [w1, w2, w3]
+                            best_test_r = (_corr(composite[cut:], y[cut:]) if has_split
+                                           else r_train)
+
     return {
         "best_lags": best_lags,
         "best_weights": [round(w, 2) for w in best_weights],
-        "max_correlation": round(max_r, 3)
+        "max_correlation": round(max_r, 3),
+        "test_correlation": (round(best_test_r, 3) if best_test_r is not None
+                             and not np.isnan(best_test_r) else None),
     }
 
