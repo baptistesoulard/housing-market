@@ -246,3 +246,50 @@ def best_tx_to_monthly(df_series, tx12, value_col="Sales", lags=range(0, 19)):
         if fit and (best is None or fit["r2"] > best["r2"]):
             best = fit
     return best
+
+
+def propagate_to_series(fit, tx12_obs, tx_path, sales_df, value_col="Sales",
+                        sigma_tx=0.0, z=1.2816):
+    """Monthly forecast of a company's OWN sales from the transactions forecast path.
+
+    Turns the demand-planning deliverable into a company-level series: with the estimated
+    elasticity `fit` (from best_tx_to_monthly: sales ≈ a + b·tx12(t − lag_m)), the future
+    transactions path drives a month-by-month projection of the imported sales, out to the
+    transactions horizon + the elasticity lag. The band propagates the transactions
+    uncertainty `sigma_tx` through the slope b (±z·|b|·sigma_tx, z≈80%).
+
+    fit       : dict {beta:[a,b], lag_m, r2, n} from best_tx_to_monthly.
+    tx12_obs  : observed 12-month transactions Series (Date-indexed).
+    tx_path   : forecast_path frame [Date, pred, ...] (future transactions).
+    sales_df  : the company series [Date, value_col].
+    Returns a [Date, pred, lo, hi] frame (empty when nothing is projectable).
+    """
+    cols = ["Date", "pred", "lo", "hi"]
+    if fit is None or sales_df is None or sales_df.empty:
+        return pd.DataFrame(columns=cols)
+    a, b = float(fit["beta"][0]), float(fit["beta"][1])
+    lag = int(fit["lag_m"])
+    tx_obs = tx12_obs.dropna()
+    parts = [tx_obs]
+    if tx_path is not None and not tx_path.empty:
+        parts.append(tx_path.set_index("Date")["pred"])
+    tx_full = pd.concat(parts).sort_index()
+    tx_full = tx_full[~tx_full.index.duplicated(keep="last")]
+
+    s = sales_df[["Date", value_col]].dropna().copy()
+    s["Date"] = pd.to_datetime(s["Date"])
+    if s.empty:
+        return pd.DataFrame(columns=cols)
+    last_sales = s["Date"].max()
+    end = tx_full.index.max() + pd.DateOffset(months=lag)
+    future = pd.date_range(last_sales + pd.DateOffset(months=1), end, freq="MS")
+    band = abs(b) * z * sigma_tx
+
+    rows = []
+    for t in future:
+        drv = tx_full.get(t - pd.DateOffset(months=lag))
+        if drv is None or pd.isna(drv):
+            continue
+        pred = a + b * float(drv)
+        rows.append({"Date": t, "pred": pred, "lo": pred - band, "hi": pred + band})
+    return pd.DataFrame(rows, columns=cols)

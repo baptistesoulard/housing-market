@@ -136,6 +136,27 @@ def test_forecast_path_uses_observed_lags_and_bounds_horizon():
     assert abs(path["pred"].iloc[0] - exp) < 1e-6
 
 
+def test_propagate_to_series_drives_sales_from_tx_path():
+    """The company-sales forecast = a + b·tx12(t − lag_m), driven by observed tx then the
+    forecast path, out to tx_path end + lag_m."""
+    obs_idx = pd.date_range("2020-01-01", periods=24, freq="MS")   # ...2021-12
+    tx12_obs = pd.Series(np.linspace(800_000, 900_000, 24), index=obs_idx, name="tx12")
+    path_idx = pd.date_range("2022-01-01", periods=6, freq="MS")   # ...2022-06
+    tx_path = pd.DataFrame({"Date": path_idx, "pred": np.linspace(905_000, 930_000, 6),
+                            "lo": 0, "hi": 0, "assured": True})
+    fit = {"beta": [1_000.0, 0.01], "lag_m": 3, "r2": 0.9, "n": 20}
+    sales_df = pd.DataFrame({"Date": obs_idx, "Sales": np.linspace(100, 200, 24)})
+    out = fc.propagate_to_series(fit, tx12_obs, tx_path, sales_df, "Sales", sigma_tx=1_000.0)
+    assert not out.empty
+    # Horizon: last sales month (2021-12) +1 .. tx_path end (2022-06) + lag_m(3) = 2022-09.
+    assert out["Date"].max() == pd.Timestamp("2022-09-01")
+    # First projected month 2022-01 uses tx at 2021-10 (observed).
+    drv = tx12_obs.loc[pd.Timestamp("2021-10-01")]
+    assert abs(out["pred"].iloc[0] - (1_000.0 + 0.01 * drv)) < 1e-6
+    # Band = |b|·z·sigma (z≈1.2816).
+    assert abs((out["hi"].iloc[0] - out["pred"].iloc[0]) - 0.01 * 1.2816 * 1_000.0) < 1e-6
+
+
 def test_search_tx_lags_split_avoids_leakage():
     """With a train/test split, the lag search must use the TRAIN window only. Build a
     series whose intentions lead transactions by 6 months IN TRAIN, but by 2 months (more

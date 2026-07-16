@@ -1876,6 +1876,45 @@ with tab_forecast:
                     f"transactions (IGEDD, 12-month sum) with a ~{_sf['lag_m']}-month lag. Same "
                     f"transactions shock propagated as above."))
 
+                # Monthly sales FORECAST: drive the imported series with the transactions
+                # projection path (_fpath) through the estimated elasticity — the actual
+                # demand-planning deliverable, exportable to SAP IBP.
+                _spath = fc.propagate_to_series(
+                    _sf, _tx12, _fpath if (_fpath is not None) else None,
+                    _df_serie_f, "Sales", sigma_tx=_sigma)
+                if _spath is not None and not _spath.empty:
+                    _sobs = _df_serie_f.sort_values("Date")
+                    fig_sfc = go.Figure()
+                    fig_sfc.add_trace(go.Scatter(x=_sobs["Date"], y=_sobs["Sales"],
+                                                 name=_L("Ventes observées", "Observed sales"),
+                                                 line=dict(color=COLOR_TEXT, width=2.5)))
+                    fig_sfc.add_trace(go.Scatter(
+                        x=list(_spath["Date"]) + list(_spath["Date"][::-1]),
+                        y=list(_spath["hi"]) + list(_spath["lo"][::-1]),
+                        fill="toself", fillcolor="rgba(230,74,25,0.12)", line=dict(width=0),
+                        hoverinfo="skip", name=_L("Intervalle ~80 %", "~80% band")))
+                    fig_sfc.add_trace(go.Scatter(x=_spath["Date"], y=_spath["pred"],
+                                                 name=_L("Prévision de ventes", "Sales forecast"),
+                                                 line=dict(color=COLOR_BRICK, width=2.5, dash="dot")))
+                    apply_macro_chart_layout(fig_sfc, _L("Ventes mensuelles", "Monthly sales"))
+                    st.plotly_chart(fig_sfc, use_container_width=True)
+                    _sf_end, _sf_endval = _spath["Date"].iloc[-1], _spath["pred"].iloc[-1]
+                    st.caption(_L(
+                        f"Prévision de vos ventes « {_serie_f} » jusqu'à {_sf_end:%Y-%m} "
+                        f"({len(_spath)} mois), obtenue en propageant la trajectoire de transactions "
+                        f"projetée à travers l'élasticité estimée (décalage {_sf['lag_m']} mois). "
+                        f"Exportable vers SAP IBP (onglet Export, source « Prévision ventes société »).",
+                        f"Forecast of your '{_serie_f}' sales through {_sf_end:%Y-%m} ({len(_spath)} "
+                        f"months), by propagating the projected transactions path through the estimated "
+                        f"elasticity ({_sf['lag_m']}-month lag). Exportable to SAP IBP (Export tab, "
+                        f"'Company-sales forecast' source)."))
+                    # Persist for the SAP export tab (a real, dated forecast — not synthetic).
+                    _sfc_export = _spath.rename(columns={"pred": "Ventes_Prevues"})[["Date", "Ventes_Prevues"]]
+                    st.session_state["forecast_sales_export_df"] = _sfc_export
+                    st.session_state["forecast_sales_export_col"] = "Ventes_Prevues"
+                    st.session_state["forecast_sales_export_name"] = \
+                        f"KF_PREVISION_VENTES_{str(_serie_f).replace(' ', '_').upper()}"
+
 
 # ==============================================================================
 # TAB 6: SIMULATION TIME LAG
@@ -2446,15 +2485,30 @@ with tab_export:
     st.write(T[lang_code]["export_desc"])
     
     _src_forecast = _L("Prévision des transactions (12 mois)", "Transactions forecast (12 months)")
+    _src_sales_fc = _L("Prévision ventes société", "Company-sales forecast")
     export_source = st.radio(
         T[lang_code]["export_source_label"],
-        [T[lang_code]["src_simple_lag"], T[lang_code]["src_composite"], _src_forecast],
+        [T[lang_code]["src_simple_lag"], T[lang_code]["src_composite"], _src_forecast, _src_sales_fc],
         horizontal=True
     )
 
     source_available = False
 
-    if export_source == T[lang_code]["src_simple_lag"]:
+    if export_source == _src_sales_fc:
+        if "forecast_sales_export_df" in st.session_state:
+            export_raw_df = st.session_state["forecast_sales_export_df"]
+            val_col_name = st.session_state["forecast_sales_export_col"]
+            default_kf_name = st.session_state["forecast_sales_export_name"]
+            export_is_synthetic = False  # a real, dated company-sales forecast
+            source_available = True
+        else:
+            st.warning(_L(
+                "⚠️ Aucune prévision de ventes société. Importez vos ventes (onglet « Données "
+                "Source ») puis ouvrez « 📡 Prévision & Scénarios » (section « Propagation à vos "
+                "ventes importées »).",
+                "⚠️ No company-sales forecast. Import your sales (『Source Data』 tab) then open "
+                "『📡 Forecast & Scenarios』 (『Propagation to your imported sales』 section)."))
+    elif export_source == T[lang_code]["src_simple_lag"]:
         if "shifted_export_df" in st.session_state:
             export_raw_df = st.session_state["shifted_export_df"]
             val_col_name = st.session_state["shifted_export_col"]
