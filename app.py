@@ -596,6 +596,16 @@ with tab_synthese:
         cards.append((_f_status, _L("Ventes 12 m vs cible BPCE", "12m sales vs BPCE target"),
                       _th(_sy_last_tx), _L("écart à 890k : ", "gap to 890k: ") + _pct_fr(_sy_gap)))
 
+    # --- Card 7 (conditional): renovation activity — the stock-driven second-œuvre driver.
+    # Only shown once the renovation series is populated (fetch_new_sources.build_renovation).
+    if "Reno_Activite_Batiment" in df_macro_full.columns and df_macro_full["Reno_Activite_Batiment"].notna().any():
+        _rn_last, _rn_prev = _last_prev("Reno_Activite_Batiment")
+        if _rn_last is not None:
+            _rn_d = None if _rn_prev is None else _rn_last - _rn_prev
+            _rn_status = "flat" if _rn_d is None else ("up" if _rn_d > 0 else ("down" if _rn_d < 0 else "flat"))
+            cards.append((_rn_status, _L("Activité rénovation", "Renovation activity"),
+                          f"{_rn_last:.0f}", _L("second œuvre / stock", "second-œuvre / stock")))
+
     # Render cards in rows of 3.
     for _row_start in range(0, len(cards), 3):
         _rc = st.columns(3)
@@ -1914,6 +1924,35 @@ with tab_forecast:
                     st.session_state["forecast_sales_export_col"] = "Ventes_Prevues"
                     st.session_state["forecast_sales_export_name"] = \
                         f"KF_PREVISION_VENTES_{str(_serie_f).replace(' ', '_').upper()}"
+
+                # Renovation as a THIRD driver: when a renovation series is available, fit a
+                # two-factor model (sales ~ transactions + renovation) and compare its R² to
+                # the transactions-only elasticity — renovation captures the stock-driven
+                # demand that moves don't. Inactive (and silent) until the reno CSV exists.
+                _reno_col = next((c for c in ("Reno_Activite_Batiment", "Reno_Aides_Distribuees")
+                                  if c in df_macro_full.columns
+                                  and df_macro_full[c].notna().any()), None)
+                if _reno_col is not None:
+                    _reno_ser = df_macro_full.set_index("Date")[_reno_col]
+                    _tf = fc.fit_sales_two_factor(_df_serie_f, _tx12, _reno_ser, "Sales")
+                    if _tf is not None:
+                        st.markdown("**" + _L("→ Rénovation comme 3ᵉ driver",
+                                              "→ Renovation as a 3rd driver") + "**")
+                        tf_cols = st.columns(3)
+                        tf_cols[0].metric(_L("R² transactions seules", "R² transactions only"),
+                                          f"{_sf['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_sf['r2']:.2f}")
+                        tf_cols[1].metric(_L("R² transactions + rénovation", "R² transactions + renovation"),
+                                          f"{_tf['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_tf['r2']:.2f}")
+                        tf_cols[2].metric(_L("Décalages (tx / réno)", "Lags (tx / reno)"),
+                                          f"{_tf['tx_lag']} / {_tf['reno_lag']} " + _L("mois", "mo"))
+                        st.caption(_L(
+                            "Le second facteur (rénovation) capte la demande second-œuvre tirée par le "
+                            "STOCK de logements, indépendante des déménagements. Un gain de R² valide la "
+                            "rénovation comme driver — et ouvre la voie au remplacement de la dernière "
+                            "série synthétique.",
+                            "The second factor (renovation) captures stock-driven second-œuvre demand, "
+                            "independent of moves. An R² gain validates renovation as a driver — and paves "
+                            "the way to replacing the last synthetic series."))
 
 
 # ==============================================================================

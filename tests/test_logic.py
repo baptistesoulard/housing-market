@@ -187,6 +187,26 @@ def test_search_tx_lags_split_avoids_leakage():
     assert full["ki"] != train["ki"] or full["ki"] == 2         # sanity: full is pulled to test
 
 
+def test_two_factor_recovers_renovation_driver():
+    """sales = a + b_tx·tx(t-3) + b_reno·reno(t-6): the two-factor fit must recover both
+    lags and beat a transactions-only fit."""
+    idx = pd.date_range("2015-01-01", periods=96, freq="MS")
+    rng = np.random.default_rng(3)
+    tx = pd.Series(np.linspace(800_000, 950_000, 96) + rng.normal(0, 3_000, 96), index=idx)
+    reno = pd.Series(rng.normal(50, 8, 96), index=idx)
+    sales_vals = np.full(96, np.nan)
+    for t in range(96):
+        if t >= 6:
+            sales_vals[t] = 100.0 + 0.0005 * tx.iloc[t - 3] + 3.0 * reno.iloc[t - 6]
+    sdf = pd.DataFrame({"Date": idx, "Sales": sales_vals}).dropna()
+    tf = fc.fit_sales_two_factor(sdf, tx, reno, "Sales")
+    assert tf is not None
+    assert tf["tx_lag"] == 3 and tf["reno_lag"] == 6
+    assert tf["r2"] > 0.98
+    single = fc.best_tx_to_monthly(sdf, tx, "Sales")
+    assert tf["r2"] >= single["r2"]  # adding renovation cannot hurt in-sample fit
+
+
 def test_composite_optimizer_reports_out_of_sample():
     """The composite optimizer must return a held-out test correlation, and on pure noise
     the (overfit) train r should exceed the honest test r."""

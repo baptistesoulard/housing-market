@@ -248,6 +248,43 @@ def best_tx_to_monthly(df_series, tx12, value_col="Sales", lags=range(0, 19)):
     return best
 
 
+def fit_sales_two_factor(df_series, tx12, reno, value_col="Sales",
+                         tx_lags=range(0, 19, 3), reno_lags=range(0, 19, 3), min_obs=12):
+    """Two-driver elasticity of a company's monthly sales:
+
+        sales(t) ≈ a + b_tx·tx12(t − l₁) + b_reno·reno(t − l₂)
+
+    Renovation adds the STOCK-driven second-œuvre demand channel that existing-home
+    transactions (move-driven) miss — the third driver for a Somfy-type actor, and the path
+    that eventually replaces the synthetic sales series. Grid-searches both lags for the best
+    in-sample R². `tx12` and `reno` are Date-indexed monthly Series. Returns
+    {beta:[a, b_tx, b_reno], r2, tx_lag, reno_lag, n} or None (too few overlapping months
+    or reno unavailable).
+    """
+    if reno is None:
+        return None
+    reno = reno.dropna()
+    if reno.empty:
+        return None
+    s = (df_series[["Date", value_col]].dropna()
+         .assign(Date=lambda d: pd.to_datetime(d["Date"]))
+         .groupby("Date")[value_col].sum().sort_index())
+    best = None
+    for l1 in tx_lags:
+        tx_s = tx12.dropna().copy()
+        tx_s.index = pd.to_datetime(tx_s.index) + pd.DateOffset(months=l1)
+        for l2 in reno_lags:
+            rn = reno.copy()
+            rn.index = pd.to_datetime(rn.index) + pd.DateOffset(months=l2)
+            d = pd.DataFrame({"y": s}).join(tx_s.rename("tx")).join(rn.rename("rn")).dropna()
+            if len(d) < min_obs:
+                continue
+            beta, r2, _, _ = ols(d[["tx", "rn"]].values, d["y"].values)
+            if best is None or r2 > best["r2"]:
+                best = {"beta": beta, "r2": r2, "tx_lag": l1, "reno_lag": l2, "n": len(d)}
+    return best
+
+
 def propagate_to_series(fit, tx12_obs, tx_path, sales_df, value_col="Sales",
                         sigma_tx=0.0, z=1.2816):
     """Monthly forecast of a company's OWN sales from the transactions forecast path.

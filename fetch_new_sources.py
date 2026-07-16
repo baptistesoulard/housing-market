@@ -232,11 +232,27 @@ def build_renovation():
     only skips the renovation pillar (the app then degrades gracefully) rather than aborting
     the whole acquisition run. When a CSV is absent, data_manager leaves the column NaN.
     """
-    # NOTE: verify these identifiers on bdm.insee.fr before relying on the values.
-    IDBANK_RENO_ACTIVITE = "001585919"   # INSEE — bâtiment, solde d'opinion sur l'activité
-    s_act = _fetch_bdm(IDBANK_RENO_ACTIVITE).rename("Reno_Activite_Batiment")
-    _write_single_series(s_act, "Reno_Activite_Batiment",
-                         "reno-activite-batiment.csv", "reno-activite")
+    # Each source is fetched independently so a single wrong identifier only skips that
+    # series (the app then leaves its macro column NaN).
+    # NOTE: verify these identifiers on the live catalogues before relying on the values.
+
+    # (1) INSEE — bâtiment, solde d'opinion sur l'activité (climat/activité), SDMX BDM.
+    try:
+        IDBANK_RENO_ACTIVITE = "001585919"   # À VÉRIFIER sur bdm.insee.fr
+        s_act = _fetch_bdm(IDBANK_RENO_ACTIVITE).rename("Reno_Activite_Batiment")
+        _write_single_series(s_act, "Reno_Activite_Batiment",
+                             "reno-activite-batiment.csv", "reno-activite")
+    except Exception as e:
+        print(f"  reno-activite -> SKIPPED ({e.__class__.__name__}: {e})")
+
+    # (2) ANAH — MaPrimeRénov' : dossiers/montants engagés (proxy de volume de rénovation).
+    # Publié sur data.gouv (API DiDo, comme l'ECLN). Renseigner l'URL du datafile + les noms
+    # de colonnes (période, valeur) une fois la ressource identifiée, puis dé-commenter.
+    #   url = "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/<UUID>/csv"
+    #   rows = list(csv.DictReader(io.StringIO(_get(url).decode("utf-8","replace")), delimiter=";"))
+    #   ... parse (période -> Date, montant/nombre -> Reno_Aides_Distribuees) ...
+    #   _write_single_series(serie, "Reno_Aides_Distribuees", "reno-aides-renovation.csv", "reno-aides")
+    print("  reno-aides -> TODO (renseigner le datafile DiDo MaPrimeRénov' dans build_renovation)")
 
 
 if __name__ == "__main__":
