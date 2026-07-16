@@ -82,6 +82,16 @@ CREDIT_VOLUME_CSV = os.path.join("data_manual_input",
 # for household house-purchase loans, France, QUARTERLY. Realised (past 3 months) and
 # expected (next 3 months, BPCE's "perspectives à 3 mois"). A soft leading indicator.
 CREDIT_DEMAND_BLS_CSV = os.path.join("data_manual_input", "credit-demand-bls.csv")
+# --- Renovation pillar (real, national) — the second-œuvre / renovation demand that new
+# construction and existing-home transactions alone don't capture. Both are acquired
+# off-runtime (fetch_new_sources.py) into single-series [Date, <value>] CSVs; when a file
+# is absent the column simply stays NaN (like the other optional macro series).
+#   Reno_Activite_Batiment : Banque de France monthly business survey, building trades —
+#     activity-opinion balance (a soft, timely read on renovation/second-œuvre demand).
+#   Reno_Aides_Distribuees : MaPrimeRénov' grants paid (ANAH / data.gouv), a volume proxy
+#     for the renovation-driven equipment market.
+RENO_ACTIVITE_CSV = os.path.join("data_manual_input", "reno-activite-batiment.csv")
+RENO_AIDES_CSV = os.path.join("data_manual_input", "reno-aides-renovation.csv")
 # --- Commercialisation des logements neufs (ECLN, SDES) — national quarterly CVS-CJO
 # "ventes aux particuliers": réservations, mises en vente, annulations, encours, délai
 # d'écoulement (en trimestres) et prix au m² du collectif. Its own dataset (data/ecln.csv).
@@ -122,6 +132,9 @@ _MACRO_OPTIONAL = [
     # Housing-loan demand (BLS, net %) — quarterly, realised + expected ("perspectives").
     (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Realisee"),
     (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Perspectives"),
+    # Renovation pillar (NaN until fetch_new_sources.py produces the CSVs).
+    (RENO_ACTIVITE_CSV, "Reno_Activite_Batiment"),
+    (RENO_AIDES_CSV, "Reno_Aides_Distribuees"),
 ]
 
 
@@ -384,12 +397,9 @@ class DataManager:
                 "Encours", "DelaiEcoulement", "PrixM2_Collectif",
                 "Resa_Sociaux", "Resa_Institutionnels"])
 
-        # User-imported monthly company sales (optional benchmark). Empty frame when the
-        # user hasn't imported any yet.
-        if os.path.exists(self.paths["company_sales"]):
-            df_company_sales = pd.read_csv(self.paths["company_sales"], parse_dates=["Date"])
-        else:
-            df_company_sales = pd.DataFrame(columns=["Date", "Company", "Sales"])
+        # User-imported monthly company sales (optional benchmark). Canonical
+        # [Date, Company, Serie, Sales] shape; empty frame when nothing imported yet.
+        df_company_sales = self._read_company_sales()
 
         # Mirror the loaded frames to the typed Parquet/DuckDB warehouse (validated,
         # non-fatal). CSV stays the runtime source of truth during the migration.
@@ -400,6 +410,44 @@ class DataManager:
         })
 
         return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
+
+    def read_frames(self):
+        """Read the already-persisted CSVs into frames WITHOUT re-generating or re-mirroring
+        to the warehouse. Cheap, side-effect-free path meant to sit behind a Streamlit
+        cache keyed on the files' mtimes, so a plain rerun (moving a slider) does not
+        re-validate and re-write the seven Parquet mirrors on every interaction.
+
+        Assumes load_or_generate_all() has already run once (files exist); optional
+        datasets absent on disk return correctly-typed empty frames.
+        """
+        df_sitadel = pd.read_csv(self.paths["sitadel"], parse_dates=["Date"])
+        df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
+        df_macro = pd.read_csv(self.paths["macro"], parse_dates=["Date"])
+        df_sales = pd.read_csv(self.paths["sales"], parse_dates=["Date"])
+        if os.path.exists(self.paths["revenue"]):
+            df_revenue = pd.read_csv(self.paths["revenue"], parse_dates=["Date"])
+        else:
+            df_revenue = pd.DataFrame(columns=["Date", "Company", "CA_MEUR"])
+        if os.path.exists(self.paths["ecln"]):
+            df_ecln = pd.read_csv(self.paths["ecln"], parse_dates=["Date"])
+        else:
+            df_ecln = pd.DataFrame(columns=[
+                "Date", "Reservations", "MisesEnVente", "Annulations",
+                "Encours", "DelaiEcoulement", "PrixM2_Collectif",
+                "Resa_Sociaux", "Resa_Institutionnels"])
+        df_company_sales = self._read_company_sales()
+        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
+
+    def _read_company_sales(self):
+        """Read data/company_sales.csv into the canonical [Date, Company, Serie, Sales]
+        shape. Back-compatible with the legacy single-series file (no Serie column): Serie
+        then defaults to Company so downstream code always has a series label."""
+        if not os.path.exists(self.paths["company_sales"]):
+            return pd.DataFrame(columns=["Date", "Company", "Serie", "Sales"])
+        df = pd.read_csv(self.paths["company_sales"], parse_dates=["Date"])
+        if "Serie" not in df.columns:
+            df["Serie"] = df["Company"] if "Company" in df.columns else "Ventes"
+        return df
 
     def _mirror_to_warehouse(self, frames):
         """Validate the datasets against their contracts and persist them as Parquet next
@@ -421,39 +469,65 @@ class DataManager:
                 first = str(e).splitlines()[0] if str(e) else e.__class__.__name__
                 self.warehouse_status[name] = (False, first)
 
+    # Column-name aliases accepted on import (first match wins).
+    _SALES_VALUE_ALIASES = ["Sales", "Ventes", "Sales_Units", "Valeur", "Value", "CA", "CA_MEUR"]
+    _SALES_SERIES_ALIASES = ["Serie", "Série", "Series", "Produit", "Product",
+                             "Famille", "Categorie", "Catégorie", "Gamme"]
+
     def import_company_sales(self, uploaded_file, company_name="Ma société"):
         """Import a company's MONTHLY sales from an uploaded CSV into data/company_sales.csv
-        (overwrite — one company at a time). The CSV must expose a 'Date' column and a
-        numeric sales column: 'Sales' (or 'Ventes' / 'Sales_Units' / 'Valeur' / 'Value' /
-        'CA' — first match), or, failing that, the single remaining non-Date column. The
-        company name comes from a 'Company' column if present, else from `company_name`.
-        Returns (success, message)."""
+        (overwrite). Supports MULTIPLE product families in one file: if a series column is
+        present ('Serie'/'Série'/'Produit'/'Famille'/… — first match), each distinct value
+        becomes its own series; otherwise the whole file is one series labelled after the
+        company. Requires a 'Date' column and a numeric sales column ('Sales'/'Ventes'/… or,
+        failing that, the single remaining non-Date/Company/Serie column). Validated against
+        the pandera contract before it is written. Returns (success, message)."""
         try:
             df = pd.read_csv(uploaded_file)
             if "Date" not in df.columns:
                 return False, "Colonne « Date » manquante dans le fichier."
-            val_col = next((c for c in ["Sales", "Ventes", "Sales_Units", "Valeur",
-                                        "Value", "CA", "CA_MEUR"] if c in df.columns), None)
+            series_col = next((c for c in self._SALES_SERIES_ALIASES if c in df.columns), None)
+            val_col = next((c for c in self._SALES_VALUE_ALIASES if c in df.columns), None)
             if val_col is None:
-                others = [c for c in df.columns if c not in ("Date", "Company")]
+                _reserved = {"Date", "Company", series_col}
+                others = [c for c in df.columns if c not in _reserved]
                 val_col = others[0] if len(others) == 1 else None
             if val_col is None:
                 return False, ("Colonne de ventes introuvable : nommez-la « Sales » "
                                "(ou « Ventes »), ou ne laissez qu'une seule colonne en plus de « Date ».")
-            out = pd.DataFrame()
-            out["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-            out["Sales"] = pd.to_numeric(df[val_col], errors="coerce")
-            out = out.dropna(subset=["Date", "Sales"]).sort_values("Date")
-            if out.empty:
-                return False, "Aucune ligne valide (Date + valeur de ventes) trouvée."
             if "Company" in df.columns and df["Company"].notna().any():
                 name = str(df["Company"].dropna().iloc[0])
             else:
                 name = (company_name or "Ma société").strip() or "Ma société"
-            out.insert(1, "Company", name)
+
+            out = pd.DataFrame()
+            out["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+            out["Company"] = name
+            if series_col is not None:
+                out["Serie"] = df[series_col].astype(str).str.strip().replace("", name)
+            else:
+                out["Serie"] = name
+            out["Sales"] = pd.to_numeric(df[val_col], errors="coerce")
+            out = out.dropna(subset=["Date", "Sales"]).sort_values(["Serie", "Date"])
+            out = out[["Date", "Company", "Serie", "Sales"]]
+            if out.empty:
+                return False, "Aucune ligne valide (Date + valeur de ventes) trouvée."
+
+            # Contract check before persisting (turns a bad file into a clear message).
+            if hd is not None:
+                try:
+                    hd.validate("company_sales", out, lazy=False)
+                except Exception as e:
+                    msg = str(e).strip().splitlines()
+                    first = next((l.strip() for l in msg if l.strip() not in ("", "{", "}")),
+                                 e.__class__.__name__)
+                    return False, f"Données non conformes au contrat company_sales : {first}"
+
             out.to_csv(self.paths["company_sales"], index=False, encoding="utf-8")
             dmin, dmax = out["Date"].min().strftime("%Y-%m"), out["Date"].max().strftime("%Y-%m")
-            return True, (f"Ventes « {name} » importées : {len(out)} mois "
+            n_series = out["Serie"].nunique()
+            _serie_txt = f"{n_series} séries" if n_series > 1 else "1 série"
+            return True, (f"Ventes « {name} » importées : {len(out)} lignes, {_serie_txt} "
                           f"({dmin} → {dmax}).")
         except Exception as e:
             return False, f"Erreur lors de l'import : {e}"
@@ -632,15 +706,28 @@ class DataManager:
             missing = required - set(df.columns)
             if missing:
                 return False, f"Colonnes manquantes: {', '.join(missing)}"
-            
+
             # Ensure proper Date formatting
             df["Date"] = pd.to_datetime(df["Date"])
             df = df.sort_values("Date")
-            
+
+            # Contract validation before overwriting the on-disk dataset: a file with the
+            # right column names but bad content (stray NaN, negative count, non-national
+            # row, duplicate Date/Type, unknown category value) is rejected here with a
+            # clear message instead of corrupting the data and breaking a tab downstream.
+            if hd is not None and category in hd.SCHEMAS:
+                try:
+                    df = hd.validate(category, df, lazy=False)
+                except Exception as e:
+                    msg = str(e).strip().splitlines()
+                    first = next((l.strip() for l in msg if l.strip() not in ("", "{", "}")),
+                                 e.__class__.__name__)
+                    return False, (f"Données non conformes au contrat {category} : {first}")
+
             # Save the updated file
             df.to_csv(self.paths[category], index=False, encoding="utf-8")
             return True, f"Fichier {category}.csv mis à jour avec succès !"
-            
+
         except Exception as e:
             return False, f"Erreur lors du traitement du fichier: {str(e)}"
             

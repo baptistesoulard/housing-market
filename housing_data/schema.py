@@ -62,6 +62,14 @@ MACRO_VALUE_COLUMNS = [
     "Production_Credits_Renego",
     "Demande_Credit_Realisee",
     "Demande_Credit_Perspectives",
+    # Renovation pillar (real, off-runtime acquisition — NaN until fetch_new_sources runs):
+    #   Reno_Activite_Batiment  = Banque de France monthly building-trades activity opinion
+    #                             balance (enquête mensuelle de conjoncture, bâtiment) — a
+    #                             direct read on second-œuvre / renovation demand.
+    #   Reno_Aides_Distribuees  = MaPrimeRénov' grants paid (count or €, ANAH / data.gouv),
+    #                             a volume proxy for the renovation-driven equipment market.
+    "Reno_Activite_Batiment",
+    "Reno_Aides_Distribuees",
 ]
 
 _COUNT = lambda title: Column(int, Check.ge(0), nullable=False, coerce=True, title=title)
@@ -145,15 +153,20 @@ ECLN = DataFrameSchema(
     unique=["Date"],
 )
 
-# Optional user-imported monthly company sales (present only after an import).
+# Optional user-imported monthly company sales (present only after an import). Multi-series:
+# one company, one or more product families ("Serie"), monthly. A single-series import gets
+# Serie = Company so the shape is uniform whether the source file split by product or not.
 COMPANY_SALES = DataFrameSchema(
     {
         "Date": _DATE,
         "Company": Column(str, nullable=False, coerce=True),
+        "Serie": Column(str, nullable=False, coerce=True,
+                        title="Product family / imported series label"),
         "Sales": Column(float, nullable=False, coerce=True,
                         title="Imported monthly sales"),
     },
     strict=False, coerce=True, name="company_sales",
+    unique=["Date", "Serie"],
 )
 
 SCHEMAS: dict[str, DataFrameSchema] = {

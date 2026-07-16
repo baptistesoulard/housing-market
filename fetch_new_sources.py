@@ -207,9 +207,47 @@ def build_ecln():
     print(f"ecln -> {path} ({len(df)} trimestres, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
 
 
+def _write_single_series(series, column, filename, label):
+    """Persist a single real series to a [Date, <column>] CSV in data_manual_input."""
+    df = series.rename(column).reset_index()
+    df.columns = ["Date", column]
+    df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
+    path = os.path.join(OUT_DIR, filename)
+    df.to_csv(path, index=False, encoding="utf-8")
+    print(f"{label} -> {path} ({len(df)} points, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+
+
+def build_renovation():
+    """Renovation-pillar sources — the second-œuvre / renovation demand that new
+    construction and existing-home transactions don't capture. Both are national and real:
+
+      * Reno_Activite_Batiment : INSEE monthly business survey in the building trades,
+        activity-opinion balance (climat/activité) — a timely soft read on renovation and
+        second-œuvre demand. INSEE SDMX BDM idbank (see IDBANK_RENO_ACTIVITE).
+      * Reno_Aides_Distribuees : MaPrimeRénov' grants (ANAH / data.gouv), a volume proxy
+        for the renovation-driven equipment market.
+
+    Both idbanks/endpoints below MUST be verified against the live catalogues before use;
+    they are isolated in their own function and guarded in __main__ so a wrong identifier
+    only skips the renovation pillar (the app then degrades gracefully) rather than aborting
+    the whole acquisition run. When a CSV is absent, data_manager leaves the column NaN.
+    """
+    # NOTE: verify these identifiers on bdm.insee.fr before relying on the values.
+    IDBANK_RENO_ACTIVITE = "001585919"   # INSEE — bâtiment, solde d'opinion sur l'activité
+    s_act = _fetch_bdm(IDBANK_RENO_ACTIVITE).rename("Reno_Activite_Batiment")
+    _write_single_series(s_act, "Reno_Activite_Batiment",
+                         "reno-activite-batiment.csv", "reno-activite")
+
+
 if __name__ == "__main__":
     build_prices()
     build_neuf_price()
     build_credit_volume()
     build_credit_demand_bls()
     build_ecln()
+    # Renovation pillar is best-effort: a not-yet-verified identifier must not abort the run.
+    try:
+        build_renovation()
+    except Exception as e:
+        print(f"reno -> SKIPPED ({e.__class__.__name__}: {e}). "
+              f"Vérifiez les identifiants dans build_renovation().")
