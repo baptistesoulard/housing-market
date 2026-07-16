@@ -6,15 +6,16 @@ L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) 
 
 ## Aperçu des onglets
 
+0. **Synthèse** — page d'accueil : lecture « feu tricolore » (🟢/🟠/🔴) de 6 signaux (permis, mises en chantier, ventes anciennes, taux de crédit, demande BLS, ventes 12 m vs cible BPCE), commentaire d'analyse auto-généré et fraîcheur des données par source. Chiffres nationaux, indépendants du filtre de période.
 1. **Conjoncture rétrospective** — permis, mises en chantier et ventes dans l'ancien (cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1), **commentaire d'analyse auto-généré** sous les chiffres clés et **dynamique Individuel vs Collectif** (driver du second œuvre).
 2. **Contexte Macro & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois) et **demande de crédits (enquête BLS)** — indicateur avancé.
 3. **Prix & Accessibilité** — indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
 4. **Commercialisation Neuf (ECLN)** — encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
-5. **Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés), **backtest hors échantillon**, **repère des prévisions publiées BPCE L'Observatoire 2026**, et panneau de scénarios (OAT / Euribor / chômage → transactions → chiffre d'affaires benchmark).
+5. **Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE ; **exportable vers SAP IBP**), **repère des prévisions publiées BPCE L'Observatoire 2026**, et panneau de scénarios (OAT / Euribor / chômage → transactions → chiffre d'affaires benchmark).
 6. **Atelier — Time Lag** — atelier exploratoire : décalage d'un indicateur avancé et corrélation avec les ventes (ou un CA d'entreprise réel).
 7. **Atelier — Composite** — atelier exploratoire : indicateur composite pondéré (grid-search des lags/poids).
 8. **Export SAP IBP** — export de l'indicateur avancé.
-9. **Données Source** — inspection / upload des jeux de données, et **import des ventes mensuelles d'une société** (CSV `Date, Sales`) réutilisables comme cible/benchmark dans les moteurs Time-Lag, Composite et Prévision.
+9. **Données Source** — inspection / upload des jeux de données (les uploads sont **validés par les contrats pandera** avant écrasement), et **import des ventes mensuelles d'une société** (CSV `Date, Sales` — **multi-séries** : une colonne `Serie`/`Produit`/`Famille` crée une famille de produits par valeur, sélectionnable dans les moteurs). Ces ventes réelles sont la **cible par défaut** des ateliers Time-Lag / Composite / Prévision (les ventes synthétiques ne servent que de repli, avec avertissement de circularité).
 
 ## Lancer en local
 
@@ -52,11 +53,11 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 
 - ✅ **Cohérence ventes ↔ transactions (résolu 2026-07-15).** Les ventes synthétiques de second œuvre sont désormais construites (`build_sales`) à partir des **permis SIT@DEL réels** et des **transactions IGEDD réelles** — la série que l'app affiche —, via la série des ventes anciennes réelle (IGEDD) chargée *avant* la génération des ventes. L'ancienne série de transactions synthétique (jetée) et `macro_model` ont été supprimés. Corrélation « Sécurité & Domotique » ↔ IGEDD décalé 2 mois = 0,99.
 - ✅ **Couverture temporelle alignée (résolu 2026-07-15).** Plus de `date_range` hardcodé : `generate_sitadel_and_macro` dérive la borne de la donnée réelle (SIT@DEL + buffer, puis trim des mois de queue tout-NaN → macro se termine sur la dernière observation réelle, ex. 2026-06 pour confiance/Euribor/OAT/intentions) ; `build_sales` est borné à `min(SIT@DEL, IGEDD)` (2026-05) — plus aucun mois fabriqué sans donnée marché.
-- **🟠 Validation de schéma & logging.** Aucun contrôle au chargement (types, dates mensuelles uniques/ordonnées, doublons, plages plausibles) ; `update_with_custom_csv` ne couvre que 4 catégories sur 6 (pas `ecln`/`revenue`). Ajouter un validateur léger exécuté au chargement + un `logging` fichier (remplacer les `print` et les erreurs avalées dans les tuples `(bool, message)`).
+- ✅ **Validation de schéma sur les uploads (résolu 2026-07-16).** `update_with_custom_csv` et `import_company_sales` valident désormais la donnée contre le contrat pandera (`hd.validate(..., lazy=False)`) avant écriture : un fichier aux bonnes colonnes mais au contenu invalide (NaN parasite, compte négatif, ligne non-nationale, doublon Date/Type, catégorie inconnue) est rejeté avec un message clair au lieu de casser un onglet plus loin. Reste ouvert : un vrai `logging` fichier (les `print` et les tuples `(bool, message)` subsistent).
 
 ### P1 — consolidation
 
-- **Tests automatisés (`pytest`)** sur les invariants : reproduction IGEDD (erreur 0), réindexation macro, helpers `momentum_metrics` / `calculate_rolling`.
+- ✅ **Tests automatisés (résolu 2026-07-16).** `tests/test_logic.py` couvre les invariants clés : reproduction IGEDD (dérive ≤ 12 sur le cumul 12 m), `momentum_metrics`, `calculate_kpis`, `ols`/`scenario`, et `forecast_path` (horizon + report). Standalone ou pytest, comme `tests/test_housing_data.py`.
 - **Métadonnée de provenance** : un `data/_manifest.json` (série → source, dernière date, horodatage du build) affiché dans l'onglet Données Source.
 - **Bouton « Reconstruire la macro »** dans l'onglet Données Source, symétrique des boutons IGEDD / ECLN existants.
 - **Loader IGEDD fragile** : indices de colonnes en dur (`DATE_COL=1`, `VALUE_COL=3`, nom de feuille) — à fiabiliser (détection d'en-têtes).
@@ -66,11 +67,20 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - **Registre de sources unique** : centraliser `série → {fichier, colonne, fréquence, clé SDMX}` dans un seul dict partagé par `fetch_new_sources.py` et `data_manager.py` (aujourd'hui dupliqué → risque de dérive).
 - **Stockage macro en format long** (`[Date, série, valeur, fréquence]`) : `macro.csv` est aujourd'hui un format large ~35 % NaN (séries trimestrielles réindexées en mensuel).
 - **Versionnement des données** : snapshots horodatés avant écrasement, plutôt qu'une réécriture en place.
-- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant).
+- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). 🟠 Amorcé : **pilier rénovation** ajouté (colonnes `Reno_Activite_Batiment` INSEE bâtiment + `Reno_Aides_Distribuees` MaPrimeRénov', câblées dans `fetch_new_sources.build_renovation` et affichées dans l'onglet Macro) — **identifiants source à vérifier** avant de fiabiliser ce driver.
+
+### Réalisés le 2026-07-16
+
+- **Cache de chargement** : `read_frames()` + `@st.cache_data` keyé sur les mtimes → plus de relecture des CSV ni de réécriture des 7 Parquet à chaque interaction (le miroir entrepôt ne tourne qu'à la (re)génération).
+- **Ventes société multi-séries** : format `[Date, Company, Serie, Sales]`, sélecteur de famille de produits dans les 3 moteurs ; cible réelle par défaut + avertissement de circularité sur le synthétique.
+- **Prévision à horizon** (voir onglet 5) et **export SAP IBP** de cette prévision.
+- **Page Synthèse** feu-tricolore (onglet 0).
+- **Extraction i18n** : dictionnaire `T` sorti dans `translations.py` ; étiquettes corrigées (catégorie « Ventes second-œuvre (synthétiques) », texte de reset, clés mortes de la carte supprimées).
 
 ## Modules
 
-- `app.py` — interface Streamlit (9 onglets, bilingue FR/EN).
+- `app.py` — interface Streamlit (10 onglets dont la Synthèse, bilingue FR/EN).
+- `translations.py` — dictionnaire de traductions `T` (FR/EN) extrait d'`app.py`.
 - `data_manager.py` — chargement / génération / cache des jeux de données (dont import des ventes société).
 - `analysis.py` — filtres, agrégations, cumuls glissants, momentum et commentaire d'analyse auto-généré.
 - `simulation.py` — décalage temporel et indicateur composite.

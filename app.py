@@ -145,8 +145,23 @@ def get_data_manager():
 
 dm = get_data_manager()
 
-# Load initial datasets (national-level series)
-df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales = dm.load_or_generate_all()
+def _data_signature():
+    """mtimes of the persisted datasets, used as the cache key below so a plain rerun
+    (moving a slider) reuses the in-memory frames instead of re-reading every CSV and
+    re-writing the seven Parquet mirrors. The warehouse mirror now runs only in
+    get_data_manager (once per session / cache clear) or on an explicit rebuild button."""
+    sig = []
+    for p in dm.paths.values():
+        sig.append(os.path.getmtime(p) if os.path.exists(p) else 0.0)
+    return tuple(sig)
+
+@st.cache_data(show_spinner=False)
+def _load_frames(signature):
+    # `signature` (file mtimes) is the only cache key; `dm` is a stable module global.
+    return dm.read_frames()
+
+# Load datasets (national-level series), cached on the source files' mtimes.
+df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales = _load_frames(_data_signature())
 
 # Untouched full-history macro (before the year slicer below). The affordability index
 # rebases borrowing capacity to its 2015 mean from the FULL history, so the sidebar year
@@ -185,414 +200,7 @@ def _L(fr, en):
     return fr if lang_code == "FR" else en
 
 # --- Bilingual Translations Dictionary ---
-T = {
-    "FR": {
-        "title": "🏠 Outil de Market Intelligence Immobilier & Aide à la Prévision",
-        "demand_planning_caption": "Département Demand Planning",
-        "year_filter": "📅 Période (années)",
-        "geo_filter": "🌍 Filtre Géographique",
-        "geo_granularity": "Niveau de granularité",
-        "regions_label": "Sélectionnez les Régions",
-        "regions_all_placeholder": "all — toutes les régions",
-        "depts_label": "Sélectionnez les Départements",
-        "depts_all_placeholder": "all — tous les départements",
-        "filter_region_label": "Filtrer par Région",
-        "sidebar_info": "💡 **Aide à la décision :** Les permis de construire et mises en chantier de SIT@DEL ainsi que les ventes de logements anciens (IGEDD) prédisent l'activité des industries du second œuvre du bâtiment avec un décalage temporel (Time Lag) propre à chaque segment de logement.",
-        "tab_lookback": "📊 Conjoncture rétrospective",
-        "tab_macro": "🏦 Contexte Macro & Financement",
-        "tab_prix": "🏷️ Prix & Accessibilité",
-        "tab_ecln": "🏗️ Commercialisation Neuf",
-        "tab_forecast": "📡 Prévision & Scénarios",
-        "tab_timelag": "🔬 Atelier — Time Lag",
-        "tab_composite": "🔬 Atelier — Composite",
-        "tab_export": "💾 Export SAP IBP",
-        "tab_source": "📂 Données Source",
-        
-        # Tab 1
-        "lookback_header": "📈 Visualisation Conjoncturelle des Marchés",
-        "lookback_desc": "Analyse rétrospective des indicateurs de construction neuve (SIT@DEL) et des ventes de logements anciens (IGEDD), au niveau national.",
-        "seg_neuf": "Segmentation Neuf (SIT@DEL)",
-        "seg_ancien": "Segmentation Ancien (IGEDD)",
-        "kpis_title": "🔑 Chiffres Clés",
-        "kpi_last_month": "Dernier mois disponible",
-        "permis_12m": "Permis de Construire (Cumul 12m glissant)",
-        "mises_12m": "Mises en Chantier (Cumul 12m glissant)",
-        "transactions_12m": "Ventes anciennes IGEDD (Cumul 12m glissant)",
-        "mensuel": "Mensuel",
-        "curves_title": "📊 Courbes d'évolution du marché",
-        "chart_view_label": "Type de visualisation",
-        "chart_view_rolling": "Cumul Glissant 12 Mois (Lissé)",
-        "chart_view_rolling6": "Cumul Glissant 6 Mois",
-        "chart_view_raw": "Données Brutes Mensuelles",
-        "ma_overlay_label": "Séries à afficher (données brutes et/ou moyennes mobiles) :",
-        "show_raw_label": "Données brutes mensuelles",
-        "ma_12": "Moyenne mobile 12 mois",
-        "ma_6": "Moyenne mobile 6 mois",
-        "ma_axis_title": "Moyenne mobile (milliers/mois)",
-        "ma12_suffix": "MM 12m",
-        "ma6_suffix": "MM 6m",
-        "chart_sitadel_main": "Logements autorisés et commencés",
-        "chart_sitadel_permis": "Logements autorisés",
-        "chart_sitadel_mises": "Logements commencés",
-        "chart_ventes_ancien_main": "Transactions de logements anciens",
-        "extra_params_title": "⚙️ Paramètres supplémentaires (neuf)",
-        "neuf_metric_label": "Indicateurs neuf à afficher",
-        "neuf_metric_both": "Les deux",
-        "neuf_metric_permis": "Permis de construire",
-        "neuf_metric_mises": "Logements commencés",
-        "sub_rolling": "cumul sur 12 mois, en milliers",
-        "sub_rolling6": "cumul sur 6 mois, en milliers",
-        "sub_raw": "données mensuelles brutes, en milliers",
-        "source_label": "Source",
-        "source_sitadel": "SIT@DEL (SDES)",
-        "source_ventes_ancien": "IGEDD",
-        "last_point_label": "Dernier point",
-        "monthly_compare_title": "📅 Comparaison Mensuelle par Année",
-        "monthly_compare_desc": "Sélectionnez un ou plusieurs mois pour comparer leurs valeurs d'une année à l'autre. Les années affichées correspondent au filtre « Période (années) » de la barre latérale.",
-        "month_select_label": "Mois à comparer",
-        "monthly_metric_label": "Indicateur neuf (SIT@DEL)",
-        "chart_sitadel_monthly_permis": "Permis de construire mensuels",
-        "chart_sitadel_monthly_mises": "Mises en chantier mensuelles",
-        "chart_ventes_ancien_monthly_main": "Transactions mensuelles de logements anciens",
-        "sub_monthly": "en milliers",
-        "no_month_selected": "Sélectionnez au moins un mois pour afficher la comparaison.",
-        "macro_context": "🏦 Contexte Macroéconomique et Financement",
-        "macro_desc": "Indicateurs de contexte macroéconomique et de conditions de financement : indice de confiance des ménages (INSEE), taux nominaux moyens du crédit habitat (Banque de France / BCE), Euribor 3 mois et OAT 10 ans (BCE), ainsi que les intentions d'achats de logements des ménages et le taux de chômage au sens du BIT (INSEE).",
-        "source_insee_full": "Source : INSEE — Enquête mensuelle de conjoncture auprès des ménages, indicateur synthétique de confiance (CVS, base 100 = moyenne de longue période), idbank 001587668.",
-        "source_rate_full": "Source : Banque de France / BCE — Coût du crédit à l'habitat des particuliers (crédits nouveaux, statistiques MIR, série M.FR.B.A2C.AM.R.A.2250.EUR.N). Équivalent ouvert et téléchargeable de l'Observatoire Crédit Logement.",
-        "chart_insee_title": "Indice de Confiance des Ménages (INSEE)",
-        "chart_insee_avg": "Moyenne de long terme (100)",
-        "chart_rates_title": "Taux d'intérêt et conditions de financement",
-        "rate_series_label": "Séries à afficher :",
-        "euribor_trace": "Euribor 3 mois",
-        "oat_trace": "OAT 10 ans",
-        "source_euribor_full": "Source : BCE — Euribor 3 mois (moyenne mensuelle, série FM M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA).",
-        "source_oat_full": "Source : BCE / AFT — OAT 10 ans, taux de référence des emprunts d'État français à 10 ans (série IRS M.FR.L.L40.CI.0000.EUR.N.Z).",
-        "permis_trace": "Permis de Construire",
-        "mises_trace": "Mises en Chantier",
-        "transactions_trace": "Transactions Ancien",
-        "insee_trace": "Indice de Confiance",
-        "credit_trace": "Taux Crédit Habitat",
-        "chart_insee_sub": "indice base 100",
-        "chart_rates_sub": "en %",
-        "intentions_trace": "Intentions d'achat de logement",
-        "chomage_trace": "Taux de chômage BIT",
-        "chart_intentions_title": "Intentions d'achats de logements dans un délai de 1 an",
-        "chart_intentions_sub": "solde des réponses, données CVS centrées-réduites",
-        "chart_chomage_title": "Taux de chômage au sens du BIT en France",
-        "chart_chomage_sub": "en %",
-        "source_intentions_full": "Source : INSEE — Enquête mensuelle de conjoncture auprès des ménages (Camme), intentions d'achats de logements (dans un délai de 1 an), solde des réponses, données CVS (idbank 001616794). Série affichée centrée-réduite (écart à la moyenne, en écarts-types).",
-        "source_chomage_full": "Source : INSEE — Taux de chômage au sens du BIT, ensemble, France hors Mayotte, données CVS trimestrielles (idbank 001688527).",
-
-        # Tab 2
-        "timelag_header": "🔮 Moteur de Simulation Prospective (Time Lag)",
-        "timelag_desc": "Décaler les indicateurs macroéconomiques ou de construction immobilière dans le futur pour modéliser des indicateurs avancés et estimer la demande future.",
-        "sim_params": "### 🎛️ Paramètres de Simulation",
-        "src_indicator": "1. Source d'Indicateur",
-        "housing_type": "Type de logement",
-        "property_type": "Type de bien",
-        "metric_sitadel": "Métrique",
-        "indicator_label": "Indicateur",
-        "smooth_ind": "Lisser l'indicateur (Cumul 12M glissant)",
-        "time_lag_label": "2. Décalage Temporel (Time Lag en mois)",
-        "time_lag_help": "Décale la courbe de l'indicateur vers le futur (valeur positive). Un lag de 14 signifie que l'indicateur d'aujourd'hui prédira les ventes dans 14 mois.",
-        "sales_compare": "3. Comparer avec les ventes de",
-        "bench_src_label": "3. Benchmark de ventes",
-        "bench_src_synth": "Ventes synthétiques (unités)",
-        "bench_src_revenue": "CA entreprise réel (M€)",
-        "bench_src_help": "Comparez l'indicateur soit aux ventes synthétiques (mensuelles, "
-                          "en unités), soit au chiffre d'affaires réel d'une entreprise cotée "
-                          "liée au logement (trimestriel, en M€ — Hexaom / Kingfisher France). "
-                          "En mode CA réel, l'indicateur est agrégé au trimestre.",
-        "bench_company": "Entreprise (CA réel)",
-        "revenue_note": "✅ CA réel (source publique, communiqués financiers). "
-                        "Comparaison sur base trimestrielle ; indicateur agrégé au trimestre.",
-        "optimal_lag_search": "🎯 Recherche de Décalage Optimal",
-        "optimal_lag_desc": "Calculer automatiquement le décalage qui maximise la corrélation avec vos ventes.",
-        "btn_calc_optimal": "Calculer le Lag Optimal",
-        "optimal_found": "Lag Optimal trouvé",
-        "max_corr": "Corrélation Maximale (Pearson)",
-        "btn_apply_lag": "Appliquer le Lag de {lag} mois",
-        "comp_view": "📈 Visualisation Comparée",
-        "alignment_title": "Alignement : {ind} (décalé de {lag} mois) vs Ventes",
-        "scale_ind": "Échelle Indicateur",
-        "scale_sales": "Ventes (Unités)",
-        "zone_prev": "🔮 ZONE PRÉVISIONNELLE",
-        "corr_dist_title": "📊 Distribution des coefficients de corrélation par mois de décalage",
-        "best_align_title": "Meilleur alignement : {lag} mois avec r = {r}",
-        
-        # Tab 3
-        "composite_header": "🧪 Créateur d'Indicateur Avancé Composite",
-        "composite_desc": "Combinez plusieurs indicateurs (permis, taux, confiance) avec des décalages temporels et des pondérations personnalisés pour créer un signal d'activité composite robuste.",
-        "composite_config": "🛠️ Sélectionnez les composantes et configurez leurs poids et lags",
-        "comp1_title": "Component 1: SIT@DEL",
-        "comp2_title": "Component 2: INSEE",
-        "comp3_title": "Component 3: Financement",
-        "comp_lag": "Lag (mois)",
-        "comp_weight": "Poids de l'Indicateur",
-        "comp_invert": "Inverser l'indicateur",
-        "comp_invert_help": "Recommandé : des taux élevés freinent l'immobilier, inverser permet de créer un signal d'activité positif corrélé aux ventes.",
-        "bench_product": "Sélectionnez le produit pour évaluer le modèle composite",
-        "composite_plot_title": "Indicateur Avancé Composite (Normalisé 0-100) vs Ventes Réelles",
-        "composite_axis": "Indice Composite (0-100)",
-        "sales_axis": "Volume des Ventes (Unités)",
-        "composite_perf": "💡 **Performance de l'indicateur composite :** Corrélation linéaire avec les ventes de {product} : **r = {r:.3f}**.",
-        
-        # Tab 4
-        "export_header": "💾 Export et Formatage pour SAP IBP",
-        "export_desc": "Formatez, prévisualisez et exportez la série temporelle de l'Indicateur Avancé calculé pour l'intégrer directement comme Key Figure Exogène dans SAP IBP.",
-        "export_source_label": "Indicateur à exporter",
-        "src_simple_lag": "Indicateur Simple Décalé (Défini dans l'onglet 'Simulation')",
-        "src_composite": "Indicateur Composite (Défini dans l'onglet 'Modèle Composite')",
-        "no_simple_lag": "⚠️ Aucun indicateur décalé n'a été calculé. Rendez-vous sur l'onglet 'Simulation Time Lag' pour en générer un.",
-        "no_composite": "⚠️ Aucun indicateur composite n'a été créé. Rendez-vous sur l'onglet 'Modèle Composite' pour en configurer un.",
-        "export_ready": "✅ Source prête à l'export contenant {count} mois de données.",
-        "export_params": "### ⚙️ Paramètres d'Exportation SAP",
-        "kf_name_label": "ID de la Key Figure dans SAP IBP",
-        "granularity_label": "Granularité temporelle",
-        "date_format_label": "Format de date / période",
-        "delimiter_label": "Délimiteur de colonnes CSV",
-        "locid_default": "Code de localisation par défaut (LOCID)",
-        "header_mapping": "#### 🛠️ Personnalisation des En-têtes (Headers Mapping)",
-        "header_period": "Période (Time)",
-        "header_loc": "Localisation (Location)",
-        "header_ind": "Indicateur / Produit",
-        "header_val": "Valeur (Value)",
-        "export_preview_title": "👀 Prévisualisation du fichier d'intégration (.csv)",
-        "export_rows_desc": "Aperçu des 10 premières lignes (total : {count} lignes) :",
-        "btn_download_csv": "📥 Télécharger le fichier CSV pour SAP IBP",
-        "sap_instructions": "#### 📋 Instructions de chargement SAP IBP:\n1. Connectez-vous à la console SAP IBP Cloud.\n2. Ouvrez l'application **\"Data Integration Jobs\"**.\n3. Sélectionnez le job de chargement des **Key Figures** de type exogène.\n4. Déposez ce fichier CSV. L'alignement automatique avec la Key Figure `KEYFIGUREVALUE` et la période `PERIODID0` se fera d'après vos en-têtes configurés.",
-        
-        # Tab 5
-        "source_header": "📂 Gestion des Données Ingestion & Open Data",
-        "source_desc": "Ce module gère le stockage local et permet d'ingérer de nouvelles données en téléversant des fichiers CSV personnalisés pour écraser les données historiques.",
-        "source_status": "📊 Données Actuelles du Système",
-        "select_db_view": "Sélectionnez la base à visualiser / mettre à jour",
-        "db_preview_label": "Aperçu de la base **{name}** ({count} lignes) :",
-        "btn_download_template": "📥 Télécharger le modèle CSV ({name}.csv)",
-        "upload_new_data": "📤 Téléverser de Nouvelles Données",
-        "upload_desc": "Mettez à jour la table **{name}** avec vos propres données locales ou des extractions directes SAP / Ministères.",
-        "required_cols": "Colonnes requises :",
-        "file_uploader_label": "Choisir un fichier CSV pour {name}",
-        "btn_import_overwrite": "Importer et Écraser {name}",
-        "reset_title": "⚠️ Réinitialisation Générale",
-        "reset_desc": "Rétablir toutes les bases de données par défaut de l'application (données historiques 2018-2026).",
-        "btn_reset_all": "Réinitialiser toutes les bases",
-        "reset_spinner": "Rétablissement des données en cours...",
-        "reset_success": "Toutes les bases ont été réinitialisées aux données d'origine !",
-        "synthetic_note": "⚠️ Données synthétiques, en attente de source officielle.",
-        "map_caption": "🗺️ Transactions de logements anciens 2025 par département (foncé = plus de transactions). Cliquez un département pour filtrer.",
-        "map_caption_region": "🗺️ Transactions de logements anciens 2025 par région (foncé = plus de transactions). Cliquez une région pour filtrer.",
-        "map_hover_tx": "Transactions 2025",
-        "igedd_header": "🏛️ Ventes dans l'ancien (source IGEDD)",
-        "igedd_desc": "La série des ventes de logements anciens provient du fichier national IGEDD « data_manual_input/nombre-vente-maison-appartement-ancien.xls » (cumul 12 mois glissant, national). Cliquez pour la reconstruire si vous avez mis à jour le fichier.",
-        "igedd_btn": "🔄 Reconstruire les ventes anciennes (IGEDD)",
-        "igedd_spinner": "Lecture du fichier IGEDD et reconstruction de la série...",
-    },
-    "EN": {
-        "title": "🏠 Real Estate Market Intelligence & Forecasting Tool",
-        "demand_planning_caption": "Demand Planning Department",
-        "year_filter": "📅 Period (years)",
-        "geo_filter": "🌍 Geographic Filter",
-        "geo_granularity": "Granularity level",
-        "regions_label": "Select Regions",
-        "regions_all_placeholder": "all — every region",
-        "depts_label": "Select Departments",
-        "depts_all_placeholder": "all — every department",
-        "filter_region_label": "Filter by Region",
-        "sidebar_info": "💡 **Decision support:** SIT@DEL building permits & construction starts as well as IGEDD existing-home sales predict activity in the building secondary-works (second-œuvre) industries with a specific Time Lag proper to each housing segment.",
-        "tab_lookback": "📊 Look-back Analysis",
-        "tab_macro": "🏦 Macro & Financing Context",
-        "tab_prix": "🏷️ Prices & Affordability",
-        "tab_ecln": "🏗️ New-Build Sales (ECLN)",
-        "tab_forecast": "📡 Forecast & Scenarios",
-        "tab_timelag": "🔬 Workshop — Time Lag",
-        "tab_composite": "🔬 Workshop — Composite",
-        "tab_export": "💾 Export SAP IBP",
-        "tab_source": "📂 Source Data",
-        
-        # Tab 1
-        "lookback_header": "📈 Market Economic Visualization",
-        "lookback_desc": "Retrospective analysis of new construction metrics (SIT@DEL) and existing-home sales volumes (IGEDD), at the national level.",
-        "seg_neuf": "New Construction Segment (SIT@DEL)",
-        "seg_ancien": "Existing Housing Segment (IGEDD)",
-        "kpis_title": "🔑 Key Performance Indicators",
-        "kpi_last_month": "Last available month",
-        "permis_12m": "Building Permits (12M Rolling Cumulative)",
-        "mises_12m": "Construction Starts (12M Rolling Cumulative)",
-        "transactions_12m": "IGEDD existing-home sales (12M Rolling Cumulative)",
-        "mensuel": "Monthly",
-        "curves_title": "📊 Market evolution curves",
-        "chart_view_label": "Visualization Type",
-        "chart_view_rolling": "12-Month Rolling Cumulative (Smoothed)",
-        "chart_view_rolling6": "6-Month Rolling Cumulative",
-        "chart_view_raw": "Raw Monthly Data",
-        "ma_overlay_label": "Series to display (raw data and/or moving averages):",
-        "show_raw_label": "Raw monthly data",
-        "ma_12": "12-month moving average",
-        "ma_6": "6-month moving average",
-        "ma_axis_title": "Moving average (thousands/month)",
-        "ma12_suffix": "12m MA",
-        "ma6_suffix": "6m MA",
-        "chart_sitadel_main": "Housing permits and starts",
-        "chart_sitadel_permis": "Housing permits",
-        "chart_sitadel_mises": "Housing starts",
-        "chart_ventes_ancien_main": "Existing-home sales",
-        "extra_params_title": "⚙️ Additional settings (new-build)",
-        "neuf_metric_label": "New-build indicators to display",
-        "neuf_metric_both": "Both",
-        "neuf_metric_permis": "Building permits",
-        "neuf_metric_mises": "Housing starts",
-        "sub_rolling": "12-month rolling sum, in thousands",
-        "sub_rolling6": "6-month rolling sum, in thousands",
-        "sub_raw": "raw monthly data, in thousands",
-        "source_label": "Source",
-        "source_sitadel": "SIT@DEL (SDES)",
-        "source_ventes_ancien": "IGEDD",
-        "last_point_label": "Last data point",
-        "monthly_compare_title": "📅 Monthly Comparison by Year",
-        "monthly_compare_desc": "Select one or more months to compare their values year over year. The years shown follow the “Période (années)” filter in the sidebar.",
-        "month_select_label": "Months to compare",
-        "monthly_metric_label": "New-build indicator (SIT@DEL)",
-        "chart_sitadel_monthly_permis": "Monthly building permits",
-        "chart_sitadel_monthly_mises": "Monthly construction starts",
-        "chart_ventes_ancien_monthly_main": "Monthly existing-home sales",
-        "sub_monthly": "in thousands",
-        "no_month_selected": "Select at least one month to display the comparison.",
-        "macro_context": "🏦 Macroeconomics and Financing Context",
-        "macro_desc": "Macroeconomic context and financing-condition indicators: household confidence index (INSEE), average nominal housing-loan rates (Banque de France / ECB), 3-month Euribor and 10-year OAT (ECB), together with household housing-purchase intentions and the ILO unemployment rate (INSEE).",
-        "source_insee_full": "Source: INSEE — Monthly household confidence survey, synthetic confidence indicator (SA, base 100 = long-term average), idbank 001587668.",
-        "source_rate_full": "Source: Banque de France / ECB — Cost of borrowing for house purchase (new business, MIR statistics, series M.FR.B.A2C.AM.R.A.2250.EUR.N). Open, downloadable equivalent of the Crédit Logement Observatory rate.",
-        "chart_insee_title": "Household Confidence Index (INSEE)",
-        "chart_insee_avg": "Long-term Average (100)",
-        "chart_rates_title": "Interest rates and financing conditions",
-        "rate_series_label": "Series to display:",
-        "euribor_trace": "3-month Euribor",
-        "oat_trace": "10-year OAT",
-        "source_euribor_full": "Source: ECB — 3-month Euribor (monthly average, FM series M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA).",
-        "source_oat_full": "Source: ECB / AFT — 10-year OAT, benchmark yield of French 10-year government bonds (IRS series M.FR.L.L40.CI.0000.EUR.N.Z).",
-        "permis_trace": "Building Permits",
-        "mises_trace": "Construction Starts",
-        "transactions_trace": "Transactions",
-        "insee_trace": "Confidence Index",
-        "credit_trace": "Housing Loan Rate",
-        "chart_insee_sub": "index, base 100",
-        "chart_rates_sub": "in %",
-        "intentions_trace": "Housing purchase intentions",
-        "chomage_trace": "ILO unemployment rate",
-        "chart_intentions_title": "Housing purchase intentions within 1 year",
-        "chart_intentions_sub": "response balance, seasonally adjusted, standardized",
-        "chart_chomage_title": "ILO unemployment rate in France",
-        "chart_chomage_sub": "in %",
-        "source_intentions_full": "Source: INSEE — Monthly household confidence survey (Camme), intentions to purchase housing (within 1 year), response balance, seasonally adjusted (idbank 001616794). Series shown standardized (deviation from mean, in standard deviations).",
-        "source_chomage_full": "Source: INSEE — ILO unemployment rate, whole population, France excl. Mayotte, seasonally adjusted quarterly data (idbank 001688527).",
-
-        # Tab 2
-        "timelag_header": "🔮 Forward-Looking Simulation Engine (Time Lag)",
-        "timelag_desc": "Shift macroeconomic or construction indicators forward in time to model leading indicators and project future sales demand.",
-        "sim_params": "### 🎛️ Simulation Parameters",
-        "src_indicator": "1. Indicator Source",
-        "housing_type": "Housing type",
-        "property_type": "Property type",
-        "metric_sitadel": "Metric",
-        "indicator_label": "Indicator",
-        "smooth_ind": "Smooth indicator (12M rolling cumulative)",
-        "time_lag_label": "2. Time Lag (months)",
-        "time_lag_help": "Shifts the indicator curve forward in time (positive lag). A lag of 14 means today's permits will predict sales 14 months into the future.",
-        "sales_compare": "3. Compare with sales of",
-        "bench_src_label": "3. Sales benchmark",
-        "bench_src_synth": "Synthetic sales (units)",
-        "bench_src_revenue": "Real company revenue (€m)",
-        "bench_src_help": "Compare the indicator either against synthetic sales (monthly, "
-                          "in units) or against the real revenue of a listed housing-related "
-                          "company (quarterly, in €m — Hexaom / Kingfisher France). In real-"
-                          "revenue mode the indicator is aggregated to quarters.",
-        "bench_company": "Company (real revenue)",
-        "revenue_note": "✅ Real revenue (public source, investor-relations releases). "
-                        "Compared on a quarterly basis; indicator aggregated to quarters.",
-        "optimal_lag_search": "🎯 Optimal Lag Search",
-        "optimal_lag_desc": "Automatically calculate the time lag that maximizes Pearson correlation with your sales.",
-        "btn_calc_optimal": "Calculate Optimal Lag",
-        "optimal_found": "Optimal Lag found",
-        "max_corr": "Maximum Correlation (Pearson)",
-        "btn_apply_lag": "Apply Lag of {lag} months",
-        "comp_view": "📈 Comparative Visualization",
-        "alignment_title": "Alignment: {ind} (shifted by {lag} months) vs Sales",
-        "scale_ind": "Indicator Scale",
-        "scale_sales": "Sales (Units)",
-        "zone_prev": "🔮 FORECAST ZONE",
-        "corr_dist_title": "📊 Correlation coefficient distribution by month lag",
-        "best_align_title": "Best alignment: {lag} months with r = {r}",
-        
-        # Tab 3
-        "composite_header": "🧪 Weighted Composite Leading Indicator",
-        "composite_desc": "Combine multiple indicators (permis, rates, confidence) with custom time lags and weights to create a single robust demand signal.",
-        "composite_config": "🛠️ Select components and configure weights and lags",
-        "comp1_title": "Component 1: SIT@DEL",
-        "comp2_title": "Component 2: INSEE",
-        "comp3_title": "Component 3: Financing",
-        "comp_lag": "Lag (months)",
-        "comp_weight": "Indicator Weight",
-        "comp_invert": "Invert indicator",
-        "comp_invert_help": "Recommended: High interest rates slow down housing. Inverting creates a positive activity signal correlated with sales.",
-        "bench_product": "Select product to benchmark the composite model",
-        "composite_plot_title": "Composite Leading Indicator (Normalized 0-100) vs Actual Sales",
-        "composite_axis": "Composite Index (0-100)",
-        "sales_axis": "Sales Volume (Units)",
-        "composite_perf": "💡 **Composite indicator performance:** Linear correlation with sales of {product}: **r = {r:.3f}**.",
-        
-        # Tab 4
-        "export_header": "💾 SAP IBP Formatting & Export",
-        "export_desc": "Format, preview and export the calculated Leading Indicator series to import it directly as an Exogenous Key Figure in SAP IBP.",
-        "export_source_label": "Indicator to export",
-        "src_simple_lag": "Shifted Simple Indicator (Defined in 'Simulation' tab)",
-        "src_composite": "Composite Indicator (Defined in 'Composite Model' tab)",
-        "no_simple_lag": "⚠️ No shifted simple indicator calculated. Go to the 'Simulation Time Lag' tab to generate one.",
-        "no_composite": "⚠️ No composite indicator created. Go to the 'Composite Model' tab to configure one.",
-        "export_ready": "✅ Export source ready with {count} months of data.",
-        "export_params": "### ⚙️ SAP Export Settings",
-        "kf_name_label": "Key Figure ID in SAP IBP",
-        "granularity_label": "Temporal granularity",
-        "date_format_label": "Date / period format",
-        "delimiter_label": "CSV Column Delimiter",
-        "locid_default": "Default location code (LOCID)",
-        "header_mapping": "#### 🛠️ Column Headers Mapping",
-        "header_period": "Period (Time)",
-        "header_loc": "Location (Location)",
-        "header_ind": "Indicator / Product",
-        "header_val": "Value (Value)",
-        "export_preview_title": "👀 Integration File Preview (.csv)",
-        "export_rows_desc": "Showing the first 10 rows (total: {count} rows):",
-        "btn_download_csv": "📥 Download CSV file for SAP IBP",
-        "sap_instructions": "#### 📋 SAP IBP Loading Instructions:\n1. Log in to your SAP IBP Cloud console.\n2. Open the **\"Data Integration Jobs\"** app.\n3. Select the job to load exogenous **Key Figures**.\n4. Upload this CSV file. Automatic alignment with Key Figure `KEYFIGUREVALUE` and period `PERIODID0` will be done based on your configured headers.",
-        
-        # Tab 5
-        "source_header": "📂 Source Data & Open Data Management",
-        "source_desc": "This module manages local storage and enables data ingestion by uploading custom CSV files to overwrite historical data.",
-        "source_status": "📊 Current System Databases",
-        "select_db_view": "Select database to view / update",
-        "db_preview_label": "Database preview for **{name}** ({count} rows):",
-        "btn_download_template": "📥 Download CSV template ({name}.csv)",
-        "upload_new_data": "📤 Upload New Data",
-        "upload_desc": "Update the **{name}** table with your own local data or direct extractions from SAP / Ministries.",
-        "required_cols": "Required columns:",
-        "file_uploader_label": "Choose CSV file for {name}",
-        "btn_import_overwrite": "Import & Overwrite {name}",
-        "reset_title": "⚠️ System General Reset",
-        "reset_desc": "Restore all databases to application default values (historical data 2018-2026).",
-        "btn_reset_all": "Reset all databases",
-        "reset_spinner": "Restoring data, please wait...",
-        "reset_success": "All databases have been successfully restored to factory defaults!",
-        "synthetic_note": "⚠️ Synthetic data, pending an official source.",
-        "map_caption": "🗺️ 2025 existing-home transactions by department (darker = more transactions). Click a department to filter.",
-        "map_caption_region": "🗺️ 2025 existing-home transactions by region (darker = more transactions). Click a region to filter.",
-        "map_hover_tx": "2025 transactions",
-        "igedd_header": "🏛️ Existing-home sales (IGEDD source)",
-        "igedd_desc": "The existing-home sales series comes from the IGEDD national file 'data_manual_input/nombre-vente-maison-appartement-ancien.xls' (12-month rolling total, national). Click to rebuild it if you have updated the file.",
-        "igedd_btn": "🔄 Rebuild existing-home sales (IGEDD)",
-        "igedd_spinner": "Reading the IGEDD file and rebuilding the series...",
-    }
-}
+from translations import T
 
 # Apply Translations
 st.sidebar.caption(T[lang_code]["demand_planning_caption"])
@@ -830,8 +438,50 @@ def macro_chart_title(title, subtitle):
         unsafe_allow_html=True
     )
 
+def company_series_options(df):
+    """Distinct imported product-family labels ('Serie'), or [] when nothing imported."""
+    if df is None or df.empty or "Serie" not in df.columns:
+        return []
+    return sorted(df["Serie"].dropna().astype(str).unique().tolist())
+
+def pick_company_series(df, key, label=None):
+    """Series selector + monthly [Date, Sales] aggregate for the chosen imported product
+    family. Shows a selectbox only when several series were imported; returns
+    (serie_name, agg_df) or (None, None) when no company sales are available."""
+    opts = company_series_options(df)
+    if not opts:
+        return None, None
+    serie = opts[0] if len(opts) == 1 else st.selectbox(
+        label or _L("Série (famille de produits)", "Series (product family)"), opts, key=key)
+    agg = df[df["Serie"] == serie].groupby("Date")["Sales"].sum().reset_index()
+    return serie, agg
+
+def synthetic_circularity_warning():
+    """Shown when an exploratory engine is benchmarked on the SYNTHETIC second-œuvre sales:
+    those are built FROM the same permits/transactions, so a high correlation is mechanical,
+    not evidence. Nudges the user toward importing real company sales."""
+    st.warning(_L(
+        "⚠️ Cible = ventes **synthétiques**, construites à partir des permis SIT@DEL et des "
+        "transactions IGEDD. Une corrélation élevée est ici **mécanique** (l'indicateur "
+        "explique une série dérivée de lui-même), pas une preuve de pouvoir prédictif. "
+        "Importez vos ventes réelles (onglet « Données Source ») pour une analyse valide.",
+        "⚠️ Target = **synthetic** sales, built FROM SIT@DEL permits and IGEDD transactions. "
+        "A high correlation here is **mechanical** (the indicator explains a series derived "
+        "from itself), not evidence of predictive power. Import your real company sales "
+        "(『Source Data』 tab) for a valid analysis."))
+
+# Published BPCE L'Observatoire targets for 2026 (RDV Immobilier press conference,
+# 2 June 2026) — external validation benchmark for our own model. Defined here (above the
+# tabs) so both the Synthèse landing page and the Forecast tab can reference them.
+BPCE_TX_ANCIEN_2026 = 890_000      # existing-home transactions in 2026 (−6% vs 2025)
+BPCE_TX_TOTAL_2026 = 1_026_000     # total (new + existing) transactions (−5% vs 2025)
+BPCE_RATE_Q4_2026 = 3.43           # credit rate at Q4 2026 (%, +34 bp YoY)
+BPCE_PRICE_YOY_Q4_2026 = -0.1      # existing-home price, YoY at Q4 2026 (%)
+
 # --- Define Streamlit Tabs ---
-tabs = st.tabs([
+(tab_synthese, tab_lookback, tab_macro, tab_prix, tab_ecln, tab_forecast,
+ tab_timelag, tab_composite, tab_export, tab_source) = st.tabs([
+    _L("🧭 Synthèse", "🧭 Overview"),
     T[lang_code]["tab_lookback"],
     T[lang_code]["tab_macro"],
     T[lang_code]["tab_prix"],
@@ -844,9 +494,141 @@ tabs = st.tabs([
 ])
 
 # ==============================================================================
+# TAB 0: SYNTHÈSE (landing page — traffic-light read of the market + auto commentary)
+# ==============================================================================
+with tab_synthese:
+    st.header(_L("🧭 Synthèse — vue d'ensemble du marché",
+                 "🧭 Market overview"))
+    st.caption(_L(
+        "Lecture rapide de l'état du marché et de son orientation récente. Chaque pastille "
+        "résume la tendance des 3 derniers mois vs un an plus tôt (🟢 hausse · 🟠 stable · "
+        "🔴 baisse) ; le détail est dans les onglets dédiés. Chiffres nationaux, indépendants "
+        "du filtre de période.",
+        "Quick read of the market's state and recent direction. Each dot summarises the last "
+        "3 months vs a year earlier (🟢 up · 🟠 flat · 🔴 down); detail is in the dedicated "
+        "tabs. National figures, independent of the period filter."))
+
+    def _dot(status):
+        return {"up": "🟢", "flat": "🟠", "down": "🔴"}.get(status, "⚪")
+
+    def _status_yoy(v, hi=1.0, lo=-1.0):
+        if v is None:
+            return "flat"
+        return "up" if v > hi else ("down" if v < lo else "flat")
+
+    def _th(v):
+        return "—" if v is None else f"{int(round(v)):,}".replace(",", " ")
+
+    def _pct_fr(v):
+        if v is None:
+            return "—"
+        s = f"{v:+.1f}%"
+        return s.replace(".", ",") if lang_code == "FR" else s
+
+    # Full-history national momentum & 12m levels (slicer-independent).
+    _sy_sit = ana.aggregate_sitadel(df_sitadel_full)
+    _sy_va = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
+    _sy_m_permis = ana.momentum_metrics(_sy_sit, "Permis")
+    _sy_m_mises = ana.momentum_metrics(_sy_sit, "MisesEnChantier")
+    _sy_m_tx = ana.momentum_metrics(_sy_va, "Transactions")
+    _sy_k_permis = ana.calculate_kpis(ana.calculate_rolling_12m(_sy_sit, ["Permis"]), "Permis")
+    _sy_k_mises = ana.calculate_kpis(ana.calculate_rolling_12m(_sy_sit, ["MisesEnChantier"]), "MisesEnChantier")
+    _sy_k_tx = ana.calculate_kpis(ana.calculate_rolling_12m(_sy_va, ["Transactions"]), "Transactions")
+
+    _mi = df_macro_full.set_index("Date").sort_index()
+
+    def _last_prev(col, months=12):
+        if col not in _mi.columns:
+            return None, None
+        s = _mi[col].dropna()
+        if s.empty:
+            return None, None
+        last = float(s.iloc[-1])
+        cutoff = s.index[-1] - pd.DateOffset(months=months)
+        older = s[s.index <= cutoff]
+        return last, (float(older.iloc[-1]) if not older.empty else None)
+
+    # --- Card 1-3: construction & transactions (momentum) ---
+    cards = []
+    cards.append((_status_yoy(_sy_m_permis.get("last3_yoy")),
+                  _L("Permis de construire", "Building permits"),
+                  _th(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
+                  _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_permis.get("last3_yoy"))))
+    cards.append((_status_yoy(_sy_m_mises.get("last3_yoy")),
+                  _L("Mises en chantier", "Housing starts"),
+                  _th(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
+                  _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_mises.get("last3_yoy"))))
+    cards.append((_status_yoy(_sy_m_tx.get("last3_yoy")),
+                  _L("Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"),
+                  _th(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
+                  _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_tx.get("last3_yoy"))))
+
+    # --- Card 4: credit rate direction (rising rate = headwind → down) ---
+    _r_last, _r_prev = _last_prev("Credit_Logement_Taux_Interet")
+    if _r_last is None:
+        _r_status, _r_val, _r_sub = "flat", "—", ""
+    else:
+        _dr = None if _r_prev is None else _r_last - _r_prev
+        _r_status = "flat" if _dr is None else ("down" if _dr > 0.1 else ("up" if _dr < -0.1 else "flat"))
+        _r_val = (f"{_r_last:.2f} %".replace(".", ",") if lang_code == "FR" else f"{_r_last:.2f}%")
+        _r_sub = _L("sur 12 m : ", "12m: ") + (_pct_fr(_dr).replace("%", " pt") if _dr is not None else "—")
+    cards.append((_r_status, _L("Taux de crédit habitat", "Housing-loan rate"), _r_val, _r_sub))
+
+    # --- Card 5: credit demand (BLS expectations, leading) ---
+    _bls_last, _ = _last_prev("Demande_Credit_Perspectives")
+    if _bls_last is None:
+        cards.append(("flat", _L("Demande de crédit (BLS)", "Credit demand (BLS)"), "—", ""))
+    else:
+        _bls_status = "up" if _bls_last > 0 else ("down" if _bls_last < -10 else "flat")
+        cards.append((_bls_status, _L("Demande de crédit (BLS)", "Credit demand (BLS)"),
+                      f"{_bls_last:+.0f}", _L("perspectives 3 m, solde net %", "3m outlook, net %")))
+
+    # --- Card 6: forecast vs BPCE 2026 target ---
+    _sy_tx12 = fc.build_target(df_ventes_ancien_full).dropna()
+    if _sy_tx12.empty:
+        cards.append(("flat", _L("Prévision vs BPCE 2026", "Forecast vs BPCE 2026"), "—", ""))
+    else:
+        _sy_last_tx = float(_sy_tx12.iloc[-1])
+        _sy_gap = (_sy_last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
+        # Above target = market currently stronger than BPCE's end-2026 view (a slowdown is
+        # implied ahead) → flag orange; near/below is closer to the published landing point.
+        _f_status = "up" if _sy_gap > 3 else ("flat" if _sy_gap > -3 else "down")
+        cards.append((_f_status, _L("Ventes 12 m vs cible BPCE", "12m sales vs BPCE target"),
+                      _th(_sy_last_tx), _L("écart à 890k : ", "gap to 890k: ") + _pct_fr(_sy_gap)))
+
+    # Render cards in rows of 3.
+    for _row_start in range(0, len(cards), 3):
+        _rc = st.columns(3)
+        for _c, (_st, _title, _val, _sub) in zip(_rc, cards[_row_start:_row_start + 3]):
+            with _c:
+                st.markdown(f"### {_dot(_st)} {_val}")
+                st.markdown(f"**{_title}**")
+                if _sub:
+                    st.caption(_sub)
+
+    # Auto-generated commentary (same helper as the look-back tab & the PDF report).
+    _sy_mom_ip = ana.momentum_metrics(
+        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+    st.markdown("---")
+    st.info("📝 " + ana.build_market_commentary(
+        _sy_k_permis, _sy_k_mises, _sy_k_tx,
+        _sy_m_permis, _sy_m_mises, _sy_m_tx, _sy_mom_ip, lang_code))
+
+    # Data freshness by source (SIT@DEL and IGEDD can end on different months).
+    _last_sit = last_valid_month(ana.calculate_rolling_12m(_sy_sit, ["Permis"]), "Permis")
+    _last_va = last_valid_month(ana.calculate_rolling_12m(_sy_va, ["Transactions"]), "Transactions")
+    st.caption(_L(
+        f"Dernières données — construction (SIT@DEL) : {format_month_year(_last_sit, lang_code)} · "
+        f"ventes anciennes (IGEDD) : {format_month_year(_last_va, lang_code)}. "
+        f"Ouvrez « 📡 Prévision & Scénarios » pour la projection à horizon et les scénarios.",
+        f"Latest data — construction (SIT@DEL): {format_month_year(_last_sit, lang_code)} · "
+        f"existing-home sales (IGEDD): {format_month_year(_last_va, lang_code)}. "
+        f"Open 『📡 Forecast & Scenarios』 for the horizon projection and scenarios."))
+
+# ==============================================================================
 # TAB 1: CONJONCTURE LOOK-BACK
 # ==============================================================================
-with tabs[0]:
+with tab_lookback:
     st.header(T[lang_code]["lookback_header"])
     st.write(T[lang_code]["lookback_desc"])
     
@@ -950,6 +732,11 @@ with tabs[0]:
 
     # --- KPI Row (rendered into the reserved container above the charts) ---
     kpi_container.markdown(f"### {T[lang_code]['kpis_title']}")
+    kpi_container.caption(_L(
+        "Chiffres nationaux au dernier mois disponible — indépendants du filtre de période "
+        "et de la segmentation ci-dessous.",
+        "National figures at the latest available month — independent of the period filter "
+        "and the segmentation below."))
     kpi_cols = kpi_container.columns(3)
 
     with kpi_cols[0]:
@@ -1242,7 +1029,7 @@ with tabs[0]:
 # ==============================================================================
 # TAB 2: CONTEXTE MACRO ÉCONOMIQUE ET FINANCEMENT
 # ==============================================================================
-with tabs[1]:
+with tab_macro:
     st.header(T[lang_code]["macro_context"])
     st.write(T[lang_code]["macro_desc"])
 
@@ -1446,6 +1233,49 @@ with tabs[1]:
             "house-purchase loans, France, net percentage. A leading indicator of loan "
             "production (BPCE p.23)."))
 
+    # --- Renovation pillar — the second-œuvre demand that neither new construction nor
+    # existing-home transactions capture (a large share of Somfy-type product demand comes
+    # from the installed stock, not moves). Real, national; NaN until fetch_new_sources.py
+    # produces the CSVs, in which case a hint replaces the charts.
+    st.markdown("---")
+    st.markdown("#### " + _L("Rénovation & second œuvre (pilier complémentaire)",
+                             "Renovation & secondary works (complementary pillar)"))
+    _reno_cols = [("Reno_Activite_Batiment",
+                   _L("Activité dans le bâtiment (enquête)", "Building-trades activity (survey)"),
+                   _L("solde d'opinion", "opinion balance"), COLOR_BRICK),
+                  ("Reno_Aides_Distribuees",
+                   _L("Aides à la rénovation distribuées", "Renovation grants paid"),
+                   _L("volume (MaPrimeRénov')", "volume (MaPrimeRénov')"), COLOR_GREEN)]
+    _reno_present = [c for c in _reno_cols
+                     if c[0] in df_macro.columns and df_macro[c[0]].notna().any()]
+    if not _reno_present:
+        st.info(_L(
+            "Pilier rénovation non encore alimenté. Lancez `python fetch_new_sources.py` "
+            "(fonction `build_renovation`, identifiants à vérifier) pour ajouter l'activité "
+            "bâtiment (enquête de conjoncture) et les aides à la rénovation — un troisième "
+            "driver de la demande second œuvre, indépendant du neuf et des transactions.",
+            "Renovation pillar not populated yet. Run `python fetch_new_sources.py` "
+            "(`build_renovation`, identifiers to verify) to add building-trades activity "
+            "(business survey) and renovation grants — a third second-œuvre demand driver, "
+            "independent of new-build and transactions."))
+    else:
+        reno_c = st.columns(len(_reno_present))
+        for (_c, _title, _sub, _clr), _rc in zip(_reno_present, reno_c):
+            with _rc:
+                macro_chart_title(_title, _sub)
+                s = df_macro.dropna(subset=[_c])
+                fig_r = go.Figure()
+                fig_r.add_trace(go.Scatter(x=s["Date"], y=s[_c], name=_title,
+                                           line=dict(color=_clr, width=2)))
+                add_last_value_label(fig_r, s, "Date", _c, _clr, lang_code, decimals=0)
+                apply_macro_chart_layout(fig_r, _sub)
+                st.plotly_chart(fig_r, use_container_width=True)
+        st.caption(_L(
+            "Sources : INSEE (enquête bâtiment) / ANAH — MaPrimeRénov' (data.gouv). La "
+            "rénovation tire une part de la demande second œuvre non expliquée par le neuf.",
+            "Sources: INSEE (building survey) / ANAH — MaPrimeRénov' (data.gouv). Renovation "
+            "drives a share of second-œuvre demand not explained by new construction."))
+
 
 # ==============================================================================
 # TAB 3: PRIX & ACCESSIBILITÉ (indices Notaires-INSEE + capacité d'emprunt / accessibilité)
@@ -1460,7 +1290,7 @@ def _borrow_capacity_factor(rate_pct, years):
         return np.where(i > 0, (1.0 - (1.0 + i) ** (-n)) / i, float(n))
 
 
-with tabs[2]:
+with tab_prix:
     st.header(_L("🏷️ Prix des logements & accessibilité",
                  "🏷️ House prices & affordability"))
     st.write(_L(
@@ -1622,7 +1452,7 @@ with tabs[2]:
 # ==============================================================================
 # TAB 4: COMMERCIALISATION DES LOGEMENTS NEUFS (ECLN)
 # ==============================================================================
-with tabs[3]:
+with tab_ecln:
     st.header(_L("🏗️ Commercialisation des logements neufs (ECLN)", "🏗️ New-build sales (ECLN)"))
     st.write(_L(
         "Commercialisation des logements neufs (SDES — ECLN, national, trimestriel CVS-CJO) : encours "
@@ -1731,15 +1561,8 @@ def _forecast_bundle(macro, ventes_ancien):
     return rm, lags, tm
 
 
-# Published BPCE L'Observatoire targets for 2026 (RDV Immobilier press conference,
-# 2 June 2026) — used as an external validation benchmark for our own model.
-BPCE_TX_ANCIEN_2026 = 890_000      # existing-home transactions in 2026 (−6% vs 2025)
-BPCE_TX_TOTAL_2026 = 1_026_000     # total (new + existing) transactions (−5% vs 2025)
-BPCE_RATE_Q4_2026 = 3.43           # credit rate at Q4 2026 (%, +34 bp YoY)
-BPCE_PRICE_YOY_Q4_2026 = -0.1      # existing-home price, YoY at Q4 2026 (%)
 
-
-with tabs[4]:
+with tab_forecast:
     st.header(_L("📡 Prévision des transactions & scénarios",
                  "📡 Transaction forecast & scenarios"))
     st.write(_L(
@@ -1828,6 +1651,79 @@ with tabs[4]:
             "Trained only on ≤2021 data, the model reproduces the 2022-24 contraction, the Sept-2024 trough and "
             "the 2025-26 rebound — without having seen them. That is the proof the leading indicators genuinely "
             "'forecast'. Sources: IGEDD (sales), INSEE + BdF/ECB (indicators)."))
+
+        # ---- 2bis. Forward projection to horizon --------------------------------
+        # Because the predictors enter with estimated lags, their ALREADY-OBSERVED values
+        # pin down transactions for the coming months with no assumption on where macro
+        # goes next. Sigma = out-of-sample backtest RMSE when available (else in-sample).
+        _sigma = float(_bt["rmse"]) if "rmse" in _bt else float(_tm["rmse"])
+        _last_tx12_pre = float(_tx12.dropna().iloc[-1])
+        _fpath = fc.forecast_path(df_macro_full, _tx12, _lags, _b, _sigma, horizon=18)
+        st.markdown("#### " + _L("2 bis. Projection à horizon (décalages déjà observés)",
+                                 "2b. Projection to horizon (already-observed lags)"))
+        if _fpath is None or _fpath.empty:
+            st.info(_L(
+                "Les décalages estimés ne permettent pas de projection au-delà du dernier point "
+                "(un prédicteur a un décalage nul ou proche de zéro).",
+                "The estimated lags allow no projection beyond the last point (a predictor has a "
+                "zero / near-zero lag)."))
+        else:
+            _obs_line = _tm["frame"]
+            fig_fc = go.Figure()
+            fig_fc.add_trace(go.Scatter(x=_obs_line["Date"], y=_obs_line["obs"],
+                                        name=_L("Observé (IGEDD)", "Observed (IGEDD)"),
+                                        line=dict(color=COLOR_TEXT, width=2.5)))
+            # Uncertainty band (±1.28σ ≈ 80%).
+            fig_fc.add_trace(go.Scatter(x=list(_fpath["Date"]) + list(_fpath["Date"][::-1]),
+                                        y=list(_fpath["hi"]) + list(_fpath["lo"][::-1]),
+                                        fill="toself", fillcolor="rgba(230,74,25,0.12)",
+                                        line=dict(width=0), hoverinfo="skip",
+                                        name=_L("Intervalle ~80 %", "~80% band")))
+            fig_fc.add_trace(go.Scatter(x=_fpath["Date"], y=_fpath["pred"],
+                                        name=_L("Projection", "Projection"),
+                                        line=dict(color=COLOR_BRICK, width=2.5, dash="dot")))
+            # Mark the boundary between the assumption-free part (all predictors observed)
+            # and the carry-forward extension (predictors held flat at their last value).
+            _assured = _fpath[_fpath["assured"]]
+            if not _assured.empty and not _fpath["assured"].all():
+                _bound = _assured["Date"].iloc[-1]
+                fig_fc.add_vline(x=pd.Timestamp(_bound), line_dash="dash", line_color=COLOR_SUBTLE,
+                                 annotation_text=_L("sans hypothèse | indicateurs constants",
+                                                    "assumption-free | held flat"),
+                                 annotation_position="top left")
+            fig_fc.add_hline(y=BPCE_TX_ANCIEN_2026, line_dash="dot", line_color=COLOR_SUNFLOWER,
+                             annotation_text=_L("Cible BPCE 2026 : 890k", "BPCE 2026 target: 890k"),
+                             annotation_position="bottom right")
+            apply_macro_chart_layout(fig_fc, _L("Ventes sur 12 mois", "12-month sales"))
+            st.plotly_chart(fig_fc, use_container_width=True)
+
+            _h_end = _fpath["Date"].iloc[-1]
+            _v_end = _fpath["pred"].iloc[-1]
+            _n_assured = int(_fpath["assured"].sum())
+            fh1, fh2, fh3 = st.columns(3)
+            fh1.metric(_L("Horizon de projection", "Projection horizon"),
+                       f"{len(_fpath)} " + _L("mois", "mo"),
+                       _L(f"dont {_n_assured} sans hypothèse", f"of which {_n_assured} assumption-free"),
+                       delta_color="off")
+            fh2.metric(_L("Fin d'horizon", "Horizon end"), f"{_h_end:%Y-%m}")
+            fh3.metric(_L("Ventes 12 m projetées (fin)", "Projected 12m sales (end)"),
+                       f"{_v_end:,.0f}".replace(",", " "),
+                       f"{(_v_end/_last_tx12_pre-1)*100:+.1f}%".replace(".", ",") if lang_code == "FR"
+                       else f"{(_v_end/_last_tx12_pre-1)*100:+.1f}%")
+            st.caption(_L(
+                "Jusqu'au repère, la projection n'utilise que des valeurs d'indicateurs déjà publiées "
+                "(décalées de leurs délais estimés) — sans hypothèse. Au-delà, chaque indicateur manquant "
+                "est maintenu à sa dernière valeur connue (report). Bande = ±1,28·RMSE (hors échantillon "
+                "si disponible). Exportable vers SAP IBP (onglet Export).",
+                "Up to the marker, the projection uses only already-published indicator values (shifted "
+                "by their estimated lags) — assumption-free. Beyond it, each missing indicator is held at "
+                "its last known value (carry-forward). Band = ±1.28·RMSE (out-of-sample when available). "
+                "Exportable to SAP IBP (Export tab)."))
+            # Persist for the SAP IBP export tab (a real, dated forecast — not synthetic).
+            _fc_export = _fpath.rename(columns={"pred": "Transactions_Prevues"})[["Date", "Transactions_Prevues"]]
+            st.session_state["forecast_export_df"] = _fc_export
+            st.session_state["forecast_export_col"] = "Transactions_Prevues"
+            st.session_state["forecast_export_name"] = "KF_PREVISION_TRANSACTIONS_12M"
 
         # ---- BPCE 2026 published targets (external validation benchmark) ----------
         st.markdown("**" + _L("📌 Repère : prévisions publiées BPCE L'Observatoire 2026",
@@ -1931,17 +1827,19 @@ with tabs[4]:
                     f"Elasticity estimated on {_caf['n']} quarters; R²={_caf['r2']:.2f} (indicative — short company "
                     f"series). Hexaom (new-build) and Kingfisher France (renovation) respond to transactions with a lag."))
 
-        # propagation to the user-imported MONTHLY company sales (own series)
+        # propagation to the user-imported MONTHLY company sales (own series). Multi-series:
+        # pick the product family to propagate the transactions shock onto.
         if df_company_sales_full is not None and not df_company_sales_full.empty:
             _co_s = str(df_company_sales_full["Company"].iloc[0])
-            st.markdown("**" + _L(f"→ Propagation à vos ventes importées ({_co_s})",
-                                  f"→ Propagation to your imported sales ({_co_s})") + "**")
-            _sf = fc.best_tx_to_monthly(df_company_sales_full, _tx12, "Sales")
+            _serie_f, _df_serie_f = pick_company_series(df_company_sales_full, key="fc_serie")
+            st.markdown("**" + _L(f"→ Propagation à vos ventes importées ({_co_s} — {_serie_f})",
+                                  f"→ Propagation to your imported sales ({_co_s} — {_serie_f})") + "**")
+            _sf = fc.best_tx_to_monthly(_df_serie_f, _tx12, "Sales")
             if _sf is None:
                 st.info(_L("Trop peu de points pour relier les transactions à vos ventes importées.",
                            "Too few points to link transactions to your imported sales."))
             else:
-                _sales_now = float(df_company_sales_full.sort_values("Date")["Sales"].iloc[-1])
+                _sales_now = float(_df_serie_f.sort_values("Date")["Sales"].iloc[-1])
                 _d_sales = _sf["beta"][1] * _sc["d_tx"]
                 sc_cols = st.columns(3)
                 sc_cols[0].metric(_L("Ventes mensuelles récentes", "Recent monthly sales"),
@@ -1965,7 +1863,7 @@ with tabs[4]:
 # ==============================================================================
 # TAB 6: SIMULATION TIME LAG
 # ==============================================================================
-with tabs[5]:
+with tab_timelag:
     st.header(T[lang_code]["timelag_header"])
     st.info(_L(
         "🔬 **Atelier exploratoire.** Testez à la main le décalage d'un indicateur unique "
@@ -2049,15 +1947,19 @@ with tabs[5]:
         #    Two families: the synthetic second-œuvre units, or a REAL company revenue
         #    series (quarterly, in M€) when ca-*.csv files are available. The real series
         #    is national and quarterly, so the indicator is compared on a quarterly grid.
+        # Prefer the REAL imported company sales as the default target when available: the
+        # synthetic units are derived from the same permits/transactions, so benchmarking
+        # against them is circular. Real imported sales are listed first (default radio).
         _has_revenue = (df_revenue is not None) and (not df_revenue.empty)
         _has_company = (df_company_sales is not None) and (not df_company_sales.empty)
         _bench_company_lbl = _L("Ventes société importées (mensuel)",
                                 "Imported company sales (monthly)")
-        _bench_src_opts = [T[lang_code]["bench_src_synth"]]
+        _bench_src_opts = []
         if _has_company:
             _bench_src_opts.append(_bench_company_lbl)
         if _has_revenue:
             _bench_src_opts.append(T[lang_code]["bench_src_revenue"])
+        _bench_src_opts.append(T[lang_code]["bench_src_synth"])  # synthetic last (fallback)
         benchmark_src = st.radio(
             T[lang_code]["bench_src_label"], _bench_src_opts,
             help=T[lang_code]["bench_src_help"] if _has_revenue else None,
@@ -2072,10 +1974,11 @@ with tabs[5]:
         if benchmark_is_company:
             # User-imported MONTHLY company sales — compared on the monthly grid like the
             # synthetic sales (finer lag resolution than the quarterly revenue benchmark).
+            # Multi-series: pick which imported product family to benchmark.
             _co = str(df_company_sales["Company"].iloc[0])
-            agg_sales = (df_company_sales.groupby("Date")["Sales"].sum().reset_index())
+            _serie, agg_sales = pick_company_series(df_company_sales, key="tl_serie")
             sales_value_col = "Sales"
-            sales_trace_label = _L(f"Ventes {_co}", f"{_co} sales")
+            sales_trace_label = _L(f"Ventes {_co} — {_serie}", f"{_co} sales — {_serie}")
             sales_axis_title = _L("Ventes (mensuel, importées)", "Sales (monthly, imported)")
         elif benchmark_is_revenue:
             company = st.selectbox(
@@ -2098,7 +2001,8 @@ with tabs[5]:
             sales_value_col = "Sales_Units"
             sales_trace_label = f"Sales - {selected_product}"
             sales_axis_title = T[lang_code]["scale_sales"]
-        
+            synthetic_circularity_warning()
+
         st.markdown("---")
         # 4. Auto-correlation analysis trigger
         st.subheader(T[lang_code]["optimal_lag_search"])
@@ -2260,7 +2164,7 @@ with tabs[5]:
 # ==============================================================================
 # TAB 7: MODÈLE COMPOSITE
 # ==============================================================================
-with tabs[6]:
+with tab_composite:
     st.header(T[lang_code]["composite_header"])
     st.info(_L(
         "🔬 **Atelier exploratoire.** Combinez plusieurs indicateurs pondérés/décalés pour "
@@ -2329,22 +2233,23 @@ with tabs[6]:
     
     df_composite = sim.create_composite_indicator(components)
 
-    # Benchmark target: synthetic product sales, or the user-imported company sales.
+    # Benchmark target: the user-imported real company sales (default when available) or,
+    # as a fallback, the synthetic product sales. Real listed first so it is the default.
     _has_company_comp = (df_company_sales is not None) and (not df_company_sales.empty)
     _comp_use_company = False
     if _has_company_comp:
-        _comp_company_lbl = _L("Ventes société importées", "Imported company sales")
+        _comp_company_lbl = _L("Ventes société importées (réelles)", "Imported company sales (real)")
         _comp_bench_src = st.radio(
             _L("Cible du modèle (benchmark)", "Model target (benchmark)"),
-            [_L("Ventes synthétiques", "Synthetic sales"), _comp_company_lbl],
+            [_comp_company_lbl, _L("Ventes synthétiques", "Synthetic sales")],
             horizontal=True, key="comp_bench_src")
         _comp_use_company = (_comp_bench_src == _comp_company_lbl)
 
     if _comp_use_company:
         _co_c = str(df_company_sales["Company"].iloc[0])
-        df_sales_bench = df_company_sales.groupby("Date")["Sales"].sum().reset_index()
+        _serie_c, df_sales_bench = pick_company_series(df_company_sales, key="comp_serie")
         bench_col = "Sales"
-        bench_label = _L(f"Ventes {_co_c}", f"{_co_c} sales")
+        bench_label = _L(f"Ventes {_co_c} — {_serie_c}", f"{_co_c} sales — {_serie_c}")
     else:
         bench_product = st.selectbox(
             T[lang_code]["bench_product"],
@@ -2354,6 +2259,7 @@ with tabs[6]:
         df_sales_bench = filtered_sales[filtered_sales["Product"] == bench_product].groupby("Date")["Sales_Units"].sum().reset_index()
         bench_col = "Sales_Units"
         bench_label = f"Sales - {bench_product}"
+        synthetic_circularity_warning()
     
     # --- AUTOMATED PARAMETER OPTIMIZATION ---
     st.markdown("---")
@@ -2483,18 +2389,19 @@ with tabs[6]:
 # ==============================================================================
 # TAB 8: EXPORT SAP IBP
 # ==============================================================================
-with tabs[7]:
+with tab_export:
     st.header(T[lang_code]["export_header"])
     st.write(T[lang_code]["export_desc"])
     
+    _src_forecast = _L("Prévision des transactions (12 mois)", "Transactions forecast (12 months)")
     export_source = st.radio(
         T[lang_code]["export_source_label"],
-        [T[lang_code]["src_simple_lag"], T[lang_code]["src_composite"]],
+        [T[lang_code]["src_simple_lag"], T[lang_code]["src_composite"], _src_forecast],
         horizontal=True
     )
-    
+
     source_available = False
-    
+
     if export_source == T[lang_code]["src_simple_lag"]:
         if "shifted_export_df" in st.session_state:
             export_raw_df = st.session_state["shifted_export_df"]
@@ -2504,6 +2411,19 @@ with tabs[7]:
             source_available = True
         else:
             st.warning(T[lang_code]["no_simple_lag"])
+    elif export_source == _src_forecast:
+        if "forecast_export_df" in st.session_state:
+            export_raw_df = st.session_state["forecast_export_df"]
+            val_col_name = st.session_state["forecast_export_col"]
+            default_kf_name = st.session_state["forecast_export_name"]
+            export_is_synthetic = False  # a real, dated model forecast
+            source_available = True
+        else:
+            st.warning(_L(
+                "⚠️ Aucune prévision disponible. Ouvrez l'onglet « 📡 Prévision & Scénarios » "
+                "pour la calculer (section « Projection à horizon »).",
+                "⚠️ No forecast available. Open the 『📡 Forecast & Scenarios』 tab to compute it "
+                "(『Projection to horizon』 section)."))
     else:
         if "composite_export_df" in st.session_state:
             export_raw_df = st.session_state["composite_export_df"]
@@ -2595,24 +2515,28 @@ with tabs[7]:
 # ==============================================================================
 # TAB 9: DONNÉES SOURCE
 # ==============================================================================
-with tabs[8]:
+with tab_source:
     st.header(T[lang_code]["source_header"])
     st.write(T[lang_code]["source_desc"])
     
     st.markdown(f"### {T[lang_code]['source_status']}")
     
-    db_cat_opts = ["SIT@DEL (Construction neuve)", "Ventes anciennes (IGEDD)", "Indicateurs Macro", "Ventes réelles"] if lang_code == "FR" else ["SIT@DEL (New Construction)", "Existing-home sales (IGEDD)", "Macro Indicators", "Actual Sales"]
+    _synth_sales_lbl = ("Ventes second-œuvre (synthétiques)" if lang_code == "FR"
+                        else "Second-œuvre sales (synthetic)")
+    db_cat_opts = (["SIT@DEL (Construction neuve)", "Ventes anciennes (IGEDD)", "Indicateurs Macro", _synth_sales_lbl]
+                   if lang_code == "FR" else
+                   ["SIT@DEL (New Construction)", "Existing-home sales (IGEDD)", "Macro Indicators", _synth_sales_lbl])
     db_cat = st.selectbox(
         T[lang_code]["select_db_view"],
         db_cat_opts
     )
-    
+
     internal_cat = "sitadel"
     if db_cat in ["Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"]:
         internal_cat = "ventes_ancien"
     elif db_cat in ["Indicateurs Macro", "Macro Indicators"]:
         internal_cat = "macro"
-    elif db_cat in ["Ventes réelles", "Actual Sales"]:
+    elif db_cat == _synth_sales_lbl:
         internal_cat = "sales"
         
     if internal_cat == "sitadel":
@@ -2657,6 +2581,7 @@ with tabs[8]:
                 if success:
                     st.success(msg)
                     st.cache_resource.clear()
+                    st.cache_data.clear()
                     st.rerun()
                 else:
                     st.error(msg)
@@ -2668,6 +2593,7 @@ with tabs[8]:
             with st.spinner(T[lang_code]["reset_spinner"]):
                 dm.load_or_generate_all(force_regenerate=True)
                 st.cache_resource.clear()
+                st.cache_data.clear()
                 st.success(T[lang_code]["reset_success"])
                 st.rerun()
 
@@ -2701,6 +2627,7 @@ with tabs[8]:
             if success:
                 st.success(msg)
                 st.cache_resource.clear()
+                st.cache_data.clear()
                 st.rerun()
             else:
                 st.error(msg)
@@ -2754,6 +2681,7 @@ with tabs[8]:
             if ok:
                 st.success(msg)
                 st.cache_resource.clear()
+                st.cache_data.clear()
                 st.rerun()
             else:
                 st.error(msg)
@@ -2763,4 +2691,5 @@ with tabs[8]:
                 if os.path.exists(dm.paths["company_sales"]):
                     os.remove(dm.paths["company_sales"])
                 st.cache_resource.clear()
+                st.cache_data.clear()
                 st.rerun()

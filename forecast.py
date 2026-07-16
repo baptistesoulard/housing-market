@@ -120,6 +120,58 @@ def predict_tx(beta, rate, intent, chom):
     return float(beta[0] + beta[1] * rate + beta[2] * intent + beta[3] * chom)
 
 
+def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816):
+    """Forward monthly path of 12-month transactions out to `horizon` months.
+
+    Two regimes, flagged by the `assured` column:
+      * assured=True — every predictor is an ALREADY-OBSERVED value (shifted by its estimated
+        lag), so the point needs no assumption on where macro goes next. This part reaches
+        min over predictors of (last predictor date + its lag).
+      * assured=False — beyond that, a predictor has run out; it is HELD FLAT at its last
+        observed value (a transparent carry-forward assumption) so the planner still gets a
+        full 12-18-month projection. The app draws a marker at the assured/assumed boundary.
+
+    Each point carries an ±`z`·`sigma` band (z=1.2816 ≈ 80%); `sigma` is the out-of-sample
+    backtest RMSE when available (else the in-sample RMSE). Returns a
+    [Date, pred, lo, hi, assured] frame (empty if no future month is reachable) or None if a
+    predictor series is entirely missing.
+    """
+    m = _macro_indexed(df_macro)
+    kr, ki, kc = lags["kr"], lags["ki"], lags["kc"]
+    preds = [("Credit_Logement_Taux_Interet", kr),
+             ("Intentions_Achat_Logement", ki),
+             ("Taux_Chomage_BIT", kc)]
+    obs = tx12.dropna()
+    if obs.empty:
+        return None
+    last_obs = obs.index.max()
+
+    last_vals = {}
+    for col, _ in preds:
+        if col not in m:
+            return None
+        s = m[col].dropna()
+        if s.empty:
+            return None
+        last_vals[col] = float(s.iloc[-1])  # for carry-forward beyond availability
+
+    end = last_obs + pd.DateOffset(months=horizon)
+    future = pd.date_range(last_obs + pd.DateOffset(months=1), end, freq="MS")
+
+    rows = []
+    for t in future:
+        vals, assured = [], True
+        for col, k in preds:
+            v = m[col].get(t - pd.DateOffset(months=k))
+            if v is None or pd.isna(v):
+                v, assured = last_vals[col], False  # carry forward the last observed value
+            vals.append(float(v))
+        pred = float(beta[0] + beta[1] * vals[0] + beta[2] * vals[1] + beta[3] * vals[2])
+        rows.append({"Date": t, "pred": pred,
+                     "lo": pred - z * sigma, "hi": pred + z * sigma, "assured": assured})
+    return pd.DataFrame(rows, columns=["Date", "pred", "lo", "hi", "assured"])
+
+
 def scenario(rate_beta, tx_beta, base, scen):
     """Delta-anchored scenario, robust to the models' level biases (e.g. Stage 1 currently
     over-predicts the rate because banks hold it below what the OAT implies). We apply the
