@@ -11,7 +11,7 @@ L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) 
 2. **Contexte Macro & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois) et **demande de crédits (enquête BLS)** — indicateur avancé.
 3. **Prix & Accessibilité** — indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
 4. **Commercialisation Neuf (ECLN)** — encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
-5. **Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE ; **exportable vers SAP IBP**), **repère des prévisions publiées BPCE L'Observatoire 2026**, et panneau de scénarios (OAT / Euribor / chômage → transactions → chiffre d'affaires benchmark).
+5. **Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés, **lags cherchés sur le train seul**), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE ; **exportable vers SAP IBP**), **propagation à une prévision mensuelle des ventes société** par famille (également exportable), **rénovation en 3ᵉ driver** (comparatif R² transactions seules vs transactions+rénovation), **repère BPCE L'Observatoire 2026**, et panneau de scénarios à 4 leviers (OAT / Euribor / chômage / **intentions d'achat** → transactions → CA benchmark).
 6. **Atelier — Time Lag** — atelier exploratoire : décalage d'un indicateur avancé et corrélation avec les ventes (ou un CA d'entreprise réel).
 7. **Atelier — Composite** — atelier exploratoire : indicateur composite pondéré (grid-search des lags/poids).
 8. **Export SAP IBP** — export de l'indicateur avancé.
@@ -69,13 +69,21 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - **Versionnement des données** : snapshots horodatés avant écrasement, plutôt qu'une réécriture en place.
 - **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). 🟠 Amorcé : **pilier rénovation** ajouté (colonnes `Reno_Activite_Batiment` INSEE bâtiment + `Reno_Aides_Distribuees` MaPrimeRénov', câblées dans `fetch_new_sources.build_renovation` et affichées dans l'onglet Macro) — **identifiants source à vérifier** avant de fiabiliser ce driver.
 
-### Réalisés le 2026-07-16
+### Réalisés le 2026-07-16 (première vague)
 
 - **Cache de chargement** : `read_frames()` + `@st.cache_data` keyé sur les mtimes → plus de relecture des CSV ni de réécriture des 7 Parquet à chaque interaction (le miroir entrepôt ne tourne qu'à la (re)génération).
 - **Ventes société multi-séries** : format `[Date, Company, Serie, Sales]`, sélecteur de famille de produits dans les 3 moteurs ; cible réelle par défaut + avertissement de circularité sur le synthétique.
 - **Prévision à horizon** (voir onglet 5) et **export SAP IBP** de cette prévision.
 - **Page Synthèse** feu-tricolore (onglet 0).
 - **Extraction i18n** : dictionnaire `T` sorti dans `translations.py` ; étiquettes corrigées (catégorie « Ventes second-œuvre (synthétiques) », texte de reset, clés mortes de la carte supprimées).
+
+### Réalisés le 2026-07-16 (seconde vague — robustesse & pertinence)
+
+- **Anti-fuite / anti-overfit** : (e3) recherche de décalages du modèle de transactions sur le **train uniquement** (`search_tx_lags(split=)`) — le MAPE hors échantillon n'est plus flatté ; (e2) l'**optimiseur composite** sélectionne sur un **split train/test** et affiche le **r hors échantillon** (le seul honnête sur ~9 500 combinaisons) ; (e1) l'atelier Time-Lag affiche la **corrélation sur variations annuelles** + le **n de points** à côté du r sur niveaux, avec avertissement d'auto-corrélation quand l'indicateur est lissé ; (e4) **slider « Intentions d'achat »** ajouté au panneau de scénarios (3ᵉ prédicteur enfin pilotable).
+- **Prévision mensuelle des ventes société** : `forecast.propagate_to_series` propage la trajectoire de transactions projetée à travers l'élasticité estimée → prévision par famille + bande, **exportable SAP IBP** (4ᵉ source d'export).
+- **Pilier rénovation comme 3ᵉ driver** : `forecast.fit_sales_two_factor` (ventes ~ transactions + rénovation, décalages recherchés) — comparatif R² dans l'onglet Prévision + 7ᵉ pastille Synthèse ; **actif dès que les CSV rénovation existent** (identifiants source à vérifier).
+- **Import versionné des ventes** : `data_manual_input/ventes-<famille>.csv` (comme `ca-*.csv`), ingérés automatiquement quand aucun upload ad-hoc n'est présent ; **table récap « une famille = un décalage »** dans l'onglet Prévision.
+- **Tests étendus** (`tests/test_logic.py`, 10 tests) : anti-fuite du lag search, propagation ventes, modèle 2 facteurs, split de l'optimiseur composite.
 
 ## Modules
 
