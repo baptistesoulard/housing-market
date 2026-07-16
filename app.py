@@ -1858,6 +1858,27 @@ with tab_forecast:
         # pick the product family to propagate the transactions shock onto.
         if df_company_sales_full is not None and not df_company_sales_full.empty:
             _co_s = str(df_company_sales_full["Company"].iloc[0])
+
+            # Recap: each product family and ITS OWN best transactions lag / R² — so the
+            # planner sees at a glance which family leads/lags the market and by how much.
+            _series_all = company_series_options(df_company_sales_full)
+            if len(_series_all) > 1:
+                _recap = []
+                for _srn in _series_all:
+                    _agg_srn = (df_company_sales_full[df_company_sales_full["Serie"] == _srn]
+                                .groupby("Date")["Sales"].sum().reset_index())
+                    _fit_srn = fc.best_tx_to_monthly(_agg_srn, _tx12, "Sales")
+                    _recap.append({
+                        _L("Famille", "Family"): _srn,
+                        _L("Décalage optimal", "Best lag"): (f"{_fit_srn['lag_m']} " + _L("mois", "mo"))
+                            if _fit_srn else "—",
+                        "R²": (round(_fit_srn["r2"], 2) if _fit_srn else None),
+                        _L("n mois", "n months"): (_fit_srn["n"] if _fit_srn else 0),
+                    })
+                st.markdown("**" + _L("Décalage transactions→ventes par famille",
+                                      "Transactions→sales lag per family") + "**")
+                st.dataframe(pd.DataFrame(_recap), use_container_width=True, hide_index=True)
+
             _serie_f, _df_serie_f = pick_company_series(df_company_sales_full, key="fc_serie")
             st.markdown("**" + _L(f"→ Propagation à vos ventes importées ({_co_s} — {_serie_f})",
                                   f"→ Propagation to your imported sales ({_co_s} — {_serie_f})") + "**")
@@ -2802,11 +2823,18 @@ with tab_source:
         "company at a time — each import replaces the previous one."))
     st.info(_L(
         "**Format attendu :** un CSV avec une colonne **`Date`** (mensuelle, ex. `2023-01-01` ou "
-        "`2023-01`) et une colonne de ventes nommée **`Sales`** (ou `Ventes`). Colonne `Company` "
-        "facultative (sinon le nom saisi ci-dessous est utilisé).",
+        "`2023-01`) et une colonne de ventes nommée **`Sales`** (ou `Ventes`). Colonnes `Company` "
+        "et **`Serie`** (famille de produits — plusieurs familles dans un même fichier) facultatives.",
         "**Expected format:** a CSV with a **`Date`** column (monthly, e.g. `2023-01-01` or "
-        "`2023-01`) and a sales column named **`Sales`** (or `Ventes`). Optional `Company` column "
-        "(otherwise the name entered below is used)."))
+        "`2023-01`) and a sales column named **`Sales`** (or `Ventes`). Optional `Company` and "
+        "**`Serie`** columns (product family — several families in one file)."))
+    st.caption(_L(
+        "💡 Alternative versionnée : déposez un fichier par famille nommé "
+        "`data_manual_input/ventes-<famille>.csv` (comme les `ca-*.csv`). Ils sont ingérés "
+        "automatiquement quand aucun import ad-hoc n'est présent — traçable via git.",
+        "💡 Versioned alternative: drop one file per family named "
+        "`data_manual_input/ventes-<family>.csv` (like the `ca-*.csv`). They are ingested "
+        "automatically when no ad-hoc upload is present — git-traceable."))
 
     if df_company_sales_full is not None and not df_company_sales_full.empty:
         _cs_name = str(df_company_sales_full["Company"].iloc[0])

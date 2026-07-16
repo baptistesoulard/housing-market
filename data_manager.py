@@ -105,6 +105,12 @@ ECLN_CSV = os.path.join("data_manual_input", "ecln-commercialisation-neuf.csv")
 # "Moteur de Simulation Prospective" as an alternative sales benchmark expressed in M€.
 REVENUE_GLOB = os.path.join("data_manual_input", "ca-*.csv")
 
+# --- Versioned company sales (optional) — one CSV per product family in data_manual_input,
+# named "ventes-<slug>.csv", each [Date, Sales] (+ optional Company/Serie). Mirrors the
+# ca-*.csv convention: a traceable, git-versionable default source of company sales, used
+# when no ad-hoc upload (data/company_sales.csv) is present. The upload always wins.
+VENTES_GLOB = os.path.join("data_manual_input", "ventes-*.csv")
+
 # Real macro series: (manual-input file, target column). Only the first two are
 # required (raise FileNotFoundError, triggering the synthetic fallback); the two
 # financing rates are optional add-ons — a missing file just leaves NaN so the
@@ -439,15 +445,51 @@ class DataManager:
         return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
 
     def _read_company_sales(self):
-        """Read data/company_sales.csv into the canonical [Date, Company, Serie, Sales]
-        shape. Back-compatible with the legacy single-series file (no Serie column): Serie
-        then defaults to Company so downstream code always has a series label."""
-        if not os.path.exists(self.paths["company_sales"]):
-            return pd.DataFrame(columns=["Date", "Company", "Serie", "Sales"])
-        df = pd.read_csv(self.paths["company_sales"], parse_dates=["Date"])
-        if "Serie" not in df.columns:
-            df["Serie"] = df["Company"] if "Company" in df.columns else "Ventes"
-        return df
+        """Return the canonical [Date, Company, Serie, Sales] company-sales frame.
+
+        Precedence: an ad-hoc upload (data/company_sales.csv) wins; otherwise the versioned
+        data_manual_input/ventes-*.csv files (one per product family) are used; otherwise an
+        empty frame. Back-compatible with the legacy single-series upload (no Serie column):
+        Serie then defaults to Company so downstream code always has a series label.
+        """
+        if os.path.exists(self.paths["company_sales"]):
+            df = pd.read_csv(self.paths["company_sales"], parse_dates=["Date"])
+            if "Serie" not in df.columns:
+                df["Serie"] = df["Company"] if "Company" in df.columns else "Ventes"
+            return df
+        return self.build_company_sales_from_manual_inputs()
+
+    @staticmethod
+    def build_company_sales_from_manual_inputs(pattern=VENTES_GLOB):
+        """Read every data_manual_input/ventes-*.csv (one per product family) into a single
+        [Date, Company, Serie, Sales] frame. Each file needs a Date column and a numeric
+        sales column (Sales/Ventes/…); a 'Serie' column splits it further, else the file
+        slug (ventes-<slug>.csv) is the series label; 'Company' is optional. Empty (typed)
+        frame when nothing matches — the versioned counterpart of the ca-*.csv benchmark."""
+        cols = ["Date", "Company", "Serie", "Sales"]
+        frames = []
+        for path in sorted(glob.glob(pattern)):
+            df = pd.read_csv(path)
+            if "Date" not in df.columns:
+                continue
+            val = next((c for c in DataManager._SALES_VALUE_ALIASES if c in df.columns), None)
+            if val is None:
+                others = [c for c in df.columns if c not in ("Date", "Company", "Serie")]
+                val = others[0] if len(others) == 1 else None
+            if val is None:
+                continue
+            slug = os.path.splitext(os.path.basename(path))[0].replace("ventes-", "")
+            out = pd.DataFrame()
+            out["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+            out["Company"] = (str(df["Company"].dropna().iloc[0])
+                              if "Company" in df.columns and df["Company"].notna().any() else slug)
+            out["Serie"] = (df["Serie"].astype(str).str.strip() if "Serie" in df.columns else slug)
+            out["Sales"] = pd.to_numeric(df[val], errors="coerce")
+            out = out.dropna(subset=["Date", "Sales"])
+            frames.append(out[cols])
+        if not frames:
+            return pd.DataFrame(columns=cols)
+        return pd.concat(frames, ignore_index=True).sort_values(["Serie", "Date"]).reset_index(drop=True)
 
     def _mirror_to_warehouse(self, frames):
         """Validate the datasets against their contracts and persist them as Parquet next
