@@ -10,6 +10,7 @@ import analysis as ana
 import simulation as sim
 import export as exp
 import forecast as fc
+import actualites as actu
 
 # --- Brand palette (see "Color theme.txt") ---
 # Centralised so the CSS block and every Plotly trace draw from the same colours.
@@ -479,11 +480,12 @@ BPCE_RATE_Q4_2026 = 3.43           # credit rate at Q4 2026 (%, +34 bp YoY)
 BPCE_PRICE_YOY_Q4_2026 = -0.1      # existing-home price, YoY at Q4 2026 (%)
 
 # --- Define Streamlit Tabs ---
-(tab_synthese, tab_lookback, tab_macro, tab_prix, tab_ecln, tab_forecast,
+(tab_synthese, tab_lookback, tab_macro, tab_actus, tab_prix, tab_ecln, tab_forecast,
  tab_timelag, tab_composite, tab_export, tab_source) = st.tabs([
     _L("🧭 Synthèse", "🧭 Overview"),
     T[lang_code]["tab_lookback"],
     T[lang_code]["tab_macro"],
+    _L("📰 Actualités & Aides", "📰 News & Policy"),
     T[lang_code]["tab_prix"],
     T[lang_code]["tab_ecln"],
     T[lang_code]["tab_forecast"],
@@ -1289,6 +1291,168 @@ with tab_macro:
             "Source: INSEE — Monthly building-industry business survey, activity trend (past/planned), "
             "second-œuvre, SA (idbanks 001586954 / 001586886). A negative balance = more firms reporting "
             "falling activity. Renovation drives second-œuvre demand not explained by new-build or transactions."))
+
+
+# ==============================================================================
+# TAB: ACTUALITÉS & AIDES (veille curatée — dispositifs FR/UE et impact potentiel)
+# Contenu éditorial dans actualites.py (NEWS_ITEMS) ; ici uniquement le rendu.
+# ==============================================================================
+with tab_actus:
+    st.header(_L("📰 Actualités — aides & plans de relance logement",
+                 "📰 News — housing aid & stimulus plans"))
+    st.write(_L(
+        "Veille sur les grands dispositifs publics français et européens qui soutiennent (ou "
+        "freinent) le marché du logement : plan « Relance Logement » / dispositif Jeanbrun, "
+        "MaPrimeRénov', PTZ, CEE, plan européen pour le logement abordable… Pour chaque mesure : "
+        "statut, jalons, montants et **impact potentiel sur les trois piliers du modèle** "
+        "(neuf, ancien, rénovation). Grille de lecture qualitative, à croiser avec l'onglet "
+        "« 📡 Prévision & Scénarios ».",
+        "Watchlist of the major French and EU public schemes supporting (or restraining) the "
+        "housing market: 'Relance Logement' plan / Jeanbrun scheme, MaPrimeRénov', PTZ, CEE, "
+        "European Affordable Housing Plan… For each measure: status, milestones, amounts and "
+        "**potential impact on the model's three pillars** (new-build, existing homes, "
+        "renovation). A qualitative reading grid, to cross with the 'Forecast & Scenarios' tab."))
+    st.caption(_L(
+        f"⚠️ Contenu éditorial mis à jour manuellement (dernière revue : {actu.MAJ}), sur la base "
+        "de sources publiques citées dans chaque fiche. Les impacts sont des lectures "
+        "qualitatives, pas des sorties de modèle.",
+        f"⚠️ Editorial content updated manually (last review: {actu.MAJ}), based on the public "
+        "sources cited in each card. Impacts are qualitative readings, not model outputs."))
+
+    _items_all = actu.items_sorted()
+
+    # --- KPIs ---
+    _n_vigueur = sum(1 for it in _items_all if it["statut"] == "vigueur")
+    _next_jalons = sorted(
+        [(d, it) for it in _items_all for d, _lbl, _typ in it.get("jalons", [])
+         if d > actu.MAJ],
+        key=lambda t: t[0])
+    ka = st.columns(4)
+    ka[0].metric(_L("Dispositifs suivis", "Tracked measures"), len(_items_all))
+    ka[1].metric(_L("En vigueur", "In force"), _n_vigueur)
+    ka[2].metric(_L("Budget MaPrimeRénov' 2026", "MaPrimeRénov' 2026 budget"),
+                 _L("3,6 Md€", "€3.6bn"))
+    if _next_jalons:
+        _nd, _nit = _next_jalons[0]
+        ka[3].metric(_L("Prochaine échéance", "Next deadline"),
+                     pd.Timestamp(_nd).strftime("%m/%Y"),
+                     delta=_nit["court"][lang_code], delta_color="off")
+
+    # --- Filtres ---
+    fa = st.columns(3)
+    _cat_opts = list(actu.CATEGORIES[lang_code].keys())
+    _stat_opts = list(actu.STATUTS[lang_code].keys())
+    _pil_opts = list(actu.PILIERS[lang_code].keys())
+    with fa[0]:
+        _cat_sel = st.multiselect(_L("Périmètre", "Scope"), _cat_opts, default=_cat_opts,
+                                  format_func=lambda c: actu.CATEGORIES[lang_code][c],
+                                  key="actu_cat")
+    with fa[1]:
+        _stat_sel = st.multiselect(_L("Statut", "Status"), _stat_opts, default=_stat_opts,
+                                   format_func=lambda s: actu.STATUTS[lang_code][s],
+                                   key="actu_statut")
+    with fa[2]:
+        _pil_sel = st.multiselect(
+            _L("Pilier impacté", "Pillar affected"), _pil_opts, default=_pil_opts,
+            format_func=lambda p: actu.PILIERS[lang_code][p], key="actu_pilier",
+            help=_L("Ne garde que les mesures ayant un impact non neutre sur au moins un "
+                    "des piliers sélectionnés.",
+                    "Keeps only measures with a non-neutral impact on at least one selected pillar."))
+    _items = [it for it in _items_all
+              if it["categorie"] in _cat_sel and it["statut"] in _stat_sel
+              and (not _pil_sel or any(it["impacts"][p] != 0 for p in _pil_sel)
+                   or all(v == 0 for v in it["impacts"].values()))]
+    if not _items:
+        st.info(_L("Aucune mesure ne correspond aux filtres.", "No measure matches the filters."))
+
+    if _items:
+        # --- Matrice d'impact ---
+        st.subheader(_L("🎯 Matrice d'impact par pilier du modèle",
+                        "🎯 Impact matrix by model pillar"))
+        st.caption(_L(
+            "Lecture qualitative de la direction attendue : ⬆⬆ soutien fort · ⬆ soutien · "
+            "➖ neutre/mitigé · ⬇ frein. Les piliers correspondent aux trois moteurs du modèle "
+            "de ventes (permis SIT@DEL, transactions IGEDD, activité rénovation INSEE).",
+            "Qualitative read of the expected direction: ⬆⬆ strong support · ⬆ support · "
+            "➖ neutral/mixed · ⬇ headwind. Pillars map to the sales model's three drivers "
+            "(SIT@DEL permits, IGEDD transactions, INSEE renovation activity)."))
+        st.dataframe(actu.impact_matrix(_items, lang_code),
+                     use_container_width=True, hide_index=True)
+
+        # --- Échéancier ---
+        st.subheader(_L("🗓️ Échéancier des mesures", "🗓️ Policy timeline"))
+        _jf = actu.jalons_frame(_items, lang_code)
+        fig_tl = go.Figure()
+        _seen_types = set()
+        for _typ, _tinfo in actu.JALON_TYPES.items():
+            sub = _jf[_jf["Type"] == _typ]
+            if sub.empty:
+                continue
+            _seen_types.add(_typ)
+            fig_tl.add_trace(go.Scatter(
+                x=sub["Date"], y=sub["Dispositif"], mode="markers",
+                name=_tinfo[lang_code],
+                marker=dict(symbol=_tinfo["symbol"], size=13,
+                            color=[COLOR_BRICK if c == "FR" else COLOR_BLUE
+                                   for c in sub["Categorie"]],
+                            line=dict(width=1, color="white")),
+                text=sub["Jalon"],
+                hovertemplate="%{y} — %{x|%d/%m/%Y}<br>%{text}<extra></extra>"))
+        # Ligne « aujourd'hui » (add_shape : compatible axes dates, contrairement à add_vline)
+        _today = pd.Timestamp(actu.MAJ)
+        fig_tl.add_shape(type="line", x0=_today, x1=_today, y0=0, y1=1, yref="paper",
+                         line=dict(color=COLOR_SUBTLE, width=1, dash="dash"))
+        fig_tl.add_annotation(x=_today, y=1.04, yref="paper", showarrow=False,
+                              text=_L("Aujourd'hui", "Today"),
+                              font=dict(color=COLOR_SUBTLE, size=11))
+        apply_macro_chart_layout(fig_tl, "")
+        fig_tl.update_layout(
+            height=max(300, 60 + 34 * _jf["Dispositif"].nunique()),
+            yaxis=dict(autorange="reversed"))
+        st.plotly_chart(fig_tl, use_container_width=True)
+        st.caption(_L(
+            "🔴 mesures françaises · 🔵 mesures européennes. ● entrée en vigueur · ◆ jalon · "
+            "✕ échéance/attendu. Ligne pointillée = date de la dernière revue.",
+            "🔴 French measures · 🔵 EU measures. ● entry into force · ◆ milestone · "
+            "✕ deadline/expected. Dashed line = last review date."))
+
+        # --- Fiches détaillées ---
+        st.subheader(_L("🗞️ Le détail des mesures", "🗞️ Measures in detail"))
+        for it in _items:
+            _hdr = (f"{actu.CATEGORIES[lang_code][it['categorie']].split(' ')[0]} "
+                    f"{it['titre'][lang_code]} — {actu.STATUTS[lang_code][it['statut']]}")
+            with st.expander(_hdr):
+                st.markdown(it["resume"][lang_code])
+                mc = st.columns(3)
+                if it.get("montant"):
+                    mc[0].markdown(_L("**💶 Chiffre clé** : ", "**💶 Key figure**: ")
+                                   + it["montant"][lang_code])
+                mc[1].markdown(_L("**⏳ Horizon de transmission** : ",
+                                  "**⏳ Transmission horizon**: ") + it["horizon"][lang_code])
+                _echs = [(d, lbl) for d, lbl, typ in it.get("jalons", []) if typ == "echeance"]
+                if _echs:
+                    mc[2].markdown(_L("**📅 Échéance** : ", "**📅 Deadline**: ")
+                                   + f"{pd.Timestamp(_echs[0][0]).strftime('%d/%m/%Y')} — "
+                                   + _echs[0][1][lang_code])
+                ic = st.columns(3)
+                for _i, _p in enumerate(("neuf", "ancien", "renovation")):
+                    ic[_i].markdown(f"{actu.PILIERS[lang_code][_p]}<br>"
+                                    f"**{actu.IMPACT_LABELS[lang_code][it['impacts'][_p]]}**",
+                                    unsafe_allow_html=True)
+                st.markdown(_L("**🎯 Impact potentiel** — ", "**🎯 Potential impact** — ")
+                            + it["impact_detail"][lang_code])
+                st.caption(_L("Sources : ", "Sources: ") + " · ".join(
+                    f"[{lbl}]({url})" for lbl, url in it["sources"]))
+
+        st.info(_L(
+            "💡 Pour chiffrer un scénario (ex. relance de la demande via Jeanbrun/PTZ → baisse "
+            "des taux effectifs ou hausse des intentions d'achat), utilisez les curseurs de "
+            "l'onglet **📡 Prévision & Scénarios** : ces mesures agissent sur les mêmes canaux "
+            "(taux, intentions, chômage) que le modèle de transactions.",
+            "💡 To quantify a scenario (e.g. demand restart via Jeanbrun/PTZ → lower effective "
+            "rates or higher purchase intentions), use the sliders in the **📡 Forecast & "
+            "Scenarios** tab: these measures act on the same channels (rates, intentions, "
+            "unemployment) as the transactions model."))
 
 
 # ==============================================================================
