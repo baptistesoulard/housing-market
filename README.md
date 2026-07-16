@@ -40,6 +40,7 @@ Toutes les séries de `data/` sont **réelles**, issues de sources publiques off
 | Taux de crédit habitat & **volume de crédits** (décomposé hors renégociations / renégociations) | Banque de France / BCE | API SDMX BCE (MIR) |
 | **Demande de crédits habitat** (enquête BLS, réalisé + perspectives 3 mois) | BCE / Banque de France | API SDMX BCE (BLS) |
 | Euribor 3 mois, OAT 10 ans | BCE | API SDMX BCE |
+| **Activité du second œuvre** (rénovation — activité passée & prévue) | INSEE (enquête conjoncture bâtiment) | API SDMX BDM |
 
 Les identifiants de séries (idbanks INSEE, clés BCE, ressources DiDo) sont documentés dans [`data_manual_input/Data source.txt`](data_manual_input/Data%20source.txt).
 
@@ -67,7 +68,7 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - **Registre de sources unique** : centraliser `série → {fichier, colonne, fréquence, clé SDMX}` dans un seul dict partagé par `fetch_new_sources.py` et `data_manager.py` (aujourd'hui dupliqué → risque de dérive).
 - **Stockage macro en format long** (`[Date, série, valeur, fréquence]`) : `macro.csv` est aujourd'hui un format large ~35 % NaN (séries trimestrielles réindexées en mensuel).
 - **Versionnement des données** : snapshots horodatés avant écrasement, plutôt qu'une réécriture en place.
-- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). 🟠 Amorcé : **pilier rénovation** ajouté (colonnes `Reno_Activite_Batiment` INSEE bâtiment + `Reno_Aides_Distribuees` MaPrimeRénov', câblées dans `fetch_new_sources.build_renovation` et affichées dans l'onglet Macro) — **identifiants source à vérifier** avant de fiabiliser ce driver.
+- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). ✅ **Pilier rénovation actif (2026-07-16)** : 2 séries INSEE réelles (activité passée/prévue du second œuvre, idbanks 001586954/001586886) branchées comme 2ᵉ facteur du modèle de ventes — le mécanisme de remplacement du synthétique est en place ; reste à disposer de vraies ventes Somfy pour retirer `build_sales`.
 
 ### Réalisés le 2026-07-16 (première vague)
 
@@ -81,7 +82,7 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 
 - **Anti-fuite / anti-overfit** : (e3) recherche de décalages du modèle de transactions sur le **train uniquement** (`search_tx_lags(split=)`) — le MAPE hors échantillon n'est plus flatté ; (e2) l'**optimiseur composite** sélectionne sur un **split train/test** et affiche le **r hors échantillon** (le seul honnête sur ~9 500 combinaisons) ; (e1) l'atelier Time-Lag affiche la **corrélation sur variations annuelles** + le **n de points** à côté du r sur niveaux, avec avertissement d'auto-corrélation quand l'indicateur est lissé ; (e4) **slider « Intentions d'achat »** ajouté au panneau de scénarios (3ᵉ prédicteur enfin pilotable).
 - **Prévision mensuelle des ventes société** : `forecast.propagate_to_series` propage la trajectoire de transactions projetée à travers l'élasticité estimée → prévision par famille + bande, **exportable SAP IBP** (4ᵉ source d'export).
-- **Pilier rénovation comme 3ᵉ driver** : `forecast.fit_sales_two_factor` (ventes ~ transactions + rénovation, décalages recherchés) — comparatif R² dans l'onglet Prévision + 7ᵉ pastille Synthèse ; **actif dès que les CSV rénovation existent** (identifiants source à vérifier).
+- **Pilier rénovation comme 3ᵉ driver — ACTIF (2026-07-16)** : deux séries **réelles** INSEE (Enquête mensuelle de conjoncture dans l'industrie du bâtiment, **second œuvre**, CVS, mensuel 1975→2026-06) — activité **passée** (idbank 001586954) et **prévue** (001586886, avancée). Affichées dans l'onglet Contexte Macro (section « Rénovation & second œuvre »), pastille Synthèse, et 2ᵉ facteur du modèle `forecast.fit_sales_two_factor` (ventes ~ transactions + rénovation) — comparatif R² dans l'onglet Prévision. Acquisition : `fetch_new_sources.build_renovation()`. Enrichissement futur possible : un proxy de volume (MaPrimeRénov'/éco-PTZ).
 - **Import versionné des ventes** : `data_manual_input/ventes-<famille>.csv` (comme `ca-*.csv`), ingérés automatiquement quand aucun upload ad-hoc n'est présent ; **table récap « une famille = un décalage »** dans l'onglet Prévision.
 - **Tests étendus** (`tests/test_logic.py`, 10 tests) : anti-fuite du lag search, propagation ventes, modèle 2 facteurs, split de l'optimiseur composite.
 

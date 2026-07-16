@@ -62,14 +62,13 @@ MACRO_VALUE_COLUMNS = [
     "Production_Credits_Renego",
     "Demande_Credit_Realisee",
     "Demande_Credit_Perspectives",
-    # Renovation pillar (real, off-runtime acquisition — NaN until fetch_new_sources runs):
-    #   Reno_Activite_Batiment  = Banque de France monthly building-trades activity opinion
-    #                             balance (enquête mensuelle de conjoncture, bâtiment) — a
-    #                             direct read on second-œuvre / renovation demand.
-    #   Reno_Aides_Distribuees  = MaPrimeRénov' grants paid (count or €, ANAH / data.gouv),
-    #                             a volume proxy for the renovation-driven equipment market.
+    # Renovation pillar (real INSEE building-industry survey — NaN until fetch runs):
+    #   Reno_Activite_Batiment  = "activité passée — second œuvre" opinion balance, CVS
+    #                             (idbank 001586954) — current second-œuvre demand.
+    #   Reno_Activite_Prevue    = "activité prévue — second œuvre" opinion balance, CVS
+    #                             (idbank 001586886) — a leading signal (planned activity).
     "Reno_Activite_Batiment",
-    "Reno_Aides_Distribuees",
+    "Reno_Activite_Prevue",
 ]
 
 _COUNT = lambda title: Column(int, Check.ge(0), nullable=False, coerce=True, title=title)

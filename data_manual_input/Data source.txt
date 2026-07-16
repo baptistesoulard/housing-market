@@ -120,3 +120,27 @@ Statut : téléchargé via l'API DiDo (data.statistiques.developpement-durable.g
 Couverture : TRIMESTRIEL, 2017-T1 -> 2026-T1 (les 2 colonnes acquéreurs « en bloc » commencent en 2018-T1 → NaN en 2017). Colonnes : Date, Reservations, MisesEnVente, Annulations, Encours, DelaiEcoulement, PrixM2_Collectif, Resa_Sociaux, Resa_Institutionnels.
 Usage : les 3 catégories (Reservations=particuliers + Resa_Sociaux + Resa_Institutionnels) alimentent le graphique « Réservations par catégorie d'acquéreurs » (barres empilées) de l'onglet, cf. BPCE L'Observatoire p.13 (au T1-2026 : ~16 502 / 11 134 / 2 184 par trimestre, soit ~55 % / 37 % / 7 % en annualisé).
 ATTENTION unité : DelaiEcoulement est en TRIMESTRES (stock / réservations trimestrielles) — l'app l'affiche en mois (×3), soit ~22 mois au T1-2026 (« près de deux ans », cf. BPCE L'Observatoire).
+
+
+
+=== Ajout 2026-07-16 — pilier RÉNOVATION / SECOND ŒUVRE (3e driver de la demande). Acquisition : fetch_new_sources.build_renovation() (SDMX BDM, urllib). ===
+
+
+
+Activité passée du second œuvre : HousingMarket_v3\data_manual_input\reno-activite-batiment.csv
+Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, tendance de l'activité PASSÉE, Second œuvre, série CVS (solde d'opinion : % d'entreprises signalant une hausse d'activité − % signalant une baisse)
+idbank : 001586954
+Page : https://www.insee.fr/fr/statistiques/serie/001586954
+Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586954
+Couverture : MENSUEL, 1975-01 -> 2026-06 (juin 2026 = −16,1). Colonnes : Date, Reno_Activite_Batiment. Trous ponctuels (août avant 2008, base trimestrielle avant 1993) laissés NaN. Réindexé sur l'index mensuel maître (2001+).
+
+
+
+Activité prévue du second œuvre (indicateur avancé) : HousingMarket_v3\data_manual_input\reno-activite-prevue.csv
+Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, tendance de l'activité PRÉVUE, Second œuvre, série CVS (solde d'opinion)
+idbank : 001586886
+Page : https://www.insee.fr/fr/statistiques/serie/001586886
+Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586886
+Couverture : MENSUEL, 1975-01 -> 2026-06 (juin 2026 = −9,1). Colonnes : Date, Reno_Activite_Prevue.
+Usage : ces 2 séries (colonnes Reno_Activite_Batiment / Reno_Activite_Prevue de macro.csv) alimentent la section « Rénovation & second œuvre » de l'onglet Contexte Macro, une pastille de la page Synthèse, et servent de 2e facteur au modèle « ventes ~ transactions + rénovation » (forecast.fit_sales_two_factor) de l'onglet Prévision — la rénovation capte la demande second œuvre tirée par le STOCK de logements, indépendante des transactions/déménagements. C'est le driver appelé à remplacer la dernière série synthétique.
+Note (enrichissement futur, non fait) : un proxy de VOLUME de rénovation (MaPrimeRénov' / éco-PTZ, ANAH / data.gouv API DiDo) compléterait ces soldes d'opinion — série mensuelle nationale propre non triviale à obtenir par API, différée.

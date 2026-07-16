@@ -40,11 +40,15 @@ def _get(url):
 
 
 def _period_to_date(p):
-    """INSEE TIME_PERIOD -> first day of the period ('2025-Q4' -> 2025-10-01, '2021' -> 2021-01-01)."""
-    m = re.match(r"^(\d{4})-Q([1-4])$", p)
+    """INSEE TIME_PERIOD -> first day of the period. Handles monthly ('2026-06'), quarterly
+    ('2025-Q4' -> 2025-10-01) and annual ('2021' -> 2021-01-01)."""
+    m = re.match(r"^(\d{4})-(\d{2})$", p)            # monthly
+    if m:
+        return pd.Timestamp(int(m.group(1)), int(m.group(2)), 1)
+    m = re.match(r"^(\d{4})-Q([1-4])$", p)           # quarterly
     if m:
         return pd.Timestamp(int(m.group(1)), (int(m.group(2)) - 1) * 3 + 1, 1)
-    m = re.match(r"^(\d{4})$", p)
+    m = re.match(r"^(\d{4})$", p)                     # annual
     if m:
         return pd.Timestamp(int(m.group(1)), 1, 1)
     return pd.NaT
@@ -218,41 +222,38 @@ def _write_single_series(series, column, filename, label):
 
 
 def build_renovation():
-    """Renovation-pillar sources — the second-œuvre / renovation demand that new
-    construction and existing-home transactions don't capture. Both are national and real:
+    """Renovation-pillar sources — the SECOND-ŒUVRE / renovation demand that new construction
+    and existing-home transactions don't capture (a large share of Somfy-type product demand
+    comes from the installed stock, not moves). Two real, national, monthly INSEE series from
+    the building-industry business survey (Enquête mensuelle de conjoncture dans l'industrie
+    du bâtiment), CVS, both verified on bdm.insee.fr:
 
-      * Reno_Activite_Batiment : INSEE monthly business survey in the building trades,
-        activity-opinion balance (climat/activité) — a timely soft read on renovation and
-        second-œuvre demand. INSEE SDMX BDM idbank (see IDBANK_RENO_ACTIVITE).
-      * Reno_Aides_Distribuees : MaPrimeRénov' grants (ANAH / data.gouv), a volume proxy
-        for the renovation-driven equipment market.
+      * Reno_Activite_Batiment : "Tendance de l'activité passée — Second œuvre" (opinion
+        balance, idbank 001586954) — the current state of second-œuvre demand.
+      * Reno_Activite_Prevue   : "Tendance de l'activité prévue — Second œuvre" (opinion
+        balance, idbank 001586886) — a LEADING signal (planned activity).
 
-    Both idbanks/endpoints below MUST be verified against the live catalogues before use;
-    they are isolated in their own function and guarded in __main__ so a wrong identifier
-    only skips the renovation pillar (the app then degrades gracefully) rather than aborting
-    the whole acquisition run. When a CSV is absent, data_manager leaves the column NaN.
+    Each source is fetched independently so a single failure only skips that series (the app
+    then leaves the macro column NaN and degrades gracefully).
     """
-    # Each source is fetched independently so a single wrong identifier only skips that
-    # series (the app then leaves its macro column NaN).
-    # NOTE: verify these identifiers on the live catalogues before relying on the values.
-
-    # (1) INSEE — bâtiment, solde d'opinion sur l'activité (climat/activité), SDMX BDM.
+    # (1) Second-œuvre PAST activity (CVS, monthly 1975+). idbank verified on bdm.insee.fr.
     try:
-        IDBANK_RENO_ACTIVITE = "001585919"   # À VÉRIFIER sur bdm.insee.fr
-        s_act = _fetch_bdm(IDBANK_RENO_ACTIVITE).rename("Reno_Activite_Batiment")
+        s_act = _fetch_bdm("001586954").rename("Reno_Activite_Batiment")
         _write_single_series(s_act, "Reno_Activite_Batiment",
                              "reno-activite-batiment.csv", "reno-activite")
     except Exception as e:
         print(f"  reno-activite -> SKIPPED ({e.__class__.__name__}: {e})")
 
-    # (2) ANAH — MaPrimeRénov' : dossiers/montants engagés (proxy de volume de rénovation).
-    # Publié sur data.gouv (API DiDo, comme l'ECLN). Renseigner l'URL du datafile + les noms
-    # de colonnes (période, valeur) une fois la ressource identifiée, puis dé-commenter.
-    #   url = "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/<UUID>/csv"
-    #   rows = list(csv.DictReader(io.StringIO(_get(url).decode("utf-8","replace")), delimiter=";"))
-    #   ... parse (période -> Date, montant/nombre -> Reno_Aides_Distribuees) ...
-    #   _write_single_series(serie, "Reno_Aides_Distribuees", "reno-aides-renovation.csv", "reno-aides")
-    print("  reno-aides -> TODO (renseigner le datafile DiDo MaPrimeRénov' dans build_renovation)")
+    # (2) Second-œuvre PLANNED activity (CVS, monthly 1975+) — leading indicator.
+    try:
+        s_prev = _fetch_bdm("001586886").rename("Reno_Activite_Prevue")
+        _write_single_series(s_prev, "Reno_Activite_Prevue",
+                             "reno-activite-prevue.csv", "reno-prevue")
+    except Exception as e:
+        print(f"  reno-prevue -> SKIPPED ({e.__class__.__name__}: {e})")
+
+    # Possible future enrichment (volume): MaPrimeRénov' / éco-PTZ (ANAH, data.gouv/DiDo).
+    # A clean national monthly time series is not straightforward via API — deferred.
 
 
 if __name__ == "__main__":
@@ -261,9 +262,4 @@ if __name__ == "__main__":
     build_credit_volume()
     build_credit_demand_bls()
     build_ecln()
-    # Renovation pillar is best-effort: a not-yet-verified identifier must not abort the run.
-    try:
-        build_renovation()
-    except Exception as e:
-        print(f"reno -> SKIPPED ({e.__class__.__name__}: {e}). "
-              f"Vérifiez les identifiants dans build_renovation().")
+    build_renovation()

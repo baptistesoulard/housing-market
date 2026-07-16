@@ -82,16 +82,17 @@ CREDIT_VOLUME_CSV = os.path.join("data_manual_input",
 # for household house-purchase loans, France, QUARTERLY. Realised (past 3 months) and
 # expected (next 3 months, BPCE's "perspectives à 3 mois"). A soft leading indicator.
 CREDIT_DEMAND_BLS_CSV = os.path.join("data_manual_input", "credit-demand-bls.csv")
-# --- Renovation pillar (real, national) — the second-œuvre / renovation demand that new
-# construction and existing-home transactions alone don't capture. Both are acquired
-# off-runtime (fetch_new_sources.py) into single-series [Date, <value>] CSVs; when a file
-# is absent the column simply stays NaN (like the other optional macro series).
-#   Reno_Activite_Batiment : Banque de France monthly business survey, building trades —
-#     activity-opinion balance (a soft, timely read on renovation/second-œuvre demand).
-#   Reno_Aides_Distribuees : MaPrimeRénov' grants paid (ANAH / data.gouv), a volume proxy
-#     for the renovation-driven equipment market.
+# --- Renovation pillar (REAL, national, monthly) — the second-œuvre / renovation demand
+# that new construction and existing-home transactions alone don't capture. Two INSEE
+# building-industry business-survey opinion balances (Enquête mensuelle de conjoncture dans
+# l'industrie du bâtiment, CVS), acquired off-runtime (fetch_new_sources.build_renovation)
+# into single-series [Date, <value>] CSVs; a missing file just leaves the column NaN.
+#   Reno_Activite_Batiment : "activité passée — second œuvre" (idbank 001586954) — current
+#     state of second-œuvre demand.
+#   Reno_Activite_Prevue   : "activité prévue — second œuvre" (idbank 001586886) — a leading
+#     signal (planned activity).
 RENO_ACTIVITE_CSV = os.path.join("data_manual_input", "reno-activite-batiment.csv")
-RENO_AIDES_CSV = os.path.join("data_manual_input", "reno-aides-renovation.csv")
+RENO_PREVUE_CSV = os.path.join("data_manual_input", "reno-activite-prevue.csv")
 # --- Commercialisation des logements neufs (ECLN, SDES) — national quarterly CVS-CJO
 # "ventes aux particuliers": réservations, mises en vente, annulations, encours, délai
 # d'écoulement (en trimestres) et prix au m² du collectif. Its own dataset (data/ecln.csv).
@@ -140,7 +141,7 @@ _MACRO_OPTIONAL = [
     (CREDIT_DEMAND_BLS_CSV, "Demande_Credit_Perspectives"),
     # Renovation pillar (NaN until fetch_new_sources.py produces the CSVs).
     (RENO_ACTIVITE_CSV, "Reno_Activite_Batiment"),
-    (RENO_AIDES_CSV, "Reno_Aides_Distribuees"),
+    (RENO_PREVUE_CSV, "Reno_Activite_Prevue"),
 ]
 
 

@@ -1251,23 +1251,23 @@ with tab_macro:
     st.markdown("#### " + _L("Rénovation & second œuvre (pilier complémentaire)",
                              "Renovation & secondary works (complementary pillar)"))
     _reno_cols = [("Reno_Activite_Batiment",
-                   _L("Activité dans le bâtiment (enquête)", "Building-trades activity (survey)"),
-                   _L("solde d'opinion", "opinion balance"), COLOR_BRICK),
-                  ("Reno_Aides_Distribuees",
-                   _L("Aides à la rénovation distribuées", "Renovation grants paid"),
-                   _L("volume (MaPrimeRénov')", "volume (MaPrimeRénov')"), COLOR_GREEN)]
+                   _L("Activité passée — second œuvre", "Past activity — second-œuvre"),
+                   _L("solde d'opinion CVS", "SA opinion balance"), COLOR_BRICK),
+                  ("Reno_Activite_Prevue",
+                   _L("Activité prévue — second œuvre", "Planned activity — second-œuvre"),
+                   _L("solde d'opinion CVS (avancé)", "SA opinion balance (leading)"), COLOR_GREEN)]
     _reno_present = [c for c in _reno_cols
                      if c[0] in df_macro.columns and df_macro[c[0]].notna().any()]
     if not _reno_present:
         st.info(_L(
             "Pilier rénovation non encore alimenté. Lancez `python fetch_new_sources.py` "
-            "(fonction `build_renovation`, identifiants à vérifier) pour ajouter l'activité "
-            "bâtiment (enquête de conjoncture) et les aides à la rénovation — un troisième "
-            "driver de la demande second œuvre, indépendant du neuf et des transactions.",
+            "(fonction `build_renovation`) pour ajouter l'activité passée et prévue du second "
+            "œuvre (enquête de conjoncture bâtiment INSEE) — un troisième driver de la demande "
+            "second œuvre, indépendant du neuf et des transactions.",
             "Renovation pillar not populated yet. Run `python fetch_new_sources.py` "
-            "(`build_renovation`, identifiers to verify) to add building-trades activity "
-            "(business survey) and renovation grants — a third second-œuvre demand driver, "
-            "independent of new-build and transactions."))
+            "(`build_renovation`) to add past and planned second-œuvre activity (INSEE building "
+            "business survey) — a third second-œuvre demand driver, independent of new-build "
+            "and transactions."))
     else:
         reno_c = st.columns(len(_reno_present))
         for (_c, _title, _sub, _clr), _rc in zip(_reno_present, reno_c):
@@ -1277,14 +1277,18 @@ with tab_macro:
                 fig_r = go.Figure()
                 fig_r.add_trace(go.Scatter(x=s["Date"], y=s[_c], name=_title,
                                            line=dict(color=_clr, width=2)))
+                fig_r.add_hline(y=0, line_dash="dash", line_color="grey")
                 add_last_value_label(fig_r, s, "Date", _c, _clr, lang_code, decimals=0)
                 apply_macro_chart_layout(fig_r, _sub)
                 st.plotly_chart(fig_r, use_container_width=True)
         st.caption(_L(
-            "Sources : INSEE (enquête bâtiment) / ANAH — MaPrimeRénov' (data.gouv). La "
-            "rénovation tire une part de la demande second œuvre non expliquée par le neuf.",
-            "Sources: INSEE (building survey) / ANAH — MaPrimeRénov' (data.gouv). Renovation "
-            "drives a share of second-œuvre demand not explained by new construction."))
+            "Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, "
+            "tendance de l'activité (passée/prévue), second œuvre, série CVS (idbanks 001586954 / "
+            "001586886). Un solde négatif = plus d'entreprises signalant une baisse d'activité. La "
+            "rénovation tire une part de la demande second œuvre non expliquée par le neuf ni les transactions.",
+            "Source: INSEE — Monthly building-industry business survey, activity trend (past/planned), "
+            "second-œuvre, SA (idbanks 001586954 / 001586886). A negative balance = more firms reporting "
+            "falling activity. Renovation drives second-œuvre demand not explained by new-build or transactions."))
 
 
 # ==============================================================================
@@ -1950,7 +1954,7 @@ with tab_forecast:
                 # two-factor model (sales ~ transactions + renovation) and compare its R² to
                 # the transactions-only elasticity — renovation captures the stock-driven
                 # demand that moves don't. Inactive (and silent) until the reno CSV exists.
-                _reno_col = next((c for c in ("Reno_Activite_Batiment", "Reno_Aides_Distribuees")
+                _reno_col = next((c for c in ("Reno_Activite_Batiment", "Reno_Activite_Prevue")
                                   if c in df_macro_full.columns
                                   and df_macro_full[c].notna().any()), None)
                 if _reno_col is not None:
