@@ -21,8 +21,9 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.utils import ImageReader
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-                                Image)
+                                Image, KeepTogether)
 
 import analysis as ana
 
@@ -85,6 +86,17 @@ def _style_ax(ax):
     ax.tick_params(labelsize=8)
 
 
+def _legend(ax):
+    """Legend placed above the axes, on one horizontal row, so it never covers the curves
+    (mirrors the app's charts). savefig(bbox_inches="tight") grows the canvas to fit it."""
+    handles, labels = ax.get_legend_handles_labels()
+    if not handles:
+        return
+    ax.legend(handles, labels, loc="lower left", bbox_to_anchor=(0, 1.01),
+              ncol=len(handles), fontsize=8, frameon=False,
+              borderaxespad=0, handlelength=1.6, columnspacing=1.4)
+
+
 # --- Charts -----------------------------------------------------------------------------
 
 def _chart_construction(df_sitadel, lang):
@@ -96,8 +108,8 @@ def _chart_construction(df_sitadel, lang):
     ax.plot(agg["Date"], agg["MisesEnChantier_12M"] / 1000, color=TEXT, lw=2, ls="--",
             label=_L("Mises en chantier", "Housing starts", lang))
     ax.set_ylabel(_L("Milliers", "Thousands", lang), fontsize=8)
-    ax.legend(loc="upper right", fontsize=8, frameon=False)
     _style_ax(ax)
+    _legend(ax)
     return _png(fig)
 
 
@@ -110,8 +122,8 @@ def _chart_transactions(df_ventes_ancien, lang):
     ax.axhline(BPCE_TX_ANCIEN_2026 / 1000, color=TERRA, lw=1.2, ls=":",
                label=_L("Cible BPCE 2026 (890k)", "BPCE 2026 target (890k)", lang))
     ax.set_ylabel(_L("Milliers", "Thousands", lang), fontsize=8)
-    ax.legend(loc="upper left", fontsize=8, frameon=False)
     _style_ax(ax)
+    _legend(ax)
     return _png(fig)
 
 
@@ -124,8 +136,8 @@ def _chart_indiv_collectif(df_sitadel, lang):
                                       ["MisesEnChantier"]).dropna(subset=["MisesEnChantier_12M"])
         ax.plot(g["Date"], g["MisesEnChantier_12M"] / 1000, color=clr, lw=2, label=lbl)
     ax.set_ylabel(_L("Milliers (mises en chantier)", "Thousands (starts)", lang), fontsize=8)
-    ax.legend(loc="upper right", fontsize=8, frameon=False)
     _style_ax(ax)
+    _legend(ax)
     return _png(fig)
 
 
@@ -134,23 +146,23 @@ def _chart_rates(df_macro, lang):
     series = [("Credit_Logement_Taux_Interet", BRICK, _L("Taux crédit habitat", "Housing loan rate", lang)),
               ("OAT_10ans", GREEN, _L("OAT 10 ans", "10-year OAT", lang)),
               ("Euribor_3M", BLUE, _L("Euribor 3 mois", "3-month Euribor", lang))]
-    drawn = False
     for col, clr, lbl in series:
         if col in df_macro.columns and df_macro[col].notna().any():
             d = df_macro.dropna(subset=[col])
             ax.plot(d["Date"], d[col], color=clr, lw=1.8, label=lbl)
-            drawn = True
     ax.set_ylabel("%", fontsize=8)
-    if drawn:
-        ax.legend(loc="upper left", fontsize=8, frameon=False)
     _style_ax(ax)
+    _legend(ax)
     return _png(fig)
 
 
-def _img(png_buf, width_mm=170.0, fig_ratio=2.7 / 7.4):
-    """reportlab Image sized to a target width (mm), height from the figure aspect ratio."""
+def _img(png_buf, width_mm=170.0):
+    """reportlab Image sized to a target width (mm), height from the PNG's own aspect ratio
+    (the legend above the axes makes the rendered canvas taller than the bare figure)."""
+    px_w, px_h = ImageReader(png_buf).getSize()
+    png_buf.seek(0)
     w = width_mm * mm
-    return Image(png_buf, width=w, height=w * fig_ratio)
+    return Image(png_buf, width=w, height=w * px_h / px_w)
 
 
 # --- Document ---------------------------------------------------------------------------
@@ -234,19 +246,22 @@ def build_pdf_report(df_sitadel, df_ventes_ancien, df_macro, lang="FR"):
     story.append(Paragraph(_L("À retenir", "At a glance", lang), h2))
     story.append(Paragraph(commentary, body))
 
-    # --- Charts ---
-    story.append(Paragraph(_L("Construction neuve (cumul 12 mois, en milliers)",
-                              "New construction (12-month total, thousands)", lang), h2))
-    story.append(_img(_chart_construction(df_sitadel, lang)))
-    story.append(Paragraph(_L("Ventes de logements anciens (cumul 12 mois, en milliers)",
-                              "Existing-home sales (12-month total, thousands)", lang), h2))
-    story.append(_img(_chart_transactions(df_ventes_ancien, lang)))
-    story.append(Paragraph(_L("Individuel pur vs collectif (mises en chantier, cumul 12 mois)",
-                              "Detached vs collective (starts, 12-month total)", lang), h2))
-    story.append(_img(_chart_indiv_collectif(df_sitadel, lang)))
-    story.append(Paragraph(_L("Taux d'intérêt et conditions de financement (%)",
-                              "Interest rates and financing conditions (%)", lang), h2))
-    story.append(_img(_chart_rates(df_macro, lang)))
+    # --- Charts --- (each title stays on the same page as its chart)
+    def _section(title, png):
+        story.append(KeepTogether([Paragraph(title, h2), _img(png)]))
+
+    _section(_L("Construction neuve (cumul 12 mois, en milliers)",
+                "New construction (12-month total, thousands)", lang),
+             _chart_construction(df_sitadel, lang))
+    _section(_L("Ventes de logements anciens (cumul 12 mois, en milliers)",
+                "Existing-home sales (12-month total, thousands)", lang),
+             _chart_transactions(df_ventes_ancien, lang))
+    _section(_L("Individuel pur vs collectif (mises en chantier, cumul 12 mois)",
+                "Detached vs collective (starts, 12-month total)", lang),
+             _chart_indiv_collectif(df_sitadel, lang))
+    _section(_L("Taux d'intérêt et conditions de financement (%)",
+                "Interest rates and financing conditions (%)", lang),
+             _chart_rates(df_macro, lang))
 
     # --- BPCE benchmark ---
     story.append(Paragraph(_L("Repère : prévisions BPCE L'Observatoire 2026",
