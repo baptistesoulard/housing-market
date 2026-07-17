@@ -28,12 +28,12 @@ L'application s'ouvre sur http://localhost:8501.
 
 ## Données
 
-Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition des séries les plus récentes est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) ; l'application, elle, ne fait aucun appel réseau.
+Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition de **toutes** les sources est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) : `python fetch_new_sources.py` rafraîchit l'intégralité de `data_manual_input/` en une commande (un builder par source, isolé en cas de panne d'API), à l'exception des compilations manuelles `ca-*.csv` / `ventes-*.csv`. L'application, elle, ne fait aucun appel réseau.
 
 | Indicateur | Source | Accès |
 |---|---|---|
-| Ventes dans l'ancien (cumul 12 m) | IGEDD | fichier `.xls` |
-| Logements autorisés / commencés (SIT@DEL) | SDES | data.gouv.fr |
+| Ventes dans l'ancien (cumul 12 m) | IGEDD | fichier `.xls` (URL directe cgedd.fr) |
+| Logements autorisés / commencés (SIT@DEL) | SDES | API DiDo (data.gouv) |
 | Commercialisation des logements neufs (ECLN : réservations, mises en vente, encours, délai, prix, acquéreurs) | SDES | data.gouv / API DiDo |
 | Prix des logements anciens (Notaires-INSEE) & neufs | INSEE | API SDMX BDM |
 | Confiance des ménages, intentions d'achat, chômage BIT | INSEE | API SDMX BDM |
@@ -65,7 +65,7 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 
 ### P2 — refonte de fond
 
-- **Registre de sources unique** : centraliser `série → {fichier, colonne, fréquence, clé SDMX}` dans un seul dict partagé par `fetch_new_sources.py` et `data_manager.py` (aujourd'hui dupliqué → risque de dérive).
+- **Registre de sources unique** : centraliser `série → {fichier, colonne, fréquence, clé SDMX}` dans un seul dict partagé par `fetch_new_sources.py` et `data_manager.py` (aujourd'hui dupliqué → risque de dérive). ✅ Premier pas (2026-07-18) : `MACRO_CORE_SERIES` dans `fetch_new_sources.py`, alignement verrouillé par `tests/test_fetch_sources.py`.
 - **Stockage macro en format long** (`[Date, série, valeur, fréquence]`) : `macro.csv` est aujourd'hui un format large ~35 % NaN (séries trimestrielles réindexées en mensuel).
 - **Versionnement des données** : snapshots horodatés avant écrasement, plutôt qu'une réécriture en place.
 - **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). ✅ **Pilier rénovation actif (2026-07-16)** : 2 séries INSEE réelles (activité passée/prévue du second œuvre, idbanks 001586954/001586886) branchées comme 2ᵉ facteur du modèle de ventes — le mécanisme de remplacement du synthétique est en place ; reste à disposer de vraies ventes Somfy pour retirer `build_sales`.

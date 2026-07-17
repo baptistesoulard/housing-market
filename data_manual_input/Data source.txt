@@ -1,6 +1,11 @@
+=== MISE À JOUR (2026-07-18) : `python fetch_new_sources.py` rafraîchit TOUS les fichiers de ce dossier en une commande (chaque source a son builder, isolé en cas de panne d'API), à l'exception des ca-*.csv / ventes-*.csv (compilations manuelles, voir ca-SOURCES.md). L'app ne touche jamais le réseau : elle lit uniquement ces fichiers. ===
+
+
+
 Ventes dans l'ancien : HousingMarket_v3\data_manual_input\nombre-vente-maison-appartement-ancien.xls
 Source : IGEDD
 https://www.igedd.developpement-durable.gouv.fr/prix-immobilier-evolution-a-long-terme-a1048.html
+Statut : régénéré par fetch_new_sources.build_igedd() — URL directe stable https://www.cgedd.fr/nombre-vente-maison-appartement-ancien.xls (liée depuis la page IGEDD ci-dessus). Le script invalide data/ventes_ancien.csv pour que l'app reconstruise la série au prochain démarrage.
 Note : série nationale unique, cumul 12 mois glissant en milliers ; l'app reconstruit des flux mensuels (voir data_manager.build_ventes_ancien_from_igedd).
 [Correction 2026-07-14 : les noms de fichiers des 2 premiers blocs étaient intervertis — rétabli d'après le CONTENU réel des fichiers.]
 
@@ -9,7 +14,7 @@ Note : série nationale unique, cumul 12 mois glissant en milliers ; l'app recon
 Logements autorisés et mis en chantier : HousingMarket_v3\data_manual_input\Donnees-mensuelles-nationales-Logements.csv
 Source : SDES — SIT@DEL2 (logements autorisés / commencés, séries mensuelles nationales, données CVS-CJO)
 https://www.data.gouv.fr/datasets/logements-autorises-et-commences-nombre-et-surfaces-series-mensuelles-donnees-estimees-1
-Statut : téléchargé manuellement, API possible : https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=datafile&datafileRid=175486a6-76a3-4c6c-a34b-aeb96758910b&datafileMillesime=2026-07&tab=api
+Statut : régénéré par fetch_new_sources.build_sitadel() via l'API DiDo (datafile 175486a6-76a3-4c6c-a34b-aeb96758910b, millésime le plus récent) : https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/175486a6-76a3-4c6c-a34b-aeb96758910b/csv — CSV identique au téléchargement manuel data.gouv.
 
 
 
@@ -17,7 +22,7 @@ Indice de confiance des ménages : HousingMarket_v3\data_manual_input\insee-conf
 Source : INSEE — Enquête mensuelle de conjoncture auprès des ménages, indicateur synthétique de confiance des ménages (CVS, base 100 = moyenne de longue période)
 idbank : 001587668
 Page : https://www.insee.fr/fr/statistiques/serie/001587668
-Statut : téléchargé via l'API SDMX BDM : https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/001587668
+Statut : régénéré par fetch_new_sources.build_macro_core() via l'API SDMX BDM : https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/001587668
 Couverture : mensuel, 1972-10 -> 2026-06
 
 
@@ -26,7 +31,7 @@ Taux nominaux moyens du crédit habitat : HousingMarket_v3\data_manual_input\tau
 Source : Banque de France / BCE — Coût du crédit à l'habitat des particuliers (crédits nouveaux, statistiques MIR)
 Série : M.FR.B.A2C.AM.R.A.2250.EUR.N  (équivalent ouvert et téléchargeable de l'Observatoire Crédit Logement)
 Page BdF (clé API requise) : https://webstat.banque-france.fr/fr/catalogue/mir1/MIR1.M.FR.B.A22.A.R.A.2254U6.EUR.N
-Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.AM.R.A.2250.EUR.N?format=csvdata
+Statut : régénéré par fetch_new_sources.build_macro_core() via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.AM.R.A.2250.EUR.N?format=csvdata
 Couverture : mensuel, 2003-01 -> 2026-05 (la série commence en 2003 : pas de valeur 2001-2002, laissée vide/NaN)
 
 
@@ -34,15 +39,15 @@ Couverture : mensuel, 2003-01 -> 2026-05 (la série commence en 2003 : pas de va
 Euribor 3 mois : HousingMarket_v3\data_manual_input\euribor-3-mois.csv
 Source : BCE — Euribor 3 mois, moyenne mensuelle
 Série : FM M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA
-Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA?format=csvdata
+Statut : régénéré par fetch_new_sources.build_macro_core() via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA?format=csvdata
 Couverture : mensuel, 1994-01 -> 2026-06
 
 
 
 OAT 10 ans : HousingMarket_v3\data_manual_input\oat-10-ans.csv
-Source : BCE / AFT — taux de référence des emprunts d'État français à 10 ans (OAT 10 ans / taux long harmonisé)
+Source : BCE / Banque de France — taux de référence des emprunts d'État français à 10 ans (OAT 10 ans / taux long harmonisé ; série compilée par la BCE à partir des données Banque de France)
 Série : IRS M.FR.L.L40.CI.0000.EUR.N.Z
-Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/IRS/M.FR.L.L40.CI.0000.EUR.N.Z?format=csvdata
+Statut : régénéré par fetch_new_sources.build_macro_core() via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/IRS/M.FR.L.L40.CI.0000.EUR.N.Z?format=csvdata
 Couverture : mensuel, 1986-01 -> 2026-06
 
 
@@ -51,7 +56,7 @@ Intentions d'achats de logements (dans un délai de 1 an) : HousingMarket_v3\dat
 Source : INSEE — Enquête mensuelle de conjoncture auprès des ménages (Camme), intentions d'achats de logements (dans un délai de 1 an), solde des réponses (intentions d'achats moins pas d'achat envisagé), données CVS
 idbank : 001616794
 Page : https://www.insee.fr/fr/statistiques/serie/001616794
-Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001616794
+Statut : régénéré par fetch_new_sources.build_macro_core() via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001616794
 Couverture : mensuel, 1986-06 -> 2026-06
 Note : la série est affichée dans l'app en données centrées-réduites (écart à la moyenne, en écarts-types), comme dans la présentation INSEE.
 
@@ -61,7 +66,7 @@ Taux de chômage au sens du BIT : HousingMarket_v3\data_manual_input\taux-chomag
 Source : INSEE — Taux de chômage au sens du BIT, ensemble, France hors Mayotte, données CVS (enquête Emploi en continu)
 idbank : 001688527
 Page : https://www.insee.fr/fr/statistiques/serie/001688527
-Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001688527
+Statut : régénéré par fetch_new_sources.build_macro_core() via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001688527
 Couverture : TRIMESTRIEL, 1975-T1 -> 2026-T1 (8,1 %). Chaque trimestre est placé sur le 1er mois du trimestre (janv./avr./juil./oct.) ; les mois hors trimestre restent vides/NaN.
 
 

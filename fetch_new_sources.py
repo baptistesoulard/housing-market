@@ -1,10 +1,18 @@
 """
-Off-runtime acquisition of the REAL source series added in the "Prix & Accessibilité"
-and "Commercialisation Neuf (ECLN)" tabs. Run manually to (re)fresh the manual-input
-CSVs; the Streamlit app itself never hits the network (same convention as the other
-data_manual_input/*.csv real series).
+Off-runtime acquisition of ALL the real source files in data_manual_input/. Run
+`python fetch_new_sources.py` to refresh everything in one go; the Streamlit app itself
+never hits the network (it only reads the CSVs this script maintains). Each builder is
+failure-isolated: one API being down skips that file and the rest still refresh.
 
-Sources (all open / official):
+Sources (all open / official — full per-file details in data_manual_input/Data source.txt):
+  * SIT@DEL2 (SDES) — logements autorisés / commencés, mensuel national CVS-CJO, via
+    l'API DiDo (même backend que le jeu data.gouv ; CSV identique au téléchargement manuel).
+  * IGEDD — ventes de logements anciens, classeur .xls national (URL directe cgedd.fr) ;
+    la série dérivée data/ventes_ancien.csv est invalidée pour reconstruction au prochain
+    démarrage de l'app.
+  * Macro « socle » (6 séries) : confiance des ménages (BDM 001587668), taux du crédit
+    habitat (ECB MIR M.FR.B.A2C.AM.R.A.2250.EUR.N), Euribor 3 mois (ECB FM), OAT 10 ans
+    (ECB IRS), intentions d'achat de logement (BDM 001616794), chômage BIT (BDM 001688527).
   * Prix des logements anciens — indices Notaires-INSEE, France métropolitaine, base
     100 en moyenne annuelle 2015, série CVS, trimestriels (INSEE SDMX BDM) :
         Ensemble      idbank 010567059
@@ -14,11 +22,16 @@ Sources (all open / official):
     idbank 010751595), même base que l'ancien pour comparer neuf/ancien.
   * Production de crédits à l'habitat (crédits nouveaux, Md€, mensuel) — ECB MIR, série
     M.FR.B.A2C.A.B.A.2250.EUR.N (data-api.ecb.europa.eu).
+  * Demande de crédits à l'habitat (enquête BLS) — ECB SDMX, trimestriel.
   * Commercialisation des logements neufs (ECLN) — séries nationales trimestrielles
     CVS-CJO (SDES / data.gouv) : réservations (particuliers), mises en vente, annulations,
     encours, délai d'écoulement, prix au m² (ressource « ventes aux particuliers ») +
     réservations bailleurs sociaux / investisseurs institutionnels (ressource « ventes aux
     institutionnels / ventes en bloc »).
+  * Rénovation / second œuvre — activité passée & prévue (INSEE conjoncture bâtiment).
+
+Not fetchable here: ca-*.csv / ventes-*.csv (compilations manuelles de communiqués
+financiers, voir ca-SOURCES.md).
 """
 import os
 import re
@@ -73,6 +86,72 @@ def _fetch_ecb(dataset, key):
         p = r["TIME_PERIOD"]
         out[pd.Timestamp(int(p[:4]), int(p[5:7]), 1)] = float(r["OBS_VALUE"])
     return pd.Series(out).sort_index()
+
+
+def build_sitadel():
+    """SIT@DEL2 monthly national series (logements autorisés / commencés) via the DiDo
+    API — same backend as the data.gouv dataset documented in Data source.txt; /csv
+    serves the latest millésime. The payload is identical to the manual download
+    (';'-separated, ANNEE/MOIS/TYPE_LGT/NAT_SERIES/LOG_AUT/LOG_COM/...), so the header
+    is sanity-checked before overwriting the file data_manager parses."""
+    url = ("https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/"
+           "datafiles/175486a6-76a3-4c6c-a34b-aeb96758910b/csv")
+    raw = _get(url).decode("utf-8", "replace")
+    header = raw.splitlines()[0] if raw else ""
+    for col in ("ANNEE", "MOIS", "TYPE_LGT", "NAT_SERIES", "LOG_AUT", "LOG_COM"):
+        if col not in header:
+            raise ValueError(f"en-tête DiDo inattendu (colonne '{col}' absente) : {header!r}")
+    path = os.path.join(OUT_DIR, "Donnees-mensuelles-nationales-Logements.csv")
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(raw)
+    print(f"sitadel -> {path} ({raw.count(chr(10))} lignes)")
+
+
+def build_igedd():
+    """IGEDD existing-home sales workbook — stable direct URL on cgedd.fr (the IGEDD
+    page 'prix-immobilier-evolution-a-long-terme-a1048' links to it). Saved as-is; the
+    derived data/ventes_ancien.csv is then deleted so data_manager.ensure_ventes_ancien
+    rebuilds the monthly flows from the fresh workbook on the next app start (or via the
+    in-app « Reconstruire » button)."""
+    url = "https://www.cgedd.fr/nombre-vente-maison-appartement-ancien.xls"
+    raw = _get(url)
+    if not raw.startswith(b"\xd0\xcf\x11\xe0"):     # OLE2 magic: it must be a real .xls
+        raise ValueError("le fichier téléchargé n'est pas un classeur .xls (page d'erreur ?)")
+    path = os.path.join(OUT_DIR, "nombre-vente-maison-appartement-ancien.xls")
+    with open(path, "wb") as f:
+        f.write(raw)
+    print(f"igedd -> {path} ({len(raw) // 1024} Ko)")
+    derived = os.path.join(os.path.dirname(OUT_DIR), "data", "ventes_ancien.csv")
+    if os.path.exists(derived):
+        os.remove(derived)
+        print("         data/ventes_ancien.csv invalidé -> reconstruit au prochain démarrage de l'app")
+
+
+# The six "socle" macro series (the forecast model's predictors), each a single
+# [Date, <column>] CSV. (fichier, colonne data_manager, source, code série) — kept as
+# data so tests can check the filenames/columns stay aligned with data_manager.
+MACRO_CORE_SERIES = [
+    ("insee-confiance-menages.csv", "Insee_Confiance_Menages", "bdm", "001587668"),
+    ("taux-credit-habitat.csv", "Credit_Logement_Taux_Interet", "ecb", "MIR/M.FR.B.A2C.AM.R.A.2250.EUR.N"),
+    ("euribor-3-mois.csv", "Euribor_3M", "ecb", "FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA"),
+    ("oat-10-ans.csv", "OAT_10ans", "ecb", "IRS/M.FR.L.L40.CI.0000.EUR.N.Z"),
+    ("intentions-achat-logement.csv", "Intentions_Achat_Logement", "bdm", "001616794"),
+    ("taux-chomage-bit.csv", "Taux_Chomage_BIT", "bdm", "001688527"),
+]
+
+
+def build_macro_core():
+    """The six first-wave macro CSVs (confiance, taux crédit, Euribor, OAT, intentions,
+    chômage BIT) — historically downloaded by hand from the very same SDMX endpoints the
+    other builders use. Each series is fetched independently so one outage only skips
+    that file. Quarterly series (chômage) keep one row per quarter, first month of the
+    quarter, exactly like the manual files."""
+    for filename, column, kind, code in MACRO_CORE_SERIES:
+        try:
+            s = _fetch_bdm(code) if kind == "bdm" else _fetch_ecb(*code.split("/", 1))
+            _write_single_series(s, column, filename, column)
+        except Exception as e:
+            print(f"  {column} -> SKIPPED ({e.__class__.__name__}: {e})")
 
 
 def build_prices():
@@ -257,9 +336,27 @@ def build_renovation():
 
 
 if __name__ == "__main__":
-    build_prices()
-    build_neuf_price()
-    build_credit_volume()
-    build_credit_demand_bls()
-    build_ecln()
-    build_renovation()
+    # Every real source file, one builder each. Failure-isolated: an API being down
+    # skips that source (the app keeps serving the previous CSV) and the rest refresh.
+    builders = [
+        build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
+        build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)
+        build_macro_core,       # confiance, taux crédit, Euribor, OAT, intentions, chômage
+        build_prices,           # indices Notaires-INSEE (ancien)
+        build_neuf_price,       # indice prix logements neufs
+        build_credit_volume,    # production de crédits à l'habitat (MIR)
+        build_credit_demand_bls,  # demande de crédits (BLS)
+        build_ecln,             # commercialisation des logements neufs
+        build_renovation,       # activité second œuvre passée / prévue
+    ]
+    failed = []
+    for b in builders:
+        try:
+            b()
+        except Exception as e:
+            failed.append(b.__name__)
+            print(f"{b.__name__} -> ÉCHEC ({e.__class__.__name__}: {e})")
+    if failed:
+        print(f"\nTerminé avec échec(s) : {', '.join(failed)} — les CSV précédents restent en place.")
+    else:
+        print("\nTerminé : toutes les sources ont été rafraîchies.")
