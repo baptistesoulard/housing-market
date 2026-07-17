@@ -645,7 +645,7 @@ with tab_synthese:
             _e_yoy = (float(_se["Reservations"].iloc[-1]) / float(_se["Reservations"].iloc[-5]) - 1) * 100
             _cards_act.append((
                 _dot(_status_yoy(_e_yoy)),
-                _L("Réservations neuf (ECLN)", "New-build reservations (ECLN)"),
+                _L("Réservations particuliers neuf (ECLN)", "New-build private-buyer reservations (ECLN)"),
                 _th(float(_se["Reservations"].iloc[-1])) + _L(" /trim.", " /qtr"),
                 _L("trim. vs n-1 : ", "qtr vs prior yr: ") + _pct_fr(_e_yoy)))
     _render_cards(_cards_act, per_row=4 if len(_cards_act) == 4 else 3)
@@ -897,7 +897,7 @@ with tab_neuf:
                 _ke_yoy = ((float(_ke["Reservations"].iloc[-1]) / float(_ke["Reservations"].iloc[-5]) - 1) * 100
                            if len(_ke) >= 5 else None)
                 st.metric(
-                    label=_L("Réservations neuf ECLN (trimestre)", "ECLN new-build reservations (quarter)"),
+                    label=_L("Réservations particuliers ECLN (trimestre)", "ECLN private-buyer reservations (quarter)"),
                     value=f"{int(_ke['Reservations'].iloc[-1]):,}".replace(",", " "),
                     delta=(f"{_ke_yoy:+.1f}% YoY" if _ke_yoy is not None else None),
                     delta_color="normal"
@@ -1027,6 +1027,11 @@ with tab_neuf:
 
     # Rolling-12m lines: individual-pur vs collective, in thousands. Computed on the full
     # history then clipped to the selected years (12m window keeps its real look-back).
+    st.markdown(
+        f"**{_iv_metric} — {_L('maison individuelle pure vs collectif', 'detached houses vs collective')}** "
+        f"<span style='color:#6c757d;font-weight:400'>({T[lang_code]['sub_rolling']})</span>",
+        unsafe_allow_html=True
+    )
     fig_iv = go.Figure()
     for _lbl, _types, _clr in [_iv_groups[0], _iv_groups[2]]:
         _g = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel_full, _types), [_iv_col])
@@ -1355,7 +1360,10 @@ with tab_macro:
         cr_cols = st.columns(2)
         with cr_cols[0]:
             macro_chart_title(_L("Production mensuelle de crédits à l'habitat", "Monthly housing-loan production"),
-                              _L("dont renégociations, Md€ par mois", "of which renegotiations, €bn per month"))
+                              _L("crédits nouveaux vs renégociations, Md€ par mois",
+                                 "new loans vs renegotiations, €bn per month") if _has_split
+                              else _L("y compris renégociations, Md€ par mois",
+                                      "including renegotiations, €bn per month"))
             fig_cv = go.Figure()
             if _has_split:
                 # Stacked, BPCE p.24 style: purchase-related lending vs renegotiations.
@@ -1719,8 +1727,10 @@ with tab_ancien:
                 add_last_value_label(fig_p, s, "Date", _c, _col, lang_code, decimals=0, yshift=_ysh[_c])
             apply_macro_chart_layout(fig_p, _L("Indice (base 100)", "Index (base 100)"))
             st.plotly_chart(fig_p, use_container_width=True)
-            st.caption(_L("Source : INSEE — indices Notaires-INSEE des prix des logements anciens (CVS), idbanks 010567059/057/061.",
-                          "Source: INSEE — Notaires-INSEE existing-home price indices (SA), idbanks 010567059/057/061."))
+            st.caption(_L("Source : INSEE — indices Notaires-INSEE des prix des logements anciens, France métropolitaine (CVS), "
+                          "idbanks 010567059 (ensemble) / 010567057 (appartements) / 010567061 (maisons).",
+                          "Source: INSEE — Notaires-INSEE existing-home price indices, metropolitan France (SA), "
+                          "idbanks 010567059 (all) / 010567057 (apartments) / 010567061 (houses)."))
         with r1[1]:
             macro_chart_title(_L("Évolution annuelle des prix", "Annual price growth"),
                               _L("glissement sur 1 an, %", "year-on-year, %"))
@@ -1857,7 +1867,8 @@ with tab_neuf:
         er1 = st.columns(2)
         with er1[0]:
             macro_chart_title(_L("Encours & mises en vente", "Outstanding stock & new listings"),
-                              _L("logements neufs, par trimestre", "new dwellings, per quarter"))
+                              _L("encours = stock en fin de trimestre · mises en vente = flux trimestriel",
+                                 "stock = end-of-quarter level · listings = quarterly flow"))
             fig_s = go.Figure()
             fig_s.add_trace(go.Scatter(x=e["Date"], y=e["Encours"], name=_L("Encours à la vente", "Outstanding stock"),
                                        line=dict(color=COLOR_TEXT, width=2)))
@@ -2090,10 +2101,12 @@ with tab_forecast:
                 "Jusqu'au repère, la projection n'utilise que des valeurs d'indicateurs déjà publiées "
                 "(décalées de leurs délais estimés) — sans hypothèse. Au-delà, chaque indicateur manquant "
                 "est maintenu à sa dernière valeur connue (report). Bande = ±1,28·RMSE (hors échantillon "
-                "si disponible). Exportable vers SAP IBP (onglet « ⚙️ Données & Export »).",
+                "si disponible). Sources : IGEDD (ventes) ; INSEE, Banque de France/BCE (indicateurs). "
+                "Exportable vers SAP IBP (onglet « ⚙️ Données & Export »).",
                 "Up to the marker, the projection uses only already-published indicator values (shifted "
                 "by their estimated lags) — assumption-free. Beyond it, each missing indicator is held at "
                 "its last known value (carry-forward). Band = ±1.28·RMSE (out-of-sample when available). "
+                "Sources: IGEDD (sales); INSEE, Banque de France/ECB (indicators). "
                 "Exportable to SAP IBP ('⚙️ Data & Export' tab)."))
             # Persist for the SAP IBP export tab (a real, dated forecast — not synthetic).
             _fc_export = _fpath.rename(columns={"pred": "Transactions_Prevues"})[["Date", "Transactions_Prevues"]]
@@ -2595,7 +2608,8 @@ with tab_timelag:
         )
         
         fig_sim.update_layout(
-            title=T[lang_code]["alignment_title"].format(ind=ind_label, lag=time_lag),
+            title=T[lang_code]["alignment_title"].format(ind=ind_label, lag=time_lag,
+                                                         bench=sales_trace_label),
             xaxis_title="Date" if lang_code == "EN" else "Temps",
             template="plotly_white",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
@@ -2622,6 +2636,20 @@ with tab_timelag:
                           "✅ Imported real sales (user data, monthly)."))
         else:
             st.caption(T[lang_code]["synthetic_note"])
+        # Source of the SHIFTED indicator itself (the benchmark note above covers the target).
+        if internal_category == "Construction (SIT@DEL)":
+            _ind_src = "SDES — SIT@DEL"
+        elif internal_category == "Transactions (ventes anciennes)":
+            _ind_src = "IGEDD"
+        else:
+            _ind_src = {"Insee_Confiance_Menages": _L("INSEE (confiance des ménages)",
+                                                      "INSEE (household confidence)"),
+                        "Credit_Logement_Taux_Interet": _L("Banque de France / BCE (taux crédit habitat, MIR)",
+                                                           "Banque de France / ECB (housing-loan rate, MIR)"),
+                        "Euribor_3M": _L("BCE (Euribor 3 mois)", "ECB (3-month Euribor)"),
+                        "OAT_10ans": _L("BCE / Banque de France (OAT 10 ans)",
+                                        "ECB / Banque de France (10-year OAT)")}.get(ind_metric, "INSEE / BCE")
+        st.caption(f"{T[lang_code]['source_label']} ({_L('indicateur', 'indicator')}) : {_ind_src}")
 
         # Save shifted data in session state for export later
         st.session_state["shifted_export_df"] = shifted_ind_df
@@ -2873,7 +2901,7 @@ with tab_composite:
     )
     
     fig_comp.update_layout(
-        title=T[lang_code]["composite_plot_title"],
+        title=T[lang_code]["composite_plot_title"].format(bench=bench_label),
         xaxis_title="Date",
         template="plotly_white",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
@@ -2894,6 +2922,11 @@ with tab_composite:
     st.plotly_chart(fig_comp, use_container_width=True)
     st.caption(_L("✅ Cible = ventes réelles importées.", "✅ Target = imported real sales.")
                if _comp_use_company else T[lang_code]["synthetic_note"])
+    st.caption(_L(
+        "Sources des composantes : SDES — SIT@DEL (construction) · INSEE (confiance des ménages, "
+        "idbank 001587668) · Banque de France / BCE (taux crédit habitat, MIR).",
+        "Component sources: SDES — SIT@DEL (construction) · INSEE (household confidence, "
+        "idbank 001587668) · Banque de France / ECB (housing-loan rate, MIR)."))
 
     # Measure correlation between composite indicator and historical sales
     merged_comp_sales = pd.merge(df_sales_bench, df_composite, on="Date", how="inner")
