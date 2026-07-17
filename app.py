@@ -175,6 +175,8 @@ df_macro_full = df_macro
 df_sitadel_full, df_ventes_ancien_full = df_sitadel, df_ventes_ancien
 # Full-history macro & revenue for the forecast models (they must not depend on the slicer).
 df_revenue_full = df_revenue
+# Full-history ECLN for the slicer-independent headline cards (Synthèse & Marché du neuf).
+df_ecln_full = df_ecln
 # Full-history user-imported company sales (forecast propagation uses the untouched series).
 df_company_sales_full = df_company_sales
 
@@ -278,6 +280,22 @@ def last_valid_month(df, value_col, date_col="Date"):
     """Return the most recent date for which value_col is non-null."""
     valid = df.dropna(subset=[value_col])
     return valid[date_col].max() if not valid.empty else pd.NaT
+
+def _mom_caption(m):
+    """'3 derniers mois vs n-1' momentum line for a KPI card (— if unavailable)."""
+    v = m.get("last3_yoy")
+    txt = "—" if v is None else (f"{v:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{v:+.1f}%")
+    return f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {txt}"
+
+def _borrow_capacity_factor(rate_pct, years):
+    """Present value of a 1-unit monthly instalment over `years` at annual rate
+    `rate_pct` — i.e. the principal a fixed monthly payment can service. Vectorised;
+    a zero rate degenerates to n months. Used by the affordability card (Synthèse)
+    and the Prix & Accessibilité section of the existing-home tab."""
+    i = np.asarray(rate_pct, dtype=float) / 100.0 / 12.0
+    n = years * 12
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.where(i > 0, (1.0 - (1.0 + i) ** (-n)) / i, float(n))
 
 def add_moving_average_traces(fig, disp_df, base_col, name, color, show_ma12, show_ma6,
                               ma12_lbl, ma6_lbl, date_col="Date"):
@@ -465,11 +483,12 @@ def synthetic_circularity_warning():
         "⚠️ Cible = ventes **synthétiques**, construites à partir des permis SIT@DEL et des "
         "transactions IGEDD. Une corrélation élevée est ici **mécanique** (l'indicateur "
         "explique une série dérivée de lui-même), pas une preuve de pouvoir prédictif. "
-        "Importez vos ventes réelles (onglet « Données Source ») pour une analyse valide.",
+        "Importez vos ventes réelles (onglet « ⚙️ Données & Export », sous-onglet "
+        "« Sources & Imports ») pour une analyse valide.",
         "⚠️ Target = **synthetic** sales, built FROM SIT@DEL permits and IGEDD transactions. "
         "A high correlation here is **mechanical** (the indicator explains a series derived "
         "from itself), not evidence of predictive power. Import your real company sales "
-        "(『Source Data』 tab) for a valid analysis."))
+        "(『⚙️ Data & Export』 tab, 『Sources & Imports』 sub-tab) for a valid analysis."))
 
 # Published BPCE L'Observatoire targets for 2026 (RDV Immobilier press conference,
 # 2 June 2026) — external validation benchmark for our own model. Defined here (above the
@@ -480,20 +499,34 @@ BPCE_RATE_Q4_2026 = 3.43           # credit rate at Q4 2026 (%, +34 bp YoY)
 BPCE_PRICE_YOY_Q4_2026 = -0.1      # existing-home price, YoY at Q4 2026 (%)
 
 # --- Define Streamlit Tabs ---
-(tab_synthese, tab_lookback, tab_macro, tab_actus, tab_prix, tab_ecln, tab_forecast,
- tab_timelag, tab_composite, tab_export, tab_source) = st.tabs([
+# First level follows the reading funnel: where does the market stand (new-build,
+# existing homes) → why (macro environment, policy) → where is it going (forecast) →
+# toolbox (workshops, data & export). Each market tab owns its whole segment: the
+# new-build tab covers SIT@DEL permits/starts AND ECLN commercialisation; the
+# existing-home tab covers IGEDD transactions AND Notaires-INSEE prices/affordability.
+(tab_synthese, tab_neuf, tab_ancien, tab_macro, tab_actus, tab_forecast,
+ tab_atelier, tab_donnees) = st.tabs([
     _L("🧭 Synthèse", "🧭 Overview"),
-    T[lang_code]["tab_lookback"],
+    T[lang_code]["tab_neuf"],
+    T[lang_code]["tab_ancien"],
     T[lang_code]["tab_macro"],
     _L("📰 Actualités & Aides", "📰 News & Policy"),
-    T[lang_code]["tab_prix"],
-    T[lang_code]["tab_ecln"],
     T[lang_code]["tab_forecast"],
-    T[lang_code]["tab_timelag"],
-    T[lang_code]["tab_composite"],
-    T[lang_code]["tab_export"],
-    T[lang_code]["tab_source"]
+    T[lang_code]["tab_atelier"],
+    T[lang_code]["tab_donnees"]
 ])
+
+# Nested sub-tabs: the two exploratory workshops share one first-level tab, and the
+# data/export plumbing shares another. The `with tab_timelag:` / `with tab_composite:` /
+# `with tab_source:` / `with tab_export:` blocks further down render into these containers.
+with tab_atelier:
+    st.caption(T[lang_code]["atelier_caption"])
+    tab_timelag, tab_composite = st.tabs(
+        [T[lang_code]["subtab_timelag"], T[lang_code]["subtab_composite"]])
+with tab_donnees:
+    st.caption(T[lang_code]["donnees_caption"])
+    tab_source, tab_export = st.tabs(
+        [T[lang_code]["subtab_source"], T[lang_code]["subtab_export"]])
 
 # ==============================================================================
 # TAB 0: SYNTHÈSE (landing page — traffic-light read of the market + auto commentary)
@@ -503,12 +536,50 @@ with tab_synthese:
                  "🧭 Market overview"))
     st.caption(_L(
         "Lecture rapide de l'état du marché et de son orientation récente. Chaque pastille "
-        "résume la tendance des 3 derniers mois vs un an plus tôt (🟢 hausse · 🟠 stable · "
-        "🔴 baisse) ; le détail est dans les onglets dédiés. Chiffres nationaux, indépendants "
-        "du filtre de période.",
+        "résume la tendance des 3 derniers mois vs un an plus tôt : 🟢 vent favorable · "
+        "🟠 stable · 🔴 vent contraire — pour les taux et l'accessibilité, 🟢 signifie donc "
+        "des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Le "
+        "détail est dans les onglets dédiés ; chiffres nationaux, indépendants du filtre "
+        "de période.",
         "Quick read of the market's state and recent direction. Each dot summarises the last "
-        "3 months vs a year earlier (🟢 up · 🟠 flat · 🔴 down); detail is in the dedicated "
-        "tabs. National figures, independent of the period filter."))
+        "3 months vs a year earlier: 🟢 tailwind · 🟠 flat · 🔴 headwind — for rates and "
+        "affordability, 🟢 therefore means improving conditions (falling rates), not a rising "
+        "value. Detail is in the dedicated tabs; national figures, independent of the period "
+        "filter."))
+
+    # Full-history national momentum & 12m levels (slicer-independent).
+    _sy_sit = ana.aggregate_sitadel(df_sitadel_full)
+    _sy_va = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
+    _sy_roll_sit = ana.calculate_rolling_12m(_sy_sit, ["Permis", "MisesEnChantier"])
+    _sy_roll_va = ana.calculate_rolling_12m(_sy_va, ["Transactions"])
+    _sy_m_permis = ana.momentum_metrics(_sy_sit, "Permis")
+    _sy_m_mises = ana.momentum_metrics(_sy_sit, "MisesEnChantier")
+    _sy_m_tx = ana.momentum_metrics(_sy_va, "Transactions")
+    _sy_k_permis = ana.calculate_kpis(_sy_roll_sit, "Permis")
+    _sy_k_mises = ana.calculate_kpis(_sy_roll_sit, "MisesEnChantier")
+    _sy_k_tx = ana.calculate_kpis(_sy_roll_va, "Transactions")
+
+    # Data freshness by source, up front (SIT@DEL, IGEDD and ECLN can end on
+    # different months/quarters).
+    _last_sit = last_valid_month(_sy_roll_sit, "Permis")
+    _last_va = last_valid_month(_sy_roll_va, "Transactions")
+    _fresh = [
+        f"SIT@DEL : {format_month_year(_last_sit, lang_code)}",
+        f"IGEDD : {format_month_year(_last_va, lang_code)}",
+    ]
+    if df_ecln_full is not None and not df_ecln_full.empty:
+        _e_last_d = df_ecln_full.dropna(subset=["Reservations"])["Date"].max()
+        if pd.notna(_e_last_d):
+            _fresh.append(f"ECLN : {_e_last_d.year}-T{(_e_last_d.month - 1) // 3 + 1}")
+    st.caption("📅 " + _L("Dernières données — ", "Latest data — ") + " · ".join(_fresh))
+
+    # The verdict first: the same auto commentary as the look-back charts and the PDF
+    # report, surfaced before the cards so a hurried reader gets the conclusion immediately.
+    _sy_mom_ip = ana.momentum_metrics(
+        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+    st.info("📝 " + ana.build_market_commentary(
+        _sy_k_permis, _sy_k_mises, _sy_k_tx,
+        _sy_m_permis, _sy_m_mises, _sy_m_tx, _sy_mom_ip, lang_code))
 
     def _dot(status):
         return {"up": "🟢", "flat": "🟠", "down": "🔴"}.get(status, "⚪")
@@ -527,15 +598,16 @@ with tab_synthese:
         s = f"{v:+.1f}%"
         return s.replace(".", ",") if lang_code == "FR" else s
 
-    # Full-history national momentum & 12m levels (slicer-independent).
-    _sy_sit = ana.aggregate_sitadel(df_sitadel_full)
-    _sy_va = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
-    _sy_m_permis = ana.momentum_metrics(_sy_sit, "Permis")
-    _sy_m_mises = ana.momentum_metrics(_sy_sit, "MisesEnChantier")
-    _sy_m_tx = ana.momentum_metrics(_sy_va, "Transactions")
-    _sy_k_permis = ana.calculate_kpis(ana.calculate_rolling_12m(_sy_sit, ["Permis"]), "Permis")
-    _sy_k_mises = ana.calculate_kpis(ana.calculate_rolling_12m(_sy_sit, ["MisesEnChantier"]), "MisesEnChantier")
-    _sy_k_tx = ana.calculate_kpis(ana.calculate_rolling_12m(_sy_va, ["Transactions"]), "Transactions")
+    def _render_cards(cards, per_row=3):
+        """Rows of headline cards: (dot emoji, title, value, sub-caption)."""
+        for _row_start in range(0, len(cards), per_row):
+            _rc = st.columns(per_row)
+            for _c, (_emoji, _title, _val, _sub) in zip(_rc, cards[_row_start:_row_start + per_row]):
+                with _c:
+                    st.markdown(f"### {_emoji} {_val}")
+                    st.markdown(f"**{_title}**")
+                    if _sub:
+                        st.caption(_sub)
 
     _mi = df_macro_full.set_index("Date").sort_index()
 
@@ -550,100 +622,163 @@ with tab_synthese:
         older = s[s.index <= cutoff]
         return last, (float(older.iloc[-1]) if not older.empty else None)
 
-    # --- Card 1-3: construction & transactions (momentum) ---
-    cards = []
-    cards.append((_status_yoy(_sy_m_permis.get("last3_yoy")),
-                  _L("Permis de construire", "Building permits"),
-                  _th(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
-                  _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_permis.get("last3_yoy"))))
-    cards.append((_status_yoy(_sy_m_mises.get("last3_yoy")),
-                  _L("Mises en chantier", "Housing starts"),
-                  _th(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
-                  _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_mises.get("last3_yoy"))))
-    cards.append((_status_yoy(_sy_m_tx.get("last3_yoy")),
-                  _L("Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"),
-                  _th(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
-                  _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_tx.get("last3_yoy"))))
+    # --- Block 1: activity (construction, existing-home sales, new-build reservations) ---
+    st.markdown("#### " + _L("Activité", "Activity"))
+    _cards_act = [
+        (_dot(_status_yoy(_sy_m_permis.get("last3_yoy"))),
+         _L("Permis de construire", "Building permits"),
+         _th(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
+         _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_permis.get("last3_yoy"))),
+        (_dot(_status_yoy(_sy_m_mises.get("last3_yoy"))),
+         _L("Mises en chantier", "Housing starts"),
+         _th(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
+         _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_mises.get("last3_yoy"))),
+        (_dot(_status_yoy(_sy_m_tx.get("last3_yoy"))),
+         _L("Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"),
+         _th(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
+         _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_tx.get("last3_yoy"))),
+    ]
+    # New-build reservations (ECLN, quarterly): last quarter vs same quarter a year earlier.
+    if df_ecln_full is not None and not df_ecln_full.empty:
+        _se = df_ecln_full.dropna(subset=["Reservations"]).sort_values("Date")
+        if len(_se) >= 5:
+            _e_yoy = (float(_se["Reservations"].iloc[-1]) / float(_se["Reservations"].iloc[-5]) - 1) * 100
+            _cards_act.append((
+                _dot(_status_yoy(_e_yoy)),
+                _L("Réservations neuf (ECLN)", "New-build reservations (ECLN)"),
+                _th(float(_se["Reservations"].iloc[-1])) + _L(" /trim.", " /qtr"),
+                _L("trim. vs n-1 : ", "qtr vs prior yr: ") + _pct_fr(_e_yoy)))
+    _render_cards(_cards_act, per_row=4 if len(_cards_act) == 4 else 3)
+    st.caption(_L("→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »",
+                  "→ detail: '🏗️ New-Build Market' · '🏠 Existing-Home Market'"))
 
-    # --- Card 4: credit rate direction (rising rate = headwind → down) ---
+    # --- Block 2: financing conditions ---
+    st.markdown("#### " + _L("Conditions de financement", "Financing conditions"))
+    _cards_fin = []
+    # Credit rate direction (rising rate = headwind → down).
     _r_last, _r_prev = _last_prev("Credit_Logement_Taux_Interet")
     if _r_last is None:
-        _r_status, _r_val, _r_sub = "flat", "—", ""
+        _cards_fin.append(("⚪", _L("Taux de crédit habitat", "Housing-loan rate"), "—", ""))
     else:
         _dr = None if _r_prev is None else _r_last - _r_prev
         _r_status = "flat" if _dr is None else ("down" if _dr > 0.1 else ("up" if _dr < -0.1 else "flat"))
         _r_val = (f"{_r_last:.2f} %".replace(".", ",") if lang_code == "FR" else f"{_r_last:.2f}%")
         _r_sub = _L("sur 12 m : ", "12m: ") + (_pct_fr(_dr).replace("%", " pt") if _dr is not None else "—")
-    cards.append((_r_status, _L("Taux de crédit habitat", "Housing-loan rate"), _r_val, _r_sub))
-
-    # --- Card 5: credit demand (BLS expectations, leading) ---
+        _cards_fin.append((_dot(_r_status), _L("Taux de crédit habitat", "Housing-loan rate"), _r_val, _r_sub))
+    # Credit demand (BLS expectations, leading).
     _bls_last, _ = _last_prev("Demande_Credit_Perspectives")
     if _bls_last is None:
-        cards.append(("flat", _L("Demande de crédit (BLS)", "Credit demand (BLS)"), "—", ""))
+        _cards_fin.append(("⚪", _L("Demande de crédit (BLS)", "Credit demand (BLS)"), "—", ""))
     else:
         _bls_status = "up" if _bls_last > 0 else ("down" if _bls_last < -10 else "flat")
-        cards.append((_bls_status, _L("Demande de crédit (BLS)", "Credit demand (BLS)"),
-                      f"{_bls_last:+.0f}", _L("perspectives 3 m, solde net %", "3m outlook, net %")))
+        _cards_fin.append((_dot(_bls_status), _L("Demande de crédit (BLS)", "Credit demand (BLS)"),
+                           f"{_bls_last:+.0f}", _L("perspectives 3 m, solde net %", "3m outlook, net %")))
+    # Affordability index (borrowing capacity ÷ prices, base 100 = 2015, 25-year loan) —
+    # the same construction as the Prix & Accessibilité section of the existing-home tab.
+    if "Prix_Ancien_Ensemble" in df_macro_full.columns:
+        _af = df_macro_full.dropna(subset=["Credit_Logement_Taux_Interet", "Prix_Ancien_Ensemble"]).copy()
+        _cap15 = _borrow_capacity_factor(
+            df_macro_full.loc[(df_macro_full["Date"].dt.year == 2015)
+                              & df_macro_full["Credit_Logement_Taux_Interet"].notna(),
+                              "Credit_Logement_Taux_Interet"], 25).mean() if not _af.empty else None
+        if _cap15 and _cap15 > 0:
+            _af["_access"] = (_borrow_capacity_factor(_af["Credit_Logement_Taux_Interet"], 25)
+                              / _cap15 * 100) / _af["Prix_Ancien_Ensemble"] * 100
+            _acc_s = _af.set_index("Date")["_access"].dropna()
+            if not _acc_s.empty:
+                _a_last = float(_acc_s.iloc[-1])
+                _older = _acc_s[_acc_s.index <= _acc_s.index[-1] - pd.DateOffset(months=12)]
+                _da = (_a_last - float(_older.iloc[-1])) if not _older.empty else None
+                _a_status = "flat" if _da is None else ("up" if _da > 1 else ("down" if _da < -1 else "flat"))
+                _a_sub = (_L("base 100 = 2015 · sur 12 m : ", "base 100 = 2015 · 12m: ")
+                          + (_pct_fr(_da).replace("%", " pt") if _da is not None else "—"))
+                _cards_fin.append((_dot(_a_status), _L("Indice d'accessibilité", "Affordability index"),
+                                   f"{_a_last:.0f}", _a_sub))
+    _render_cards(_cards_fin)
+    st.caption(_L("→ détail : « 🏦 Environnement & Financement » · « 🏠 Marché de l'ancien »",
+                  "→ detail: '🏦 Macro Environment & Financing' · '🏠 Existing-Home Market'"))
 
-    # --- Card 6: forecast vs BPCE 2026 target ---
+    # --- Block 3: perspective (own read vs BPCE, renovation driver, next policy step) ---
+    st.markdown("#### " + _L("Perspective", "Outlook"))
+    _cards_persp = []
     _sy_tx12 = fc.build_target(df_ventes_ancien_full).dropna()
     if _sy_tx12.empty:
-        cards.append(("flat", _L("Prévision vs BPCE 2026", "Forecast vs BPCE 2026"), "—", ""))
+        _cards_persp.append(("⚪", _L("Ventes 12 m vs cible BPCE 2026", "12m sales vs BPCE 2026 target"), "—", ""))
     else:
         _sy_last_tx = float(_sy_tx12.iloc[-1])
         _sy_gap = (_sy_last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
         # Above target = market currently stronger than BPCE's end-2026 view (a slowdown is
         # implied ahead) → flag orange; near/below is closer to the published landing point.
         _f_status = "up" if _sy_gap > 3 else ("flat" if _sy_gap > -3 else "down")
-        cards.append((_f_status, _L("Ventes 12 m vs cible BPCE", "12m sales vs BPCE target"),
-                      _th(_sy_last_tx), _L("écart à 890k : ", "gap to 890k: ") + _pct_fr(_sy_gap)))
-
-    # --- Card 7 (conditional): renovation activity — the stock-driven second-œuvre driver.
-    # Only shown once the renovation series is populated (fetch_new_sources.build_renovation).
+        _cards_persp.append((_dot(_f_status),
+                             _L("Ventes 12 m vs cible BPCE 2026", "12m sales vs BPCE 2026 target"),
+                             _th(_sy_last_tx), _L("écart à 890k : ", "gap to 890k: ") + _pct_fr(_sy_gap)))
+    # Renovation activity — the stock-driven second-œuvre driver. Only shown once the
+    # renovation series is populated (fetch_new_sources.build_renovation).
     if "Reno_Activite_Batiment" in df_macro_full.columns and df_macro_full["Reno_Activite_Batiment"].notna().any():
         _rn_last, _rn_prev = _last_prev("Reno_Activite_Batiment")
         if _rn_last is not None:
             _rn_d = None if _rn_prev is None else _rn_last - _rn_prev
             _rn_status = "flat" if _rn_d is None else ("up" if _rn_d > 0 else ("down" if _rn_d < 0 else "flat"))
-            cards.append((_rn_status, _L("Activité rénovation", "Renovation activity"),
-                          f"{_rn_last:.0f}", _L("second œuvre / stock", "second-œuvre / stock")))
+            _cards_persp.append((_dot(_rn_status), _L("Activité rénovation", "Renovation activity"),
+                                 f"{_rn_last:.0f}", _L("second œuvre / stock", "second-œuvre / stock")))
+    # Next policy milestone from the curated watchlist (Actualités & Aides).
+    _sy_jalons = sorted(
+        [(d, it) for it in actu.items_sorted() for d, _lbl, _typ in it.get("jalons", [])
+         if d > actu.MAJ],
+        key=lambda t: t[0])
+    if _sy_jalons:
+        _j_d, _j_it = _sy_jalons[0]
+        _cards_persp.append(("🗓️", _L("Prochaine échéance aides", "Next policy deadline"),
+                             pd.Timestamp(_j_d).strftime("%m/%Y"), _j_it["court"][lang_code]))
+    _render_cards(_cards_persp)
+    st.caption(_L("→ détail : « 📡 Prévision & Scénarios » · « 📰 Actualités & Aides »",
+                  "→ detail: '📡 Forecast & Scenarios' · '📰 News & Policy'"))
 
-    # Render cards in rows of 3.
-    for _row_start in range(0, len(cards), 3):
-        _rc = st.columns(3)
-        for _c, (_st, _title, _val, _sub) in zip(_rc, cards[_row_start:_row_start + 3]):
-            with _c:
-                st.markdown(f"### {_dot(_st)} {_val}")
-                st.markdown(f"**{_title}**")
-                if _sub:
-                    st.caption(_sub)
-
-    # Auto-generated commentary (same helper as the look-back tab & the PDF report).
-    _sy_mom_ip = ana.momentum_metrics(
-        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+    # --- Cross-market view: the new-build funnel vs existing-home sales, 12m totals.
+    # This is the side-by-side read the two market tabs each show half of.
     st.markdown("---")
-    st.info("📝 " + ana.build_market_commentary(
-        _sy_k_permis, _sy_k_mises, _sy_k_tx,
-        _sy_m_permis, _sy_m_mises, _sy_m_tx, _sy_mom_ip, lang_code))
-
-    # Data freshness by source (SIT@DEL and IGEDD can end on different months).
-    _last_sit = last_valid_month(ana.calculate_rolling_12m(_sy_sit, ["Permis"]), "Permis")
-    _last_va = last_valid_month(ana.calculate_rolling_12m(_sy_va, ["Transactions"]), "Transactions")
+    st.markdown("#### " + _L("Neuf vs ancien — volumes en cumul 12 mois",
+                             "New vs existing — 12-month rolling volumes"))
     st.caption(_L(
-        f"Dernières données — construction (SIT@DEL) : {format_month_year(_last_sit, lang_code)} · "
-        f"ventes anciennes (IGEDD) : {format_month_year(_last_va, lang_code)}. "
-        f"Ouvrez « 📡 Prévision & Scénarios » pour la projection à horizon et les scénarios.",
-        f"Latest data — construction (SIT@DEL): {format_month_year(_last_sit, lang_code)} · "
-        f"existing-home sales (IGEDD): {format_month_year(_last_va, lang_code)}. "
-        f"Open 『📡 Forecast & Scenarios』 for the horizon projection and scenarios."))
+        "Historique complet, en milliers. Permis et mises en chantier (échelle de gauche) "
+        "vs ventes de logements anciens (échelle de droite) : la lecture croisée des deux "
+        "marchés que détaillent les onglets « 🏗️ Marché du neuf » et « 🏠 Marché de l'ancien ».",
+        "Full history, in thousands. Permits and starts (left scale) vs existing-home sales "
+        "(right scale): the cross-market read detailed in the '🏗️ New-Build Market' and "
+        "'🏠 Existing-Home Market' tabs."))
+    fig_sy = make_subplots(specs=[[{"secondary_y": True}]])
+    fig_sy.add_trace(go.Scatter(x=_sy_roll_sit["Date"], y=_sy_roll_sit["Permis_12M"] / 1000.0,
+                                name=T[lang_code]["permis_trace"],
+                                line=dict(color=COLOR_BRICK, width=2.5)), secondary_y=False)
+    fig_sy.add_trace(go.Scatter(x=_sy_roll_sit["Date"], y=_sy_roll_sit["MisesEnChantier_12M"] / 1000.0,
+                                name=T[lang_code]["mises_trace"],
+                                line=dict(color=COLOR_TEXT, width=2.5, dash="dash")), secondary_y=False)
+    fig_sy.add_trace(go.Scatter(x=_sy_roll_va["Date"], y=_sy_roll_va["Transactions_12M"] / 1000.0,
+                                name=T[lang_code]["transactions_trace"],
+                                line=dict(color=COLOR_GREEN, width=2.5)), secondary_y=True)
+    fig_sy.update_layout(
+        height=420, template="plotly_white",
+        margin=dict(l=60, r=60, t=40, b=44),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0))
+    fig_sy.update_yaxes(title_text=_L("Neuf — milliers /12 m", "New-build — thousands /12m"),
+                        secondary_y=False)
+    fig_sy.update_yaxes(title_text=_L("Ancien — milliers /12 m", "Existing — thousands /12m"),
+                        secondary_y=True)
+    st.plotly_chart(fig_sy, use_container_width=True)
+    st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']} · "
+               f"{T[lang_code]['source_ventes_ancien']} — "
+               + _L("cumul 12 mois glissant", "12-month rolling sum"))
 
 # ==============================================================================
-# TAB 1: CONJONCTURE LOOK-BACK
+# TAB 1: MARCHÉ DU NEUF — permis & mises en chantier (SIT@DEL) + dynamique
+# individuel vs collectif. La commercialisation ECLN est ajoutée à la suite par le
+# second bloc `with tab_neuf:` (section ECLN, plus bas dans ce fichier).
 # ==============================================================================
-with tab_lookback:
-    st.header(T[lang_code]["lookback_header"])
-    st.write(T[lang_code]["lookback_desc"])
-    
+with tab_neuf:
+    st.header(T[lang_code]["neuf_header"])
+    st.write(T[lang_code]["neuf_desc"])
+
     # KPIs sit above the curves, but they depend on the SIT@DEL segment selector
     # which now lives with the SIT@DEL chart further down. Reserve the KPI position
     # with a container and fill it once the selection is known.
@@ -652,7 +787,8 @@ with tab_lookback:
     # --- Charts Row ---
     st.markdown(f"### {T[lang_code]['curves_title']}")
     chart_view_opts = [T[lang_code]["chart_view_rolling"], T[lang_code]["chart_view_rolling6"], T[lang_code]["chart_view_raw"]]
-    chart_view = st.radio(T[lang_code]["chart_view_label"], chart_view_opts, horizontal=True)
+    chart_view = st.radio(T[lang_code]["chart_view_label"], chart_view_opts, horizontal=True,
+                          key="chart_view_neuf")
 
     # Moving averages apply to the raw monthly data only (same scale) — never to the
     # rolling cumulative views. In that view the raw bars, the 6m MA and the 12m MA are
@@ -664,16 +800,15 @@ with tab_lookback:
         st.caption(T[lang_code]["ma_overlay_label"])
         _rc1, _rc2, _rc3, _rc_rest = st.columns([1.3, 1.3, 1.3, 1])
         with _rc1:
-            show_raw = st.checkbox(T[lang_code]["show_raw_label"], value=True, key="show_raw")
+            show_raw = st.checkbox(T[lang_code]["show_raw_label"], value=True, key="show_raw_neuf")
         with _rc2:
-            show_ma12 = st.checkbox(T[lang_code]["ma_12"], key="ma12")
+            show_ma12 = st.checkbox(T[lang_code]["ma_12"], key="ma12_neuf")
         with _rc3:
-            show_ma6 = st.checkbox(T[lang_code]["ma_6"], key="ma6")
+            show_ma6 = st.checkbox(T[lang_code]["ma_6"], key="ma6_neuf")
 
-    # Extra settings for the neuf/SIT@DEL chart, tucked into a collapsible expander:
+    # Extra settings for the SIT@DEL chart, tucked into a collapsible expander:
     #  - which indicators to show (permits only / starts only / both);
-    #  - the housing-type segmentation. Both apply to the neuf chart only (the IGEDD
-    #    "ancien" series is a single national aggregate with no housing-type split).
+    #  - the housing-type segmentation.
     with st.expander(T[lang_code]["extra_params_title"]):
         neuf_metric = st.radio(
             T[lang_code]["neuf_metric_label"],
@@ -689,25 +824,18 @@ with tab_lookback:
     show_permis = neuf_metric in (T[lang_code]["neuf_metric_both"], T[lang_code]["neuf_metric_permis"])
     show_mises = neuf_metric in (T[lang_code]["neuf_metric_both"], T[lang_code]["neuf_metric_mises"])
 
-    c_col1, c_col2 = st.columns(2)
-
-    # Aggregate data according to segment selections. The year-filtered aggregates feed the
-    # month-by-year comparison bars below.
+    # Aggregate data according to the segment selection. The year-filtered aggregate
+    # feeds the month-by-year comparison bars below.
     agg_sitadel = ana.aggregate_sitadel(filtered_sitadel, sitadel_types)
-    agg_ventes_ancien = ana.aggregate_ventes_ancien(filtered_ventes_ancien)
 
     # Rolling 12m + 6m sums (and the moving-average overlays) are computed on the FULL
     # history, then the DISPLAY is clipped to the selected years — so a 12m cumul / moving
     # average at Jan 2023 uses its real Feb 2022→Jan 2023 window instead of showing an empty
     # first-12-months gap after the year slicer moves the start.
     agg_sitadel_full = ana.aggregate_sitadel(df_sitadel_full, sitadel_types)
-    agg_ventes_ancien_full = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
     rolling_sitadel = ana.calculate_rolling_12m(agg_sitadel_full, ["Permis", "MisesEnChantier"])
     rolling_sitadel = ana.calculate_rolling(rolling_sitadel, ["Permis", "MisesEnChantier"], 6)
-    rolling_ventes_ancien = ana.calculate_rolling_12m(agg_ventes_ancien_full, ["Transactions"])
-    rolling_ventes_ancien = ana.calculate_rolling(rolling_ventes_ancien, ["Transactions"], 6)
     rolling_sitadel = _filter_years(rolling_sitadel)
-    rolling_ventes_ancien = _filter_years(rolling_ventes_ancien)
 
     # KPI Calculations. The "Chiffres Clés" cards always reflect the full national
     # total (all housing types, full history) for the last available month, independent
@@ -716,31 +844,18 @@ with tab_lookback:
     rolling_sitadel_total = ana.calculate_rolling_12m(
         ana.aggregate_sitadel(df_sitadel_full), ["Permis", "MisesEnChantier"]
     )
-    rolling_ventes_ancien_total = ana.calculate_rolling_12m(
-        ana.aggregate_ventes_ancien(df_ventes_ancien_full), ["Transactions"]
-    )
     kpi_permis = ana.calculate_kpis(rolling_sitadel_total, "Permis")
     kpi_mises = ana.calculate_kpis(rolling_sitadel_total, "MisesEnChantier")
-    kpi_transactions = ana.calculate_kpis(rolling_ventes_ancien_total, "Transactions")
 
     # Momentum (BPCE style): 3 derniers mois vs mêmes mois n-1, computed from the
     # monthly national series (independent of the year slicer). Surfaces inflections
     # ("coup d'arrêt") faster than the 12m rolling YoY.
     _mom_sitadel = ana.aggregate_sitadel(df_sitadel_full)
-    _mom_ventes_ancien = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
     mom_permis = ana.momentum_metrics(_mom_sitadel, "Permis")
     mom_mises = ana.momentum_metrics(_mom_sitadel, "MisesEnChantier")
-    mom_transactions = ana.momentum_metrics(_mom_ventes_ancien, "Transactions")
 
-    def _mom_caption(m):
-        """'3 derniers mois vs n-1' momentum line for a KPI card (— if unavailable)."""
-        v = m.get("last3_yoy")
-        txt = "—" if v is None else (f"{v:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{v:+.1f}%")
-        return f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {txt}"
-
-    # Last available month behind each headline figure (SIT@DEL vs IGEDD can differ).
+    # Last available month behind the headline figures.
     _kpi_sitadel_month = format_month_year(last_valid_month(rolling_sitadel_total, "Permis"), lang_code)
-    _kpi_ventes_ancien_month = format_month_year(last_valid_month(rolling_ventes_ancien_total, "Transactions"), lang_code)
 
     # --- KPI Row (rendered into the reserved container above the charts) ---
     kpi_container.markdown(f"### {T[lang_code]['kpis_title']}")
@@ -774,34 +889,29 @@ with tab_lookback:
         st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_sitadel_month}")
 
     with kpi_cols[2]:
-        st.metric(
-            label=T[lang_code]["transactions_12m"],
-            value=f"{kpi_transactions['current_12m']:,}".replace(",", " "),
-            delta=f"{kpi_transactions['yoy_12m_pct']}% YoY",
-            delta_color="normal"
-        )
-        st.caption(f"{T[lang_code]['mensuel']} : {kpi_transactions['current_val']:,} ({kpi_transactions['yoy_monthly_pct']}% YoY)")
-        st.caption(_mom_caption(mom_transactions))
-        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_ventes_ancien_month}")
+        # End of the new-build funnel: quarterly ECLN reservations (detailed in the
+        # ECLN section further down this tab).
+        if df_ecln_full is not None and not df_ecln_full.empty:
+            _ke = df_ecln_full.dropna(subset=["Reservations"]).sort_values("Date")
+            if not _ke.empty:
+                _ke_yoy = ((float(_ke["Reservations"].iloc[-1]) / float(_ke["Reservations"].iloc[-5]) - 1) * 100
+                           if len(_ke) >= 5 else None)
+                st.metric(
+                    label=_L("Réservations neuf ECLN (trimestre)", "ECLN new-build reservations (quarter)"),
+                    value=f"{int(_ke['Reservations'].iloc[-1]):,}".replace(",", " "),
+                    delta=(f"{_ke_yoy:+.1f}% YoY" if _ke_yoy is not None else None),
+                    delta_color="normal"
+                )
+                _ke_d = _ke["Date"].iloc[-1]
+                st.caption(_L("Trimestre vs même trimestre n-1", "Quarter vs same quarter prior year"))
+                st.caption(_L("Dernier trimestre disponible", "Last available quarter")
+                           + f" : {_ke_d.year}-T{(_ke_d.month - 1) // 3 + 1}")
 
-    # Auto-generated data-driven commentary under the KPI cards (BPCE « à retenir » style).
-    # Reuses the individual-pur momentum as the second-œuvre demand driver. The same helper
-    # feeds the PDF report, so the narrative stays consistent.
-    _mom_indiv_pur = ana.momentum_metrics(
-        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
-    _commentary = ana.build_market_commentary(
-        kpi_permis, kpi_mises, kpi_transactions,
-        mom_permis, mom_mises, mom_transactions, _mom_indiv_pur, lang_code)
-    kpi_container.info("📝 " + _commentary)
-
-    # Charts are displayed "en milliers" (values / 1000) to match the IGEDD/SDES
+    # Charts are displayed "en milliers" (values / 1000) to match the SDES
     # presentation; the extrema labels therefore no longer divide again (text_divisor=1).
     disp_sitadel = rolling_sitadel.copy()
     for _c in ["Permis", "MisesEnChantier", "Permis_12M", "MisesEnChantier_12M", "Permis_6M", "MisesEnChantier_6M"]:
         disp_sitadel[_c] = disp_sitadel[_c] / 1000.0
-    disp_ventes_ancien = rolling_ventes_ancien.copy()
-    for _c in ["Transactions", "Transactions_12M", "Transactions_6M"]:
-        disp_ventes_ancien[_c] = disp_ventes_ancien[_c] / 1000.0
 
     # Resolve the selected view once: rolling 12m, rolling 6m, or raw monthly.
     _is_rolling = chart_view in (T[lang_code]["chart_view_rolling"], T[lang_code]["chart_view_rolling6"])
@@ -813,99 +923,64 @@ with tab_lookback:
     else:
         _sub = T[lang_code]["sub_raw"]
 
-    with c_col1:
-        # Title adapts to the selected indicators (permits only / starts only / both).
-        if show_permis and show_mises:
-            _sitadel_title = T[lang_code]["chart_sitadel_main"]
-        elif show_permis:
-            _sitadel_title = T[lang_code]["chart_sitadel_permis"]
-        else:
-            _sitadel_title = T[lang_code]["chart_sitadel_mises"]
-        st.markdown(
-            f"**{_sitadel_title}** "
-            f"<span style='color:#6c757d;font-weight:400'>({_sub})</span>",
-            unsafe_allow_html=True
-        )
-        fig1 = go.Figure()
-        if _is_rolling:
-            _pcol, _mcol = f"Permis{_roll_suffix}", f"MisesEnChantier{_roll_suffix}"
+    # Title adapts to the selected indicators (permits only / starts only / both).
+    if show_permis and show_mises:
+        _sitadel_title = T[lang_code]["chart_sitadel_main"]
+    elif show_permis:
+        _sitadel_title = T[lang_code]["chart_sitadel_permis"]
+    else:
+        _sitadel_title = T[lang_code]["chart_sitadel_mises"]
+    st.markdown(
+        f"**{_sitadel_title}** "
+        f"<span style='color:#6c757d;font-weight:400'>({_sub})</span>",
+        unsafe_allow_html=True
+    )
+    fig1 = go.Figure()
+    if _is_rolling:
+        _pcol, _mcol = f"Permis{_roll_suffix}", f"MisesEnChantier{_roll_suffix}"
+        if show_permis:
+            fig1.add_trace(go.Scatter(x=disp_sitadel["Date"], y=disp_sitadel[_pcol], name=T[lang_code]["permis_trace"], line=dict(color=COLOR_BRICK, width=3)))
+            find_and_add_extrema_trace(fig1, disp_sitadel, "Date", _pcol, COLOR_BRICK, text_divisor=1)
+        if show_mises:
+            fig1.add_trace(go.Scatter(x=disp_sitadel["Date"], y=disp_sitadel[_mcol], name=T[lang_code]["mises_trace"], line=dict(color=COLOR_TEXT, width=3, dash='dash')))
+            find_and_add_extrema_trace(fig1, disp_sitadel, "Date", _mcol, COLOR_TEXT, text_divisor=1)
+        sitadel_last = last_valid_month(disp_sitadel, _pcol if show_permis else _mcol)
+    else:
+        # Draw raw bars/line unless the user hid them; if nothing at all is selected,
+        # keep the raw data so the chart is never empty.
+        _draw_raw = show_raw or not (show_ma6 or show_ma12)
+        if _draw_raw:
+            # Light/translucent bars so overlaid curves (moving averages) stay readable.
             if show_permis:
-                fig1.add_trace(go.Scatter(x=disp_sitadel["Date"], y=disp_sitadel[_pcol], name=T[lang_code]["permis_trace"], line=dict(color=COLOR_BRICK, width=3)))
-                find_and_add_extrema_trace(fig1, disp_sitadel, "Date", _pcol, COLOR_BRICK, text_divisor=1)
+                fig1.add_trace(go.Bar(x=disp_sitadel["Date"], y=disp_sitadel["Permis"], name=T[lang_code]["permis_trace"], marker_color=COLOR_BRICK_FILL))
             if show_mises:
-                fig1.add_trace(go.Scatter(x=disp_sitadel["Date"], y=disp_sitadel[_mcol], name=T[lang_code]["mises_trace"], line=dict(color=COLOR_TEXT, width=3, dash='dash')))
-                find_and_add_extrema_trace(fig1, disp_sitadel, "Date", _mcol, COLOR_TEXT, text_divisor=1)
-            sitadel_last = last_valid_month(disp_sitadel, _pcol if show_permis else _mcol)
-        else:
-            # Draw raw bars/line unless the user hid them; if nothing at all is selected,
-            # keep the raw data so the chart is never empty.
-            _draw_raw = show_raw or not (show_ma6 or show_ma12)
-            if _draw_raw:
-                # Light/translucent bars so overlaid curves (moving averages) stay readable.
                 if show_permis:
-                    fig1.add_trace(go.Bar(x=disp_sitadel["Date"], y=disp_sitadel["Permis"], name=T[lang_code]["permis_trace"], marker_color=COLOR_BRICK_FILL))
-                if show_mises:
-                    if show_permis:
-                        # Both shown: keep Mises as a line so it reads against the Permis bars.
-                        fig1.add_trace(go.Scatter(x=disp_sitadel["Date"], y=disp_sitadel["MisesEnChantier"], name=T[lang_code]["mises_trace"], line=dict(color=COLOR_TEXT, width=2)))
-                    else:
-                        # Mises alone: display as bars, like the Permis series.
-                        fig1.add_trace(go.Bar(x=disp_sitadel["Date"], y=disp_sitadel["MisesEnChantier"], name=T[lang_code]["mises_trace"], marker_color=COLOR_TEXT_FILL))
-            sitadel_last = last_valid_month(disp_sitadel, "Permis" if show_permis else "MisesEnChantier")
-            # Moving averages (6m and/or 12m) on the raw monthly scale, same axis.
-            if show_permis:
-                add_moving_average_traces(fig1, disp_sitadel, "Permis", T[lang_code]["permis_trace"],
-                                          COLOR_BRICK_DARK, show_ma12, show_ma6, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
-            if show_mises:
-                add_moving_average_traces(fig1, disp_sitadel, "MisesEnChantier", T[lang_code]["mises_trace"],
-                                          COLOR_TEXT_MUTED, show_ma12, show_ma6, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
+                    # Both shown: keep Mises as a line so it reads against the Permis bars.
+                    fig1.add_trace(go.Scatter(x=disp_sitadel["Date"], y=disp_sitadel["MisesEnChantier"], name=T[lang_code]["mises_trace"], line=dict(color=COLOR_TEXT, width=2)))
+                else:
+                    # Mises alone: display as bars, like the Permis series.
+                    fig1.add_trace(go.Bar(x=disp_sitadel["Date"], y=disp_sitadel["MisesEnChantier"], name=T[lang_code]["mises_trace"], marker_color=COLOR_TEXT_FILL))
+        sitadel_last = last_valid_month(disp_sitadel, "Permis" if show_permis else "MisesEnChantier")
+        # Moving averages (6m and/or 12m) on the raw monthly scale, same axis.
+        if show_permis:
+            add_moving_average_traces(fig1, disp_sitadel, "Permis", T[lang_code]["permis_trace"],
+                                      COLOR_BRICK_DARK, show_ma12, show_ma6, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
+        if show_mises:
+            add_moving_average_traces(fig1, disp_sitadel, "MisesEnChantier", T[lang_code]["mises_trace"],
+                                      COLOR_TEXT_MUTED, show_ma12, show_ma6, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
 
-        # Title is rendered as markdown at the top of this column (above).
-        fig1.update_layout(
-            xaxis_title="Date",
-            yaxis_title="Thousands of dwellings" if lang_code == "EN" else "Milliers de logements",
-            template="plotly_white",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        st.plotly_chart(fig1, use_container_width=True)
-        st.caption(
-            f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']}  \n"
-            f"{T[lang_code]['last_point_label']} : {format_month_year(sitadel_last, lang_code)}"
-        )
-
-    with c_col2:
-        st.markdown(
-            f"**{T[lang_code]['chart_ventes_ancien_main']}** "
-            f"<span style='color:#6c757d;font-weight:400'>({_sub})</span>",
-            unsafe_allow_html=True
-        )
-        fig2 = go.Figure()
-        if _is_rolling:
-            _tcol = f"Transactions{_roll_suffix}"
-            fig2.add_trace(go.Scatter(x=disp_ventes_ancien["Date"], y=disp_ventes_ancien[_tcol], name=T[lang_code]["transactions_trace"], line=dict(color=COLOR_GREEN, width=3)))
-            find_and_add_extrema_trace(fig2, disp_ventes_ancien, "Date", _tcol, COLOR_GREEN, text_divisor=1)
-            ventes_ancien_last = last_valid_month(disp_ventes_ancien, _tcol)
-        else:
-            _draw_raw = show_raw or not (show_ma6 or show_ma12)
-            if _draw_raw:
-                # Light/translucent bars so overlaid curves (moving averages) stay readable.
-                fig2.add_trace(go.Bar(x=disp_ventes_ancien["Date"], y=disp_ventes_ancien["Transactions"], name=T[lang_code]["transactions_trace"], marker_color=COLOR_GREEN_FILL))
-            ventes_ancien_last = last_valid_month(disp_ventes_ancien, "Transactions")
-            # Moving averages (6m and/or 12m) on the raw monthly scale, same axis.
-            add_moving_average_traces(fig2, disp_ventes_ancien, "Transactions", T[lang_code]["transactions_trace"],
-                                      COLOR_GREEN_DARK, show_ma12, show_ma6, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
-
-        fig2.update_layout(
-            xaxis_title="Date",
-            yaxis_title="Thousands of transactions" if lang_code == "EN" else "Milliers de transactions",
-            template="plotly_white",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        st.plotly_chart(fig2, use_container_width=True)
-        st.caption(
-            f"{T[lang_code]['source_label']} : {T[lang_code]['source_ventes_ancien']}  \n"
-            f"{T[lang_code]['last_point_label']} : {format_month_year(ventes_ancien_last, lang_code)}"
-        )
+    # Title is rendered as markdown above the chart.
+    fig1.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Thousands of dwellings" if lang_code == "EN" else "Milliers de logements",
+        template="plotly_white",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+    st.caption(
+        f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']}  \n"
+        f"{T[lang_code]['last_point_label']} : {format_month_year(sitadel_last, lang_code)}"
+    )
 
     # --- Individual vs collective new-build dynamics --------------------------------
     # The single most important new-build signal for a second-œuvre building actor: an
@@ -969,8 +1044,7 @@ with tab_lookback:
 
     # --- Monthly comparison by year (grouped bars, like the IGEDD monthly chart) ---
     # Compares the selected months across the years kept by the "Période (années)"
-    # filter. Neuf uses the segment-filtered monthly Permis; ancien uses monthly
-    # Transactions. Both are shown "en milliers" to match the top charts.
+    # filter, on the segment-filtered monthly series, "en milliers".
     st.markdown(f"### {T[lang_code]['monthly_compare_title']}")
     st.caption(T[lang_code]["monthly_compare_desc"])
 
@@ -980,9 +1054,8 @@ with tab_lookback:
 
     # Default: the 3 months ending at the last available data point (inclusive), e.g.
     # if the last point is May, default to March / April / May.
-    _last_dates = [d for d in [agg_sitadel["Date"].max() if not agg_sitadel.empty else None,
-                               agg_ventes_ancien["Date"].max() if not agg_ventes_ancien.empty else None] if pd.notna(d)]
-    _last_month_num = pd.Timestamp(max(_last_dates)).month if _last_dates else 12
+    _last_month_num = (pd.Timestamp(agg_sitadel["Date"].max()).month
+                       if not agg_sitadel.empty and pd.notna(agg_sitadel["Date"].max()) else 12)
     _default_month_nums = sorted(((_last_month_num - k - 1) % 12) + 1 for k in range(3))
     _default_month_labels = [_month_labels_all[m - 1] for m in _default_month_nums]
 
@@ -995,15 +1068,11 @@ with tab_lookback:
     selected_month_nums = sorted(_label_to_num[l] for l in selected_month_labels)
     ordered_month_labels = [_month_labels_all[m - 1] for m in selected_month_nums]
 
-    # Neuf metric choice (applies to the left chart only). Its own left-half row keeps
-    # the two monthly charts below vertically aligned.
-    mt_col1, _mt_col2 = st.columns(2)
-    with mt_col1:
-        _monthly_metric = st.radio(
-            T[lang_code]["monthly_metric_label"],
-            [T[lang_code]["permis_trace"], T[lang_code]["mises_trace"]],
-            horizontal=True, key="monthly_metric"
-        )
+    _monthly_metric = st.radio(
+        T[lang_code]["monthly_metric_label"],
+        [T[lang_code]["permis_trace"], T[lang_code]["mises_trace"]],
+        horizontal=True, key="monthly_metric"
+    )
     if _monthly_metric == T[lang_code]["mises_trace"]:
         _neuf_col, _neuf_title = "MisesEnChantier", T[lang_code]["chart_sitadel_monthly_mises"]
     else:
@@ -1012,34 +1081,162 @@ with tab_lookback:
     if not selected_month_nums:
         st.info(T[lang_code]["no_month_selected"])
     else:
-        m_col1, m_col2 = st.columns(2)
-        with m_col1:
-            st.markdown(
-                f"**{_neuf_title}** "
-                f"<span style='color:#6c757d;font-weight:400'>({T[lang_code]['sub_monthly']})</span>",
-                unsafe_allow_html=True
-            )
-            figm1 = build_monthly_year_bars(agg_sitadel, _neuf_col,
-                                            selected_month_nums, ordered_month_labels, (230, 74, 25))
-            figm1.update_layout(yaxis_title="Thousands of dwellings" if lang_code == "EN"
-                                else "Milliers de logements")
-            st.plotly_chart(figm1, use_container_width=True)
-            st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']}")
-        with m_col2:
-            st.markdown(
-                f"**{T[lang_code]['chart_ventes_ancien_monthly_main']}** "
-                f"<span style='color:#6c757d;font-weight:400'>({T[lang_code]['sub_monthly']})</span>",
-                unsafe_allow_html=True
-            )
-            figm2 = build_monthly_year_bars(agg_ventes_ancien, "Transactions",
-                                            selected_month_nums, ordered_month_labels, (56, 142, 60))
-            figm2.update_layout(yaxis_title="Thousands of transactions" if lang_code == "EN"
-                                else "Milliers de transactions")
-            st.plotly_chart(figm2, use_container_width=True)
-            st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_ventes_ancien']}")
+        st.markdown(
+            f"**{_neuf_title}** "
+            f"<span style='color:#6c757d;font-weight:400'>({T[lang_code]['sub_monthly']})</span>",
+            unsafe_allow_html=True
+        )
+        figm1 = build_monthly_year_bars(agg_sitadel, _neuf_col,
+                                        selected_month_nums, ordered_month_labels, (230, 74, 25))
+        figm1.update_layout(yaxis_title="Thousands of dwellings" if lang_code == "EN"
+                            else "Milliers de logements")
+        st.plotly_chart(figm1, use_container_width=True)
+        st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']}")
 
 # ==============================================================================
-# TAB 2: CONTEXTE MACRO ÉCONOMIQUE ET FINANCEMENT
+# TAB 2: MARCHÉ DE L'ANCIEN — transactions IGEDD. La section Prix & Accessibilité
+# est ajoutée à la suite par le second bloc `with tab_ancien:` (plus bas dans ce
+# fichier).
+# ==============================================================================
+with tab_ancien:
+    st.header(T[lang_code]["ancien_header"])
+    st.write(T[lang_code]["ancien_desc"])
+
+    # --- KPI (full national series, independent of the year slicer) ---
+    rolling_ventes_ancien_total = ana.calculate_rolling_12m(
+        ana.aggregate_ventes_ancien(df_ventes_ancien_full), ["Transactions"]
+    )
+    kpi_transactions = ana.calculate_kpis(rolling_ventes_ancien_total, "Transactions")
+    mom_transactions = ana.momentum_metrics(
+        ana.aggregate_ventes_ancien(df_ventes_ancien_full), "Transactions")
+    _kpi_ventes_ancien_month = format_month_year(
+        last_valid_month(rolling_ventes_ancien_total, "Transactions"), lang_code)
+
+    st.markdown(f"### {T[lang_code]['kpis_title']}")
+    st.caption(_L(
+        "Chiffres nationaux au dernier mois disponible — indépendants du filtre de période.",
+        "National figures at the latest available month — independent of the period filter."))
+    _kpa = st.columns(3)
+    with _kpa[0]:
+        st.metric(
+            label=T[lang_code]["transactions_12m"],
+            value=f"{kpi_transactions['current_12m']:,}".replace(",", " "),
+            delta=f"{kpi_transactions['yoy_12m_pct']}% YoY",
+            delta_color="normal"
+        )
+        st.caption(f"{T[lang_code]['mensuel']} : {kpi_transactions['current_val']:,} ({kpi_transactions['yoy_monthly_pct']}% YoY)")
+        st.caption(_mom_caption(mom_transactions))
+        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_ventes_ancien_month}")
+
+    # --- Chart controls (same three views as the new-build tab, own widget keys) ---
+    st.markdown(f"### {T[lang_code]['curves_title']}")
+    chart_view_a = st.radio(T[lang_code]["chart_view_label"],
+                            [T[lang_code]["chart_view_rolling"], T[lang_code]["chart_view_rolling6"], T[lang_code]["chart_view_raw"]],
+                            horizontal=True, key="chart_view_ancien")
+    show_raw_a = True
+    show_ma12_a = show_ma6_a = False
+    if chart_view_a == T[lang_code]["chart_view_raw"]:
+        st.caption(T[lang_code]["ma_overlay_label"])
+        _ra1, _ra2, _ra3, _ra_rest = st.columns([1.3, 1.3, 1.3, 1])
+        with _ra1:
+            show_raw_a = st.checkbox(T[lang_code]["show_raw_label"], value=True, key="show_raw_ancien")
+        with _ra2:
+            show_ma12_a = st.checkbox(T[lang_code]["ma_12"], key="ma12_ancien")
+        with _ra3:
+            show_ma6_a = st.checkbox(T[lang_code]["ma_6"], key="ma6_ancien")
+
+    # Rolling sums computed on the FULL history, display clipped to the selected years
+    # (same rationale as the new-build tab). The year-filtered monthly aggregate feeds
+    # the month-by-year comparison bars below.
+    agg_ventes_ancien = ana.aggregate_ventes_ancien(filtered_ventes_ancien)
+    agg_ventes_ancien_full = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
+    rolling_ventes_ancien = ana.calculate_rolling_12m(agg_ventes_ancien_full, ["Transactions"])
+    rolling_ventes_ancien = ana.calculate_rolling(rolling_ventes_ancien, ["Transactions"], 6)
+    rolling_ventes_ancien = _filter_years(rolling_ventes_ancien)
+
+    disp_ventes_ancien = rolling_ventes_ancien.copy()
+    for _c in ["Transactions", "Transactions_12M", "Transactions_6M"]:
+        disp_ventes_ancien[_c] = disp_ventes_ancien[_c] / 1000.0
+
+    _is_rolling_a = chart_view_a in (T[lang_code]["chart_view_rolling"], T[lang_code]["chart_view_rolling6"])
+    _roll_suffix_a = "_12M" if chart_view_a == T[lang_code]["chart_view_rolling"] else "_6M"
+    if chart_view_a == T[lang_code]["chart_view_rolling"]:
+        _sub_a = T[lang_code]["sub_rolling"]
+    elif chart_view_a == T[lang_code]["chart_view_rolling6"]:
+        _sub_a = T[lang_code]["sub_rolling6"]
+    else:
+        _sub_a = T[lang_code]["sub_raw"]
+
+    st.markdown(
+        f"**{T[lang_code]['chart_ventes_ancien_main']}** "
+        f"<span style='color:#6c757d;font-weight:400'>({_sub_a})</span>",
+        unsafe_allow_html=True
+    )
+    fig2 = go.Figure()
+    if _is_rolling_a:
+        _tcol = f"Transactions{_roll_suffix_a}"
+        fig2.add_trace(go.Scatter(x=disp_ventes_ancien["Date"], y=disp_ventes_ancien[_tcol], name=T[lang_code]["transactions_trace"], line=dict(color=COLOR_GREEN, width=3)))
+        find_and_add_extrema_trace(fig2, disp_ventes_ancien, "Date", _tcol, COLOR_GREEN, text_divisor=1)
+        ventes_ancien_last = last_valid_month(disp_ventes_ancien, _tcol)
+    else:
+        _draw_raw_a = show_raw_a or not (show_ma6_a or show_ma12_a)
+        if _draw_raw_a:
+            # Light/translucent bars so overlaid curves (moving averages) stay readable.
+            fig2.add_trace(go.Bar(x=disp_ventes_ancien["Date"], y=disp_ventes_ancien["Transactions"], name=T[lang_code]["transactions_trace"], marker_color=COLOR_GREEN_FILL))
+        ventes_ancien_last = last_valid_month(disp_ventes_ancien, "Transactions")
+        # Moving averages (6m and/or 12m) on the raw monthly scale, same axis.
+        add_moving_average_traces(fig2, disp_ventes_ancien, "Transactions", T[lang_code]["transactions_trace"],
+                                  COLOR_GREEN_DARK, show_ma12_a, show_ma6_a, T[lang_code]["ma12_suffix"], T[lang_code]["ma6_suffix"])
+
+    fig2.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Thousands of transactions" if lang_code == "EN" else "Milliers de transactions",
+        template="plotly_white",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+    st.caption(
+        f"{T[lang_code]['source_label']} : {T[lang_code]['source_ventes_ancien']}  \n"
+        f"{T[lang_code]['last_point_label']} : {format_month_year(ventes_ancien_last, lang_code)}"
+    )
+
+    # --- Monthly comparison by year (grouped bars) ---
+    st.markdown(f"### {T[lang_code]['monthly_compare_title']}")
+    st.caption(T[lang_code]["monthly_compare_desc"])
+
+    _month_names_a = _EN_MONTHS if lang_code == "EN" else _FR_MONTHS
+    _month_labels_all_a = [m.capitalize() for m in _month_names_a]
+    _label_to_num_a = {lbl: i + 1 for i, lbl in enumerate(_month_labels_all_a)}
+    _last_month_num_a = (pd.Timestamp(agg_ventes_ancien["Date"].max()).month
+                         if not agg_ventes_ancien.empty and pd.notna(agg_ventes_ancien["Date"].max()) else 12)
+    _default_month_nums_a = sorted(((_last_month_num_a - k - 1) % 12) + 1 for k in range(3))
+
+    selected_month_labels_a = st.multiselect(
+        T[lang_code]["month_select_label"],
+        options=_month_labels_all_a,
+        default=[_month_labels_all_a[m - 1] for m in _default_month_nums_a],
+        key="month_compare_ancien"
+    )
+    selected_month_nums_a = sorted(_label_to_num_a[l] for l in selected_month_labels_a)
+    ordered_month_labels_a = [_month_labels_all_a[m - 1] for m in selected_month_nums_a]
+
+    if not selected_month_nums_a:
+        st.info(T[lang_code]["no_month_selected"])
+    else:
+        st.markdown(
+            f"**{T[lang_code]['chart_ventes_ancien_monthly_main']}** "
+            f"<span style='color:#6c757d;font-weight:400'>({T[lang_code]['sub_monthly']})</span>",
+            unsafe_allow_html=True
+        )
+        figm2 = build_monthly_year_bars(agg_ventes_ancien, "Transactions",
+                                        selected_month_nums_a, ordered_month_labels_a, (56, 142, 60))
+        figm2.update_layout(yaxis_title="Thousands of transactions" if lang_code == "EN"
+                            else "Milliers de transactions")
+        st.plotly_chart(figm2, use_container_width=True)
+        st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_ventes_ancien']}")
+
+# ==============================================================================
+# TAB 3: ENVIRONNEMENT MACRO & FINANCEMENT
 # ==============================================================================
 with tab_macro:
     st.header(T[lang_code]["macro_context"])
@@ -1456,19 +1653,12 @@ with tab_actus:
 
 
 # ==============================================================================
-# TAB 3: PRIX & ACCESSIBILITÉ (indices Notaires-INSEE + capacité d'emprunt / accessibilité)
+# TAB 2 (suite): PRIX & ACCESSIBILITÉ — seconde moitié de l'onglet « Marché de
+# l'ancien » (indices Notaires-INSEE + capacité d'emprunt / accessibilité). Ce
+# second bloc `with tab_ancien:` s'affiche à la suite des transactions IGEDD.
 # ==============================================================================
-def _borrow_capacity_factor(rate_pct, years):
-    """Present value of a 1-unit monthly instalment over `years` at annual rate
-    `rate_pct` — i.e. the principal a fixed monthly payment can service. Vectorised;
-    a zero rate degenerates to n months."""
-    i = np.asarray(rate_pct, dtype=float) / 100.0 / 12.0
-    n = years * 12
-    with np.errstate(divide="ignore", invalid="ignore"):
-        return np.where(i > 0, (1.0 - (1.0 + i) ** (-n)) / i, float(n))
-
-
-with tab_prix:
+with tab_ancien:
+    st.markdown("---")
     st.header(_L("🏷️ Prix des logements & accessibilité",
                  "🏷️ House prices & affordability"))
     st.write(_L(
@@ -1628,9 +1818,12 @@ with tab_prix:
 
 
 # ==============================================================================
-# TAB 4: COMMERCIALISATION DES LOGEMENTS NEUFS (ECLN)
+# TAB 1 (suite): COMMERCIALISATION DES LOGEMENTS NEUFS (ECLN) — seconde moitié de
+# l'onglet « Marché du neuf ». Ce second bloc `with tab_neuf:` s'affiche à la
+# suite des permis / mises en chantier SIT@DEL.
 # ==============================================================================
-with tab_ecln:
+with tab_neuf:
+    st.markdown("---")
     st.header(_L("🏗️ Commercialisation des logements neufs (ECLN)", "🏗️ New-build sales (ECLN)"))
     st.write(_L(
         "Commercialisation des logements neufs (SDES — ECLN, national, trimestriel CVS-CJO) : encours "
@@ -1726,7 +1919,7 @@ with tab_ecln:
 
 
 # ==============================================================================
-# TAB 5: PRÉVISION & SCÉNARIOS (nowcast transactions + backtest + scénarios)
+# TAB 4: PRÉVISION & SCÉNARIOS (nowcast transactions + backtest + scénarios)
 # ==============================================================================
 # Train/test split for the transactions model: the lag search AND the backtest train use
 # data ≤ this date, so the out-of-sample MAPE is measured on a period the lags never saw.
@@ -1897,11 +2090,11 @@ with tab_forecast:
                 "Jusqu'au repère, la projection n'utilise que des valeurs d'indicateurs déjà publiées "
                 "(décalées de leurs délais estimés) — sans hypothèse. Au-delà, chaque indicateur manquant "
                 "est maintenu à sa dernière valeur connue (report). Bande = ±1,28·RMSE (hors échantillon "
-                "si disponible). Exportable vers SAP IBP (onglet Export).",
+                "si disponible). Exportable vers SAP IBP (onglet « ⚙️ Données & Export »).",
                 "Up to the marker, the projection uses only already-published indicator values (shifted "
                 "by their estimated lags) — assumption-free. Beyond it, each missing indicator is held at "
                 "its last known value (carry-forward). Band = ±1.28·RMSE (out-of-sample when available). "
-                "Exportable to SAP IBP (Export tab)."))
+                "Exportable to SAP IBP ('⚙️ Data & Export' tab)."))
             # Persist for the SAP IBP export tab (a real, dated forecast — not synthetic).
             _fc_export = _fpath.rename(columns={"pred": "Transactions_Prevues"})[["Date", "Transactions_Prevues"]]
             st.session_state["forecast_export_df"] = _fc_export
@@ -2102,11 +2295,11 @@ with tab_forecast:
                         f"Prévision de vos ventes « {_serie_f} » jusqu'à {_sf_end:%Y-%m} "
                         f"({len(_spath)} mois), obtenue en propageant la trajectoire de transactions "
                         f"projetée à travers l'élasticité estimée (décalage {_sf['lag_m']} mois). "
-                        f"Exportable vers SAP IBP (onglet Export, source « Prévision ventes société »).",
+                        f"Exportable vers SAP IBP (onglet « ⚙️ Données & Export », source « Prévision ventes société »).",
                         f"Forecast of your '{_serie_f}' sales through {_sf_end:%Y-%m} ({len(_spath)} "
                         f"months), by propagating the projected transactions path through the estimated "
-                        f"elasticity ({_sf['lag_m']}-month lag). Exportable to SAP IBP (Export tab, "
-                        f"'Company-sales forecast' source)."))
+                        f"elasticity ({_sf['lag_m']}-month lag). Exportable to SAP IBP ('⚙️ Data & Export' "
+                        f"tab, 'Company-sales forecast' source)."))
                     # Persist for the SAP export tab (a real, dated forecast — not synthetic).
                     _sfc_export = _spath.rename(columns={"pred": "Ventes_Prevues"})[["Date", "Ventes_Prevues"]]
                     st.session_state["forecast_sales_export_df"] = _sfc_export
@@ -2145,7 +2338,7 @@ with tab_forecast:
 
 
 # ==============================================================================
-# TAB 6: SIMULATION TIME LAG
+# TAB 5a: ATELIER — SIMULATION TIME LAG (sous-onglet de « Atelier exploratoire »)
 # ==============================================================================
 with tab_timelag:
     st.header(T[lang_code]["timelag_header"])
@@ -2481,7 +2674,7 @@ with tab_timelag:
 
 
 # ==============================================================================
-# TAB 7: MODÈLE COMPOSITE
+# TAB 5b: ATELIER — MODÈLE COMPOSITE (sous-onglet de « Atelier exploratoire »)
 # ==============================================================================
 with tab_composite:
     st.header(T[lang_code]["composite_header"])
@@ -2718,7 +2911,7 @@ with tab_composite:
 
 
 # ==============================================================================
-# TAB 8: EXPORT SAP IBP
+# TAB 6b: EXPORT SAP IBP (sous-onglet de « Données & Export »)
 # ==============================================================================
 with tab_export:
     st.header(T[lang_code]["export_header"])
@@ -2743,11 +2936,11 @@ with tab_export:
             source_available = True
         else:
             st.warning(_L(
-                "⚠️ Aucune prévision de ventes société. Importez vos ventes (onglet « Données "
-                "Source ») puis ouvrez « 📡 Prévision & Scénarios » (section « Propagation à vos "
-                "ventes importées »).",
-                "⚠️ No company-sales forecast. Import your sales (『Source Data』 tab) then open "
-                "『📡 Forecast & Scenarios』 (『Propagation to your imported sales』 section)."))
+                "⚠️ Aucune prévision de ventes société. Importez vos ventes (sous-onglet "
+                "« 📂 Sources & Imports » ci-contre) puis ouvrez « 📡 Prévision & Scénarios » "
+                "(section « Propagation à vos ventes importées »).",
+                "⚠️ No company-sales forecast. Import your sales (『📂 Sources & Imports』 sub-tab) "
+                "then open 『📡 Forecast & Scenarios』 (『Propagation to your imported sales』 section)."))
     elif export_source == T[lang_code]["src_simple_lag"]:
         if "shifted_export_df" in st.session_state:
             export_raw_df = st.session_state["shifted_export_df"]
@@ -2859,7 +3052,7 @@ with tab_export:
 
 
 # ==============================================================================
-# TAB 9: DONNÉES SOURCE
+# TAB 6a: SOURCES & IMPORTS (sous-onglet de « Données & Export »)
 # ==============================================================================
 with tab_source:
     st.header(T[lang_code]["source_header"])
@@ -3010,9 +3203,11 @@ with tab_source:
         _cs_max = df_company_sales_full["Date"].max().strftime("%Y-%m")
         st.success(_L(
             f"Série active : « {_cs_name} » — {len(df_company_sales_full)} mois ({_cs_min} → {_cs_max}). "
-            f"Sélectionnable comme benchmark dans les onglets Time-Lag / Composite / Prévision.",
+            f"Sélectionnable comme benchmark dans l'Atelier exploratoire (Time-Lag / Composite) "
+            f"et dans « 📡 Prévision & Scénarios ».",
             f"Active series: '{_cs_name}' — {len(df_company_sales_full)} months ({_cs_min} → {_cs_max}). "
-            f"Selectable as a benchmark in the Time-Lag / Composite / Forecast tabs."))
+            f"Selectable as a benchmark in the Exploratory Workshop (Time-Lag / Composite) "
+            f"and in '📡 Forecast & Scenarios'."))
         st.dataframe(df_company_sales_full.tail(12), use_container_width=True)
 
     _cs_col1, _cs_col2 = st.columns([2, 1])
