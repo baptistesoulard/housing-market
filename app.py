@@ -535,17 +535,12 @@ with tab_synthese:
     st.header(_L("🧭 Synthèse — vue d'ensemble du marché",
                  "🧭 Market overview"))
     st.caption(_L(
-        "Lecture rapide de l'état du marché et de son orientation récente. Chaque pastille "
-        "résume la tendance des 3 derniers mois vs un an plus tôt : 🟢 vent favorable · "
-        "🟠 stable · 🔴 vent contraire — pour les taux et l'accessibilité, 🟢 signifie donc "
-        "des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Le "
-        "détail est dans les onglets dédiés ; chiffres nationaux, indépendants du filtre "
-        "de période.",
-        "Quick read of the market's state and recent direction. Each dot summarises the last "
-        "3 months vs a year earlier: 🟢 tailwind · 🟠 flat · 🔴 headwind — for rates and "
-        "affordability, 🟢 therefore means improving conditions (falling rates), not a rising "
-        "value. Detail is in the dedicated tabs; national figures, independent of the period "
-        "filter."))
+        "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés "
+        "et implication pour la demande second œuvre. Méthode de lecture : "
+        "« ℹ️ Comment lire cette page » ci-dessous.",
+        "The housing market at a glance: per-pillar trend, headline figures and the "
+        "implication for second-œuvre demand. Reading method: 'ℹ️ How to read this page' "
+        "below."))
 
     # Full-history national momentum & 12m levels (slicer-independent).
     _sy_sit = ana.aggregate_sitadel(df_sitadel_full)
@@ -559,28 +554,7 @@ with tab_synthese:
     _sy_k_mises = ana.calculate_kpis(_sy_roll_sit, "MisesEnChantier")
     _sy_k_tx = ana.calculate_kpis(_sy_roll_va, "Transactions")
 
-    # Data freshness by source, up front (SIT@DEL, IGEDD and ECLN can end on
-    # different months/quarters).
-    _last_sit = last_valid_month(_sy_roll_sit, "Permis")
-    _last_va = last_valid_month(_sy_roll_va, "Transactions")
-    _fresh = [
-        f"SIT@DEL : {format_month_year(_last_sit, lang_code)}",
-        f"IGEDD : {format_month_year(_last_va, lang_code)}",
-    ]
-    if df_ecln_full is not None and not df_ecln_full.empty:
-        _e_last_d = df_ecln_full.dropna(subset=["Reservations"])["Date"].max()
-        if pd.notna(_e_last_d):
-            _fresh.append(f"ECLN : {_e_last_d.year}-T{(_e_last_d.month - 1) // 3 + 1}")
-    st.caption("📅 " + _L("Dernières données — ", "Latest data — ") + " · ".join(_fresh))
-
-    # The verdict first: the same auto commentary as the look-back charts and the PDF
-    # report, surfaced before the cards so a hurried reader gets the conclusion immediately.
-    _sy_mom_ip = ana.momentum_metrics(
-        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
-    st.info("📝 " + ana.build_market_commentary(
-        _sy_k_permis, _sy_k_mises, _sy_k_tx,
-        _sy_m_permis, _sy_m_mises, _sy_m_tx, _sy_mom_ip, lang_code))
-
+    # --- Shared card/format helpers -------------------------------------------------
     def _dot(status):
         return {"up": "🟢", "flat": "🟠", "down": "🔴"}.get(status, "⚪")
 
@@ -592,20 +566,40 @@ with tab_synthese:
     def _th(v):
         return "—" if v is None else f"{int(round(v)):,}".replace(",", " ")
 
+    def _human(v):
+        """Headline-sized number: '385 k' above 100 000, exact spaced int below —
+        faster to scan; the exact figure stays in the card caption."""
+        if v is None:
+            return "—"
+        v = float(v)
+        if abs(v) >= 100_000:
+            return f"{v / 1000.0:,.0f} k".replace(",", " ")
+        return f"{int(round(v)):,}".replace(",", " ")
+
     def _pct_fr(v):
         if v is None:
             return "—"
         s = f"{v:+.1f}%"
         return s.replace(".", ",") if lang_code == "FR" else s
 
+    def _delta3m_sub(v, exact=None):
+        """Plain-language momentum caption ('+9,2 % vs un an plus tôt (3 derniers mois)'),
+        with the exact 12-month total appended when the headline value is humanised."""
+        txt = _pct_fr(v) + _L(" vs un an plus tôt (3 derniers mois)",
+                              " vs a year earlier (last 3 months)")
+        if exact is not None:
+            txt += _L(" · total exact : ", " · exact total: ") + _th(exact)
+        return txt
+
     def _render_cards(cards, per_row=3):
-        """Rows of headline cards: (dot emoji, title, value, sub-caption)."""
+        """Rows of headline cards: (dot emoji, title, value, sub-caption). Title first,
+        then the value — the natural reading order (what is it, then how much)."""
         for _row_start in range(0, len(cards), per_row):
             _rc = st.columns(per_row)
             for _c, (_emoji, _title, _val, _sub) in zip(_rc, cards[_row_start:_row_start + per_row]):
                 with _c:
-                    st.markdown(f"### {_emoji} {_val}")
                     st.markdown(f"**{_title}**")
+                    st.markdown(f"### {_emoji} {_val}")
                     if _sub:
                         st.caption(_sub)
 
@@ -622,21 +616,158 @@ with tab_synthese:
         older = s[s.index <= cutoff]
         return last, (float(older.iloc[-1]) if not older.empty else None)
 
+    # --- Global market state: one status per pillar, shown as chips before anything
+    # else — the "at a glance" a sales director or GM actually needs. Derived from the
+    # same momentum metrics as the cards below (no new computation).
+    _neuf_l3 = [v for v in (_sy_m_permis.get("last3_yoy"), _sy_m_mises.get("last3_yoy"))
+                if v is not None]
+    _pill_neuf = _status_yoy(sum(_neuf_l3) / len(_neuf_l3)) if _neuf_l3 else "flat"
+    _pill_ancien = _status_yoy(_sy_m_tx.get("last3_yoy"))
+    _r_now, _r_yr = _last_prev("Credit_Logement_Taux_Interet")
+    _dr_yr = None if (_r_now is None or _r_yr is None) else _r_now - _r_yr
+    _pill_fin = ("flat" if _dr_yr is None
+                 else ("down" if _dr_yr > 0.1 else ("up" if _dr_yr < -0.1 else "flat")))
+    _bls_now, _ = _last_prev("Demande_Credit_Perspectives")
+
+    _w_market = {"up": _L("en reprise", "recovering"), "flat": _L("stable", "stable"),
+                 "down": _L("en repli", "declining")}
+    _w_fin = {"up": _L("en amélioration", "improving"), "flat": _L("stable", "stable"),
+              "down": _L("en durcissement", "tightening")}
+
+    def _chip(status, label, word):
+        _bg, _fg = {"up": ("rgba(56,142,60,0.12)", "#2E7D32"),
+                    "flat": ("rgba(251,192,45,0.20)", "#7A5D00"),
+                    "down": ("rgba(230,74,25,0.12)", "#B23A12")}.get(status, ("#ECECEC", "#555555"))
+        return (f"<span style='background:{_bg};color:{_fg};border-radius:16px;"
+                f"padding:6px 14px;margin-right:10px;font-weight:600;font-size:1.02rem;"
+                f"display:inline-block;margin-bottom:6px'>{_dot(status)} {label} · {word}</span>")
+
+    st.markdown(
+        _chip(_pill_neuf, _L("Neuf", "New-build"), _w_market[_pill_neuf])
+        + _chip(_pill_ancien, _L("Ancien", "Existing homes"), _w_market[_pill_ancien])
+        + _chip(_pill_fin, _L("Financement", "Financing"), _w_fin[_pill_fin]),
+        unsafe_allow_html=True)
+
+    # --- Key takeaways: one bullet per pillar (one or two figures each) + the business
+    # implication for second-œuvre demand — instead of a dense numbers paragraph.
+    _sy_mom_ip = ana.momentum_metrics(
+        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+    _lines = []
+    _neuf_head = {"up": _L("la construction accélère", "construction is accelerating"),
+                  "flat": _L("la construction est stable", "construction is flat"),
+                  "down": _L("la construction recule", "construction is receding")}[_pill_neuf]
+    _l1 = (f"{_dot(_pill_neuf)} **{_L('Neuf', 'New-build')}** — {_neuf_head} : "
+           + _L(f"permis {_pct_fr(_sy_k_permis['yoy_12m_pct'])} et mises en chantier "
+                f"{_pct_fr(_sy_k_mises['yoy_12m_pct'])} sur 12 mois",
+                f"permits {_pct_fr(_sy_k_permis['yoy_12m_pct'])} and starts "
+                f"{_pct_fr(_sy_k_mises['yoy_12m_pct'])} over 12 months"))
+    if _sy_mom_ip.get("last3_yoy") is not None:
+        _l1 += _L(f" (maison individuelle pure : {_pct_fr(_sy_mom_ip['last3_yoy'])} sur 3 mois).",
+                  f" (detached houses: {_pct_fr(_sy_mom_ip['last3_yoy'])} over 3 months).")
+    else:
+        _l1 += "."
+    _lines.append(_l1)
+
+    _tx_l3 = _sy_m_tx.get("last3_yoy")
+    _l2 = (f"{_dot(_pill_ancien)} **{_L('Ancien', 'Existing homes')}** — "
+           + _L(f"{_human(_sy_k_tx['current_12m'])} ventes sur 12 mois "
+                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])})",
+                f"{_human(_sy_k_tx['current_12m'])} sales over 12 months "
+                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])})"))
+    if _tx_l3 is not None:
+        if _pill_ancien == "down":
+            _l2 += _L(f", mais la dynamique ralentit : {_pct_fr(_tx_l3)} sur les 3 derniers mois.",
+                      f", but momentum is fading: {_pct_fr(_tx_l3)} over the last 3 months.")
+        else:
+            _l2 += _L(f" ; {_pct_fr(_tx_l3)} sur les 3 derniers mois.",
+                      f"; {_pct_fr(_tx_l3)} over the last 3 months.")
+    else:
+        _l2 += "."
+    _lines.append(_l2)
+
+    _l3_parts = []
+    if _r_now is not None:
+        _r_txt = f"{_r_now:.2f} %".replace(".", ",") if lang_code == "FR" else f"{_r_now:.2f}%"
+        _part = _L(f"taux de crédit à {_r_txt}", f"credit rate at {_r_txt}")
+        if _dr_yr is not None:
+            _part += _L(f" ({_pct_fr(_dr_yr).replace('%', ' pt')} sur un an)",
+                        f" ({_pct_fr(_dr_yr).replace('%', 'pp')} over a year)")
+        _l3_parts.append(_part)
+    if _bls_now is not None:
+        _bls_word = (_L("en hausse", "rising") if _bls_now > 0
+                     else (_L("en baisse", "falling") if _bls_now < -10 else _L("stable", "flat")))
+        _l3_parts.append(_L(f"les banques anticipent une demande de crédit {_bls_word}",
+                            f"banks expect credit demand to be {_bls_word}"))
+    if _l3_parts:
+        _lines.append(f"{_dot(_pill_fin)} **{_L('Financement', 'Financing')}** — "
+                      + _L(" ; ", "; ").join(_l3_parts) + ".")
+
+    # The "so what" for the business, using the lead-times assumed across the app
+    # (new-build → second-œuvre content at ~12-18 months; moves → equipment at ~2 months).
+    _impl_neuf = {"up": _L("signal favorable à 12-18 mois via le neuf (fermetures & menuiseries)",
+                           "favourable 12-18-month signal from new-build (closures & joinery)"),
+                  "flat": _L("signal neuf neutre à 12-18 mois",
+                             "neutral new-build signal at 12-18 months"),
+                  "down": _L("vent contraire à 12-18 mois côté neuf",
+                             "12-18-month headwind from new-build")}[_pill_neuf]
+    _impl_ancien = {"up": _L("soutien à court terme (~2 mois) via les transactions "
+                             "(sécurité & domotique)",
+                             "short-term (~2-month) support from transactions "
+                             "(security & home automation)"),
+                    "flat": _L("transactions neutres à court terme",
+                               "neutral short-term transactions"),
+                    "down": _L("prudence à court terme (~2 mois) sur les produits liés aux "
+                               "déménagements (sécurité & domotique)",
+                               "short-term (~2-month) caution on move-related products "
+                               "(security & home automation)")}[_pill_ancien]
+    _lines.append("🎯 **" + _L("Demande second œuvre", "Second-œuvre demand")
+                  + f"** — {_impl_neuf} ; {_impl_ancien}.")
+
+    st.info(_L("**À retenir**", "**Key takeaways**") + "\n\n"
+            + "\n".join(f"- {l}" for l in _lines))
+
+    # Data freshness by source (SIT@DEL, IGEDD and ECLN can end on different
+    # months/quarters), then the how-to-read methodology tucked into an expander.
+    _last_sit = last_valid_month(_sy_roll_sit, "Permis")
+    _last_va = last_valid_month(_sy_roll_va, "Transactions")
+    _fresh = [
+        f"SIT@DEL : {format_month_year(_last_sit, lang_code)}",
+        f"IGEDD : {format_month_year(_last_va, lang_code)}",
+    ]
+    if df_ecln_full is not None and not df_ecln_full.empty:
+        _e_last_d = df_ecln_full.dropna(subset=["Reservations"])["Date"].max()
+        if pd.notna(_e_last_d):
+            _fresh.append(f"ECLN : {_e_last_d.year}-T{(_e_last_d.month - 1) // 3 + 1}")
+    st.caption("📅 " + _L("Dernières données — ", "Latest data — ") + " · ".join(_fresh))
+    with st.expander("ℹ️ " + _L("Comment lire cette page", "How to read this page")):
+        st.markdown(_L(
+            "Chaque pastille résume la tendance des **3 derniers mois vs un an plus tôt** : "
+            "🟢 vent favorable · 🟠 stable · 🔴 vent contraire. Pour les taux et "
+            "l'accessibilité, 🟢 signifie des **conditions qui s'améliorent** (taux en "
+            "baisse), pas une valeur qui monte. Chiffres nationaux, indépendants du filtre "
+            "de période de la barre latérale ; le détail de chaque bloc est dans les "
+            "onglets dédiés (liens sous chaque bloc).",
+            "Each dot summarises the trend of the **last 3 months vs a year earlier**: "
+            "🟢 tailwind · 🟠 flat · 🔴 headwind. For rates and affordability, 🟢 means "
+            "**improving conditions** (falling rates), not a rising value. National "
+            "figures, independent of the sidebar period filter; each block's detail lives "
+            "in the dedicated tabs (links under each block)."))
+
     # --- Block 1: activity (construction, existing-home sales, new-build reservations) ---
     st.markdown("#### " + _L("Activité", "Activity"))
     _cards_act = [
         (_dot(_status_yoy(_sy_m_permis.get("last3_yoy"))),
          _L("Permis de construire", "Building permits"),
-         _th(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
-         _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_permis.get("last3_yoy"))),
+         _human(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
+         _delta3m_sub(_sy_m_permis.get("last3_yoy"), exact=_sy_k_permis["current_12m"])),
         (_dot(_status_yoy(_sy_m_mises.get("last3_yoy"))),
          _L("Mises en chantier", "Housing starts"),
-         _th(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
-         _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_mises.get("last3_yoy"))),
+         _human(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
+         _delta3m_sub(_sy_m_mises.get("last3_yoy"), exact=_sy_k_mises["current_12m"])),
         (_dot(_status_yoy(_sy_m_tx.get("last3_yoy"))),
-         _L("Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"),
-         _th(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
-         _L("3 m vs n-1 : ", "3m vs prior yr: ") + _pct_fr(_sy_m_tx.get("last3_yoy"))),
+         _L("Ventes de logements anciens", "Existing-home sales"),
+         _human(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
+         _delta3m_sub(_sy_m_tx.get("last3_yoy"), exact=_sy_k_tx["current_12m"])),
     ]
     # New-build reservations (ECLN, quarterly): last quarter vs same quarter a year earlier.
     if df_ecln_full is not None and not df_ecln_full.empty:
@@ -647,7 +778,8 @@ with tab_synthese:
                 _dot(_status_yoy(_e_yoy)),
                 _L("Réservations particuliers neuf (ECLN)", "New-build private-buyer reservations (ECLN)"),
                 _th(float(_se["Reservations"].iloc[-1])) + _L(" /trim.", " /qtr"),
-                _L("trim. vs n-1 : ", "qtr vs prior yr: ") + _pct_fr(_e_yoy)))
+                _pct_fr(_e_yoy) + _L(" vs même trimestre un an plus tôt",
+                                     " vs same quarter a year earlier")))
     _render_cards(_cards_act, per_row=4 if len(_cards_act) == 4 else 3)
     st.caption(_L("→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »",
                   "→ detail: '🏗️ New-Build Market' · '🏠 Existing-Home Market'"))
@@ -663,16 +795,21 @@ with tab_synthese:
         _dr = None if _r_prev is None else _r_last - _r_prev
         _r_status = "flat" if _dr is None else ("down" if _dr > 0.1 else ("up" if _dr < -0.1 else "flat"))
         _r_val = (f"{_r_last:.2f} %".replace(".", ",") if lang_code == "FR" else f"{_r_last:.2f}%")
-        _r_sub = _L("sur 12 m : ", "12m: ") + (_pct_fr(_dr).replace("%", " pt") if _dr is not None else "—")
+        _r_sub = _L("sur un an : ", "1-year change: ") + (_pct_fr(_dr).replace("%", " pt") if _dr is not None else "—")
         _cards_fin.append((_dot(_r_status), _L("Taux de crédit habitat", "Housing-loan rate"), _r_val, _r_sub))
-    # Credit demand (BLS expectations, leading).
+    # Credit demand (BLS expectations, leading) — plain-language wording, survey named in the sub.
     _bls_last, _ = _last_prev("Demande_Credit_Perspectives")
     if _bls_last is None:
-        _cards_fin.append(("⚪", _L("Demande de crédit (BLS)", "Credit demand (BLS)"), "—", ""))
+        _cards_fin.append(("⚪", _L("Demande de crédit (banques)", "Credit demand (banks)"), "—", ""))
     else:
         _bls_status = "up" if _bls_last > 0 else ("down" if _bls_last < -10 else "flat")
-        _cards_fin.append((_dot(_bls_status), _L("Demande de crédit (BLS)", "Credit demand (BLS)"),
-                           f"{_bls_last:+.0f}", _L("perspectives 3 m, solde net %", "3m outlook, net %")))
+        _bls_word = (_L("attendue en hausse", "expected to rise") if _bls_last > 0
+                     else (_L("attendue en baisse", "expected to fall") if _bls_last < -10
+                           else _L("attendue stable", "expected flat")))
+        _cards_fin.append((_dot(_bls_status), _L("Demande de crédit (banques)", "Credit demand (banks)"),
+                           f"{_bls_last:+.0f}",
+                           _bls_word + _L(" par les banques · enquête BLS, 3 prochains mois",
+                                          " by banks · BLS survey, next 3 months")))
     # Affordability index (borrowing capacity ÷ prices, base 100 = 2015, 25-year loan) —
     # the same construction as the Prix & Accessibilité section of the existing-home tab.
     if "Prix_Ancien_Ensemble" in df_macro_full.columns:
@@ -690,8 +827,18 @@ with tab_synthese:
                 _older = _acc_s[_acc_s.index <= _acc_s.index[-1] - pd.DateOffset(months=12)]
                 _da = (_a_last - float(_older.iloc[-1])) if not _older.empty else None
                 _a_status = "flat" if _da is None else ("up" if _da > 1 else ("down" if _da < -1 else "flat"))
-                _a_sub = (_L("base 100 = 2015 · sur 12 m : ", "base 100 = 2015 · 12m: ")
-                          + (_pct_fr(_da).replace("%", " pt") if _da is not None else "—"))
+                # Say what the index MEANS (gap vs the 2015 baseline) instead of "base 100".
+                _gap15 = 100.0 - _a_last
+                if _gap15 > 0.5:
+                    _a_txt = _L(f"logement ≈ {_gap15:.0f} % moins accessible qu'en 2015",
+                                f"housing ≈ {_gap15:.0f}% less affordable than in 2015")
+                elif _gap15 < -0.5:
+                    _a_txt = _L(f"logement ≈ {-_gap15:.0f} % plus accessible qu'en 2015",
+                                f"housing ≈ {-_gap15:.0f}% more affordable than in 2015")
+                else:
+                    _a_txt = _L("accessibilité au niveau de 2015", "affordability at its 2015 level")
+                _a_sub = _a_txt + _L(" · sur un an : ", " · 1y: ") \
+                    + (_pct_fr(_da).replace("%", " pt") if _da is not None else "—")
                 _cards_fin.append((_dot(_a_status), _L("Indice d'accessibilité", "Affordability index"),
                                    f"{_a_last:.0f}", _a_sub))
     _render_cards(_cards_fin)
@@ -699,20 +846,40 @@ with tab_synthese:
                   "→ detail: '🏦 Macro Environment & Financing' · '🏠 Existing-Home Market'"))
 
     # --- Block 3: perspective (own read vs BPCE, renovation driver, next policy step) ---
-    st.markdown("#### " + _L("Perspective", "Outlook"))
+    # Gap to the published BPCE target computed first so the block header can carry
+    # its one-line verdict.
     _cards_persp = []
     _sy_tx12 = fc.build_target(df_ventes_ancien_full).dropna()
-    if _sy_tx12.empty:
-        _cards_persp.append(("⚪", _L("Ventes 12 m vs cible BPCE 2026", "12m sales vs BPCE 2026 target"), "—", ""))
-    else:
+    _sy_gap = None
+    if not _sy_tx12.empty:
         _sy_last_tx = float(_sy_tx12.iloc[-1])
         _sy_gap = (_sy_last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
+    _persp_hdr = "#### " + _L("Perspective", "Outlook")
+    if _sy_gap is not None:
+        if _sy_gap > 3:
+            _persp_hdr += _L(" — marché au-dessus de la cible BPCE 2026, infléchissement attendu",
+                             " — market above the BPCE 2026 target, slowdown expected")
+        elif _sy_gap >= -3:
+            _persp_hdr += _L(" — marché aligné sur la cible BPCE 2026",
+                             " — market in line with the BPCE 2026 target")
+        else:
+            _persp_hdr += _L(" — marché sous la cible BPCE 2026",
+                             " — market below the BPCE 2026 target")
+    st.markdown(_persp_hdr)
+    if _sy_gap is None:
+        _cards_persp.append(("⚪", _L("Ventes 12 m vs cible BPCE 2026", "12m sales vs BPCE 2026 target"), "—", ""))
+    else:
         # Above target = market currently stronger than BPCE's end-2026 view (a slowdown is
         # implied ahead) → flag orange; near/below is closer to the published landing point.
         _f_status = "up" if _sy_gap > 3 else ("flat" if _sy_gap > -3 else "down")
         _cards_persp.append((_dot(_f_status),
                              _L("Ventes 12 m vs cible BPCE 2026", "12m sales vs BPCE 2026 target"),
-                             _th(_sy_last_tx), _L("écart à 890k : ", "gap to 890k: ") + _pct_fr(_sy_gap)))
+                             _human(_sy_last_tx),
+                             _pct_fr(_sy_gap)
+                             + (_L(" au-dessus de la cible BPCE 2026 (890 k)",
+                                   " above the BPCE 2026 target (890k)") if _sy_gap >= 0
+                                else _L(" sous la cible BPCE 2026 (890 k)",
+                                        " below the BPCE 2026 target (890k)"))))
     # Renovation activity — the stock-driven second-œuvre driver. Only shown once the
     # renovation series is populated (fetch_new_sources.build_renovation).
     if "Reno_Activite_Batiment" in df_macro_full.columns and df_macro_full["Reno_Activite_Batiment"].notna().any():
@@ -720,8 +887,14 @@ with tab_synthese:
         if _rn_last is not None:
             _rn_d = None if _rn_prev is None else _rn_last - _rn_prev
             _rn_status = "flat" if _rn_d is None else ("up" if _rn_d > 0 else ("down" if _rn_d < 0 else "flat"))
-            _cards_persp.append((_dot(_rn_status), _L("Activité rénovation", "Renovation activity"),
-                                 f"{_rn_last:.0f}", _L("second œuvre / stock", "second-œuvre / stock")))
+            _rn_word = (_L("activité en baisse", "activity falling") if _rn_last < 0
+                        else (_L("activité en hausse", "activity rising") if _rn_last > 0
+                              else _L("activité stable", "activity flat")))
+            _cards_persp.append((_dot(_rn_status),
+                                 _L("Activité rénovation (second œuvre)", "Renovation activity (second-œuvre)"),
+                                 f"{_rn_last:+.0f}",
+                                 _L(f"solde d'opinion INSEE — {_rn_word}",
+                                    f"INSEE opinion balance — {_rn_word}")))
     # Next policy milestone from the curated watchlist (Actualités & Aides).
     _sy_jalons = sorted(
         [(d, it) for it in actu.items_sorted() for d, _lbl, _typ in it.get("jalons", [])
@@ -759,12 +932,38 @@ with tab_synthese:
                                 line=dict(color=COLOR_GREEN, width=2.5)), secondary_y=True)
     fig_sy.update_layout(
         height=420, template="plotly_white",
-        margin=dict(l=60, r=60, t=40, b=44),
+        margin=dict(l=60, r=86, t=40, b=44),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0))
     fig_sy.update_yaxes(title_text=_L("Neuf — milliers /12 m", "New-build — thousands /12m"),
                         secondary_y=False)
     fig_sy.update_yaxes(title_text=_L("Ancien — milliers /12 m", "Existing — thousands /12m"),
                         secondary_y=True)
+    # Annotate the story directly on the curves (recent trough + latest values) so a
+    # non-expert reader takes away the turning points without decoding the axes.
+    _va_line = _sy_roll_va.dropna(subset=["Transactions_12M"])
+    if not _va_line.empty:
+        _recent = _va_line[_va_line["Date"] >= _va_line["Date"].max() - pd.DateOffset(years=4)]
+        if len(_recent) > 12:
+            _i_min = _recent["Transactions_12M"].idxmin()
+            _d_min = _recent.loc[_i_min, "Date"]
+            _v_min = _recent.loc[_i_min, "Transactions_12M"] / 1000.0
+            fig_sy.add_annotation(
+                x=_d_min, y=_v_min, yref="y2",
+                text=_L(f"creux : {format_month_year(_d_min, 'FR')} ({_v_min:.0f} k)",
+                        f"trough: {format_month_year(_d_min, 'EN')} ({_v_min:.0f}k)"),
+                showarrow=True, arrowhead=2, arrowcolor=COLOR_GREEN, ax=0, ay=42,
+                font=dict(color=COLOR_GREEN, size=11))
+        fig_sy.add_annotation(
+            x=_va_line["Date"].iloc[-1], y=_va_line["Transactions_12M"].iloc[-1] / 1000.0,
+            yref="y2", text=f"<b>{_va_line['Transactions_12M'].iloc[-1] / 1000.0:.0f} k</b>",
+            showarrow=False, xanchor="left", xshift=6, font=dict(color=COLOR_GREEN, size=12))
+    for _col, _clr in (("Permis_12M", COLOR_BRICK), ("MisesEnChantier_12M", COLOR_TEXT)):
+        _sline = _sy_roll_sit.dropna(subset=[_col])
+        if not _sline.empty:
+            fig_sy.add_annotation(
+                x=_sline["Date"].iloc[-1], y=_sline[_col].iloc[-1] / 1000.0,
+                text=f"<b>{_sline[_col].iloc[-1] / 1000.0:.0f} k</b>",
+                showarrow=False, xanchor="left", xshift=6, font=dict(color=_clr, size=12))
     st.plotly_chart(fig_sy, use_container_width=True)
     st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']} · "
                f"{T[lang_code]['source_ventes_ancien']} — "
