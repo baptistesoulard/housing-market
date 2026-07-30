@@ -6,16 +6,16 @@ L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) 
 
 ## Aperçu des onglets
 
-0. **Synthèse** — page d'accueil : lecture « feu tricolore » (🟢/🟠/🔴) de 6 signaux (permis, mises en chantier, ventes anciennes, taux de crédit, demande BLS, ventes 12 m vs cible BPCE), commentaire d'analyse auto-généré et fraîcheur des données par source. Chiffres nationaux, indépendants du filtre de période.
-1. **Conjoncture rétrospective** — permis, mises en chantier et ventes dans l'ancien (cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1), **commentaire d'analyse auto-généré** sous les chiffres clés et **dynamique Individuel vs Collectif** (driver du second œuvre).
-2. **Contexte Macro & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois) et **demande de crédits (enquête BLS)** — indicateur avancé.
-3. **Prix & Accessibilité** — indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
-4. **Commercialisation Neuf (ECLN)** — encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
-5. **Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés, **lags cherchés sur le train seul**), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE ; **exportable vers SAP IBP**), **propagation à une prévision mensuelle des ventes société** par famille (également exportable), **rénovation en 3ᵉ driver** (comparatif R² transactions seules vs transactions+rénovation), **repère BPCE L'Observatoire 2026**, et panneau de scénarios à 4 leviers (OAT / Euribor / chômage / **intentions d'achat** → transactions → CA benchmark).
-6. **Atelier — Time Lag** — atelier exploratoire : décalage d'un indicateur avancé et corrélation avec les ventes (ou un CA d'entreprise réel).
-7. **Atelier — Composite** — atelier exploratoire : indicateur composite pondéré (grid-search des lags/poids).
-8. **Export SAP IBP** — export de l'indicateur avancé.
-9. **Données Source** — inspection / upload des jeux de données (les uploads sont **validés par les contrats pandera** avant écrasement), et **import des ventes mensuelles d'une société** (CSV `Date, Sales` — **multi-séries** : une colonne `Serie`/`Produit`/`Famille` crée une famille de produits par valeur, sélectionnable dans les moteurs). Ces ventes réelles sont la **cible par défaut** des ateliers Time-Lag / Composite / Prévision (les ventes synthétiques ne servent que de repli, avec avertissement de circularité).
+L'application est organisée en **8 onglets** suivant les segments de marché puis l'entonnoir de lecture (où en est le marché → pourquoi → où va-t-il → outils).
+
+0. **🧭 Synthèse** — page d'accueil « coup d'œil » : **chips d'état par pilier** (🟢/🟠/🔴 pour Neuf, Ancien, Financement), encart **« À retenir »** en puces (une par pilier + implication demande second œuvre), 3 blocs de cartes (*Activité* / *Conditions de financement* / *Perspective* avec verdict vs cible BPCE), fraîcheur des données par source, et un **graphique croisé neuf/ancien en deux panneaux** — niveaux réels sur échelle unique + base 100. Chiffres nationaux, indépendants du filtre de période.
+1. **🏗️ Marché du neuf** — permis et mises en chantier (SIT@DEL : cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1), **dynamique Individuel vs Collectif** (driver du second œuvre), puis section **Commercialisation Neuf (ECLN)** : encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
+2. **🏠 Marché de l'ancien** — ventes dans l'ancien (IGEDD : cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle), puis section **Prix & Accessibilité** : indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
+3. **🏦 Environnement & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois), **demande de crédits (enquête BLS)** — indicateur avancé — et **activité du second œuvre** (rénovation, passée & prévue).
+4. **📰 Actualités & Aides** — veille curatée des dispositifs d'aide FR/UE (Jeanbrun, MaPrimeRénov', PTZ, DPE, CEE, EAHP…), impacts qualitatifs par pilier et échéancier.
+5. **📡 Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés, **lags cherchés sur le train seul**), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE ; **exportable vers SAP IBP**), **propagation à une prévision mensuelle des ventes société** par famille (également exportable), **rénovation en 3ᵉ driver** (comparatif R² transactions seules vs transactions+rénovation), **repère BPCE L'Observatoire 2026**, et panneau de scénarios à 4 leviers (OAT / Euribor / chômage / **intentions d'achat** → transactions → CA benchmark).
+6. **🔬 Atelier exploratoire** — deux sous-onglets : **⏱️ Time Lag** (décalage d'un indicateur avancé et corrélation avec les ventes, ou un CA d'entreprise réel) et **🧪 Composite** (indicateur composite pondéré, grid-search des lags/poids).
+7. **⚙️ Données & Export** — deux sous-onglets : **📂 Sources & Imports** — inspection / upload des jeux de données (les uploads sont **validés par les contrats pandera** avant écrasement) et **import des ventes mensuelles d'une société** (CSV `Date, Sales` — **multi-séries** : une colonne `Serie`/`Produit`/`Famille` crée une famille de produits par valeur, sélectionnable dans les moteurs ; **cible par défaut** des ateliers, les ventes synthétiques ne servant que de repli avec avertissement de circularité) — et **💾 Export SAP IBP** de l'indicateur avancé.
 
 ## Lancer en local
 
@@ -88,12 +88,13 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 
 ## Modules
 
-- `app.py` — interface Streamlit (10 onglets dont la Synthèse, bilingue FR/EN).
+- `app.py` — interface Streamlit (8 onglets dont la Synthèse, bilingue FR/EN).
 - `translations.py` — dictionnaire de traductions `T` (FR/EN) extrait d'`app.py`.
 - `data_manager.py` — chargement / génération / cache des jeux de données (dont import des ventes société).
 - `analysis.py` — filtres, agrégations, cumuls glissants, momentum et commentaire d'analyse auto-généré.
 - `simulation.py` — décalage temporel et indicateur composite.
 - `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→CA/ventes).
+- `actualites.py` — veille curatée des dispositifs d'aide FR/UE (onglet « Actualités & Aides ») : items, jalons et impacts qualitatifs par pilier.
 - `export.py` — export SAP IBP.
 - `fetch_new_sources.py` — acquisition des sources réelles (INSEE / SDES / BCE).
 - `report.py` — génération du **rapport PDF** (bilan : chiffres clés, commentaire, graphiques, repère BPCE) via reportlab + matplotlib. Bouton « 📄 Rapport PDF » dans la barre latérale.
