@@ -982,10 +982,10 @@ with tab_synthese:
             on="Date", how="outer").sort_values("Date")
         _idx_cols = ["Permis_12M", "MisesEnChantier_12M", "Transactions_12M"]
         _base_rows = _sy_merged.dropna(subset=_idx_cols)
-        # Rebase to 2015: first month of 2015 where all three series are available
-        # (falls back to the earliest common month if 2015 is out of range).
-        _base_2015 = _base_rows[_base_rows["Date"] >= pd.Timestamp("2015-01-01")]
-        _base_rows = _base_2015 if not _base_2015.empty else _base_rows
+        # Rebase to 2022: first month of 2022 where all three series are available
+        # (falls back to the earliest common month if 2022 is out of range).
+        _base_2022 = _base_rows[_base_rows["Date"] >= pd.Timestamp("2022-01-01")]
+        _base_rows = _base_2022 if not _base_2022.empty else _base_rows
         _base_date = _base_rows["Date"].iloc[0] if not _base_rows.empty else None
         st.markdown("**" + (
             _L(f"Base 100 = {format_month_year(_base_date, 'FR')}",
