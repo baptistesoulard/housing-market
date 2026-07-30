@@ -914,57 +914,109 @@ with tab_synthese:
     st.markdown("#### " + _L("Neuf vs ancien — volumes en cumul 12 mois",
                              "New vs existing — 12-month rolling volumes"))
     st.caption(_L(
-        "Historique complet, en milliers. Permis et mises en chantier (échelle de gauche) "
-        "vs ventes de logements anciens (échelle de droite) : la lecture croisée des deux "
-        "marchés que détaillent les onglets « 🏗️ Marché du neuf » et « 🏠 Marché de l'ancien ».",
-        "Full history, in thousands. Permits and starts (left scale) vs existing-home sales "
-        "(right scale): the cross-market read detailed in the '🏗️ New-Build Market' and "
-        "'🏠 Existing-Home Market' tabs."))
-    fig_sy = make_subplots(specs=[[{"secondary_y": True}]])
-    fig_sy.add_trace(go.Scatter(x=_sy_roll_sit["Date"], y=_sy_roll_sit["Permis_12M"] / 1000.0,
-                                name=T[lang_code]["permis_trace"],
-                                line=dict(color=COLOR_BRICK, width=2.5)), secondary_y=False)
-    fig_sy.add_trace(go.Scatter(x=_sy_roll_sit["Date"], y=_sy_roll_sit["MisesEnChantier_12M"] / 1000.0,
-                                name=T[lang_code]["mises_trace"],
-                                line=dict(color=COLOR_TEXT, width=2.5, dash="dash")), secondary_y=False)
-    fig_sy.add_trace(go.Scatter(x=_sy_roll_va["Date"], y=_sy_roll_va["Transactions_12M"] / 1000.0,
-                                name=T[lang_code]["transactions_trace"],
-                                line=dict(color=COLOR_GREEN, width=2.5)), secondary_y=True)
-    fig_sy.update_layout(
-        height=420, template="plotly_white",
-        margin=dict(l=60, r=86, t=40, b=44),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0))
-    fig_sy.update_yaxes(title_text=_L("Neuf — milliers /12 m", "New-build — thousands /12m"),
-                        secondary_y=False)
-    fig_sy.update_yaxes(title_text=_L("Ancien — milliers /12 m", "Existing — thousands /12m"),
-                        secondary_y=True)
-    # Annotate the story directly on the curves (recent trough + latest values) so a
-    # non-expert reader takes away the turning points without decoding the axes.
-    _va_line = _sy_roll_va.dropna(subset=["Transactions_12M"])
-    if not _va_line.empty:
-        _recent = _va_line[_va_line["Date"] >= _va_line["Date"].max() - pd.DateOffset(years=4)]
-        if len(_recent) > 12:
-            _i_min = _recent["Transactions_12M"].idxmin()
-            _d_min = _recent.loc[_i_min, "Date"]
-            _v_min = _recent.loc[_i_min, "Transactions_12M"] / 1000.0
-            fig_sy.add_annotation(
-                x=_d_min, y=_v_min, yref="y2",
-                text=_L(f"creux : {format_month_year(_d_min, 'FR')} ({_v_min:.0f} k)",
-                        f"trough: {format_month_year(_d_min, 'EN')} ({_v_min:.0f}k)"),
-                showarrow=True, arrowhead=2, arrowcolor=COLOR_GREEN, ax=0, ay=42,
-                font=dict(color=COLOR_GREEN, size=11))
-        fig_sy.add_annotation(
-            x=_va_line["Date"].iloc[-1], y=_va_line["Transactions_12M"].iloc[-1] / 1000.0,
-            yref="y2", text=f"<b>{_va_line['Transactions_12M'].iloc[-1] / 1000.0:.0f} k</b>",
-            showarrow=False, xanchor="left", xshift=6, font=dict(color=COLOR_GREEN, size=12))
-    for _col, _clr in (("Permis_12M", COLOR_BRICK), ("MisesEnChantier_12M", COLOR_TEXT)):
-        _sline = _sy_roll_sit.dropna(subset=[_col])
-        if not _sline.empty:
-            fig_sy.add_annotation(
-                x=_sline["Date"].iloc[-1], y=_sline[_col].iloc[-1] / 1000.0,
-                text=f"<b>{_sline[_col].iloc[-1] / 1000.0:.0f} k</b>",
-                showarrow=False, xanchor="left", xshift=6, font=dict(color=_clr, size=12))
-    st.plotly_chart(fig_sy, use_container_width=True)
+        "Lecture croisée des deux marchés que détaillent les onglets « 🏗️ Marché du neuf » "
+        "et « 🏠 Marché de l'ancien », en deux angles. À gauche, les niveaux réels sur une "
+        "échelle unique : le rapport de masse saute aux yeux (l'ancien pèse 2 à 3× le neuf en "
+        "volume). À droite, base 100 à la même date de référence : on compare les dynamiques "
+        "sans distorsion d'échelle.",
+        "Cross-market read detailed in the '🏗️ New-Build Market' and '🏠 Existing-Home Market' "
+        "tabs, from two angles. Left, real levels on a single scale: the mass ratio is obvious "
+        "(existing sales are 2–3× new-build volumes). Right, rebased to 100 at a shared "
+        "reference date: dynamics are compared without scale distortion."))
+
+    # Series to plot on both panels — same colour language throughout.
+    _sy_series = [
+        (_sy_roll_sit, "Permis_12M", T[lang_code]["permis_trace"], COLOR_BRICK, None),
+        (_sy_roll_sit, "MisesEnChantier_12M", T[lang_code]["mises_trace"], COLOR_TEXT, "dash"),
+        (_sy_roll_va, "Transactions_12M", T[lang_code]["transactions_trace"], COLOR_GREEN, None),
+    ]
+
+    _col_lvl, _col_idx = st.columns(2)
+
+    # --- Left panel: real levels, single shared y-axis (in thousands). No dual axis, so
+    # the vertical position of every curve is honest and directly comparable.
+    with _col_lvl:
+        st.markdown("**" + _L("Niveaux réels — échelle unique",
+                              "Real levels — single scale") + "**")
+        fig_lvl = go.Figure()
+        for _df, _col, _name, _clr, _dash in _sy_series:
+            fig_lvl.add_trace(go.Scatter(
+                x=_df["Date"], y=_df[_col] / 1000.0, name=_name,
+                line=dict(color=_clr, width=2.5, dash=_dash)))
+        fig_lvl.update_layout(
+            height=400, template="plotly_white",
+            margin=dict(l=54, r=64, t=40, b=44),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0))
+        fig_lvl.update_yaxes(title_text=_L("Milliers /12 m", "Thousands /12m"),
+                             rangemode="tozero")
+        # Recent trough on the existing-home line + latest value on every curve, straight
+        # on the curves so the turning points read without decoding an axis.
+        _va_line = _sy_roll_va.dropna(subset=["Transactions_12M"])
+        if not _va_line.empty:
+            _recent = _va_line[_va_line["Date"] >= _va_line["Date"].max() - pd.DateOffset(years=4)]
+            if len(_recent) > 12:
+                _i_min = _recent["Transactions_12M"].idxmin()
+                _d_min = _recent.loc[_i_min, "Date"]
+                _v_min = _recent.loc[_i_min, "Transactions_12M"] / 1000.0
+                fig_lvl.add_annotation(
+                    x=_d_min, y=_v_min,
+                    text=_L(f"creux : {format_month_year(_d_min, 'FR')} ({_v_min:.0f} k)",
+                            f"trough: {format_month_year(_d_min, 'EN')} ({_v_min:.0f}k)"),
+                    showarrow=True, arrowhead=2, arrowcolor=COLOR_GREEN, ax=0, ay=42,
+                    font=dict(color=COLOR_GREEN, size=11))
+        for _df, _col, _name, _clr, _dash in _sy_series:
+            _sline = _df.dropna(subset=[_col])
+            if not _sline.empty:
+                fig_lvl.add_annotation(
+                    x=_sline["Date"].iloc[-1], y=_sline[_col].iloc[-1] / 1000.0,
+                    text=f"<b>{_sline[_col].iloc[-1] / 1000.0:.0f} k</b>",
+                    showarrow=False, xanchor="left", xshift=6, font=dict(color=_clr, size=12))
+        st.plotly_chart(fig_lvl, use_container_width=True)
+
+    # --- Right panel: same series rebased to 100 at the first month where all three are
+    # available, so growth paths are compared cleanly (no arbitrary dual-axis alignment).
+    with _col_idx:
+        _sy_merged = pd.merge(
+            _sy_roll_sit[["Date", "Permis_12M", "MisesEnChantier_12M"]],
+            _sy_roll_va[["Date", "Transactions_12M"]],
+            on="Date", how="outer").sort_values("Date")
+        _idx_cols = ["Permis_12M", "MisesEnChantier_12M", "Transactions_12M"]
+        _base_rows = _sy_merged.dropna(subset=_idx_cols)
+        # Rebase to 2015: first month of 2015 where all three series are available
+        # (falls back to the earliest common month if 2015 is out of range).
+        _base_2015 = _base_rows[_base_rows["Date"] >= pd.Timestamp("2015-01-01")]
+        _base_rows = _base_2015 if not _base_2015.empty else _base_rows
+        _base_date = _base_rows["Date"].iloc[0] if not _base_rows.empty else None
+        st.markdown("**" + (
+            _L(f"Base 100 = {format_month_year(_base_date, 'FR')}",
+               f"Rebased to 100 = {format_month_year(_base_date, 'EN')}")
+            if _base_date is not None else _L("Base 100", "Rebased to 100")) + "**")
+        fig_idx = go.Figure()
+        if _base_date is not None:
+            _base = _base_rows.iloc[0]
+            fig_idx.add_hline(y=100, line_dash="dot", line_color="#B0B7C3",
+                              line_width=1)
+            for _col, _name, _clr, _dash in (
+                ("Permis_12M", T[lang_code]["permis_trace"], COLOR_BRICK, None),
+                ("MisesEnChantier_12M", T[lang_code]["mises_trace"], COLOR_TEXT, "dash"),
+                ("Transactions_12M", T[lang_code]["transactions_trace"], COLOR_GREEN, None),
+            ):
+                _idx = _sy_merged[["Date", _col]].dropna()
+                _idx["v"] = _idx[_col] / _base[_col] * 100.0
+                fig_idx.add_trace(go.Scatter(
+                    x=_idx["Date"], y=_idx["v"], name=_name,
+                    line=dict(color=_clr, width=2.5, dash=_dash)))
+                fig_idx.add_annotation(
+                    x=_idx["Date"].iloc[-1], y=_idx["v"].iloc[-1],
+                    text=f"<b>{_idx['v'].iloc[-1]:.0f}</b>",
+                    showarrow=False, xanchor="left", xshift=6, font=dict(color=_clr, size=12))
+        fig_idx.update_layout(
+            height=400, template="plotly_white",
+            margin=dict(l=54, r=52, t=40, b=44),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0))
+        fig_idx.update_yaxes(title_text=_L("Indice (base 100)", "Index (base 100)"))
+        st.plotly_chart(fig_idx, use_container_width=True)
+
     st.caption(f"{T[lang_code]['source_label']} : {T[lang_code]['source_sitadel']} · "
                f"{T[lang_code]['source_ventes_ancien']} — "
                + _L("cumul 12 mois glissant", "12-month rolling sum"))
