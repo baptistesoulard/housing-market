@@ -79,7 +79,7 @@ Prix des logements anciens (indices Notaires-INSEE) : HousingMarket_v3\data_manu
 Source : INSEE — Indice des prix des logements anciens, France métropolitaine, base 100 = moyenne annuelle 2015, série CVS
 idbanks : 010567059 (Ensemble), 010567057 (Appartements), 010567061 (Maisons)
 Pages : https://www.insee.fr/fr/statistiques/serie/010567059 (+ 010567057 / 010567061)
-Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/010567059
+Statut : régénéré par fetch_new_sources.build_prices() via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/010567059
 Couverture : TRIMESTRIEL, 1996-T1 -> 2026-T1. Chaque trimestre placé sur le 1er mois du trimestre ; réindex mensuel laisse NaN 2 mois/3. Colonnes : Date, Prix_Ancien_Ensemble, Prix_Ancien_Appartements, Prix_Ancien_Maisons.
 
 
@@ -88,8 +88,8 @@ Prix des logements neufs (indice INSEE) : HousingMarket_v3\data_manual_input\pri
 Source : INSEE — Indice des prix des logements neufs, France, base 100 = moyenne annuelle 2015, série CVS
 idbank : 010751595
 Page : https://www.insee.fr/fr/statistiques/serie/010751595
-Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/010751595
-Couverture : TRIMESTRIEL, 2000-T1 -> 2026-T1. Colonnes : Date, Prix_Neuf. Même base (2015) que l'ancien → comparaison neuf/ancien directe dans l'onglet Prix & Accessibilité.
+Statut : régénéré par fetch_new_sources.build_neuf_price() via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/010751595
+Couverture : TRIMESTRIEL, 2000-T1 -> 2026-T1. Colonnes : Date, Prix_Neuf. Même base (2015) que l'ancien → comparaison neuf/ancien directe dans la section « Prix & Accessibilité » (onglet « Marché de l'ancien »).
 
 
 
@@ -99,9 +99,9 @@ Séries (3 variantes ne différant que par la dernière lettre = couverture) :
   - M.FR.B.A2C.A.B.A.2250.EUR.N  = « new business », total Y COMPRIS renégociations -> colonne Production_Credits_Habitat (MENSUEL, 2003-01 ->)
   - M.FR.B.A2C.A.B.A.2250.EUR.P  = « pure new loans », HORS renégociations              -> colonne Production_Credits_Pure  (MENSUEL, 2019-09 -> seulement)
   - M.FR.B.A2C.A.B.A.2250.EUR.R  = renégociations seules                                -> colonne Production_Credits_Renego (MENSUEL, 2019-09 -> seulement)
-Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.A.B.A.2250.EUR.N?format=csvdata (idem .P et .R)
+Statut : régénéré par fetch_new_sources.build_credit_volume() via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.A.B.A.2250.EUR.N?format=csvdata (idem .P et .R)
 Couverture : MENSUEL. Total 2003-01 -> 2026-05 (~13,8 Md€ en mai 2026) ; décomposition P/R seulement à partir de 2019-09 (indicateur BCE tardif) -> NaN avant. Colonnes : Date, Production_Credits_Habitat, Production_Credits_Pure, Production_Credits_Renego (Md€).
-Affichage (onglet Contexte Macro) : graphique mensuel = barres empilées « hors renégo. + renégo. » (style BPCE p.24, 2019+) ; cumul 12 mois = total (2003+) + courbe « hors renégociations ». Motivation : les renégociations ne déclenchent aucune transaction/construction (bruit pour la prévision bâtiment), donc isolées.
+Affichage (onglet « Environnement & Financement ») : graphique mensuel = barres empilées « hors renégo. + renégo. » (style BPCE p.24, 2019+) ; cumul 12 mois = total (2003+) + courbe « hors renégociations ». Motivation : les renégociations ne déclenchent aucune transaction/construction (bruit pour la prévision bâtiment), donc isolées.
 
 
 
@@ -110,16 +110,16 @@ Source : BCE / Banque de France — Enquête sur la distribution du crédit banc
 Séries (dataset SDMX « BLS », ménages H / achat de logement H, item Z = demande globale, FNET = pourcentage net) :
   - Q.FR.ALL.Z.H.H.B3.ZZ.D.FNET = réalisé sur les 3 derniers mois     -> colonne Demande_Credit_Realisee
   - Q.FR.ALL.Z.H.H.F3.ZZ.D.FNET = attendu sur les 3 prochains mois     -> colonne Demande_Credit_Perspectives (= le « perspectives à 3 mois » BPCE p.23)
-Statut : téléchargé via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/BLS/Q.FR.ALL.Z.H.H.F3.ZZ.D.FNET?format=csvdata (idem B3)
+Statut : régénéré par fetch_new_sources.build_credit_demand_bls() via l'API SDMX ouverte de la BCE : https://data-api.ecb.europa.eu/service/data/BLS/Q.FR.ALL.Z.H.H.F3.ZZ.D.FNET?format=csvdata (idem B3)
 Couverture : TRIMESTRIEL, 2003-T1 -> 2026-T2 (94 points). Chaque trimestre placé sur le 1er mois du trimestre ; réindex mensuel laisse NaN 2 mois/3. Colonnes : Date, Demande_Credit_Realisee, Demande_Credit_Perspectives.
-Usage : indicateur AVANCÉ de la production de crédit (onglet Contexte Macro, section « Demande de crédits à l'habitat (enquête BLS) »). Le solde « perspectives » est passé nettement négatif fin 2025 / début 2026 (signal de repli, cf. BPCE p.23).
+Usage : indicateur AVANCÉ de la production de crédit (onglet « Environnement & Financement », section « Demande de crédits à l'habitat (enquête BLS) »). Le solde « perspectives » est passé nettement négatif fin 2025 / début 2026 (signal de repli, cf. BPCE p.23).
 
 
 
 Commercialisation des logements neufs (ECLN) : HousingMarket_v3\data_manual_input\ecln-commercialisation-neuf.csv
 Source : SDES — Enquête sur la commercialisation des logements neufs (ECLN), national, séries trimestrielles CVS-CJO
 Jeu de données : https://www.data.gouv.fr/datasets/donnees-nationales-sur-la-commercialisation-des-logements-neufs
-Statut : téléchargé via l'API DiDo (data.statistiques.developpement-durable.gouv.fr), fusion de DEUX ressources :
+Statut : régénéré par fetch_new_sources.build_ecln() via l'API DiDo (data.statistiques.developpement-durable.gouv.fr), fusion de DEUX ressources :
   - datafile 7e002311-3413-4046-9248-b6e761803fd0 (« 2 - Ventes aux particuliers - CVS-CJO ») : NATURE_PROJET=« Toutes constructions », TYPE_LGT=« Tous logements » → Reservations (= réservations des PARTICULIERS), MisesEnVente, Annulations, Encours, DelaiEcoulement ; prix au m² pris sur la ligne « Collectif ».
   - datafile 174038f5-67ce-464f-b359-4c3c4034e77c (« 8 - Ventes aux institutionnels (ventes en bloc) - CVS-CJO ») : colonnes RESA_SOCIAL → Resa_Sociaux (bailleurs sociaux) et RESA_NONSOCIAL → Resa_Institutionnels (investisseurs institutionnels). Vérifié : RESA_SOCIAL + RESA_NONSOCIAL = RESA (total ventes en bloc).
 Couverture : TRIMESTRIEL, 2017-T1 -> 2026-T1 (les 2 colonnes acquéreurs « en bloc » commencent en 2018-T1 → NaN en 2017). Colonnes : Date, Reservations, MisesEnVente, Annulations, Encours, DelaiEcoulement, PrixM2_Collectif, Resa_Sociaux, Resa_Institutionnels.
@@ -136,7 +136,7 @@ Activité passée du second œuvre : HousingMarket_v3\data_manual_input\reno-act
 Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, tendance de l'activité PASSÉE, Second œuvre, série CVS (solde d'opinion : % d'entreprises signalant une hausse d'activité − % signalant une baisse)
 idbank : 001586954
 Page : https://www.insee.fr/fr/statistiques/serie/001586954
-Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586954
+Statut : régénéré par fetch_new_sources.build_renovation() via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586954
 Couverture : MENSUEL, 1975-01 -> 2026-06 (juin 2026 = −16,1). Colonnes : Date, Reno_Activite_Batiment. Trous ponctuels (août avant 2008, base trimestrielle avant 1993) laissés NaN. Réindexé sur l'index mensuel maître (2001+).
 
 
@@ -145,7 +145,7 @@ Activité prévue du second œuvre (indicateur avancé) : HousingMarket_v3\data_
 Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, tendance de l'activité PRÉVUE, Second œuvre, série CVS (solde d'opinion)
 idbank : 001586886
 Page : https://www.insee.fr/fr/statistiques/serie/001586886
-Statut : téléchargé via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586886
+Statut : régénéré par fetch_new_sources.build_renovation() via l'API SDMX BDM : https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586886
 Couverture : MENSUEL, 1975-01 -> 2026-06 (juin 2026 = −9,1). Colonnes : Date, Reno_Activite_Prevue.
-Usage : ces 2 séries (colonnes Reno_Activite_Batiment / Reno_Activite_Prevue de macro.csv) alimentent la section « Rénovation & second œuvre » de l'onglet Contexte Macro, une pastille de la page Synthèse, et servent de 2e facteur au modèle « ventes ~ transactions + rénovation » (forecast.fit_sales_two_factor) de l'onglet Prévision — la rénovation capte la demande second œuvre tirée par le STOCK de logements, indépendante des transactions/déménagements. C'est le driver appelé à remplacer la dernière série synthétique.
+Usage : ces 2 séries (colonnes Reno_Activite_Batiment / Reno_Activite_Prevue de macro.csv) alimentent la section « Rénovation & second œuvre » de l'onglet « Environnement & Financement », une pastille de la page Synthèse, et servent de 2e facteur au modèle « ventes ~ transactions + rénovation » (forecast.fit_sales_two_factor) de l'onglet Prévision — la rénovation capte la demande second œuvre tirée par le STOCK de logements, indépendante des transactions/déménagements. C'est le driver appelé à remplacer la dernière série synthétique.
 Note (enrichissement futur, non fait) : un proxy de VOLUME de rénovation (MaPrimeRénov' / éco-PTZ, ANAH / data.gouv API DiDo) compléterait ces soldes d'opinion — série mensuelle nationale propre non triviale à obtenir par API, différée.
