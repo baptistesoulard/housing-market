@@ -23,3 +23,7 @@ data/company_sales.csv
 # Entrepôt Parquet : miroir typé RÉGÉNÉRÉ des CSV à chaque chargement (housing_data/).
 # Pas de binaire versionné pendant la migration — les CSV restent la source de vérité.
 data/*.parquet
+
+# Manifeste de provenance : artefact RÉGÉNÉRÉ par fetch_new_sources.py (horodatages
+# volatils) — inspection locale / base du fetch conditionnel, pas versionné.
+data/_manifest.json

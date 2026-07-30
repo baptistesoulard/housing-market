@@ -709,8 +709,15 @@ class DataManager:
         it from the IGEDD .xls when data/ventes_ancien.csv is missing or force_rebuild is set.
         Returns (success, message). Never writes synthetic sales.
         """
-        if os.path.exists(self.paths["ventes_ancien"]) and not force_rebuild:
-            return True, "Ventes ancien (IGEDD) déjà présentes."
+        # Rebuild when the derived CSV is missing, forced, OR stale relative to the source
+        # workbook (the fetch script rewrites the .xls only when it actually changed, so a
+        # newer .xls mtime is a reliable "refresh me" signal — no manual invalidation).
+        csv_path = self.paths["ventes_ancien"]
+        if os.path.exists(csv_path) and not force_rebuild:
+            xls_newer = (os.path.exists(IGEDD_ANCIEN_XLS)
+                         and os.path.getmtime(IGEDD_ANCIEN_XLS) > os.path.getmtime(csv_path))
+            if not xls_newer:
+                return True, "Ventes ancien (IGEDD) déjà présentes."
         try:
             df = self.build_ventes_ancien_from_igedd()
         except FileNotFoundError:

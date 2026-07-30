@@ -38,18 +38,89 @@ import re
 import io
 import csv
 import ssl
+import json
+import time
+import hashlib
+import threading
 import urllib.request
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 
 CTX = ssl.create_default_context()
-OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_manual_input")
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+OUT_DIR = os.path.join(_ROOT, "data_manual_input")
+DATA_DIR = os.path.join(_ROOT, "data")
+MANIFEST_PATH = os.path.join(DATA_DIR, "_manifest.json")
+
+# --- Provenance manifest, filled as builders write. Thread-safe so builders can run in
+# parallel (see refresh_all): every write records what changed, its last observation and a
+# content hash, so freshness is inspectable without re-reading every CSV. ---
+_MANIFEST = {}          # basename -> {status, changed, rows, last_obs, sha256, fetched_at}
+_FAILURES = []          # [{"source": str, "error": str}]
+_LOCK = threading.Lock()
+
+
+def _now_iso():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _read_url(url, accept="application/xml", *, tries=3, backoff=2.0):
+    """HTTP GET with retry + exponential backoff. The INSEE/BCE/DiDo APIs return the odd
+    transient 5xx / reset; a couple of retries turn those into a success instead of a
+    skipped source. Raises the last error only if every attempt fails."""
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": accept})
+    last = None
+    for attempt in range(tries):
+        try:
+            return urllib.request.urlopen(req, timeout=120, context=CTX).read()
+        except Exception as e:                       # retry ANY transient network error
+            last = e
+            if attempt < tries - 1:
+                time.sleep(backoff ** attempt)       # 1s, 2s, 4s, ...
+    raise last
 
 
 def _get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0",
-                                               "Accept": "application/xml"})
-    return urllib.request.urlopen(req, timeout=120, context=CTX).read()
+    return _read_url(url, "application/xml")
+
+
+def _write_if_changed(path, content, *, rows=None, last=None, label=None):
+    """Atomic, hash-guarded write. `content` is str or bytes. The file is only rewritten
+    when its bytes actually differ, so an unchanged source never bumps the mtime the app's
+    load cache keys on (no needless Parquet rebuild, no noisy git diff). The write goes
+    through a temp file + os.replace so a mid-write crash can't leave a truncated CSV.
+    Records the outcome in the manifest and returns True iff the file was (re)written."""
+    data = content.encode("utf-8") if isinstance(content, str) else content
+    old = None
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            old = f.read()
+    changed = old != data
+    if changed:
+        tmp = f"{path}.tmp"
+        with open(tmp, "wb") as f:
+            f.write(data)
+        os.replace(tmp, path)                        # atomic swap
+    base = os.path.basename(path)
+    with _LOCK:
+        _MANIFEST[base] = {
+            "status": "ok", "changed": changed, "rows": rows, "last_obs": last,
+            "sha256": hashlib.sha256(data).hexdigest()[:16], "fetched_at": _now_iso(),
+        }
+    # ASCII-only console output: the Windows default code page (cp1252) can't encode e.g.
+    # '->' arrows, and a print crash here would wrongly mark a successful write as failed.
+    extra = f" ({rows} pts, last={last})" if rows is not None else ""
+    print(f"{label or base} -> {base} [{'MAJ' if changed else 'inchange'}]{extra}")
+    return changed
+
+
+def _record_failure(source, err):
+    """Log a per-source failure into the manifest (the previous CSV stays in place)."""
+    with _LOCK:
+        _FAILURES.append({"source": source, "error": f"{err.__class__.__name__}: {err}"})
+    print(f"  {source} -> SKIPPED ({err.__class__.__name__}: {err})")
 
 
 def _period_to_date(p):
@@ -68,7 +139,7 @@ def _period_to_date(p):
 
 
 def _fetch_bdm(idbank):
-    xml = _get("https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/" + idbank).decode("utf-8", "replace")
+    xml = _read_url("https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/" + idbank).decode("utf-8", "replace")
     obs = re.findall(r'TIME_PERIOD="([^"]+)"\s+OBS_VALUE="([^"]+)"', xml)
     s = pd.Series({_period_to_date(p): float(v) for p, v in obs})
     return s.sort_index()
@@ -79,8 +150,7 @@ def _fetch_ecb(dataset, key):
     TIME_PERIOD is 'YYYY-MM'; values are returned as-is (caller handles unit scaling).
     Uses a CSV Accept header (the ECB honours Accept and would otherwise return XML)."""
     url = f"https://data-api.ecb.europa.eu/service/data/{dataset}/{key}?format=csvdata"
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "text/csv"})
-    raw = urllib.request.urlopen(req, timeout=120, context=CTX).read().decode("utf-8-sig", "replace")
+    raw = _read_url(url, "text/csv").decode("utf-8-sig", "replace")
     out = {}
     for r in csv.DictReader(io.StringIO(raw)):
         p = r["TIME_PERIOD"]
@@ -102,9 +172,7 @@ def build_sitadel():
         if col not in header:
             raise ValueError(f"en-tête DiDo inattendu (colonne '{col}' absente) : {header!r}")
     path = os.path.join(OUT_DIR, "Donnees-mensuelles-nationales-Logements.csv")
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(raw)
-    print(f"sitadel -> {path} ({raw.count(chr(10))} lignes)")
+    _write_if_changed(path, raw, rows=raw.count(chr(10)), label="sitadel")
 
 
 def build_igedd():
@@ -118,13 +186,11 @@ def build_igedd():
     if not raw.startswith(b"\xd0\xcf\x11\xe0"):     # OLE2 magic: it must be a real .xls
         raise ValueError("le fichier téléchargé n'est pas un classeur .xls (page d'erreur ?)")
     path = os.path.join(OUT_DIR, "nombre-vente-maison-appartement-ancien.xls")
-    with open(path, "wb") as f:
-        f.write(raw)
-    print(f"igedd -> {path} ({len(raw) // 1024} Ko)")
-    derived = os.path.join(os.path.dirname(OUT_DIR), "data", "ventes_ancien.csv")
-    if os.path.exists(derived):
-        os.remove(derived)
-        print("         data/ventes_ancien.csv invalidé -> reconstruit au prochain démarrage de l'app")
+    _write_if_changed(path, raw, rows=len(raw) // 1024, label="igedd")
+    # No manual invalidation needed: the workbook is only (re)written when it actually
+    # changed, so its mtime now leads data/ventes_ancien.csv — and DataManager.ensure_
+    # ventes_ancien is mtime-aware, rebuilding the derived monthly series on the next app
+    # start (or in CI, see refresh_ventes_ancien). Avoids committing a spurious deletion.
 
 
 # The six "socle" macro series (the forecast model's predictors), each a single
@@ -151,7 +217,7 @@ def build_macro_core():
             s = _fetch_bdm(code) if kind == "bdm" else _fetch_ecb(*code.split("/", 1))
             _write_single_series(s, column, filename, column)
         except Exception as e:
-            print(f"  {column} -> SKIPPED ({e.__class__.__name__}: {e})")
+            _record_failure(column, e)
 
 
 def build_prices():
@@ -164,9 +230,11 @@ def build_prices():
     df.index.name = "Date"
     df = df.reset_index().sort_values("Date")
     df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
+    if df.empty:
+        raise ValueError("indices prix ancien vides")
     path = os.path.join(OUT_DIR, "prix-immobilier-notaires-insee.csv")
-    df.to_csv(path, index=False, encoding="utf-8")
-    print(f"prix -> {path} ({len(df)} trimestres, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+    _write_if_changed(path, df.to_csv(index=False), rows=len(df),
+                      last=df["Date"].iloc[-1], label="prix")
 
 
 def build_neuf_price():
@@ -176,9 +244,11 @@ def build_neuf_price():
     s = _fetch_bdm("010751595").rename("Prix_Neuf")
     df = s.reset_index().rename(columns={"index": "Date"})
     df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
+    if df.empty:
+        raise ValueError("indice prix neuf vide")
     path = os.path.join(OUT_DIR, "prix-logements-neufs-insee.csv")
-    df.to_csv(path, index=False, encoding="utf-8")
-    print(f"neuf -> {path} ({len(df)} trimestres, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+    _write_if_changed(path, df.to_csv(index=False), rows=len(df),
+                      last=df["Date"].iloc[-1], label="neuf")
 
 
 def build_credit_volume():
@@ -201,9 +271,11 @@ def build_credit_volume():
     df.index.name = "Date"
     df = df.reset_index().sort_values("Date")
     df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
+    if df.empty:
+        raise ValueError("production de crédits vide")
     path = os.path.join(OUT_DIR, "production-credits-habitat.csv")
-    df.to_csv(path, index=False, encoding="utf-8")
-    print(f"credit -> {path} ({len(df)} mois, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+    _write_if_changed(path, df.to_csv(index=False), rows=len(df),
+                      last=df["Date"].iloc[-1], label="credit")
 
 
 def build_credit_demand_bls():
@@ -221,8 +293,7 @@ def build_credit_demand_bls():
 
     def _fetch_bls_q(key):
         url = f"https://data-api.ecb.europa.eu/service/data/BLS/{key}?format=csvdata"
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "text/csv"})
-        raw = urllib.request.urlopen(req, timeout=120, context=CTX).read().decode("utf-8-sig", "replace")
+        raw = _read_url(url, "text/csv").decode("utf-8-sig", "replace")
         out = {}
         for r in csv.DictReader(io.StringIO(raw)):
             y, q = r["TIME_PERIOD"].split("-Q")
@@ -233,9 +304,11 @@ def build_credit_demand_bls():
     df.index.name = "Date"
     df = df.reset_index().sort_values("Date")
     df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
+    if df.empty:
+        raise ValueError("demande de crédits (BLS) vide")
     path = os.path.join(OUT_DIR, "credit-demand-bls.csv")
-    df.to_csv(path, index=False, encoding="utf-8")
-    print(f"bls -> {path} ({len(df)} trimestres, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+    _write_if_changed(path, df.to_csv(index=False), rows=len(df),
+                      last=df["Date"].iloc[-1], label="bls")
 
 
 def build_ecln():
@@ -284,10 +357,12 @@ def build_ecln():
             "DelaiEcoulement", "PrixM2_Collectif", "Resa_Sociaux", "Resa_Institutionnels"]
     df = pd.DataFrame(sorted(recs.values(), key=lambda x: x["Date"]))
     df = df.reindex(columns=cols)
+    if df.empty:
+        raise ValueError("commercialisation neuf (ECLN) vide")
     df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
     path = os.path.join(OUT_DIR, "ecln-commercialisation-neuf.csv")
-    df.to_csv(path, index=False, encoding="utf-8")
-    print(f"ecln -> {path} ({len(df)} trimestres, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+    _write_if_changed(path, df.to_csv(index=False), rows=len(df),
+                      last=df["Date"].iloc[-1], label="ecln")
 
 
 def _write_single_series(series, column, filename, label):
@@ -295,9 +370,11 @@ def _write_single_series(series, column, filename, label):
     df = series.rename(column).reset_index()
     df.columns = ["Date", column]
     df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
+    if df.empty:
+        raise ValueError(f"série vide ({column})")
     path = os.path.join(OUT_DIR, filename)
-    df.to_csv(path, index=False, encoding="utf-8")
-    print(f"{label} -> {path} ({len(df)} points, {df['Date'].iloc[0]} -> {df['Date'].iloc[-1]})")
+    _write_if_changed(path, df.to_csv(index=False), rows=len(df),
+                      last=df["Date"].iloc[-1], label=label)
 
 
 def build_renovation():
@@ -321,7 +398,7 @@ def build_renovation():
         _write_single_series(s_act, "Reno_Activite_Batiment",
                              "reno-activite-batiment.csv", "reno-activite")
     except Exception as e:
-        print(f"  reno-activite -> SKIPPED ({e.__class__.__name__}: {e})")
+        _record_failure("reno-activite", e)
 
     # (2) Second-œuvre PLANNED activity (CVS, monthly 1975+) — leading indicator.
     try:
@@ -329,34 +406,86 @@ def build_renovation():
         _write_single_series(s_prev, "Reno_Activite_Prevue",
                              "reno-activite-prevue.csv", "reno-prevue")
     except Exception as e:
-        print(f"  reno-prevue -> SKIPPED ({e.__class__.__name__}: {e})")
+        _record_failure("reno-prevue", e)
 
     # Possible future enrichment (volume): MaPrimeRénov' / éco-PTZ (ANAH, data.gouv/DiDo).
     # A clean national monthly time series is not straightforward via API — deferred.
 
 
-if __name__ == "__main__":
-    # Every real source file, one builder each. Failure-isolated: an API being down
-    # skips that source (the app keeps serving the previous CSV) and the rest refresh.
-    builders = [
-        build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
-        build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)
-        build_macro_core,       # confiance, taux crédit, Euribor, OAT, intentions, chômage
-        build_prices,           # indices Notaires-INSEE (ancien)
-        build_neuf_price,       # indice prix logements neufs
-        build_credit_volume,    # production de crédits à l'habitat (MIR)
-        build_credit_demand_bls,  # demande de crédits (BLS)
-        build_ecln,             # commercialisation des logements neufs
-        build_renovation,       # activité second œuvre passée / prévue
-    ]
-    failed = []
-    for b in builders:
+# Every real source file, one builder each. Failure-isolated: an API being down skips
+# that source (the app keeps serving the previous CSV) and the rest refresh.
+BUILDERS = [
+    build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
+    build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)
+    build_macro_core,       # confiance, taux crédit, Euribor, OAT, intentions, chômage
+    build_prices,           # indices Notaires-INSEE (ancien)
+    build_neuf_price,       # indice prix logements neufs
+    build_credit_volume,    # production de crédits à l'habitat (MIR)
+    build_credit_demand_bls,  # demande de crédits (BLS)
+    build_ecln,             # commercialisation des logements neufs
+    build_renovation,       # activité second œuvre passée / prévue
+]
+
+
+def _write_manifest():
+    """Persist the provenance manifest (data/_manifest.json) — per file: changed?, last
+    observation, short content hash, fetch timestamp; plus any per-source failures. Lets
+    the app show data freshness without re-reading every CSV, and flags a stale source."""
+    os.makedirs(DATA_DIR, exist_ok=True)
+    manifest = {"generated_at": _now_iso(),
+                "files": dict(sorted(_MANIFEST.items())),
+                "failures": _FAILURES}
+    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, ensure_ascii=False, indent=2)
+    print(f"manifeste -> {MANIFEST_PATH}")
+
+
+def refresh_ventes_ancien():
+    """Rebuild data/ventes_ancien.csv from the freshly fetched IGEDD workbook. The app does
+    this lazily on start (ensure_ventes_ancien is mtime-aware), but CI has no app run, so it
+    calls this to keep the committed derived series consistent with the committed .xls.
+    Imported lazily so a plain `fetch_new_sources` run needs no pandas-heavy data_manager."""
+    try:
+        from data_manager import DataManager
+        df = DataManager.build_ventes_ancien_from_igedd()
+        os.makedirs(DATA_DIR, exist_ok=True)
+        df.to_csv(os.path.join(DATA_DIR, "ventes_ancien.csv"), index=False, encoding="utf-8")
+        print(f"ventes_ancien -> reconstruit ({len(df)} mois)")
+    except Exception as e:
+        _record_failure("ventes_ancien (rebuild)", e)
+
+
+def refresh_all(parallel=True, max_workers=4, rebuild_derived=True):
+    """Run every builder (failure-isolated), rebuild the derived IGEDD series, and write the
+    manifest. Builders are independent network I/O, so parallel execution turns the wall
+    time from the sum into the max; pass parallel=False to debug one source at a time."""
+    def _run(b):
         try:
             b()
         except Exception as e:
-            failed.append(b.__name__)
-            print(f"{b.__name__} -> ÉCHEC ({e.__class__.__name__}: {e})")
-    if failed:
-        print(f"\nTerminé avec échec(s) : {', '.join(failed)} — les CSV précédents restent en place.")
+            _record_failure(b.__name__, e)
+
+    if parallel:
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            list(ex.map(_run, BUILDERS))
     else:
-        print("\nTerminé : toutes les sources ont été rafraîchies.")
+        for b in BUILDERS:
+            _run(b)
+
+    if rebuild_derived:
+        refresh_ventes_ancien()
+    _write_manifest()
+
+    changed = sorted(f for f, m in _MANIFEST.items() if m.get("changed"))
+    if _FAILURES:
+        print(f"\nTerminé avec échec(s) : {', '.join(x['source'] for x in _FAILURES)} "
+              f"— les CSV précédents restent en place.")
+    print(f"Sources modifiées : {len(changed)}/{len(_MANIFEST)}"
+          + (f" ({', '.join(changed)})" if changed else " — rien de neuf."))
+    return not _FAILURES
+
+
+if __name__ == "__main__":
+    import sys
+    ok = refresh_all(parallel="--sequential" not in sys.argv)
+    sys.exit(0 if ok else 1)

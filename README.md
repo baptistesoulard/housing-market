@@ -28,7 +28,16 @@ L'application s'ouvre sur http://localhost:8501.
 
 ## Données
 
-Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition de **toutes** les sources est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) : `python fetch_new_sources.py` rafraîchit l'intégralité de `data_manual_input/` en une commande (un builder par source, isolé en cas de panne d'API), à l'exception des compilations manuelles `ca-*.csv` / `ventes-*.csv`. L'application, elle, ne fait aucun appel réseau.
+Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition de **toutes** les sources est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) : `python fetch_new_sources.py` rafraîchit l'intégralité de `data_manual_input/` en une commande, à l'exception des compilations manuelles `ca-*.csv` / `ventes-*.csv`. L'application, elle, ne fait aucun appel réseau.
+
+Le script est optimisé pour des mises à jour fréquentes et sûres :
+
+- **Builders parallèles, isolés en cas de panne** — les 9 sources sont téléchargées en concurrence (I/O réseau indépendant) ; une API en panne ne skippe que sa source, les autres se rafraîchissent.
+- **Retry + backoff exponentiel** sur les erreurs réseau transitoires (5xx / resets des API INSEE / BCE / DiDo).
+- **Écriture hash-gardée & atomique** — un fichier n'est réécrit que si son contenu a réellement changé (pas de `mtime` bumpé pour rien → cache app préservé, pas de diff git parasite), via `tmp` + `os.replace` (jamais de CSV tronqué en cas de coupure).
+- **Manifeste de provenance** `data/_manifest.json` (non versionné) : par fichier — changé ?, dernière observation, hash, horodatage — plus les échecs éventuels.
+- **Reconstruction déterministe** de la série dérivée `data/ventes_ancien.csv` après un nouveau classeur IGEDD (`ensure_ventes_ancien` est *mtime-aware*).
+- **Automatisation** — le workflow GitHub Actions [`.github/workflows/refresh-data.yml`](.github/workflows/refresh-data.yml) lance le script chaque lundi (et à la demande) et ne committe que les fichiers réellement modifiés. `python fetch_new_sources.py --sequential` désactive le parallélisme pour déboguer une source.
 
 | Indicateur | Source | Accès |
 |---|---|---|
@@ -59,8 +68,9 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 ### P1 — consolidation
 
 - ✅ **Tests automatisés (résolu 2026-07-16).** `tests/test_logic.py` couvre les invariants clés : reproduction IGEDD (dérive ≤ 12 sur le cumul 12 m), `momentum_metrics`, `calculate_kpis`, `ols`/`scenario`, et `forecast_path` (horizon + report). Standalone ou pytest, comme `tests/test_housing_data.py`.
-- **Métadonnée de provenance** : un `data/_manifest.json` (série → source, dernière date, horodatage du build) affiché dans l'onglet Données Source.
-- **Bouton « Reconstruire la macro »** dans l'onglet Données Source, symétrique des boutons IGEDD / ECLN existants.
+- ✅ **Métadonnée de provenance (résolu 2026-07-30).** `fetch_new_sources.py` écrit `data/_manifest.json` (par fichier : changé ?, dernière observation, hash, horodatage + échecs). Non versionné (artefact régénéré). Reste ouvert : l'afficher dans l'onglet Données & Export.
+- ✅ **Acquisition optimisée & automatisée (2026-07-30).** Builders parallèles, retry/backoff, écriture hash-gardée + atomique (`tmp` + `os.replace`), reconstruction *mtime-aware* de `ventes_ancien.csv`, et workflow GitHub Actions hebdomadaire qui ne committe que les fichiers modifiés.
+- **Bouton « Reconstruire la macro »** dans l'onglet Données & Export, symétrique des boutons IGEDD / ECLN existants.
 - **Loader IGEDD fragile** : indices de colonnes en dur (`DATE_COL=1`, `VALUE_COL=3`, nom de feuille) — à fiabiliser (détection d'en-têtes).
 
 ### P2 — refonte de fond

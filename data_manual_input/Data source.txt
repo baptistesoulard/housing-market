@@ -1,5 +1,7 @@
 === MISE À JOUR (2026-07-18) : `python fetch_new_sources.py` rafraîchit TOUS les fichiers de ce dossier en une commande (chaque source a son builder, isolé en cas de panne d'API), à l'exception des ca-*.csv / ventes-*.csv (compilations manuelles, voir ca-SOURCES.md). L'app ne touche jamais le réseau : elle lit uniquement ces fichiers. ===
 
+=== OPTIMISATION (2026-07-30) : les builders tournent EN PARALLÈLE avec retry+backoff ; chaque fichier n'est RÉÉCRIT QUE si son contenu a changé (écriture atomique tmp+os.replace → le mtime n'est pas touché pour rien, cache app préservé, pas de diff git parasite) ; un manifeste de provenance data/_manifest.json (non versionné) récapitule par fichier changé?/dernière obs/hash/horodatage + échecs ; la série dérivée data/ventes_ancien.csv est reconstruite automatiquement (ensure_ventes_ancien mtime-aware). Automatisation : .github/workflows/refresh-data.yml lance le script chaque lundi et ne committe que les fichiers modifiés. Debug d'une source : `python fetch_new_sources.py --sequential`. ===
+
 
 
 Ventes dans l'ancien : HousingMarket_v3\data_manual_input\nombre-vente-maison-appartement-ancien.xls

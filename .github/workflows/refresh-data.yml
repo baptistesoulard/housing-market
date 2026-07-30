@@ -1,0 +1,44 @@
+name: Refresh data sources
+
+# Rafraîchit automatiquement les sources publiques (INSEE / SDES / BCE / IGEDD) et commite
+# uniquement les fichiers réellement modifiés — l'écriture hash-guardée de fetch_new_sources.py
+# garantit qu'un run « sans nouveauté » ne produit aucun diff. Aucune machine à laisser allumée.
+on:
+  schedule:
+    - cron: "0 6 * * 1"        # tous les lundis 06:00 UTC
+  workflow_dispatch: {}         # déclenchement manuel depuis l'onglet Actions
+
+permissions:
+  contents: write               # nécessaire pour committer/pusher les CSV rafraîchis
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances (acquisition uniquement)
+        run: pip install pandas numpy xlrd
+
+      - name: Rafraîchir toutes les sources
+        run: python fetch_new_sources.py
+
+      - name: Committer les données modifiées (le cas échéant)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data_manual_input data/ventes_ancien.csv
+          if git diff --cached --quiet; then
+            echo "Aucune donnée modifiée — rien à committer."
+          else
+            git commit -m "chore(data): rafraîchissement automatique des sources"
+            git push
+          fi
