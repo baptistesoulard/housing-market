@@ -455,10 +455,29 @@ def refresh_ventes_ancien():
         _record_failure("ventes_ancien (rebuild)", e)
 
 
+def _emit_ci_annotations(total_failure):
+    """Under GitHub Actions, turn per-source failures into workflow annotations so each skip
+    shows up in the run's 'Annotations' column (and the notification email) WITHOUT the whole
+    job going red on a single flaky or IP-blocked API. A total wipe-out is escalated to an
+    error. No-op off CI (detected via the GITHUB_ACTIONS env var GitHub always sets)."""
+    if not os.environ.get("GITHUB_ACTIONS"):
+        return
+    level = "error" if total_failure else "warning"
+    for f in _FAILURES:                              # ::warning::/::error:: -> annotations
+        print(f"::{level} title=Source non rafraichie::{f['source']} - {f['error']}")
+    if total_failure:
+        print("::error title=Refresh data sources::Toutes les sources ont echoue "
+              "(panne reseau ou regression) - aucun fichier ecrit.")
+
+
 def refresh_all(parallel=True, max_workers=4, rebuild_derived=True):
     """Run every builder (failure-isolated), rebuild the derived IGEDD series, and write the
     manifest. Builders are independent network I/O, so parallel execution turns the wall
-    time from the sum into the max; pass parallel=False to debug one source at a time."""
+    time from the sum into the max; pass parallel=False to debug one source at a time.
+
+    Returns True unless it was a TOTAL failure (no file written at all). A partial failure —
+    the common case: one API timing out or blocking the CI runner's IP — returns True so the
+    caller exits 0 and CI still commits the sources that DID refresh."""
     def _run(b):
         try:
             b()
@@ -477,15 +496,19 @@ def refresh_all(parallel=True, max_workers=4, rebuild_derived=True):
     _write_manifest()
 
     changed = sorted(f for f, m in _MANIFEST.items() if m.get("changed"))
+    total_failure = not _MANIFEST and bool(_FAILURES)   # nothing written AND something failed
+    _emit_ci_annotations(total_failure)
     if _FAILURES:
         print(f"\nTerminé avec échec(s) : {', '.join(x['source'] for x in _FAILURES)} "
               f"— les CSV précédents restent en place.")
     print(f"Sources modifiées : {len(changed)}/{len(_MANIFEST)}"
           + (f" ({', '.join(changed)})" if changed else " — rien de neuf."))
-    return not _FAILURES
+    return not total_failure
 
 
 if __name__ == "__main__":
     import sys
     ok = refresh_all(parallel="--sequential" not in sys.argv)
+    # Exit non-zero ONLY on a total failure (every source down). A single flaky/blocked API
+    # must not fail the run — its skip is already surfaced as a manifest failure + CI warning.
     sys.exit(0 if ok else 1)

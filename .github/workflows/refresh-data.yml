@@ -18,6 +18,9 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Garde-fou : un endpoint public qui pend (3 tentatives x 120 s de timeout par source)
+    # ne doit pas bloquer le runner indéfiniment. Large marge au-dessus du run nominal.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
