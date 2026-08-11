@@ -6,6 +6,7 @@ name: Refresh data sources
 on:
   schedule:
     - cron: "0 6 * * 1"        # tous les lundis 06:00 UTC
+    - cron: "0 6 12 8 *"       # TEST ponctuel : 12 août 06:00 UTC (08:00 Paris) — à retirer après vérif
   workflow_dispatch: {}         # déclenchement manuel depuis l'onglet Actions
 
 permissions:
