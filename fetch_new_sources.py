@@ -66,15 +66,20 @@ def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _read_url(url, accept="application/xml", *, tries=3, backoff=2.0):
+def _read_url(url, accept="application/xml", *, tries=3, backoff=2.0, timeout=120):
     """HTTP GET with retry + exponential backoff. The INSEE/BCE/DiDo APIs return the odd
     transient 5xx / reset; a couple of retries turn those into a success instead of a
-    skipped source. Raises the last error only if every attempt fails."""
+    skipped source. Raises the last error only if every attempt fails.
+
+    `timeout` is the per-attempt socket timeout: keep it generous (120 s) for the usually-
+    reliable SDMX/DiDo APIs, but lower it for a host that *intermittently hangs* (cgedd.fr —
+    see build_igedd) so a dead attempt fails fast and a retry gets a fresh connection while
+    the host is responsive, instead of burning the whole attempt on a stalled socket."""
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": accept})
     last = None
     for attempt in range(tries):
         try:
-            return urllib.request.urlopen(req, timeout=120, context=CTX).read()
+            return urllib.request.urlopen(req, timeout=timeout, context=CTX).read()
         except Exception as e:                       # retry ANY transient network error
             last = e
             if attempt < tries - 1:
@@ -82,8 +87,8 @@ def _read_url(url, accept="application/xml", *, tries=3, backoff=2.0):
     raise last
 
 
-def _get(url):
-    return _read_url(url, "application/xml")
+def _get(url, **kw):
+    return _read_url(url, "application/xml", **kw)
 
 
 def _write_if_changed(path, content, *, rows=None, last=None, label=None):
@@ -180,9 +185,16 @@ def build_igedd():
     page 'prix-immobilier-evolution-a-long-terme-a1048' links to it). Saved as-is; the
     derived data/ventes_ancien.csv is then deleted so data_manager.ensure_ventes_ancien
     rebuilds the monthly flows from the fresh workbook on the next app start (or via the
-    in-app « Reconstruire » button)."""
+    in-app « Reconstruire » button).
+
+    cgedd.fr (the legacy CGEDD domain, no gouv.fr mirror for this file) *intermittently
+    hangs* from datacenter IPs — the recurring cause of red CI runs (fine on 08-03, stalled
+    on 08-10 / 08-12). Since it works some minutes and not others, we fail each stalled
+    attempt fast (45 s) and retry more times: better odds of catching a responsive moment,
+    and a total hang wastes ~3 min instead of ~6. A persistent failure is still isolated to
+    a ::warning:: by refresh_all — the previous workbook stays in place (it changes yearly)."""
     url = "https://www.cgedd.fr/nombre-vente-maison-appartement-ancien.xls"
-    raw = _get(url)
+    raw = _get(url, tries=5, timeout=45)
     if not raw.startswith(b"\xd0\xcf\x11\xe0"):     # OLE2 magic: it must be a real .xls
         raise ValueError("le fichier téléchargé n'est pas un classeur .xls (page d'erreur ?)")
     path = os.path.join(OUT_DIR, "nombre-vente-maison-appartement-ancien.xls")
