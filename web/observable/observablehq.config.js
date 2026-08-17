@@ -53,6 +53,8 @@ export default {
     {name: "🧭 Synthèse", path: "/"},
     {name: "🏗️ Marché du neuf", path: "/neuf"},
     {name: "🏠 Marché de l'ancien", path: "/ancien"},
+    {name: "🏦 Environnement & Financement", path: "/macro"},
+    {name: "📰 Actualités & Aides", path: "/actualites"},
   ],
   toc: false,
   pager: false,

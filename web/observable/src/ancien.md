@@ -122,20 +122,24 @@ function accessChart() {
 }
 ```
 
-${px.available && px.new_vs_old.available ? html`
-### Prix des logements neufs vs anciens
-<div class="hm-panels">
-  <div>
-    <div class="hm-panel-title">Indices de prix</div>
-    <div class="hm-panel-sub">neuf & ancien, base 100 = 2015</div>
-    ${multiLine({rows: px.new_vs_old.levels, meta: px.new_vs_old.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)})}
-  </div>
-  <div>
-    <div class="hm-panel-title">Croissance en glissement annuel</div>
-    <div class="hm-panel-sub">neuf & ancien, %</div>
-    ${multiLine({rows: px.new_vs_old.yoy, meta: px.new_vs_old.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
-  </div>
-</div>
-` : ""}
+```js
+// Prix neuf vs ancien (conditionnel) — rendu via display() (évite les blocs inline multi-lignes).
+if (px.available && px.new_vs_old.available) {
+  const nvo = px.new_vs_old;
+  display(html`<h3>Prix des logements neufs vs anciens</h3>`);
+  display(html`<div class="hm-panels">
+    <div>
+      <div class="hm-panel-title">Indices de prix</div>
+      <div class="hm-panel-sub">neuf & ancien, base 100 = 2015</div>
+      ${multiLine({rows: nvo.levels, meta: nvo.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)})}
+    </div>
+    <div>
+      <div class="hm-panel-title">Croissance en glissement annuel</div>
+      <div class="hm-panel-sub">neuf & ancien, %</div>
+      ${multiLine({rows: nvo.yoy, meta: nvo.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
+    </div>
+  </div>`);
+}
+```
 
 <div class="hm-meta">Sources : INSEE (prix Notaires-INSEE) · Banque de France/BCE (taux crédit habitat) · calcul de l'auteur pour la capacité et l'accessibilité.</div>

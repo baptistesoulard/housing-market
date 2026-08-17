@@ -1,0 +1,420 @@
+{
+  "generated_at": "2026-08-17T22:44:08+00:00",
+  "title": "📰 Actualités — aides & plans de relance logement",
+  "caption": "Veille sur les grands dispositifs publics français et européens qui soutiennent (ou freinent) le marché du logement, avec pour chaque mesure : statut, jalons, montants et impact potentiel sur les trois piliers du modèle (neuf, ancien, rénovation).",
+  "maj": "2026-07-16",
+  "kpis": [
+    {
+      "label": "Dispositifs suivis",
+      "value": "8"
+    },
+    {
+      "label": "En vigueur",
+      "value": "6"
+    },
+    {
+      "label": "Budget MaPrimeRénov' 2026",
+      "value": "3,6 Md€"
+    },
+    {
+      "label": "Prochaine échéance",
+      "value": "09/2026",
+      "subs": [
+        "MaPrimeRénov' 2026"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "mpr_2026",
+      "categorie": "FR",
+      "statut": "vigueur",
+      "court": "MaPrimeRénov' 2026",
+      "titre": "MaPrimeRénov' 2026 : budget 3,6 Md€, recentrage sur les rénovations d'ampleur",
+      "resume": "Après une suspension au 1er janvier 2026 (« pas de budget, pas de guichet » faute de loi de finances), MaPrimeRénov' a rouvert avec la LF 2026 : budget de **3,6 Md€**, cible d'au moins **120 000 rénovations d'ampleur** et **150 000 rénovations par geste**, priorité aux passoires thermiques et aux ménages modestes. Réforme présentée au Conseil national de l'habitat le **2 juillet 2026** : suppression prévue en **septembre 2026** de plusieurs forfaits monogestes (poêles biomasse, solaire thermique/hybride hors outre-mer, PAC eau chaude sanitaire).",
+      "montant": "3,6 Md€ (vs 3,4 Md€ en 2025)",
+      "horizon": "0-12 mois",
+      "impacts": {
+        "neuf": 0,
+        "ancien": 0,
+        "renovation": 0
+      },
+      "impact_detail": "Impact **mitigé** pour le second œuvre : le budget global progresse et les rénovations d'ampleur (qui incluent l'isolation et les menuiseries) restent finançables, mais la coupe des monogestes dès septembre 2026 peut provoquer un **pic d'anticipation puis un trou d'air** sur les familles produits concernées — à surveiller dans le pilier rénovation du modèle de ventes.",
+      "echeance": {
+        "date": "01/09/2026",
+        "label": "Suppression prévue des forfaits monogestes ciblés"
+      },
+      "jalons": [
+        {
+          "date": "2026-01-01",
+          "label": "Suspension du guichet (loi spéciale)",
+          "type": "jalon"
+        },
+        {
+          "date": "2026-02-06",
+          "label": "Réouverture avec la LF 2026 (3,6 Md€)",
+          "type": "effet"
+        },
+        {
+          "date": "2026-07-02",
+          "label": "Réforme présentée au CNH",
+          "type": "jalon"
+        },
+        {
+          "date": "2026-09-01",
+          "label": "Suppression prévue des forfaits monogestes ciblés",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Hellio — MaPrimeRénov' 2026",
+          "url": "https://particulier.hellio.com/blog/financement/maprimerenov-2026"
+        },
+        {
+          "label": "LeSiteImmo — réforme juillet 2026",
+          "url": "https://news.lesiteimmo.com/2026/07/01/maprimerenov-travaux-non-finances-reforme-2026/"
+        },
+        {
+          "label": "Zepros Bâti — MPR/DPE/CEE 2026",
+          "url": "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"
+        }
+      ]
+    },
+    {
+      "id": "citizens_energy",
+      "categorie": "EU",
+      "statut": "discussion",
+      "court": "Citizens Energy Package",
+      "titre": "Citizens Energy Package (UE) : factures, précarité énergétique, rénovation",
+      "resume": "Volet complémentaire du plan logement européen, annoncé pour **2026** : un paquet « énergie des citoyens » visant à faire baisser les factures, éradiquer la précarité énergétique et accompagner une transition juste — avec un levier attendu sur la rénovation énergétique des logements des ménages modestes. Contenu législatif précis encore en préparation.",
+      "montant": null,
+      "horizon": "12-36 mois",
+      "impacts": {
+        "neuf": 0,
+        "ancien": 0,
+        "renovation": 1
+      },
+      "impact_detail": "À ce stade un signal plutôt qu'un dispositif : à suivre pour le pilier rénovation (aides européennes ciblées précarité énergétique, possibles co-financements des monogestes que la France recentre par ailleurs).",
+      "echeance": {
+        "date": "31/12/2026",
+        "label": "Présentation attendue courant 2026"
+      },
+      "jalons": [
+        {
+          "date": "2026-12-31",
+          "label": "Présentation attendue courant 2026",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Commission européenne — EAHP",
+          "url": "https://housing.ec.europa.eu/european-affordable-housing-plan_en"
+        },
+        {
+          "label": "Commission — logement abordable",
+          "url": "https://commission.europa.eu/topics/employment-and-social-affairs/affordable-housing_fr"
+        }
+      ]
+    },
+    {
+      "id": "jeanbrun",
+      "categorie": "FR",
+      "statut": "vigueur",
+      "court": "Dispositif Jeanbrun",
+      "titre": "Plan « Relance Logement » & dispositif Jeanbrun (statut du bailleur privé)",
+      "resume": "Cœur du plan gouvernemental « Relance Logement », le dispositif Jeanbrun (du nom du ministre du Logement Vincent Jeanbrun, voté en loi de finances 2026) remplace définitivement le Pinel par un statut du bailleur privé : amortissement annuel du bien déductible des revenus fonciers (jusqu'à 12 000 €/an en location très sociale), engagement locatif de 9 ans, déficit foncier renforcé. Contrairement au Pinel, il s'applique **sans zonage, sur tout le territoire**, au **neuf comme à l'ancien rénové**. Objectifs affichés : 50 000 logements locatifs dès 2026, 400 000 logements construits/an, 2 millions d'ici 2030.",
+      "montant": "≈ 12 k€/an d'amortissement max",
+      "horizon": "6-24 mois",
+      "impacts": {
+        "neuf": 2,
+        "ancien": 1,
+        "renovation": 1
+      },
+      "impact_detail": "Relance directe de la demande d'investissement locatif → soutien aux réservations ECLN puis aux permis SIT@DEL (transmission 12-24 mois, cf. lags de l'onglet Time-Lag). L'éligibilité de l'**ancien rénové** crée un double effet : transactions IGEDD + travaux de second œuvre (menuiseries, fermetures) sur les biens acquis pour être loués.",
+      "echeance": null,
+      "jalons": [
+        {
+          "date": "2026-01-01",
+          "label": "Entrée en vigueur (LF 2026)",
+          "type": "effet"
+        },
+        {
+          "date": "2026-02-06",
+          "label": "Adoption définitive du PLF 2026",
+          "type": "jalon"
+        }
+      ],
+      "sources": [
+        {
+          "label": "info.gouv.fr — Relance logement",
+          "url": "https://www.info.gouv.fr/grand-dossier/relance-logement"
+        },
+        {
+          "label": "Ministère — plan Relance logement",
+          "url": "https://www.ecologie.gouv.fr/dossiers/plan-relance-logement"
+        },
+        {
+          "label": "vie-publique.fr — loi Jeanbrun",
+          "url": "https://www.vie-publique.fr/loi/303813-relance-logement-projet-de-loi-jeanbrun"
+        }
+      ]
+    },
+    {
+      "id": "dpe_2026",
+      "categorie": "FR",
+      "statut": "vigueur",
+      "court": "Réforme DPE",
+      "titre": "Réforme du DPE au 1er janvier 2026 : ~850 000 logements sortent du statut de passoire",
+      "resume": "Au **1er janvier 2026**, le facteur de conversion de l'électricité dans le DPE passe de **2,3 à 1,9** (alignement européen) : environ **850 000 logements chauffés à l'électricité sortent mécaniquement du statut de passoire énergétique** (F/G). Le calendrier de la loi Climat & Résilience reste en vigueur : location interdite pour les G depuis 2025, pour les **F au 1er janvier 2028**, pour les E en 2034. Le DPE collectif est obligatoire pour les copropriétés ≤ 50 lots depuis 2026.",
+      "montant": "Coefficient électricité 2,3 → 1,9",
+      "horizon": "0-24 mois",
+      "impacts": {
+        "neuf": 0,
+        "ancien": 1,
+        "renovation": -1
+      },
+      "impact_detail": "Double lecture : la sortie de 850 000 logements du statut F/G **fluidifie les transactions dans l'ancien** (moins de décotes, moins de ventes contraintes) mais **réduit la pression réglementaire à rénover** ces biens — léger frein pour le pilier rénovation. L'échéance F-2028 maintient toutefois un flux de chantiers obligatoires.",
+      "echeance": {
+        "date": "01/01/2028",
+        "label": "Interdiction de louer les logements F"
+      },
+      "jalons": [
+        {
+          "date": "2026-01-01",
+          "label": "Nouveau coefficient électricité",
+          "type": "effet"
+        },
+        {
+          "date": "2028-01-01",
+          "label": "Interdiction de louer les logements F",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Zepros Bâti — MPR/DPE/CEE 2026",
+          "url": "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"
+        },
+        {
+          "label": "Ministère — le DPE",
+          "url": "https://www.ecologie.gouv.fr/politiques-publiques/diagnostic-performance-energetique-dpe"
+        }
+      ]
+    },
+    {
+      "id": "cee_p6",
+      "categorie": "FR",
+      "statut": "vigueur",
+      "court": "CEE 6e période",
+      "titre": "Certificats d'économies d'énergie : 6e période 2026-2029, obligations relevées",
+      "resume": "La **6e période des CEE** court du **1er janvier 2026 au 31 décembre 2029**, avec un relèvement significatif des obligations d'économies d'énergie imposées aux vendeurs d'énergie. L'accent est mis sur les opérations performantes : isolation, chauffage décarboné, rénovations globales. Ce financement privé compense en partie la contraction des aides budgétaires directes (MaPrimeRénov').",
+      "montant": "P6 : 2026 → 2029",
+      "horizon": "0-48 mois",
+      "impacts": {
+        "neuf": 0,
+        "ancien": 0,
+        "renovation": 2
+      },
+      "impact_detail": "Soutien structurel au pilier rénovation sur 4 ans : primes CEE (et bonifications type « coup de pouce ») directement mobilisables sur les familles second œuvre (isolation, fermetures & menuiseries). Contrepoids au recentrage de MaPrimeRénov' — les deux dispositifs sont cumulables.",
+      "echeance": {
+        "date": "31/12/2029",
+        "label": "Fin de la 6e période"
+      },
+      "jalons": [
+        {
+          "date": "2026-01-01",
+          "label": "Début de la 6e période",
+          "type": "effet"
+        },
+        {
+          "date": "2029-12-31",
+          "label": "Fin de la 6e période",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Ministère — dispositif CEE",
+          "url": "https://www.ecologie.gouv.fr/politiques-publiques/dispositif-certificats-deconomies-denergie"
+        },
+        {
+          "label": "Zepros Bâti — MPR/DPE/CEE 2026",
+          "url": "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"
+        }
+      ]
+    },
+    {
+      "id": "eahp",
+      "categorie": "EU",
+      "statut": "adopte",
+      "court": "Plan logement UE",
+      "titre": "Plan européen pour le logement abordable (EAHP) : 10 Md€ UE, 375 Md€ mobilisés",
+      "resume": "Présenté par la Commission le **16 décembre 2025** — premier plan logement de l'UE. Il prévoit **10 Md€ supplémentaires du budget européen en 2026-2027** et **375 Md€ mobilisés via la BEI et les institutions financières partenaires d'ici 2029** pour la construction et la rénovation abordables. Un **Affordable Housing Act** est attendu en 2026 (dont encadrement des locations de courte durée), ainsi que le **premier sommet européen des chefs d'État sur le logement** et une European Housing Alliance. Résolution de soutien du Parlement européen le 24 mars 2026.",
+      "montant": "10 Md€ (2026-27) + 375 Md€ d'ici 2029",
+      "horizon": "12-48 mois",
+      "impacts": {
+        "neuf": 1,
+        "ancien": 0,
+        "renovation": 1
+      },
+      "impact_detail": "Effet surtout **moyen-long terme** via le financement BEI du logement social/abordable et de la rénovation : renfort potentiel des ventes en bloc aux bailleurs sociaux (visibles dans les réservations ECLN « bailleurs sociaux » de l'onglet Commercialisation Neuf) et des programmes de rénovation du parc social.",
+      "echeance": {
+        "date": "31/12/2026",
+        "label": "Affordable Housing Act + sommet UE attendus en 2026"
+      },
+      "jalons": [
+        {
+          "date": "2025-12-16",
+          "label": "Présentation par la Commission",
+          "type": "effet"
+        },
+        {
+          "date": "2026-03-24",
+          "label": "Résolution du Parlement européen",
+          "type": "jalon"
+        },
+        {
+          "date": "2026-12-31",
+          "label": "Affordable Housing Act + sommet UE attendus en 2026",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Commission européenne — EAHP",
+          "url": "https://housing.ec.europa.eu/european-affordable-housing-plan_en"
+        },
+        {
+          "label": "Euronews — résolution du Parlement",
+          "url": "https://www.euronews.com/my-europe/2026/03/24/eu-parliament-adopts-motion-to-face-europes-housing-crisis"
+        }
+      ]
+    },
+    {
+      "id": "ptz_2026",
+      "categorie": "FR",
+      "statut": "vigueur",
+      "court": "PTZ élargi",
+      "titre": "Prêt à taux zéro élargi : tout le territoire, maison individuelle incluse",
+      "resume": "Depuis le **1er avril 2025**, le PTZ est étendu à **tout le territoire** (fin du zonage) et de nouveau ouvert à la **maison individuelle neuve**. La loi de finances 2026 le maintient et ajuste les plafonds de ressources et de coût d'opération pour solvabiliser davantage de primo-accédants. Le PTZ dans l'ancien reste conditionné à des travaux (≥ 25 % du coût total) en zone détendue. Dispositif prorogé jusqu'à fin 2027.",
+      "montant": "Prorogé jusqu'à fin 2027",
+      "horizon": "3-18 mois",
+      "impacts": {
+        "neuf": 2,
+        "ancien": 1,
+        "renovation": 1
+      },
+      "impact_detail": "Principal levier de solvabilisation des primo-accédants : soutien direct aux ventes de maisons neuves (constructeurs type Hexaom, benchmark CA de l'app) puis aux permis. Le volet « ancien avec travaux » alimente aussi les transactions IGEDD et le second œuvre (25 % de travaux imposés).",
+      "echeance": {
+        "date": "31/12/2027",
+        "label": "Fin de la prorogation actuelle"
+      },
+      "jalons": [
+        {
+          "date": "2025-04-01",
+          "label": "Extension nationale + maison neuve",
+          "type": "effet"
+        },
+        {
+          "date": "2026-01-01",
+          "label": "LF 2026 : plafonds ajustés",
+          "type": "jalon"
+        },
+        {
+          "date": "2027-12-31",
+          "label": "Fin de la prorogation actuelle",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Ministère — accéder à la propriété",
+          "url": "https://www.ecologie.gouv.fr/acceder-propriete"
+        },
+        {
+          "label": "Service-Public — PTZ",
+          "url": "https://www.service-public.fr/particuliers/vosdroits/F10871"
+        }
+      ]
+    },
+    {
+      "id": "donation_neuf",
+      "categorie": "FR",
+      "statut": "vigueur",
+      "court": "Donations exonérées",
+      "titre": "Exonération des dons familiaux pour l'achat neuf ou la rénovation énergétique",
+      "resume": "Depuis le 1er avril 2025 et **jusqu'au 31 décembre 2026**, les dons familiaux (parents, grands-parents, arrière-grands-parents) sont exonérés de droits jusqu'à **100 000 € par donateur** et **300 000 € par bénéficiaire**, s'ils financent l'achat d'un **logement neuf** (résidence principale) ou des **travaux de rénovation énergétique** de la résidence principale.",
+      "montant": "100 k€/donateur, 300 k€/bénéficiaire",
+      "horizon": "0-12 mois — expire fin 2026",
+      "impacts": {
+        "neuf": 1,
+        "ancien": 0,
+        "renovation": 1
+      },
+      "impact_detail": "Apport supplémentaire qui débloque des projets neufs et des chantiers de rénovation. **L'échéance du 31/12/2026 devrait concentrer des ventes et des travaux au S2 2026** (effet d'aubaine avant extinction) — possible sur-performance temporaire des piliers neuf et rénovation, puis contrecoup début 2027.",
+      "echeance": {
+        "date": "31/12/2026",
+        "label": "Fin du dispositif"
+      },
+      "jalons": [
+        {
+          "date": "2025-04-01",
+          "label": "Début de l'exonération",
+          "type": "effet"
+        },
+        {
+          "date": "2026-12-31",
+          "label": "Fin du dispositif",
+          "type": "echeance"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Lamotte — exonération dons familiaux",
+          "url": "https://www.lamotte.fr/conseils/exoneration-dons-familiaux/"
+        },
+        {
+          "label": "Médicis — PLF 2026 & immobilier",
+          "url": "https://www.medicis-patrimoine.com/actualites-immobilier-neuf/marche-de-l-immobilier/2026/02/06/4208-budget-le-plf-adopte-ce-qui-change-ou-pas-pour-l-immobilier.html"
+        }
+      ]
+    }
+  ],
+  "impact_labels": {
+    "2": "⬆⬆ Soutien fort",
+    "1": "⬆ Soutien",
+    "0": "➖ Neutre / mitigé",
+    "-1": "⬇ Frein",
+    "-2": "⬇⬇ Frein fort"
+  },
+  "pilier_labels": {
+    "neuf": "🏗️ Neuf (permis & ventes)",
+    "ancien": "🏠 Ancien (transactions)",
+    "renovation": "🛠️ Rénovation (second œuvre)"
+  },
+  "statut_labels": {
+    "vigueur": "✅ En vigueur",
+    "adopte": "🗳️ Adopté / en déploiement",
+    "discussion": "🔄 En discussion / annoncé"
+  },
+  "category_labels": {
+    "FR": "🇫🇷 France",
+    "EU": "🇪🇺 Union européenne"
+  },
+  "jalon_types": {
+    "effet": {
+      "label": "Entrée en vigueur",
+      "symbol": "circle"
+    },
+    "jalon": {
+      "label": "Jalon",
+      "symbol": "diamond"
+    },
+    "echeance": {
+      "label": "Échéance / attendu",
+      "symbol": "x"
+    }
+  }
+}
