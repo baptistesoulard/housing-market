@@ -7,59 +7,6 @@ toc: false
 const data = await FileAttachment("./data/synthese.json").json();
 ```
 
-<style>
-/* --- Typo & thème alignés sur l'app Streamlit (Calibri / Segoe UI, accent brique) --- */
-:root {
-  --sans-serif: Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --serif: Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --hm-brick: #E64A19;
-  --hm-ink: #2D3748;
-}
-body { font-family: var(--sans-serif); color: var(--hm-ink); background: #FFFFFF; }
-h1, h2, h3, h4 { font-family: var(--sans-serif); color: var(--hm-ink); }
-h1 { font-weight: 700; border-bottom: 2px solid var(--hm-brick); padding-bottom: 8px; margin-bottom: 0.15rem; }
-a, a:visited { color: #1E88E5; }
-
-/* Titres de section (Activité, Financement…) : 2ᵉ niveau net, avec filet de séparation. */
-main h3 {
-  font-size: 1.35rem; font-weight: 700; color: var(--hm-ink);
-  margin-top: 2.6rem; margin-bottom: 0.6rem;
-  padding-bottom: 0.35rem; border-bottom: 1px solid #E7E9ED;
-}
-
-.hm-caption { color: var(--theme-foreground-muted); font-size: 0.92rem; max-width: 62rem; margin: 0.2rem 0 1rem; }
-.hm-chips { margin: 0.4rem 0 1.2rem; }
-.hm-takeaways {
-  background: color-mix(in srgb, #64B5F6 12%, transparent);
-  border-left: 4px solid #64B5F6;
-  border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.6rem 0 1rem; max-width: 62rem;
-}
-.hm-takeaways ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
-.hm-takeaways li { margin: 0.35rem 0; line-height: 1.5; }
-.hm-meta { color: var(--theme-foreground-muted); font-size: 0.85rem; margin: 0.4rem 0 0.2rem; }
-.hm-grid {
-  display: grid; gap: 2.1rem 1.6rem; margin: 1rem 0 0.6rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-}
-.hm-card {
-  padding: 0.15rem 0; background: transparent; border: none;
-}
-/* Libellé de carte (3ᵉ niveau) : discret pour laisser le chiffre dominer. */
-.hm-card-title { font-weight: 600; font-size: 0.86rem; color: #4A5568; letter-spacing: 0.2px; }
-.hm-card-value { font-size: 1.6rem; font-weight: 700; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.1; }
-.hm-card-sub { font-size: 0.8rem; color: var(--theme-foreground-muted); line-height: 1.45; }
-.hm-link { color: var(--theme-foreground-muted); font-size: 0.83rem; margin: 0.5rem 0 2rem; }
-.hm-panels { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
-.hm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin: 0.6rem 0 0.1rem; }
-.hm-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;
-  font-size: 0.9rem; user-select: none; }
-.hm-legend-item.off { opacity: 0.4; text-decoration: line-through; }
-.hm-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
-.hm-panel-title { font-weight: 600; font-size: 0.95rem; color: var(--hm-ink); margin-bottom: 0.2rem; }
-details.hm-howto { margin: 0.2rem 0 0.8rem; max-width: 62rem; }
-details.hm-howto summary { cursor: pointer; color: var(--theme-foreground-muted); }
-</style>
-
 ```js
 // --- Rendu des pastilles par pilier ------------------------------------------------
 function chip(p) {

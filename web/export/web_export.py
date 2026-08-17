@@ -45,7 +45,13 @@ COLOR_GREEN = "#388E3C"
 _FR_MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin",
               "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 
-OUT_PATH = os.path.join(_REPO_ROOT, "web", "observable", "src", "data", "synthese.json")
+DATA_DIR = os.path.join(_REPO_ROOT, "web", "observable", "src", "data")
+OUT_PATH = os.path.join(DATA_DIR, "synthese.json")
+
+# Palette étendue (miroir d'app.py) pour les onglets Neuf/Ancien.
+COLOR_BLUE = "#64B5F6"
+COLOR_TERRACOTTA = "#C1694F"
+COLOR_SUNFLOWER = "#F5B041"
 
 
 # ============================ helpers de formatage ================================
@@ -105,17 +111,37 @@ def _borrow_capacity_factor(rate_pct, years):
         return np.where(i > 0, (1.0 - (1.0 + i) ** (-n)) / i, float(n))
 
 
-# ============================ construction du payload =============================
-def build_payload() -> dict:
+# ============================ chargement partagé des frames =======================
+def load_frames() -> dict:
+    """Charge les 7 datasets une seule fois (réutilisé par tous les builders d'onglets)."""
     dm = DataManager()
     dm.load_or_generate_all()
     (df_sitadel, df_ventes_ancien, df_macro, df_sales,
      df_revenue, df_ecln, df_company_sales) = dm.read_frames()
+    return {"sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
+            "sales": df_sales, "revenue": df_revenue, "ecln": df_ecln,
+            "company_sales": df_company_sales}
 
-    df_sitadel_full = df_sitadel
-    df_ventes_ancien_full = df_ventes_ancien
-    df_macro_full = df_macro
-    df_ecln_full = df_ecln
+
+def _rows_from(df, mapping, date_col="Date"):
+    """Sérialise un DataFrame en liste de dicts {date: 'YYYY-MM-DD', **mapping} en
+    ignorant les valeurs NaN (mapping = {json_key: df_col})."""
+    out = []
+    for _, r in df.sort_values(date_col).iterrows():
+        row = {"date": pd.Timestamp(r[date_col]).strftime("%Y-%m-%d")}
+        for k, col in mapping.items():
+            v = r.get(col)
+            row[k] = None if (v is None or pd.isna(v)) else float(v)
+        out.append(row)
+    return out
+
+
+# ============================ construction du payload =============================
+def build_synthese(frames: dict) -> dict:
+    df_sitadel_full = frames["sitadel"]
+    df_ventes_ancien_full = frames["ventes_ancien"]
+    df_macro_full = frames["macro"]
+    df_ecln_full = frames["ecln"]
 
     # --- Momentum & niveaux 12 m (indépendants de tout filtre, comme dans app.py) ---
     sit = ana.aggregate_sitadel(df_sitadel_full)
@@ -403,14 +429,249 @@ def build_payload() -> dict:
     }
 
 
+def _yoy_kpi(kpis, mom, label, month_label):
+    """Carte KPI d'un onglet marché (miroir des st.metric d'app.py)."""
+    return {
+        "label": label,
+        "value": _th(kpis["current_12m"]),
+        "delta": _pct_fr(kpis["yoy_12m_pct"]) + " YoY",
+        "subs": [
+            f"Mensuel : {_th(kpis['current_val'])} ({_pct_fr(kpis['yoy_monthly_pct'])} YoY)",
+            "3 derniers mois vs n-1 : " + (_pct_fr(mom.get("last3_yoy")) if mom.get("last3_yoy") is not None else "—"),
+            f"Dernier mois disponible : {month_label}",
+        ],
+    }
+
+
+def build_neuf(frames: dict) -> dict:
+    df_sitadel_full = frames["sitadel"]
+    df_ecln = frames["ecln"]
+
+    # --- Série principale SIT@DEL (national, tous types) : brut + 12M + 6M -------------
+    agg = ana.aggregate_sitadel(df_sitadel_full)
+    roll = ana.calculate_rolling_12m(agg, ["Permis", "MisesEnChantier"])
+    roll = ana.calculate_rolling(roll, ["Permis", "MisesEnChantier"], 6)
+    series_meta = [
+        {"key": "permis", "name": "Permis de Construire", "color": COLOR_BRICK, "dash": None,
+         "raw": "Permis", "r12": "Permis_12M", "r6": "Permis_6M"},
+        {"key": "mises", "name": "Mises en Chantier", "color": COLOR_TEXT, "dash": "dash",
+         "raw": "MisesEnChantier", "r12": "MisesEnChantier_12M", "r6": "MisesEnChantier_6M"},
+    ]
+    main_rows = []
+    for m in series_meta:
+        sub = roll[["Date", m["raw"], m["r12"], m["r6"]]].dropna(subset=[m["raw"]])
+        for _, r in sub.iterrows():
+            main_rows.append({
+                "date": r["Date"].strftime("%Y-%m-%d"), "series": m["name"], "key": m["key"],
+                "raw": round(float(r[m["raw"]]), 3),
+                "roll12": None if pd.isna(r[m["r12"]]) else round(float(r[m["r12"]]), 3),
+                "roll6": None if pd.isna(r[m["r6"]]) else round(float(r[m["r6"]]), 3)})
+
+    # --- KPIs (national plein, dernier mois) ------------------------------------------
+    kpi_permis = ana.calculate_kpis(roll, "Permis")
+    kpi_mises = ana.calculate_kpis(roll, "MisesEnChantier")
+    mom_permis = ana.momentum_metrics(agg, "Permis")
+    mom_mises = ana.momentum_metrics(agg, "MisesEnChantier")
+    _sit_month = _fmt_month_year(_last_valid_date(roll, "Permis"))
+    kpis = [
+        _yoy_kpi(kpi_permis, mom_permis, "Permis de Construire (Cumul 12m glissant)", _sit_month),
+        _yoy_kpi(kpi_mises, mom_mises, "Mises en Chantier (Cumul 12m glissant)", _sit_month),
+    ]
+    if df_ecln is not None and not df_ecln.empty:
+        ke = df_ecln.dropna(subset=["Reservations"]).sort_values("Date")
+        if not ke.empty:
+            yoy = ((float(ke["Reservations"].iloc[-1]) / float(ke["Reservations"].iloc[-5]) - 1) * 100
+                   if len(ke) >= 5 else None)
+            kd = ke["Date"].iloc[-1]
+            kpis.append({
+                "label": "Réservations particuliers ECLN (trimestre)",
+                "value": _th(ke["Reservations"].iloc[-1]),
+                "delta": (_pct_fr(yoy) + " YoY") if yoy is not None else "",
+                "subs": ["Trimestre vs même trimestre n-1",
+                         f"Dernier trimestre disponible : {kd.year}-T{(kd.month - 1) // 3 + 1}"]})
+
+    # --- Individuel vs collectif -------------------------------------------------------
+    iv_groups = [
+        ("Maison individuelle pure", ana.SITADEL_INDIVIDUEL_PUR, COLOR_BRICK),
+        ("Individuel total (pur + groupé)", ana.SITADEL_INDIVIDUEL, COLOR_TERRACOTTA),
+        ("Collectif", ana.SITADEL_COLLECTIF, COLOR_BLUE),
+    ]
+    iv = {}
+    for metric in ("MisesEnChantier", "Permis"):
+        g_kpis, g_lines = [], []
+        for lbl, types, clr in iv_groups:
+            g_agg = ana.aggregate_sitadel(df_sitadel_full, types)
+            g_roll = ana.calculate_rolling_12m(g_agg, [metric])
+            v12 = g_roll[f"{metric}_12M"].dropna()
+            g_mom = ana.momentum_metrics(g_agg, metric)
+            g_kpis.append({"label": lbl, "color": clr,
+                           "val12": _th(v12.iloc[-1]) if not v12.empty else "—",
+                           "roll12_yoy": _pct_fr(g_mom["roll12_yoy"]) if g_mom["roll12_yoy"] is not None else None,
+                           "last3_yoy": _pct_fr(g_mom["last3_yoy"]) if g_mom["last3_yoy"] is not None else "—"})
+            # Courbes : seulement individuel pur + collectif (comme app.py).
+            if types in (ana.SITADEL_INDIVIDUEL_PUR, ana.SITADEL_COLLECTIF):
+                for _, r in g_roll[["Date", f"{metric}_12M"]].dropna().iterrows():
+                    g_lines.append({"date": r["Date"].strftime("%Y-%m-%d"), "series": lbl,
+                                    "color": clr, "value_k": round(float(r[f"{metric}_12M"]) / 1000.0, 2)})
+        iv[metric] = {"kpis": g_kpis, "lines": g_lines}
+
+    # --- Comparaison mensuelle par année ----------------------------------------------
+    monthly_rows = _rows_from(agg, {"permis": "Permis", "mises": "MisesEnChantier"})
+    last_month_num = int(pd.Timestamp(agg["Date"].max()).month) if not agg.empty else 12
+
+    # --- ECLN --------------------------------------------------------------------------
+    ecln = None
+    if df_ecln is not None and not df_ecln.empty:
+        e = df_ecln.dropna(subset=["Reservations"]).sort_values("Date").copy()
+        e["DelaiMois"] = e["DelaiEcoulement"] * 3.0
+        last = e.iloc[-1]
+        lastq = f"{last['Date'].year}-T{(last['Date'].month - 1) // 3 + 1}"
+        eb = df_ecln.dropna(subset=["Resa_Sociaux"]).sort_values("Date")
+        ecln = {
+            "last_quarter": lastq,
+            "kpis": [
+                {"label": "Réservations particuliers (trim.)", "value": _th(last["Reservations"])},
+                {"label": "Mises en vente (trim.)", "value": _th(last["MisesEnVente"])},
+                {"label": "Encours à la vente", "value": _th(last["Encours"])},
+                {"label": "Délai d'écoulement", "value": f"{last['DelaiMois']:.0f} mois"},
+            ],
+            "stock_rows": _rows_from(e, {"encours": "Encours", "mises_en_vente": "MisesEnVente"}),
+            "delai_rows": _rows_from(e, {"delai_mois": "DelaiMois"}),
+            "cat_rows": _rows_from(eb, {"particuliers": "Reservations", "sociaux": "Resa_Sociaux",
+                                        "institutionnels": "Resa_Institutionnels"}),
+            "prixm2_rows": _rows_from(e.dropna(subset=["PrixM2_Collectif"]), {"prix": "PrixM2_Collectif"}),
+        }
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "title": "🏗️ Marché du neuf — de l'autorisation à la vente",
+        "caption": ("Le tunnel du logement neuf au niveau national : permis de construire et mises "
+                    "en chantier (SIT@DEL), dynamique individuel vs collectif, puis commercialisation "
+                    "des logements neufs (ECLN)."),
+        "kpis": kpis,
+        "main_series": {"meta": [{"key": m["key"], "name": m["name"], "color": m["color"], "dash": m["dash"]}
+                                 for m in series_meta],
+                        "rows": main_rows, "last_month": _fmt_month_year(_last_valid_date(roll, "Permis")),
+                        "source": "Source : SIT@DEL (SDES)"},
+        "indiv_collectif": iv,
+        "monthly": {"rows": monthly_rows, "last_month_num": last_month_num,
+                    "metrics": [{"key": "permis", "name": "Permis de Construire"},
+                                {"key": "mises", "name": "Mises en Chantier"}]},
+        "ecln": ecln,
+    }
+
+
+def build_ancien(frames: dict) -> dict:
+    df_va_full = frames["ventes_ancien"]
+    df_macro = frames["macro"]
+
+    agg = ana.aggregate_ventes_ancien(df_va_full)
+    roll = ana.calculate_rolling_12m(agg, ["Transactions"])
+    roll = ana.calculate_rolling(roll, ["Transactions"], 6)
+    kpi_tx = ana.calculate_kpis(roll, "Transactions")
+    mom_tx = ana.momentum_metrics(agg, "Transactions")
+    tx_month = _fmt_month_year(_last_valid_date(roll, "Transactions"))
+
+    main_rows = []
+    for _, r in roll[["Date", "Transactions", "Transactions_12M", "Transactions_6M"]].dropna(subset=["Transactions"]).iterrows():
+        main_rows.append({"date": r["Date"].strftime("%Y-%m-%d"), "series": "Transactions Ancien", "key": "tx",
+                          "raw": round(float(r["Transactions"]), 3),
+                          "roll12": None if pd.isna(r["Transactions_12M"]) else round(float(r["Transactions_12M"]), 3),
+                          "roll6": None if pd.isna(r["Transactions_6M"]) else round(float(r["Transactions_6M"]), 3)})
+
+    monthly_rows = _rows_from(agg, {"tx": "Transactions"})
+    last_month_num = int(pd.Timestamp(agg["Date"].max()).month) if not agg.empty else 12
+
+    # --- Prix & accessibilité ----------------------------------------------------------
+    prix = {"available": False}
+    if "Prix_Ancien_Ensemble" in df_macro.columns and not df_macro["Prix_Ancien_Ensemble"].dropna().empty:
+        labels = {"Prix_Ancien_Ensemble": "Ensemble", "Prix_Ancien_Appartements": "Appartements",
+                  "Prix_Ancien_Maisons": "Maisons"}
+        colors = {"Prix_Ancien_Ensemble": COLOR_BRICK, "Prix_Ancien_Appartements": COLOR_BLUE,
+                  "Prix_Ancien_Maisons": COLOR_GREEN}
+        cols = [c for c in labels if c in df_macro.columns]
+
+        def _long(colmap, yoy=False):
+            """Séries en format long, un dropna PAR série puis pct_change(4)=1 an si yoy."""
+            rows = []
+            for key, (col, name) in colmap.items():
+                s = df_macro.dropna(subset=[col]).sort_values("Date")
+                vals = (s[col].pct_change(4) * 100) if yoy else s[col]
+                for d, v in zip(s["Date"], vals):
+                    if pd.notna(v):
+                        rows.append({"date": pd.Timestamp(d).strftime("%Y-%m-%d"),
+                                     "series": name, "key": key, "value": round(float(v), 3)})
+            return rows
+
+        p_kpis = []
+        for c in cols:
+            s = df_macro.dropna(subset=[c])
+            if len(s) >= 5:
+                last, prev = float(s[c].iloc[-1]), float(s[c].iloc[-5])
+                p_kpis.append({"label": labels[c], "color": colors[c],
+                               "value": f"{last:.1f}".replace(".", ","),
+                               "yoy": _pct_fr((last / prev - 1) * 100)})
+        last_date = df_macro.dropna(subset=["Prix_Ancien_Ensemble"])["Date"].iloc[-1]
+        _pmap = {labels[c].lower(): (c, labels[c]) for c in cols}
+        levels = _long(_pmap)
+        yoy = _long(_pmap, yoy=True)
+
+        # Capacité d'emprunt & accessibilité, pour 25 et 20 ans (base 100 = 2015).
+        cap = {}
+        full = df_macro.dropna(subset=["Credit_Logement_Taux_Interet"]).copy()
+        acc_base = df_macro.dropna(subset=["Credit_Logement_Taux_Interet", "Prix_Ancien_Ensemble"]).copy()
+        for term in (25, 20):
+            cap15 = _borrow_capacity_factor(
+                full.loc[full["Date"].dt.year == 2015, "Credit_Logement_Taux_Interet"], term).mean()
+            if not (cap15 and cap15 > 0):
+                cap15 = _borrow_capacity_factor(full["Credit_Logement_Taux_Interet"].iloc[:1], term)[0]
+            a = acc_base.copy()
+            a["_capidx"] = _borrow_capacity_factor(a["Credit_Logement_Taux_Interet"], term) / cap15 * 100
+            a["_access"] = a["_capidx"] / a["Prix_Ancien_Ensemble"] * 100
+            cap[str(term)] = _rows_from(a, {"capidx": "_capidx", "prix": "Prix_Ancien_Ensemble", "access": "_access"})
+
+        new_vs_old = {"available": False}
+        if "Prix_Neuf" in df_macro.columns and df_macro["Prix_Neuf"].notna().any():
+            _nmap = {"neuf": ("Prix_Neuf", "Neuf"), "ancien": ("Prix_Ancien_Ensemble", "Ancien")}
+            new_vs_old = {"available": True, "levels": _long(_nmap), "yoy": _long(_nmap, yoy=True),
+                          "series_meta": [{"key": "neuf", "name": "Neuf", "color": COLOR_BLUE},
+                                          {"key": "ancien", "name": "Ancien", "color": COLOR_BRICK}]}
+
+        prix = {"available": True, "kpis": p_kpis,
+                "last_date": pd.Timestamp(last_date).strftime("%Y-%m"),
+                "price_levels": levels, "price_yoy": yoy, "capacity": cap, "new_vs_old": new_vs_old,
+                "series_meta": [{"key": labels[c].lower(), "name": labels[c], "color": colors[c]} for c in cols]}
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
+        "caption": ("Le marché des logements anciens au niveau national : volumes de transactions "
+                    "(IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité."),
+        "kpi": _yoy_kpi(kpi_tx, mom_tx, "Ventes anciennes IGEDD (Cumul 12m glissant)", tx_month),
+        "main_series": {"meta": [{"key": "tx", "name": "Transactions Ancien", "color": COLOR_GREEN, "dash": None}],
+                        "rows": main_rows, "last_month": tx_month, "source": "Source : IGEDD"},
+        "monthly": {"rows": monthly_rows, "last_month_num": last_month_num},
+        "prix": prix,
+    }
+
+
+def _last_valid_date(df, col, date_col="Date"):
+    valid = df.dropna(subset=[col])
+    return valid[date_col].max() if not valid.empty else pd.NaT
+
+
+_BUILDERS = {"synthese": build_synthese, "neuf": build_neuf, "ancien": build_ancien}
+
+
 def main():
-    payload = build_payload()
-    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-    print(f"[web_export] écrit {OUT_PATH} "
-          f"({len(payload['chart']['rows'])} points de graphique, "
-          f"{sum(len(b['cards']) for b in payload['blocks'])} cartes)")
+    os.makedirs(DATA_DIR, exist_ok=True)
+    frames = load_frames()
+    for name, builder in _BUILDERS.items():
+        payload = builder(frames)
+        path = os.path.join(DATA_DIR, f"{name}.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        print(f"[web_export] écrit {name}.json")
 
 
 if __name__ == "__main__":
