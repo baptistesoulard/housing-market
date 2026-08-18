@@ -145,6 +145,32 @@ _MACRO_OPTIONAL = [
 ]
 
 
+def _sitadel_macro_sources():
+    """Every manual-input file generate_sitadel_and_macro() reads: the SIT@DEL CSV plus
+    each macro series (deduplicated — one CSV can carry several columns)."""
+    paths = {SITADEL_MANUAL_CSV}
+    paths.update(path for path, _ in _MACRO_REQUIRED + _MACRO_OPTIONAL)
+    return sorted(paths)
+
+
+def sitadel_macro_is_stale(sitadel_csv, macro_csv):
+    """True when data/sitadel.csv or data/macro.csv is missing, or older than any of the
+    manual-input sources it was derived from.
+
+    These two caches are the only ones that used to be built once and never invalidated,
+    while ventes_ancien / sales / ecln / revenue are all mtime-aware. The weekly refresh
+    (fetch_new_sources.py + the GitHub Actions workflow) rewrites data_manual_input/ but
+    commits neither derived file, so without this check the app kept serving the stale
+    committed CSVs and silently dropped the newest month of every macro series.
+    """
+    for cache in (sitadel_csv, macro_csv):
+        if not os.path.exists(cache):
+            return True
+    oldest_cache = min(os.path.getmtime(sitadel_csv), os.path.getmtime(macro_csv))
+    return any(os.path.getmtime(src) > oldest_cache
+               for src in _sitadel_macro_sources() if os.path.exists(src))
+
+
 def build_macro_from_files(date_range):
     """
     Build the national macro dataframe [Date, Insee_Confiance_Menages,
@@ -168,9 +194,14 @@ def build_macro_from_files(date_range):
     for path, col in _MACRO_REQUIRED:
         out[col] = _load(path, col).to_numpy()   # missing file -> FileNotFoundError
     for path, col in _MACRO_OPTIONAL:
+        # An OPTIONAL series stays NaN when it cannot be read — whether the file is
+        # absent (FileNotFoundError) or present but no longer exposes the column
+        # (KeyError). The latter is real: these CSVs are refreshed weekly from the
+        # INSEE / BCE / DiDo APIs, so an upstream rename or dropped column must
+        # degrade to a gap in one chart, never crash the whole data build at startup.
         try:
             out[col] = _load(path, col).to_numpy()
-        except FileNotFoundError:
+        except (FileNotFoundError, KeyError):
             out[col] = np.nan
     return pd.DataFrame(out)
 
@@ -362,9 +393,12 @@ class DataManager:
         self.ensure_ventes_ancien(force_rebuild=force_regenerate)
         df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
 
-        # 2. Real SIT@DEL + macro, generated & cached together.
-        if not (os.path.exists(self.paths["sitadel"]) and os.path.exists(self.paths["macro"])) \
-                or force_regenerate:
+        # 2. Real SIT@DEL + macro, generated & cached together. Rebuilt when forced,
+        #    missing, OR stale relative to any manual-input source — same mtime-aware
+        #    contract as ventes_ancien / sales / ecln / revenue, so a data refresh
+        #    actually propagates instead of leaving the committed CSVs a month behind.
+        if force_regenerate or sitadel_macro_is_stale(self.paths["sitadel"],
+                                                      self.paths["macro"]):
             df_sitadel, df_macro = generate_sitadel_and_macro()
             df_sitadel.to_csv(self.paths["sitadel"], index=False, encoding="utf-8")
             df_macro.to_csv(self.paths["macro"], index=False, encoding="utf-8")
