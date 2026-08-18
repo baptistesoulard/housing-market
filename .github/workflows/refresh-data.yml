@@ -34,11 +34,21 @@ jobs:
       - name: Rafraîchir toutes les sources
         run: python fetch_new_sources.py
 
+      # Sans cette étape les JSON du front resteraient figés à leur dernier export
+      # manuel pendant que data_manual_input/ continue d'avancer. web_export.py passe
+      # par DataManager.load_or_generate_all(), qui reconstruit d'abord les CSV dérivés
+      # (sitadel / macro / sales) depuis les sources fraîchement écrites — aucune
+      # dépendance en plus de pandas + numpy déjà installés ci-dessus.
+      # Ignorée si l'étape précédente est sortie en erreur, c'est-à-dire uniquement
+      # quand TOUTES les sources ont échoué : rien de neuf à exporter dans ce cas.
+      - name: Régénérer les données du front web
+        run: python web/export/web_export.py
+
       - name: Committer les données modifiées (le cas échéant)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data_manual_input data/ventes_ancien.csv
+          git add data_manual_input data/ventes_ancien.csv web/observable/src/data
           if git diff --cached --quiet; then
             echo "Aucune donnée modifiée — rien à committer."
           else

@@ -792,15 +792,54 @@ _BUILDERS = {"synthese": build_synthese, "neuf": build_neuf, "ancien": build_anc
              "macro": build_macro, "actualites": build_actualites}
 
 
+def _payload_without_timestamp(payload):
+    """Le payload privé de son horodatage — la partie qui décide s'il a vraiment changé."""
+    return {k: v for k, v in payload.items() if k != "generated_at"}
+
+
+def _write_if_changed(path, payload):
+    """Écrit le JSON uniquement si son contenu a réellement changé, `generated_at` exclu
+    de la comparaison.
+
+    `generated_at` étant l'horloge murale, une écriture inconditionnelle produirait un
+    diff sur les 5 fichiers à CHAQUE passage, y compris quand aucune donnée n'a bougé —
+    le refresh hebdomadaire committerait donc du bruit toutes les semaines. Même
+    garde-fou que _write_if_changed dans fetch_new_sources.py, avec la même conséquence
+    utile : « Généré le » affiché par le front date de la dernière évolution réelle des
+    données, pas de la dernière exécution du script. Renvoie True si le fichier a été
+    (ré)écrit."""
+    text = json.dumps(payload, ensure_ascii=False, indent=2)
+    if os.path.exists(path):
+        try:
+            with open(path, encoding="utf-8") as f:
+                old = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            old = None                      # illisible / tronqué -> on réécrit
+        if old is not None:
+            # Comparer le payload APRÈS un aller-retour JSON : la sérialisation convertit
+            # les clés non-str en str (impact_labels est indexé par des int), si bien que
+            # l'objet Python et sa relecture ne sont jamais égaux tels quels — sans cela
+            # actualites.json serait réécrit à chaque passage.
+            if _payload_without_timestamp(old) == _payload_without_timestamp(json.loads(text)):
+                return False
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    return True
+
+
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
     frames = load_frames()
+    changed = []
     for name, builder in _BUILDERS.items():
-        payload = builder(frames)
         path = os.path.join(DATA_DIR, f"{name}.json")
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(payload, f, ensure_ascii=False, indent=2)
-        print(f"[web_export] écrit {name}.json")
+        if _write_if_changed(path, builder(frames)):
+            changed.append(name)
+            print(f"[web_export] écrit {name}.json")
+        else:
+            print(f"[web_export] {name}.json inchangé")
+    print(f"[web_export] {len(changed)}/{len(_BUILDERS)} fichier(s) modifié(s)"
+          + (f" ({', '.join(changed)})" if changed else " — rien de neuf."))
 
 
 if __name__ == "__main__":
