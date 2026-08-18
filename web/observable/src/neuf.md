@@ -5,6 +5,7 @@ toc: false
 
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
+        filterYears, yearsExtent, sumByType,
         MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR} from "./components/hm.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
 ```
@@ -18,11 +19,42 @@ const neuf = await FileAttachment("./data/neuf.json").json();
   <div class="hm-caption">${neuf.how_to_read}</div>
 </details>
 
+```js
+// --- Contrôles globaux de la page (parité avec la barre latérale + le panneau
+// « paramètres supplémentaires » de l'app Streamlit). --------------------------------
+const extN = yearsExtent(neuf.main_series.rows);
+// Années en CHAÎNES : Inputs.select formate les nombres selon la locale et
+// afficherait « 2 020 » au lieu de « 2020 ».
+const YEARS_N = d3.range(extN[0], extN[1] + 1).map(String);
+const yFromN = view(Inputs.select(YEARS_N, {value: String(extN[0]), label: "Période — de"}));
+const yToN = view(Inputs.select(YEARS_N, {value: String(extN[1]), label: "Période — à"}));
+const typesN = view(Inputs.checkbox(neuf.by_type.types.map((t) => t.name),
+  {value: neuf.by_type.types.map((t) => t.name), label: "Types de logement (SIT@DEL)"}));
+```
+
+```js
+const rangeN = [+yFromN, +yToN];
+// Aucun type coché = tous les types, comme le multiselect vide d'app.py.
+const pickedN = neuf.by_type.types.filter((t) => typesN.includes(t.name)).map((t) => t.code);
+const codesN = pickedN.length ? pickedN : neuf.by_type.types.map((t) => t.code);
+const allTypesN = codesN.length === neuf.by_type.types.length;
+// Tous types : on réutilise la série et les KPI déjà prêts. Sinon on somme les types
+// retenus (exact) et on lit les KPI pré-calculés côté Python pour ce sous-ensemble.
+const seriesRowsN = allTypesN
+  ? neuf.main_series.rows
+  : sumByType(neuf.by_type, codesN, neuf.main_series.meta);
+const kpisN = allTypesN
+  ? neuf.kpis
+  : [...neuf.kpis_by_type[codesN.slice().sort().join("+")], ...neuf.kpis.slice(2)];
+const segLabelN = allTypesN ? "tous types" :
+  neuf.by_type.types.filter((t) => codesN.includes(t.code)).map((t) => t.name).join(" + ");
+```
+
 ## 🔑 Chiffres Clés
 
-<div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de toute segmentation.</div>
+<div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de la période affichée, mais calculés sur la segmentation retenue (${segLabelN}).</div>
 
-${cardGrid(neuf.kpis, kpiCard)}
+${cardGrid(kpisN, kpiCard)}
 
 ## 📊 Courbes d'évolution du marché
 
@@ -44,9 +76,9 @@ function toggleN(name) { const s = new Set(visN.value); s.has(name) ? s.delete(n
 
 ${legend(neuf.main_series.meta, visN, toggleN)}
 
-${marketChart({rows: neuf.main_series.rows, meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements"})}
+${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements"})}
 
-<div class="hm-meta">${neuf.main_series.source} · dernier point : ${neuf.main_series.last_month}</div>
+<div class="hm-meta">${neuf.main_series.source} · dernier point : ${neuf.main_series.last_month} · segmentation : ${segLabelN} · période affichée : ${Math.min(...rangeN)}–${Math.max(...rangeN)}</div>
 
 ## 🏠 Dynamique Individuel vs Collectif
 
@@ -67,7 +99,7 @@ ${cardGrid(ivBlock.kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: 
 
 <div class="hm-panel-title">${ivMetric === "Permis" ? "Permis de Construire" : "Mises en Chantier"} — maison individuelle pure vs collectif <span style="color:#6c757d;font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
 
-${multiLine({rows: ivBlock.lines, meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k"})}
+${multiLine({rows: filterYears(ivBlock.lines, rangeN), meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k"})}
 
 ## 📅 Comparaison Mensuelle par Année
 
@@ -85,7 +117,7 @@ const monthsN = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsN, label: "Mo
 ```js
 const monthNumsN = monthsN.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
 display(monthNumsN.length
-  ? monthlyByYear({rows: neuf.monthly.rows, valueKey: mMetricN, monthNums: monthNumsN})
+  ? monthlyByYear({rows: filterYears(neuf.monthly.rows, rangeN), valueKey: mMetricN, monthNums: monthNumsN})
   : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
 ```
 
@@ -108,14 +140,14 @@ ${e ? html`<div class="hm-meta">Dernier trimestre disponible : ${e.last_quarter}
 // Charts ECLN (rendus seulement si les données existent).
 function eclnStock() {
   const rows = [
-    ...e.stock_rows.map((d) => ({date: d.date, series: "Encours à la vente", value: d.encours})),
-    ...e.stock_rows.map((d) => ({date: d.date, series: "Mises en vente", value: d.mises_en_vente})),
+    ...filterYears(e.stock_rows, rangeN).map((d) => ({date: d.date, series: "Encours à la vente", value: d.encours})),
+    ...filterYears(e.stock_rows, rangeN).map((d) => ({date: d.date, series: "Mises en vente", value: d.mises_en_vente})),
   ];
   return multiLine({rows, meta: [{name: "Encours à la vente", color: "#2D3748"}, {name: "Mises en vente", color: "#64B5F6"}],
     yLabel: "Nombre de logements", valueFmt: (v) => nf0.format(v)});
 }
 function eclnDelai() {
-  const rows = e.delai_rows.map((d) => ({...d, _x: new Date(d.date)}));
+  const rows = filterYears(e.delai_rows, rangeN).map((d) => ({...d, _x: new Date(d.date)}));
   return Plot.plot({height: 340, marginLeft: 48, marginRight: 60, y: {label: "Mois", grid: true, zero: true}, x: {label: null},
     marks: [
       Plot.areaY(rows, {x: "_x", y: "delai_mois", fill: "#E64A19", fillOpacity: 0.12}),
@@ -128,13 +160,13 @@ function eclnDelai() {
 function eclnCat() {
   const rows = [];
   const map = {particuliers: "Particuliers", sociaux: "Bailleurs sociaux", institutionnels: "Investisseurs institutionnels"};
-  for (const d of e.cat_rows) for (const k of Object.keys(map)) rows.push({date: new Date(d.date), cat: map[k], value: d[k]});
+  for (const d of filterYears(e.cat_rows, rangeN)) for (const k of Object.keys(map)) rows.push({date: new Date(d.date), cat: map[k], value: d[k]});
   return Plot.plot({height: 340, marginLeft: 54, x: {label: null}, y: {label: "Réservations", grid: true},
     color: {domain: ["Particuliers", "Bailleurs sociaux", "Investisseurs institutionnels"], range: ["#E64A19", "#64B5F6", "#F5B041"], legend: true},
     marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: true}), Plot.ruleY([0])]});
 }
 function eclnPrix() {
-  const rows = e.prixm2_rows.map((d) => ({date: d.date, series: "Prix au m²", value: d.prix}));
+  const rows = filterYears(e.prixm2_rows, rangeN).map((d) => ({date: d.date, series: "Prix au m²", value: d.prix}));
   return multiLine({rows, meta: [{name: "Prix au m²", color: "#388E3C"}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²"});
 }
 ```

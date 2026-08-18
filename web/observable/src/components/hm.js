@@ -147,3 +147,55 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd"}) {
     ],
   });
 }
+
+// --- Filtre de période ------------------------------------------------------------
+// Parité avec le curseur d'années de la barre latérale Streamlit. Il ne rogne que
+// l'AFFICHAGE : cumuls glissants et moyennes mobiles sont calculés en amont sur
+// l'historique complet (côté Python), exactement comme app.py qui filtre APRÈS avoir
+// calculé. Une fenêtre étroite montre donc les mêmes valeurs qu'en vue complète, jamais
+// des cumuls tronqués sur les premiers mois affichés.
+export function yearsExtent(rows, field = "date") {
+  let lo = Infinity, hi = -Infinity;
+  for (const r of rows) {
+    const y = +String(r[field]).slice(0, 4);
+    if (y < lo) lo = y;
+    if (y > hi) hi = y;
+  }
+  return [lo, hi];
+}
+
+export function filterYears(rows, range, field = "date") {
+  if (!range || !rows) return rows;
+  const lo = Math.min(range[0], range[1]), hi = Math.max(range[0], range[1]);
+  return rows.filter((r) => {
+    const y = +String(r[field]).slice(0, 4);
+    return y >= lo && y <= hi;
+  });
+}
+
+// --- Segmentation par type de logement (SIT@DEL) ----------------------------------
+// Reconstitue les lignes de la courbe principale pour un sous-ensemble de types, à
+// partir du bloc colonnaire `by_type`. La somme est exacte : le cumul glissant d'une
+// somme vaut la somme des cumuls glissants, et les quatre types démarrent le même mois.
+// Avec tous les types sélectionnés, le résultat est identique à `main_series.rows`
+// (mêmes lignes, même filtrage des mois sans valeur brute).
+export function sumByType({dates, series}, codes, meta) {
+  const wanted = new Set(codes);
+  const out = [];
+  for (const m of meta) {
+    const parts = series.filter((s) => s.key === m.key && wanted.has(s.type));
+    for (let i = 0; i < dates.length; i++) {
+      const row = {date: dates[i], series: m.name, key: m.key};
+      for (const f of ["raw", "roll12", "roll6"]) {
+        let sum = null;
+        for (const p of parts) {
+          const v = p[f][i];
+          if (v != null) sum = (sum ?? 0) + v;
+        }
+        row[f] = sum === null ? null : Math.round(sum * 1000) / 1000;
+      }
+      if (row.raw != null) out.push(row);
+    }
+  }
+  return out;
+}

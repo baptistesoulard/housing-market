@@ -4,7 +4,7 @@ toc: false
 ---
 
 ```js
-import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear,
+import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears, yearsExtent,
         MONTHS_FULL, nf0, nf1, fmtMonthFR} from "./components/hm.js";
 const anc = await FileAttachment("./data/ancien.json").json();
 ```
@@ -17,6 +17,20 @@ const anc = await FileAttachment("./data/ancien.json").json();
   <summary>ℹ️ Comment lire cette page</summary>
   <div class="hm-caption">${anc.how_to_read}</div>
 </details>
+
+```js
+// Filtre de période (parité avec le curseur d'années de la barre latérale Streamlit).
+const extA = yearsExtent(anc.main_series.rows);
+// Années en CHAÎNES : Inputs.select formate les nombres selon la locale et
+// afficherait « 2 020 » au lieu de « 2020 ».
+const YEARS_A = d3.range(extA[0], extA[1] + 1).map(String);
+const yFromA = view(Inputs.select(YEARS_A, {value: String(extA[0]), label: "Période — de"}));
+const yToA = view(Inputs.select(YEARS_A, {value: String(extA[1]), label: "Période — à"}));
+```
+
+```js
+const rangeA = [+yFromA, +yToA];
+```
 
 ## 🔑 Chiffres Clés
 
@@ -34,7 +48,7 @@ const maA = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mo
   {label: "Superpositions (vue brute uniquement)"}));
 ```
 
-${marketChart({rows: anc.main_series.rows, meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de transactions"})}
+${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de transactions"})}
 
 <div class="hm-meta">${anc.main_series.source} · dernier point : ${anc.main_series.last_month}</div>
 
@@ -51,7 +65,7 @@ const monthsA = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsA, label: "Mo
 ```js
 const monthNumsA = monthsA.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
 display(monthNumsA.length
-  ? monthlyByYear({rows: anc.monthly.rows, valueKey: "tx", monthNums: monthNumsA, scheme: "Greens"})
+  ? monthlyByYear({rows: filterYears(anc.monthly.rows, rangeA), valueKey: "tx", monthNums: monthNumsA, scheme: "Greens"})
   : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
 ```
 
@@ -77,25 +91,25 @@ const term = px.available ? view(Inputs.radio(new Map([["25 ans", "25"], ["20 an
 ```js
 // Séries dérivées pour capacité / accessibilité selon la durée choisie.
 function capacityRows() {
-  const rows = px.capacity[term];
+  const rows = filterYears(px.capacity[term], rangeA);
   return [
     ...rows.map((d) => ({date: d.date, series: "Capacité d'emprunt", value: d.capidx})),
     ...rows.map((d) => ({date: d.date, series: "Prix (Ensemble)", value: d.prix})),
   ];
 }
-function accessRows() { return px.capacity[term].map((d) => ({date: d.date, value: d.access})); }
+function accessRows() { return filterYears(px.capacity[term], rangeA).map((d) => ({date: d.date, value: d.access})); }
 ```
 
 <div class="hm-panels">
   <div>
     <div class="hm-panel-title">Prix des logements anciens</div>
     <div class="hm-panel-sub">indices Notaires-INSEE, base 100 = 2015</div>
-    ${px.available ? multiLine({rows: px.price_levels, meta: px.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)}) : ""}
+    ${px.available ? multiLine({rows: filterYears(px.price_levels, rangeA), meta: px.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)}) : ""}
   </div>
   <div>
     <div class="hm-panel-title">Évolution annuelle des prix</div>
     <div class="hm-panel-sub">glissement sur 1 an, %</div>
-    ${px.available ? multiLine({rows: px.price_yoy, meta: px.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"}) : ""}
+    ${px.available ? multiLine({rows: filterYears(px.price_yoy, rangeA), meta: px.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"}) : ""}
   </div>
 </div>
 
@@ -136,12 +150,12 @@ if (px.available && px.new_vs_old.available) {
     <div>
       <div class="hm-panel-title">Indices de prix</div>
       <div class="hm-panel-sub">neuf & ancien, base 100 = 2015</div>
-      ${multiLine({rows: nvo.levels, meta: nvo.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)})}
+      ${multiLine({rows: filterYears(nvo.levels, rangeA), meta: nvo.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)})}
     </div>
     <div>
       <div class="hm-panel-title">Croissance en glissement annuel</div>
       <div class="hm-panel-sub">neuf & ancien, %</div>
-      ${multiLine({rows: nvo.yoy, meta: nvo.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
+      ${multiLine({rows: filterYears(nvo.yoy, rangeA), meta: nvo.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
     </div>
   </div>`);
 }

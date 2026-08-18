@@ -120,22 +120,28 @@ légendes cliquables) :
   crédits, demande BLS, rénovation.
 - ✅ **Actualités & Aides** — filtres, matrice d'impact, échéancier, fiches détaillées.
 
-### Écarts connus avec Streamlit
+### Parité des contrôles
 
-Le front est fidèle onglet par onglet, à trois exceptions près, assumées à ce stade :
+- **Filtre de période** — présent sur *Marché du neuf*, *Marché de l'ancien* et
+  *Environnement & Financement*, comme le curseur d'années de la barre latérale
+  Streamlit. Il ne rogne que l'affichage : cumuls glissants et moyennes mobiles sont
+  calculés en amont sur l'historique complet, exactement comme `app.py` qui filtre après
+  avoir calculé — une fenêtre étroite montre donc les mêmes valeurs, jamais des cumuls
+  tronqués. La *Synthèse* n'en a pas, ses chiffres étant déjà indépendants du curseur
+  côté Streamlit.
+- **Segmentation par type de logement** — sur *Marché du neuf*, les quatre types SIT@DEL
+  se cochent/décochent et rejouent la courbe **et** les KPI, comme le panneau repliable
+  d'`app.py` (aucun type coché = tous, même convention que le multiselect vide).
+  L'export publie `by_type` (séries par type, en colonnaire : le front somme les types
+  retenus) et `kpis_by_type` (les KPI des 15 sous-ensembles, pré-calculés par les mêmes
+  fonctions `analysis` que le reste de l'app — aucune statistique n'est réimplémentée en
+  JavaScript).
+
+### Écart connu avec Streamlit
 
 - **FR uniquement.** L'app Streamlit est bilingue (sélecteur FR/EN) ; le front ne sert
-  que le français. Les libellés viennent de l'export Python, donc bilinguiser suppose de
+  que le français. Les libellés venant de l'export Python, bilinguiser suppose de
   produire un JSON par langue.
-- **Pas de filtre de période.** Streamlit a un curseur d'années global en barre latérale
-  qui rogne l'affichage de tous les graphiques. Le front affiche toujours l'historique
-  complet (les cumuls glissants sont de toute façon calculés sur l'historique entier des
-  deux côtés, donc les courbes coïncident sur la plage commune).
-- **Pas de segmentation par type de logement** sur la courbe SIT@DEL principale.
-  Streamlit permet de ne retenir qu'un sous-ensemble des quatre types (individuel pur,
-  individuel groupé, collectif, résidence) via un panneau repliable ; le front agrège
-  toujours les quatre. La section « Individuel vs Collectif » couvre le découpage
-  principal.
 
 ### Suite
 

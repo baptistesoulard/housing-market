@@ -16,6 +16,7 @@ reconstruise le site à chaque publication de données.
 """
 from __future__ import annotations
 
+import itertools
 import json
 import os
 import sys
@@ -52,6 +53,10 @@ OUT_PATH = os.path.join(DATA_DIR, "synthese.json")
 COLOR_BLUE = "#64B5F6"
 COLOR_TERRACOTTA = "#C1694F"
 COLOR_SUNFLOWER = "#F5B041"
+
+# Codes courts et stables pour les quatre types SIT@DEL (clés de `by_type` / `kpis_by_type`).
+_TYPE_CODES = {"Maison Individuelle Pure": "ip", "Maison Individuelle Groupée": "ig",
+               "Logement Collectif": "co", "Logement en Résidence": "re"}
 
 
 # ============================ helpers de formatage ================================
@@ -490,6 +495,48 @@ def build_neuf(frames: dict) -> dict:
                 "subs": ["Trimestre vs même trimestre n-1",
                          f"Dernier trimestre disponible : {kd.year}-T{(kd.month - 1) // 3 + 1}"]})
 
+    # --- Segmentation par type de logement (parité avec le sélecteur d'app.py) ---------
+    # Streamlit laisse ne retenir qu'un sous-ensemble des quatre types SIT@DEL, ce qui
+    # rejoue AUSSI les deux KPI de la page. Pour ne pas réimplémenter les statistiques
+    # côté front (et risquer qu'elles divergent), on exporte :
+    #   - `by_type` : les séries par type, en colonnaire (un tableau de valeurs aligné sur
+    #     `dates`). Le front additionne les types sélectionnés, ce qui est exact : le cumul
+    #     glissant d'une somme est la somme des cumuls glissants, et les quatre types
+    #     commencent le même mois, donc leurs trous initiaux coïncident.
+    #   - `kpis_by_type` : les KPI PRÉ-CALCULÉS pour chacun des 15 sous-ensembles non
+    #     vides, produits ici par les mêmes fonctions `analysis` que le reste de l'app.
+    sit_types = sorted(df_sitadel_full["Type"].unique())
+    codes = {t: _TYPE_CODES.get(t, t[:2].lower()) for t in sit_types}
+    date_axis = [d.strftime("%Y-%m-%d") for d in roll["Date"]]
+
+    def _arr(col):
+        return [None if pd.isna(v) else round(float(v), 3) for v in col]
+
+    by_type_series = []
+    for t in sit_types:
+        agg_t = ana.aggregate_sitadel(df_sitadel_full, [t])
+        roll_t = ana.calculate_rolling_12m(agg_t, ["Permis", "MisesEnChantier"])
+        roll_t = ana.calculate_rolling(roll_t, ["Permis", "MisesEnChantier"], 6)
+        roll_t = roll_t.set_index("Date").reindex(roll["Date"])
+        for m in series_meta:
+            by_type_series.append({
+                "type": codes[t], "key": m["key"], "raw": _arr(roll_t[m["raw"]]),
+                "roll12": _arr(roll_t[m["r12"]]), "roll6": _arr(roll_t[m["r6"]])})
+
+    kpis_by_type = {}
+    for size in range(1, len(sit_types) + 1):
+        for combo in itertools.combinations(sit_types, size):
+            agg_c = ana.aggregate_sitadel(df_sitadel_full, list(combo))
+            roll_c = ana.calculate_rolling_12m(agg_c, ["Permis", "MisesEnChantier"])
+            month_c = _fmt_month_year(_last_valid_date(roll_c, "Permis"))
+            kpis_by_type["+".join(sorted(codes[t] for t in combo))] = [
+                _yoy_kpi(ana.calculate_kpis(roll_c, "Permis"),
+                         ana.momentum_metrics(agg_c, "Permis"),
+                         "Permis de Construire (Cumul 12m glissant)", month_c),
+                _yoy_kpi(ana.calculate_kpis(roll_c, "MisesEnChantier"),
+                         ana.momentum_metrics(agg_c, "MisesEnChantier"),
+                         "Mises en Chantier (Cumul 12m glissant)", month_c)]
+
     # --- Individuel vs collectif -------------------------------------------------------
     iv_groups = [
         ("Maison individuelle pure", ana.SITADEL_INDIVIDUEL_PUR, COLOR_BRICK),
@@ -560,6 +607,10 @@ def build_neuf(frames: dict) -> dict:
                                  for m in series_meta],
                         "rows": main_rows, "last_month": _fmt_month_year(_last_valid_date(roll, "Permis")),
                         "source": "Source : SIT@DEL (SDES)"},
+        "by_type": {"dates": date_axis,
+                    "types": [{"code": codes[t], "name": t} for t in sit_types],
+                    "series": by_type_series},
+        "kpis_by_type": kpis_by_type,
         "indiv_collectif": iv,
         "monthly": {"rows": monthly_rows, "last_month_num": last_month_num,
                     "metrics": [{"key": "permis", "name": "Permis de Construire"},
