@@ -13,6 +13,11 @@ const neuf = await FileAttachment("./data/neuf.json").json();
 
 <div class="hm-caption">${neuf.caption}</div>
 
+<details class="hm-howto">
+  <summary>ℹ️ Comment lire cette page</summary>
+  <div class="hm-caption">${neuf.how_to_read}</div>
+</details>
+
 ## 🔑 Chiffres Clés
 
 <div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de toute segmentation.</div>

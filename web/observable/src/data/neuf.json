@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-08-18T11:20:08+00:00",
+  "generated_at": "2026-08-18T11:54:17+00:00",
   "title": "🏗️ Marché du neuf — de l'autorisation à la vente",
   "caption": "Le tunnel du logement neuf au niveau national : permis de construire et mises en chantier (SIT@DEL), dynamique individuel vs collectif, puis commercialisation des logements neufs (ECLN).",
+  "how_to_read": "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier 6 à 12 mois plus tard, puis un logement commercialisé. Le cumul 12 mois glissant lisse la saisonnalité et donne le niveau annuel courant ; la vue brute montre le mois réel, beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus.",
   "kpis": [
     {
       "label": "Permis de Construire (Cumul 12m glissant)",

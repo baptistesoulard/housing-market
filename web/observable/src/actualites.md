@@ -11,6 +11,11 @@ const A = await FileAttachment("./data/actualites.json").json();
 # ${A.title}
 
 <div class="hm-caption">${A.caption}</div>
+
+<details class="hm-howto">
+  <summary>ℹ️ Comment lire cette page</summary>
+  <div class="hm-caption">${A.how_to_read}</div>
+</details>
 <div class="hm-meta">⚠️ Contenu éditorial mis à jour manuellement (dernière revue : ${A.maj}). Les impacts sont des lectures qualitatives, pas des sorties de modèle.</div>
 
 ${cardGrid(A.kpis, kpiCard)}

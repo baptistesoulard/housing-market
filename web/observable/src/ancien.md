@@ -13,6 +13,11 @@ const anc = await FileAttachment("./data/ancien.json").json();
 
 <div class="hm-caption">${anc.caption}</div>
 
+<details class="hm-howto">
+  <summary>ℹ️ Comment lire cette page</summary>
+  <div class="hm-caption">${anc.how_to_read}</div>
+</details>
+
 ## 🔑 Chiffres Clés
 
 <div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de tout filtre.</div>

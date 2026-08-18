@@ -2,14 +2,14 @@
 
 Preuve de concept : porter le dashboard HousingMarket vers un **site statique moderne**
 (Observable Framework) déployable sur Cloudflare Pages / Netlify, **sans réécrire la
-couche back-office Python**. Ce PoC couvre le seul onglet **« Synthèse »**.
+couche back-office Python**. Ce PoC couvre les **5 premiers onglets** de l'app.
 
 ## Principe
 
 ```
   [ INCHANGÉ — back-office Python ]                 [ NOUVEAU — couche produit ]
-  data_manager / analysis / forecast  ──►  web_export.py  ──►  synthese.json (statique)
-  actualites / DataManager (CSV+DuckDB)     (Étape 0)                │
+  data_manager / analysis / forecast  ──►  web_export.py  ──►  5 JSON statiques
+  actualites / DataManager (CSV+DuckDB)                              │
                                                                      ▼
                                               Observable Framework  ──►  dist/ (HTML/JS)
                                                                      ▼
@@ -17,17 +17,17 @@ couche back-office Python**. Ce PoC couvre le seul onglet **« Synthèse »**.
 ```
 
 `web_export.py` **réutilise telles quelles** les fonctions de l'app (`analysis`,
-`forecast`, `actualites`, `DataManager`) et recompute exactement le contenu de l'onglet
-Synthèse d'`app.py` (pastilles par pilier, cartes Activité / Financement / Perspective,
-« à retenir », fraîcheur des sources, séries du graphique neuf/ancien). Le front ne fait
-que **lire** ce JSON : aucun Python n'est requis au build du site.
+`forecast`, `actualites`, `DataManager`) et recompute exactement le contenu des cinq
+premiers onglets d'`app.py`, un JSON par page (`synthese`, `neuf`, `ancien`, `macro`,
+`actualites`). Le front ne fait que **lire** ces JSON : aucun Python n'est requis au
+build du site.
 
 ## Arborescence
 
 ```
 web/
 ├── export/
-│   └── web_export.py            # Étape 0 : agrégats Python → JSON statique
+│   └── web_export.py            # agrégats Python → 5 JSON statiques
 ├── observable/
 │   ├── observablehq.config.js   # config du site
 │   ├── package.json
@@ -89,24 +89,57 @@ Cloudflare ne construit que le front (**Node uniquement**, pas de Python). Le
 `synthese.json` est produit et commité par la pipeline Python (voir ci-dessous), donc
 chaque rafraîchissement des données déclenche automatiquement un rebuild du site.
 
-## Brancher sur le refresh hebdomadaire
+## Branchement sur le refresh hebdomadaire
 
-Ajouter, à la fin du job de `.github/workflows/refresh-data.yml` (après le refresh des
-sources, avant le commit), une étape qui régénère le JSON du front :
+**Fait.** `.github/workflows/refresh-data.yml` régénère le JSON du front après le refresh
+des sources et avant le commit :
 
 ```yaml
-      - name: Régénérer les données du front (Synthèse)
+      - name: Régénérer les données du front web
         run: python web/export/web_export.py
 ```
 
-`web/observable/src/data/synthese.json` sera alors inclus dans le commit de données, et
-Cloudflare Pages reconstruira le site à chaque publication. (Modification de CI laissée
-à ta main — non appliquée par le PoC.)
+`web/observable/src/data/` est inclus dans le `git add` du job, donc Cloudflare Pages
+reconstruit le site à chaque publication de données. L'export est gardé par le contenu
+(`generated_at` exclu de la comparaison) : un run sans nouveauté ne produit aucun diff et
+donc aucun rebuild inutile.
 
 ## Périmètre du PoC / suite
 
-- ✅ Onglet **Synthèse** porté à l'identique (FR).
-- ⏭️ Restent à porter : Marché du neuf, Marché de l'ancien, Environnement & Financement,
-  Actualités, Prévision, Atelier, Données & Export — même patron (export Python → page).
+Les **5 premiers onglets** de l'app Streamlit sont portés, avec les mêmes sections, les
+mêmes graphiques et les mêmes options de vue (cumul 12 / 6 mois, brut, moyennes mobiles,
+légendes cliquables) :
+
+- ✅ **Synthèse** — pastilles par pilier, à retenir, 3 blocs de cartes, fraîcheur,
+  graphique croisé neuf/ancien en deux panneaux (niveaux + base 100).
+- ✅ **Marché du neuf** — SIT@DEL (courbes, comparaison mensuelle), individuel vs
+  collectif, ECLN (encours & mises en vente, délai d'écoulement, acquéreurs, prix au m²).
+- ✅ **Marché de l'ancien** — IGEDD, puis prix Notaires-INSEE, capacité d'emprunt et
+  indice d'accessibilité, neuf vs ancien.
+- ✅ **Environnement & Financement** — confiance, taux, intentions, chômage, volumes de
+  crédits, demande BLS, rénovation.
+- ✅ **Actualités & Aides** — filtres, matrice d'impact, échéancier, fiches détaillées.
+
+### Écarts connus avec Streamlit
+
+Le front est fidèle onglet par onglet, à trois exceptions près, assumées à ce stade :
+
+- **FR uniquement.** L'app Streamlit est bilingue (sélecteur FR/EN) ; le front ne sert
+  que le français. Les libellés viennent de l'export Python, donc bilinguiser suppose de
+  produire un JSON par langue.
+- **Pas de filtre de période.** Streamlit a un curseur d'années global en barre latérale
+  qui rogne l'affichage de tous les graphiques. Le front affiche toujours l'historique
+  complet (les cumuls glissants sont de toute façon calculés sur l'historique entier des
+  deux côtés, donc les courbes coïncident sur la plage commune).
+- **Pas de segmentation par type de logement** sur la courbe SIT@DEL principale.
+  Streamlit permet de ne retenir qu'un sous-ensemble des quatre types (individuel pur,
+  individuel groupé, collectif, résidence) via un panneau repliable ; le front agrège
+  toujours les quatre. La section « Individuel vs Collectif » couvre le découpage
+  principal.
+
+### Suite
+
+- ⏭️ Reste à porter : Prévision, Atelier exploratoire, Données & Export — même patron
+  (export Python → page).
 - ⏭️ Bilingue FR/EN, filtres interactifs côté client (DuckDB-WASM sur les Parquet
   existants) pour les onglets exploratoires.

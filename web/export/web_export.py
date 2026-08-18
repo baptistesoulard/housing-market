@@ -548,6 +548,13 @@ def build_neuf(frames: dict) -> dict:
         "caption": ("Le tunnel du logement neuf au niveau national : permis de construire et mises "
                     "en chantier (SIT@DEL), dynamique individuel vs collectif, puis commercialisation "
                     "des logements neufs (ECLN)."),
+        "how_to_read": (
+            "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier "
+            "6 à 12 mois plus tard, puis un logement commercialisé. Le cumul 12 mois glissant lisse "
+            "la saisonnalité et donne le niveau annuel courant ; la vue brute montre le mois réel, "
+            "beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par "
+            "logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le "
+            "délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus."),
         "kpis": kpis,
         "main_series": {"meta": [{"key": m["key"], "name": m["name"], "color": m["color"], "dash": m["dash"]}
                                  for m in series_meta],
@@ -647,6 +654,12 @@ def build_ancien(frames: dict) -> dict:
         "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
         "caption": ("Le marché des logements anciens au niveau national : volumes de transactions "
                     "(IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité."),
+        "how_to_read": (
+            "Le cumul 12 mois glissant reproduit la série publiée par l'IGEDD (« ventes sur un an ») ; "
+            "les flux mensuels en sont la reconstruction, utile pour la dynamique récente mais plus "
+            "bruitée. Côté accessibilité, la capacité d'emprunt est calculée à mensualité constante : "
+            "elle chute donc quand les taux montent, indépendamment des prix. L'indice d'accessibilité "
+            "rapporte cette capacité aux prix — sous 100, un ménage type achète moins de surface qu'en 2015."),
         "kpi": _yoy_kpi(kpi_tx, mom_tx, "Ventes anciennes IGEDD (Cumul 12m glissant)", tx_month),
         "main_series": {"meta": [{"key": "tx", "name": "Transactions Ancien", "color": COLOR_GREEN, "dash": None}],
                         "rows": main_rows, "last_month": tx_month, "source": "Source : IGEDD"},
@@ -723,6 +736,13 @@ def build_macro(frames: dict) -> dict:
         "caption": ("Indicateurs de contexte macroéconomique et de conditions de financement : confiance "
                     "des ménages (INSEE), taux du crédit habitat (BdF/BCE), Euribor 3 mois et OAT 10 ans "
                     "(BCE), intentions d'achat de logement et taux de chômage BIT (INSEE)."),
+        "how_to_read": (
+            "Ces indicateurs expliquent le marché plus qu'ils ne le décrivent, et la plupart le "
+            "précèdent. Les soldes d'opinion (confiance, intentions, rénovation, BLS) se lisent en "
+            "écart à leur repère — le zéro ou la moyenne de longue période — pas en niveau absolu. "
+            "La demande de crédits (BLS) est l'indicateur le plus avancé de la page : les banques la "
+            "constatent avant que les transactions ne bougent. Sur les volumes, les renégociations "
+            "sont isolées car elles ne déclenchent ni transaction ni chantier."),
         "confidence": series("Insee_Confiance_Menages"),
         "rates": {"rows": rate_rows, "meta": rate_meta},
         "intentions": intentions,
@@ -772,6 +792,12 @@ def build_actualites(frames: dict) -> dict:
         "caption": ("Veille sur les grands dispositifs publics français et européens qui soutiennent (ou "
                     "freinent) le marché du logement, avec pour chaque mesure : statut, jalons, montants et "
                     "impact potentiel sur les trois piliers du modèle (neuf, ancien, rénovation)."),
+        "how_to_read": (
+            "Cette page est une grille de lecture qualitative, pas une sortie de modèle. Chaque mesure "
+            "est notée de ⬇⬇ à ⬆⬆ sur les trois piliers selon le sens et l'intensité de son effet "
+            "attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé. Le statut "
+            "distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion — seules "
+            "les mesures en vigueur agissent déjà sur les séries des autres onglets."),
         "maj": actu.MAJ,
         "kpis": kpis,
         "items": items,

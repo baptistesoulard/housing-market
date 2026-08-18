@@ -12,6 +12,11 @@ const macro = await FileAttachment("./data/macro.json").json();
 
 <div class="hm-caption">${macro.caption}</div>
 
+<details class="hm-howto">
+  <summary>ℹ️ Comment lire cette page</summary>
+  <div class="hm-caption">${macro.how_to_read}</div>
+</details>
+
 ```js
 // Légende cliquable pour les 3 taux.
 const visR = Mutable(new Set(macro.rates.meta.map((m) => m.name)));
