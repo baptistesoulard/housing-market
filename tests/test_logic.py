@@ -323,6 +323,21 @@ def test_search_tx_lags_scores_every_candidate_on_one_window():
     assert common.max() <= pd.Timestamp("2021-12-01")
 
 
+def test_optional_fallback_frames_match_the_real_datasets():
+    """The empty frame returned when an optional dataset is missing must carry exactly the
+    columns the real CSV has. The ECLN schema used to be spelled out three times; it now
+    lives in one constant, and this pins it to the actual file so the two cannot drift."""
+    import tempfile
+    import data_manager as dmod
+    for key, columns, real in (("revenue", dmod.REVENUE_COLUMNS, "data/revenue.csv"),
+                               ("ecln", dmod.ECLN_COLUMNS, "data/ecln.csv")):
+        with tempfile.TemporaryDirectory() as tmp:
+            empty = dmod.DataManager(data_dir=tmp)._read_optional(key, columns)
+        assert empty.empty and list(empty.columns) == columns
+        if os.path.exists(real):
+            assert list(pd.read_csv(real).columns) == columns, f"{key}: schéma désaligné"
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     passed = 0

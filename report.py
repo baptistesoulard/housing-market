@@ -11,7 +11,6 @@ the app never needs a browser or a static-export engine. Called from the app's s
 import io
 from datetime import date
 
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")  # headless backend (no display needed)

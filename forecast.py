@@ -58,11 +58,6 @@ def fit_rate_model(df_macro):
     return {"beta": beta, "r2": r2, "rmse": rmse, "frame": frame}
 
 
-def predict_rate(beta, oat, euribor):
-    """Scenario credit rate from Stage-1 coefficients."""
-    return float(beta[0] + beta[1] * oat + beta[2] * euribor)
-
-
 def _design(m, tx12, kr, ki, kc):
     """Aligned design matrix for Stage 2 with the given lead-lags (months)."""
     X = pd.DataFrame({
@@ -159,11 +154,6 @@ def fit_tx_model(df_macro, tx12, kr, ki, kc, split="2021-12-01"):
         bt["train_beta"] = bbeta
     return {"beta": beta, "r2": r2, "rmse": rmse, "frame": frame,
             "lags": {"kr": kr, "ki": ki, "kc": kc}, "backtest": bt}
-
-
-def predict_tx(beta, rate, intent, chom):
-    """Scenario transactions (12-month) from Stage-2 coefficients."""
-    return float(beta[0] + beta[1] * rate + beta[2] * intent + beta[3] * chom)
 
 
 def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816):

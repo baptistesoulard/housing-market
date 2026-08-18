@@ -1,18 +1,4 @@
 import pandas as pd
-import numpy as np
-
-def filter_by_geography(df, level, regions=None, departments=None):
-    """
-    Filters a dataframe based on the selected geographic level (National, Régional, Départemental)
-    and specific selection parameters.
-    """
-    if level == "National":
-        return df.copy()
-    elif level == "Régional" and regions:
-        return df[df["Region"].isin(regions)].copy()
-    elif level == "Départemental" and departments:
-        return df[df["Department"].isin(departments)].copy()
-    return df.copy()
 
 def aggregate_sitadel(df_sitadel, types=None):
     """
@@ -37,19 +23,6 @@ def aggregate_ventes_ancien(df_ventes_ancien, types=None):
         df = df[df["Type"].isin(types)]
         
     df_agg = df.groupby("Date")[["Transactions"]].sum().reset_index()
-    df_agg = df_agg.sort_values("Date")
-    return df_agg
-
-def aggregate_sales(df_sales, products=None):
-    """
-    Aggregates Sales data by Date.
-    If 'products' is provided, filters for those products.
-    """
-    df = df_sales.copy()
-    if products:
-        df = df[df["Product"].isin(products)]
-        
-    df_agg = df.groupby("Date")[["Sales_Units"]].sum().reset_index()
     df_agg = df_agg.sort_values("Date")
     return df_agg
 
