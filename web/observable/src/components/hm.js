@@ -3,6 +3,7 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
 import {html} from "npm:htl";
+import {ui} from "./theme.js";
 
 // --- Formatage FR ------------------------------------------------------------------
 const frLocale = d3.timeFormatLocale({
@@ -66,8 +67,8 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
     x: {label: null}, y: {label: yLabel, grid: true, zero: baseline == null && !yPct, percent: false},
     color: {domain: colorDomain, range: colorRange},
     marks: [
-      baseline != null ? Plot.ruleY([baseline], {stroke: "#B0B7C3", strokeDasharray: "3,3"}) : null,
-      yPct ? Plot.ruleY([0], {stroke: "#B0B7C3", strokeDasharray: "3,3"}) : null,
+      baseline != null ? Plot.ruleY([baseline], {stroke: ui.rule, strokeDasharray: "3,3"}) : null,
+      yPct ? Plot.ruleY([0], {stroke: ui.rule, strokeDasharray: "3,3"}) : null,
       Plot.lineY(shown.filter((d) => !dashed.has(d.series)), {x: "_x", y: "value", stroke: "series", strokeWidth: 2.4}),
       Plot.lineY(shown.filter((d) => dashed.has(d.series)), {x: "_x", y: "value", stroke: "series", strokeWidth: 2.4, strokeDasharray: "6,4"}),
       lastLabels ? Plot.text(last, {x: "_x", y: "value", text: (d) => fmt(d.value),

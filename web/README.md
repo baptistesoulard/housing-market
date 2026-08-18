@@ -19,15 +19,17 @@ couche back-office Python**. Ce PoC couvre les **5 premiers onglets** de l'app.
 `web_export.py` **réutilise telles quelles** les fonctions de l'app (`analysis`,
 `forecast`, `actualites`, `DataManager`) et recompute exactement le contenu des cinq
 premiers onglets d'`app.py`, un JSON par page (`synthese`, `neuf`, `ancien`, `macro`,
-`actualites`). Le front ne fait que **lire** ces JSON : aucun Python n'est requis au
-build du site.
+`actualites`). La palette est centralisée dans `web/theme.json` (source unique lue par
+`web/export/theme.py`, le CSS de la config et `components/theme.js` généré). Le front ne
+fait que **lire** ces JSON : aucun Python n'est requis au build du site.
 
 ## Arborescence
 
 ```
 web/
 ├── export/
-│   └── web_export.py            # agrégats Python → 5 JSON statiques
+│   ├── web_export.py            # agrégats Python → 5 JSON statiques + theme.js
+│   └── theme.py                 # charge web/theme.json, génère components/theme.js
 ├── observable/
 │   ├── observablehq.config.js   # config du site
 │   ├── package.json

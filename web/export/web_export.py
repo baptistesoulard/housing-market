@@ -34,14 +34,15 @@ from data_manager import DataManager          # noqa: E402
 import analysis as ana                         # noqa: E402
 import forecast as fc                          # noqa: E402
 import actualites as actu                      # noqa: E402
+import theme                                    # noqa: E402  (palette partagée web/theme.json)
 
 # Cible BPCE 2026 (miroir des constantes d'app.py, bloc Perspective).
 BPCE_TX_ANCIEN_2026 = 890_000
 
-# Palette (miroir d'app.py).
-COLOR_TEXT = "#2D3748"
-COLOR_BRICK = "#E64A19"
-COLOR_GREEN = "#388E3C"
+# Palette : sourcée depuis le thème partagé (web/theme.json via theme.py), rampe de séries.
+COLOR_TEXT = theme.S_VIOLET     # slot 4 (série) — mises en chantier, taux crédit, encours
+COLOR_BRICK = theme.S_BRICK     # slot 1 — permis, prix ensemble, particuliers…
+COLOR_GREEN = theme.S_GREEN     # slot 3 — ventes anciennes, OAT, maisons…
 
 _FR_MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin",
               "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
@@ -49,10 +50,10 @@ _FR_MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin",
 DATA_DIR = os.path.join(_REPO_ROOT, "web", "observable", "src", "data")
 OUT_PATH = os.path.join(DATA_DIR, "synthese.json")
 
-# Palette étendue (miroir d'app.py) pour les onglets Neuf/Ancien.
-COLOR_BLUE = "#64B5F6"
-COLOR_TERRACOTTA = "#C1694F"
-COLOR_SUNFLOWER = "#F5B041"
+# Palette étendue (thème) pour les onglets Neuf/Ancien.
+COLOR_BLUE = theme.S_BLUE       # slot 2 — collectif, euribor, appartements…
+COLOR_TERRACOTTA = theme.S_GOLD  # slot 5 — individuel total, institutionnels, renégo.
+COLOR_SUNFLOWER = theme.S_GOLD   # slot 5
 
 # Codes courts et stables pour les quatre types SIT@DEL (clés de `by_type` / `kpis_by_type`).
 _TYPE_CODES = {"Maison Individuelle Pure": "ip", "Maison Individuelle Groupée": "ig",
@@ -906,6 +907,7 @@ def _write_if_changed(path, payload):
 
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
+    theme.write_theme_js()  # régénère components/theme.js depuis web/theme.json
     frames = load_frames()
     changed = []
     for name, builder in _BUILDERS.items():

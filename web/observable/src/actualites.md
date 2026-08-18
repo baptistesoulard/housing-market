@@ -5,6 +5,7 @@ toc: false
 
 ```js
 import {kpiCard, cardGrid} from "./components/hm.js";
+import {series, delta, ui} from "./components/theme.js";
 const A = await FileAttachment("./data/actualites.json").json();
 ```
 
@@ -39,7 +40,7 @@ const items = A.items.filter((it) =>
 <div class="hm-caption">Lecture qualitative de la direction attendue : ⬆⬆ soutien fort · ⬆ soutien · ➖ neutre/mitigé · ⬇ frein.</div>
 
 ```js
-function impactColor(v) { return v > 0 ? "#2E7D32" : v < 0 ? "#C0392B" : "#7A7A7A"; }
+function impactColor(v) { return v > 0 ? delta.positive : v < 0 ? delta.negative : delta.neutral; }
 function impactMatrix(items) {
   const pil = Object.keys(A.pilier_labels);
   return html`<table class="hm-table">
@@ -68,11 +69,11 @@ function timeline(items) {
   return Plot.plot({
     height: Math.max(240, 54 + 30 * order.length), marginLeft: 170, marginTop: 30,
     x: {label: null}, y: {domain: order, label: null},
-    color: {domain: ["FR", "EU"], range: ["#E64A19", "#64B5F6"], legend: true, label: "Périmètre"},
+    color: {domain: ["FR", "EU"], range: [series.brick, series.blue], legend: true, label: "Périmètre"},
     symbol: {domain: ["effet", "jalon", "echeance"], range: ["circle", "diamond", "times"],
              legend: true, label: "Type", tickFormat: (t) => A.jalon_types[t].label},
     marks: [
-      Plot.ruleX([new Date(A.maj)], {stroke: "#9AA5B1", strokeDasharray: "4,4"}),
+      Plot.ruleX([new Date(A.maj)], {stroke: ui.greyLine, strokeDasharray: "4,4"}),
       Plot.dot(rows, {x: "date", y: "dispositif", fill: "categorie", symbol: "type", r: 6, stroke: "white",
         channels: {jalon: "jalon"}, tip: {format: {x: (d) => d.toLocaleDateString("fr-FR"), fill: false, symbol: false, y: true, jalon: true}}}),
     ],
@@ -108,9 +109,9 @@ display(html`<div>${items.map(measureCard)}</div>`);
 
 <style>
 .hm-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
-.hm-table th, .hm-table td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid #EDEFF2; }
+.hm-table th, .hm-table td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--hm-border-light); }
 .hm-table th { font-weight: 700; color: var(--hm-ink); }
-.hm-measure { border: 1px solid #E7E9ED; border-radius: 8px; margin: 0.5rem 0; padding: 0.2rem 0.9rem; }
+.hm-measure { border: 1px solid var(--hm-border); border-radius: 8px; margin: 0.5rem 0; padding: 0.2rem 0.9rem; }
 .hm-measure summary { cursor: pointer; padding: 0.55rem 0; font-size: 1rem; }
 .hm-measure-body { padding: 0.2rem 0 0.7rem; }
 .hm-impacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin: 0.6rem 0; }

@@ -6,6 +6,7 @@ toc: false
 ```js
 import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears, yearsExtent,
         MONTHS_FULL, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {series} from "./components/theme.js";
 const anc = await FileAttachment("./data/ancien.json").json();
 ```
 
@@ -117,7 +118,7 @@ function accessRows() { return filterYears(px.capacity[term], rangeA).map((d) =>
   <div>
     <div class="hm-panel-title">Capacité d'emprunt vs prix</div>
     <div class="hm-panel-sub">base 100 = 2015 · mensualité constante, ${term} ans</div>
-    ${px.available ? multiLine({rows: capacityRows(), meta: [{name: "Capacité d'emprunt", color: "#388E3C"}, {name: "Prix (Ensemble)", color: "#E64A19"}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v)}) : ""}
+    ${px.available ? multiLine({rows: capacityRows(), meta: [{name: "Capacité d'emprunt", color: series.green}, {name: "Prix (Ensemble)", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v)}) : ""}
   </div>
   <div>
     <div class="hm-panel-title">Indice d'accessibilité</div>
@@ -131,11 +132,11 @@ function accessChart() {
   const rows = accessRows().map((d) => ({...d, _x: new Date(d.date)}));
   return Plot.plot({height: 360, marginLeft: 54, marginRight: 60, x: {label: null}, y: {label: "Indice (base 100)", grid: true},
     marks: [
-      Plot.areaY(rows, {x: "_x", y: "value", fill: "#E64A19", fillOpacity: 0.1}),
-      Plot.lineY(rows, {x: "_x", y: "value", stroke: "#E64A19", strokeWidth: 2.2}),
+      Plot.areaY(rows, {x: "_x", y: "value", fill: series.brick, fillOpacity: 0.1}),
+      Plot.lineY(rows, {x: "_x", y: "value", stroke: series.brick, strokeWidth: 2.2}),
       Plot.ruleY([100], {stroke: "grey", strokeDasharray: "4,4"}),
       Plot.text([{x: rows.at(-1)._x, y: 100}], {x: "x", y: "y", text: () => "niveau 2015", dy: -8, fill: "grey"}),
-      Plot.text([rows.at(-1)], {x: "_x", y: "value", text: (d) => nf0.format(d.value), dx: 8, fill: "#E64A19", fontWeight: 700, textAnchor: "start"}),
+      Plot.text([rows.at(-1)], {x: "_x", y: "value", text: (d) => nf0.format(d.value), dx: 8, fill: series.brick, fontWeight: 700, textAnchor: "start"}),
       Plot.tip(rows, Plot.pointerX({x: "_x", y: "value", title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.value)}`})),
     ]});
 }

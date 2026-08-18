@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T11:20:08+00:00",
+  "generated_at": "2026-08-18T20:48:44+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -129,7 +129,7 @@
       {
         "key": "mises",
         "name": "Mises en chantier",
-        "color": "#2D3748",
+        "color": "#6A4C93",
         "dash": "dash"
       },
       {

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T11:54:18+00:00",
+  "generated_at": "2026-08-18T20:48:45+00:00",
   "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
   "caption": "Le marché des logements anciens au niveau national : volumes de transactions (IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité.",
   "how_to_read": "Le cumul 12 mois glissant reproduit la série publiée par l'IGEDD (« ventes sur un an ») ; les flux mensuels en sont la reconstruction, utile pour la dynamique récente mais plus bruitée. Côté accessibilité, la capacité d'emprunt est calculée à mensualité constante : elle chute donc quand les taux montent, indépendamment des prix. L'indice d'accessibilité rapporte cette capacité aux prix — sous 100, un ménage type achète moins de surface qu'en 2015.",
@@ -3715,7 +3715,7 @@
       },
       {
         "label": "Appartements",
-        "color": "#64B5F6",
+        "color": "#1F78B4",
         "value": "126,7",
         "yoy": "+0,6%"
       },
@@ -7509,9 +7509,9 @@
         },
         {
           "date": "2011-10-01",
-          "capidx": 83.75111487401313,
+          "capidx": 83.75111487401311,
           "prix": 107.2,
-          "access": 78.12603999441524
+          "access": 78.12603999441522
         },
         {
           "date": "2012-01-01",
@@ -10803,7 +10803,7 @@
         {
           "key": "neuf",
           "name": "Neuf",
-          "color": "#64B5F6"
+          "color": "#1F78B4"
         },
         {
           "key": "ancien",
@@ -10821,7 +10821,7 @@
       {
         "key": "appartements",
         "name": "Appartements",
-        "color": "#64B5F6"
+        "color": "#1F78B4"
       },
       {
         "key": "maisons",
