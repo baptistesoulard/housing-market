@@ -227,27 +227,36 @@ def test_composite_optimizer_reports_out_of_sample():
 def test_sitadel_macro_cache_is_invalidated_by_a_newer_source():
     """data/sitadel.csv and data/macro.csv must be rebuilt when any manual-input source is
     newer, like every other derived dataset. They used to be built once and never
-    invalidated, so the weekly refresh silently left the app a month behind."""
-    import tempfile, time
+    invalidated, so the weekly refresh silently left the app serving frozen CSVs.
+
+    Fully hermetic: the source list is stubbed onto a temp directory, so the test never
+    reads or re-stamps a real file in data_manual_input/.
+    """
+    import tempfile
     import data_manager as dmod
     with tempfile.TemporaryDirectory() as tmp:
         sit = os.path.join(tmp, "sitadel.csv")
         mac = os.path.join(tmp, "macro.csv")
         assert dmod.sitadel_macro_is_stale(sit, mac), "missing caches must count as stale"
-        for p in (sit, mac):
+
+        src = os.path.join(tmp, "source.csv")
+        for p in (src, sit, mac):
             open(p, "w").write("Date\n2020-01-01\n")
-        sources = [s for s in dmod._sitadel_macro_sources() if os.path.exists(s)]
-        if not sources:
-            print("SKIP cache invalidation (no manual-input sources)")
-            return
-        # Caches newer than every source -> fresh.
-        now = time.time() + 10
-        os.utime(sit, (now, now)); os.utime(mac, (now, now))
-        assert not dmod.sitadel_macro_is_stale(sit, mac)
-        # One source newer than the caches -> stale.
-        later = now + 10
-        os.utime(sources[0], (later, later))
-        assert dmod.sitadel_macro_is_stale(sit, mac)
+
+        real_sources = dmod._sitadel_macro_sources
+        dmod._sitadel_macro_sources = lambda: [src]
+        try:
+            # Caches strictly newer than the source -> fresh, no rebuild.
+            os.utime(src, (1_000_000, 1_000_000))
+            for p in (sit, mac):
+                os.utime(p, (2_000_000, 2_000_000))
+            assert not dmod.sitadel_macro_is_stale(sit, mac)
+
+            # Source refreshed after the caches -> stale, rebuild.
+            os.utime(src, (3_000_000, 3_000_000))
+            assert dmod.sitadel_macro_is_stale(sit, mac)
+        finally:
+            dmod._sitadel_macro_sources = real_sources
 
 
 def test_macro_optional_column_missing_degrades_to_nan():
