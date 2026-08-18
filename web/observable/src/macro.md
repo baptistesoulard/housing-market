@@ -5,6 +5,7 @@ toc: false
 
 ```js
 import {legend, multiLine, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
 ```
 
@@ -22,7 +23,7 @@ function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(n
   <div>
     <div class="hm-panel-title">Indice de Confiance des Ménages (INSEE)</div>
     <div class="hm-panel-sub">CVS, base 100 = moyenne de longue période</div>
-    ${multiLine({rows: macro.confidence.map((d) => ({...d, series: "Indice de Confiance"})), meta: [{name: "Indice de Confiance", color: "#E64A19"}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v)})}
+    ${multiLine({rows: macro.confidence.map((d) => ({...d, series: "Indice de Confiance"})), meta: [{name: "Indice de Confiance", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v)})}
   </div>
   <div>
     <div class="hm-panel-title">Taux d'intérêt et conditions de financement</div>
@@ -36,12 +37,12 @@ function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(n
   <div>
     <div class="hm-panel-title">Intentions d'achat de logement (1 an)</div>
     <div class="hm-panel-sub">solde CVS centré-réduit (écarts-types)</div>
-    ${multiLine({rows: macro.intentions.map((d) => ({...d, series: "Intentions d'achat"})), meta: [{name: "Intentions d'achat", color: "#64B5F6"}], yLabel: "Écarts-types", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v)})}
+    ${multiLine({rows: macro.intentions.map((d) => ({...d, series: "Intentions d'achat"})), meta: [{name: "Intentions d'achat", color: series.blue}], yLabel: "Écarts-types", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v)})}
   </div>
   <div>
     <div class="hm-panel-title">Taux de chômage au sens du BIT</div>
     <div class="hm-panel-sub">en % de la population active, France hors Mayotte</div>
-    ${multiLine({rows: macro.chomage.map((d) => ({...d, series: "Taux de chômage BIT"})), meta: [{name: "Taux de chômage BIT", color: "#E64A19"}], yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
+    ${multiLine({rows: macro.chomage.map((d) => ({...d, series: "Taux de chômage BIT"})), meta: [{name: "Taux de chômage BIT", color: series.brick}], yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
   </div>
 </div>
 
@@ -57,22 +58,22 @@ function panel(title, sub, node) {
 function creditMonthly() {
   if (!cr.has_split)
     return multiLine({rows: cr.cum.map((d) => ({date: d.date, series: "Total", value: d.total})),
-      meta: [{name: "Total", color: "#64B5F6"}], yLabel: "Md€", valueFmt: (v) => nf0.format(v)});
+      meta: [{name: "Total", color: series.blue}], yLabel: "Md€", valueFmt: (v) => nf0.format(v)});
   const rows = [];
   for (const d of cr.monthly) {
     rows.push({date: new Date(d.date), cat: "Crédits nouveaux (hors renégo.)", value: d.pure});
     rows.push({date: new Date(d.date), cat: "Renégociations", value: d.renego});
   }
   return Plot.plot({height: 340, marginLeft: 48, x: {label: null}, y: {label: "Md€", grid: true},
-    color: {domain: ["Crédits nouveaux (hors renégo.)", "Renégociations"], range: ["#64B5F6", "#C1694F"], legend: true},
+    color: {domain: ["Crédits nouveaux (hors renégo.)", "Renégociations"], range: [series.blue, series.gold], legend: true},
     marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "month", tip: true}), Plot.ruleY([0])]});
 }
 function creditCum() {
   const rows = [...cr.cum.map((d) => ({date: d.date, series: "Total (y.c. renégo.)", value: d.total}))];
-  const meta = [{name: "Total (y.c. renégo.)", color: "#388E3C"}];
+  const meta = [{name: "Total (y.c. renégo.)", color: series.green}];
   if (cr.has_split) {
     rows.push(...cr.cum.filter((d) => d.pure != null).map((d) => ({date: d.date, series: "Hors renégociations", value: d.pure})));
-    meta.push({name: "Hors renégociations", color: "#E64A19", dash: true});
+    meta.push({name: "Hors renégociations", color: series.brick, dash: true});
   }
   return multiLine({rows, meta, yLabel: "Md€", valueFmt: (v) => nf0.format(v)});
 }

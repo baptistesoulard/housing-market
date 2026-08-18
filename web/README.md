@@ -7,27 +7,38 @@ couche back-office Python**. Ce PoC couvre le seul onglet **« Synthèse »**.
 ## Principe
 
 ```
-  [ INCHANGÉ — back-office Python ]                 [ NOUVEAU — couche produit ]
-  data_manager / analysis / forecast  ──►  web_export.py  ──►  synthese.json (statique)
-  actualites / DataManager (CSV+DuckDB)     (Étape 0)                │
-                                                                     ▼
-                                              Observable Framework  ──►  dist/ (HTML/JS)
-                                                                     ▼
-                                              Cloudflare Pages / Netlify (CDN, ~0 €)
+  [ INCHANGÉ — back-office Python ]        [ NOUVEAU — couche produit ]
+  DataManager (CSV, acquisition)  ──►  housing_data/ (Parquet + DuckDB, zéro serveur)
+       │                                                    │
+       ▼                                                    ▼
+  analysis / actualites (logique métier)   web/export/queries.py (agrégations SQL :
+       │                                    group by, cumuls glissants, YoY, z-score)
+       └───────────────────┬────────────────────────────────┘
+                            ▼
+                     web_export.py  ──►  *.json (statique)
+                     (Étape 0)                │
+                                              ▼
+                              Observable Framework  ──►  dist/ (HTML/JS)
+                                              ▼
+                              Cloudflare Pages / Netlify (CDN, ~0 €)
 ```
 
-`web_export.py` **réutilise telles quelles** les fonctions de l'app (`analysis`,
-`forecast`, `actualites`, `DataManager`) et recompute exactement le contenu de l'onglet
-Synthèse d'`app.py` (pastilles par pilier, cartes Activité / Financement / Perspective,
-« à retenir », fraîcheur des sources, séries du graphique neuf/ancien). Le front ne fait
-que **lire** ce JSON : aucun Python n'est requis au build du site.
+`web_export.py` ne recalcule plus les agrégations (group by mensuel, cumuls glissants,
+YoY, z-score, capacité d'emprunt) à la main en pandas : `web/export/queries.py` les
+délègue à **DuckDB**, qui interroge directement les **Parquet** de l'entrepôt
+`housing_data/` (déjà alimenté par `DataManager.load_or_generate_all()` à chaque
+export). Seule la logique métier partagée avec `app.py` (`analysis.calculate_kpis` /
+`momentum_metrics`, `actualites`) reste réutilisée telle quelle — c'est le contrat de
+la migration. Le front ne fait que **lire** le JSON produit : aucun Python n'est requis
+au build du site.
 
 ## Arborescence
 
 ```
 web/
 ├── export/
-│   └── web_export.py            # Étape 0 : agrégats Python → JSON statique
+│   ├── web_export.py            # Étape 0 : assemble les payloads JSON par onglet
+│   └── queries.py               # Couche SQL : agrégations DuckDB sur les Parquet
 ├── observable/
 │   ├── observablehq.config.js   # config du site
 │   ├── package.json

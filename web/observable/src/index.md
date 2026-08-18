@@ -4,18 +4,14 @@ toc: false
 ---
 
 ```js
+import {status, ui} from "./components/theme.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
 
 ```js
 // --- Rendu des pastilles par pilier ------------------------------------------------
 function chip(p) {
-  const palette = {
-    up: ["rgba(56,142,60,0.12)", "#2E7D32"],
-    flat: ["rgba(251,192,45,0.20)", "#7A5D00"],
-    down: ["rgba(230,74,25,0.12)", "#B23A12"],
-  };
-  const [bg, fg] = palette[p.status] || ["#ECECEC", "#555555"];
+  const {bg, fg} = status[p.status] || status.unknown;
   return html`<span style=${{
     background: bg, color: fg, borderRadius: "16px", padding: "6px 14px",
     marginRight: "10px", fontWeight: 600, fontSize: "1.02rem",
@@ -139,7 +135,7 @@ function panel({ y, ylabel, baseline, active }) {
     // Domaine/plage complets : chaque série garde sa couleur même si d'autres sont masquées.
     color: { domain: colorDomain, range: colorRange, legend: false },
     marks: [
-      baseline != null ? Plot.ruleY([baseline], { stroke: "#B0B7C3", strokeDasharray: "2,3" }) : null,
+      baseline != null ? Plot.ruleY([baseline], { stroke: ui.rule, strokeDasharray: "2,3" }) : null,
       Plot.lineY(solid, { x: "date", y, stroke: "series", strokeWidth: 2.5 }),
       Plot.lineY(dashed, { x: "date", y, stroke: "series", strokeWidth: 2.5, strokeDasharray: "6,4" }),
       Plot.text(lastPoints(y, active), {

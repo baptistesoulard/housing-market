@@ -6,6 +6,7 @@ toc: false
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
         MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {series} from "./components/theme.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
 ```
 
@@ -60,7 +61,7 @@ const ivMeta = [...new Map(ivBlock.lines.map((d) => [d.series, {name: d.series, 
 
 ${cardGrid(ivBlock.kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: k.roll12_yoy ? k.roll12_yoy + " sur 12 mois" : null, subs: [`3 derniers mois vs n-1 : ${k.last3_yoy}`]}))}
 
-<div class="hm-panel-title">${ivMetric === "Permis" ? "Permis de Construire" : "Mises en Chantier"} — maison individuelle pure vs collectif <span style="color:#6c757d;font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
+<div class="hm-panel-title">${ivMetric === "Permis" ? "Permis de Construire" : "Mises en Chantier"} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
 
 ${multiLine({rows: ivBlock.lines, meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k"})}
 
@@ -106,15 +107,15 @@ function eclnStock() {
     ...e.stock_rows.map((d) => ({date: d.date, series: "Encours à la vente", value: d.encours})),
     ...e.stock_rows.map((d) => ({date: d.date, series: "Mises en vente", value: d.mises_en_vente})),
   ];
-  return multiLine({rows, meta: [{name: "Encours à la vente", color: "#2D3748"}, {name: "Mises en vente", color: "#64B5F6"}],
+  return multiLine({rows, meta: [{name: "Encours à la vente", color: series.violet}, {name: "Mises en vente", color: series.blue}],
     yLabel: "Nombre de logements", valueFmt: (v) => nf0.format(v)});
 }
 function eclnDelai() {
   const rows = e.delai_rows.map((d) => ({...d, _x: new Date(d.date)}));
   return Plot.plot({height: 340, marginLeft: 48, marginRight: 60, y: {label: "Mois", grid: true, zero: true}, x: {label: null},
     marks: [
-      Plot.areaY(rows, {x: "_x", y: "delai_mois", fill: "#E64A19", fillOpacity: 0.12}),
-      Plot.lineY(rows, {x: "_x", y: "delai_mois", stroke: "#E64A19", strokeWidth: 2.4}),
+      Plot.areaY(rows, {x: "_x", y: "delai_mois", fill: series.brick, fillOpacity: 0.12}),
+      Plot.lineY(rows, {x: "_x", y: "delai_mois", stroke: series.brick, strokeWidth: 2.4}),
       Plot.ruleY([24], {stroke: "grey", strokeDasharray: "4,4"}),
       Plot.text([{x: rows.at(-1)._x, y: 24}], {x: "x", y: "y", text: () => "≈ 2 ans", dy: -8, fill: "grey"}),
       Plot.tip(rows, Plot.pointerX({x: "_x", y: "delai_mois", title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.delai_mois)} mois`})),
@@ -125,12 +126,12 @@ function eclnCat() {
   const map = {particuliers: "Particuliers", sociaux: "Bailleurs sociaux", institutionnels: "Investisseurs institutionnels"};
   for (const d of e.cat_rows) for (const k of Object.keys(map)) rows.push({date: new Date(d.date), cat: map[k], value: d[k]});
   return Plot.plot({height: 340, marginLeft: 54, x: {label: null}, y: {label: "Réservations", grid: true},
-    color: {domain: ["Particuliers", "Bailleurs sociaux", "Investisseurs institutionnels"], range: ["#E64A19", "#64B5F6", "#F5B041"], legend: true},
+    color: {domain: ["Particuliers", "Bailleurs sociaux", "Investisseurs institutionnels"], range: [series.brick, series.blue, series.gold], legend: true},
     marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: true}), Plot.ruleY([0])]});
 }
 function eclnPrix() {
   const rows = e.prixm2_rows.map((d) => ({date: d.date, series: "Prix au m²", value: d.prix}));
-  return multiLine({rows, meta: [{name: "Prix au m²", color: "#388E3C"}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²"});
+  return multiLine({rows, meta: [{name: "Prix au m²", color: series.green}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²"});
 }
 ```
 

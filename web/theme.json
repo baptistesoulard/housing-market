@@ -1,0 +1,71 @@
+{
+  "_doc": [
+    "Source unique de vérité du thème du front web. Consommée par TROIS cibles :",
+    "  1. Python  — web/export/theme.py (couleurs des métadonnées de séries sérialisées dans les JSON) ;",
+    "  2. CSS     — web/observable/observablehq.config.js (variables --hm-* injectées dans <head>) ;",
+    "  3. JS      — web/observable/src/components/theme.js (GÉNÉRÉ, ne pas éditer à la main).",
+    "Régénérer theme.js après toute modification : python web/export/web_export.py",
+    "",
+    "`brand` reproduit la charte du dépôt (Color theme.txt) telle quelle : ce sont des couleurs",
+    "d'ACCENT d'interface (titres, boutons, badges, liens), pensées pour être utilisées avec",
+    "parcimonie sur fond blanc.",
+    "",
+    "`series` est une rampe catégorielle DÉRIVÉE de ces teintes, réservée aux DONNÉES des",
+    "graphiques. Une couleur d'accent d'interface ne fait pas une bonne couleur de courbe :",
+    "la charte brute échoue aux contrôles d'accessibilité (contraste < 3:1 sur blanc pour le",
+    "bleu ciel et le jaune tournesol, et l'anthracite #2D3748 est un jeton de TEXTE qui, utilisé",
+    "comme couleur de série, se lit comme un gris). Chaque pas de `series` garde donc la teinte",
+    "de marque mais est calé sur un niveau qui passe les contrôles (bande de clarté, plancher de",
+    "chroma, séparation daltonisme, contraste >= 3:1 sur le fond).",
+    "",
+    "Les séries sont assignées dans l'ORDRE FIXE ci-dessous, jamais en cycle. Trois séries",
+    "simultanées au maximum dans un graphique : les slots 1-3 (brick/blue/green) couvrent ce cas",
+    "et sont validés entre eux ; violet et gold servent aux 4e/5e identités."
+  ],
+
+  "brand": {
+    "bg": "#FFFFFF",
+    "surface": "#F5F5F5",
+    "ink": "#2D3748",
+    "brick": "#E64A19",
+    "terracotta": "#D0A37D",
+    "sunflower": "#FBC02D",
+    "blue": "#64B5F6",
+    "green": "#388E3C"
+  },
+
+  "series": {
+    "brick": "#E64A19",
+    "blue": "#1F78B4",
+    "green": "#388E3C",
+    "violet": "#6A4C93",
+    "gold": "#B07D10"
+  },
+
+  "status": {
+    "up": {"fg": "#2E7D32", "bg": "rgba(56,142,60,0.12)"},
+    "flat": {"fg": "#7A5D00", "bg": "rgba(251,192,45,0.20)"},
+    "down": {"fg": "#B23A12", "bg": "rgba(230,74,25,0.12)"},
+    "unknown": {"fg": "#555555", "bg": "#ECECEC"}
+  },
+
+  "delta": {
+    "positive": "#2E7D32",
+    "negative": "#C0392B",
+    "neutral": "#7A7A7A"
+  },
+
+  "ui": {
+    "link": "#1E88E5",
+    "subtle": "#6c757d",
+    "muted": "#4A5568",
+    "rule": "#B0B7C3",
+    "greyLine": "#9AA5B1",
+    "border": "#E7E9ED",
+    "borderLight": "#EDEFF2"
+  },
+
+  "font": {
+    "sans": "Calibri, \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
+  }
+}

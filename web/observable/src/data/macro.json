@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T22:44:08+00:00",
+  "generated_at": "2026-08-18T08:04:45+00:00",
   "title": "🏦 Contexte Macroéconomique et Financement",
   "caption": "Indicateurs de contexte macroéconomique et de conditions de financement : confiance des ménages (INSEE), taux du crédit habitat (BdF/BCE), Euribor 3 mois et OAT 10 ans (BCE), intentions d'achat de logement et taux de chômage BIT (INSEE).",
   "confidence": [
@@ -5699,11 +5699,11 @@
     "meta": [
       {
         "name": "Taux Crédit Habitat",
-        "color": "#2D3748"
+        "color": "#6A4C93"
       },
       {
         "name": "Euribor 3 mois",
-        "color": "#64B5F6"
+        "color": "#1F78B4"
       },
       {
         "name": "OAT 10 ans",
