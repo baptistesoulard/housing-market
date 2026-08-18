@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T22:44:08+00:00",
+  "generated_at": "2026-08-18T11:20:08+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -20,19 +20,19 @@
     {
       "key": "fin",
       "label": "Financement",
-      "status": "flat",
-      "dot": "🟠",
-      "word": "stable"
+      "status": "down",
+      "dot": "🔴",
+      "word": "en durcissement"
     }
   ],
   "takeaways": [
-    "🟢 **Neuf** — la construction accélère : permis +14,7% et mises en chantier +18,9% sur 12 mois (maison individuelle pure : +41,8% sur 3 mois).",
+    "🟢 **Neuf** — la construction accélère : permis +9,2% et mises en chantier +16,7% sur 12 mois (maison individuelle pure : +40,0% sur 3 mois).",
     "🟠 **Ancien** — 954 k ventes sur 12 mois (+5,2%) ; +0,8% sur les 3 derniers mois.",
-    "🟠 **Financement** — taux de crédit à 3,10 % (+0,1 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
+    "🔴 **Financement** — taux de crédit à 3,16 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
     "🎯 **Demande second œuvre** — signal favorable à 12-18 mois via le neuf (fermetures & menuiseries) ; transactions neutres à court terme."
   ],
   "freshness": [
-    "SIT@DEL : mai 2026",
+    "SIT@DEL : juin 2026",
     "IGEDD : juin 2026",
     "ECLN : 2026-T1"
   ],
@@ -42,16 +42,16 @@
       "title": "Activité",
       "cards": [
         {
-          "emoji": "🟢",
+          "emoji": "🔴",
           "title": "Permis de construire",
-          "value": "385 k /12 m",
-          "sub": "+9,2% vs un an plus tôt (3 derniers mois) · total exact : 384 935"
+          "value": "376 k /12 m",
+          "sub": "-9,0% vs un an plus tôt (3 derniers mois) · total exact : 376 241"
         },
         {
           "emoji": "🟢",
           "title": "Mises en chantier",
-          "value": "295 k /12 m",
-          "sub": "+48,1% vs un an plus tôt (3 derniers mois) · total exact : 295 250"
+          "value": "293 k /12 m",
+          "sub": "+28,4% vs un an plus tôt (3 derniers mois) · total exact : 293 412"
         },
         {
           "emoji": "🟠",
@@ -72,15 +72,15 @@
       "title": "Conditions de financement",
       "cards": [
         {
-          "emoji": "🟠",
+          "emoji": "🔴",
           "title": "Taux de crédit habitat",
-          "value": "3,10 %",
-          "sub": "sur un an : +0,1 pt"
+          "value": "3,16 %",
+          "sub": "sur un an : +0,2 pt"
         },
         {
           "emoji": "🔴",
           "title": "Demande de crédit (banques)",
-          "value": "-38",
+          "value": "-12",
           "sub": "attendue en baisse par les banques · enquête BLS, 3 prochains mois"
         },
         {
@@ -104,7 +104,7 @@
         {
           "emoji": "🔴",
           "title": "Activité rénovation (second œuvre)",
-          "value": "-16",
+          "value": "-14",
           "sub": "solde d'opinion INSEE — activité en baisse"
         },
         {
@@ -145,1546 +145,1546 @@
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 392.93,
-        "index_100": 83.71
+        "index_100": 83.72
       },
       {
         "date": "2001-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 391.87,
-        "index_100": 83.48
+        "index_100": 83.5
       },
       {
         "date": "2001-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 394.05,
-        "index_100": 83.95
+        "index_100": 83.96
       },
       {
         "date": "2001-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 394.72,
-        "index_100": 84.09
+        "index_100": 84.1
       },
       {
         "date": "2001-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 388.94,
-        "index_100": 82.86
+        "index_100": 82.87
       },
       {
         "date": "2001-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 383.47,
-        "index_100": 81.7
+        "index_100": 81.71
       },
       {
         "date": "2001-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 382.65,
-        "index_100": 81.52
+        "index_100": 81.53
       },
       {
         "date": "2001-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 382.14,
-        "index_100": 81.41
+        "index_100": 81.42
       },
       {
         "date": "2001-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 381.38,
-        "index_100": 81.25
+        "index_100": 81.26
       },
       {
         "date": "2001-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 380.56,
-        "index_100": 81.07
+        "index_100": 81.09
       },
       {
         "date": "2001-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 383.1,
-        "index_100": 81.62
+        "index_100": 81.63
       },
       {
         "date": "2001-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 381.38,
-        "index_100": 81.25
+        "index_100": 81.26
       },
       {
         "date": "2001-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 379.76,
-        "index_100": 80.9
+        "index_100": 80.92
       },
       {
         "date": "2002-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 379.25,
-        "index_100": 80.8
+        "index_100": 80.81
       },
       {
         "date": "2002-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 375.84,
-        "index_100": 80.07
+        "index_100": 80.08
       },
       {
         "date": "2002-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 373.29,
-        "index_100": 79.53
+        "index_100": 79.54
       },
       {
         "date": "2002-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 378.5,
-        "index_100": 80.64
+        "index_100": 80.65
       },
       {
         "date": "2002-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 377.77,
-        "index_100": 80.48
+        "index_100": 80.49
       },
       {
         "date": "2002-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 376.44,
-        "index_100": 80.2
+        "index_100": 80.21
       },
       {
         "date": "2002-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 374.58,
-        "index_100": 79.8
+        "index_100": 79.81
       },
       {
         "date": "2002-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 371.88,
-        "index_100": 79.22
+        "index_100": 79.24
       },
       {
         "date": "2002-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 374.73,
-        "index_100": 79.83
+        "index_100": 79.85
       },
       {
         "date": "2002-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 373.88,
-        "index_100": 79.65
+        "index_100": 79.67
       },
       {
         "date": "2002-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 374.9,
-        "index_100": 79.87
+        "index_100": 79.88
       },
       {
         "date": "2002-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 376.52,
-        "index_100": 80.21
+        "index_100": 80.23
       },
       {
         "date": "2003-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 377.13,
-        "index_100": 80.35
+        "index_100": 80.36
       },
       {
         "date": "2003-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 380.28,
-        "index_100": 81.02
+        "index_100": 81.03
       },
       {
         "date": "2003-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 382.37,
-        "index_100": 81.46
+        "index_100": 81.47
       },
       {
         "date": "2003-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 382.07,
-        "index_100": 81.4
+        "index_100": 81.41
       },
       {
         "date": "2003-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 385.88,
-        "index_100": 82.21
+        "index_100": 82.22
       },
       {
         "date": "2003-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 388.18,
-        "index_100": 82.7
+        "index_100": 82.71
       },
       {
         "date": "2003-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 393.21,
-        "index_100": 83.77
+        "index_100": 83.78
       },
       {
         "date": "2003-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 399.08,
-        "index_100": 85.02
+        "index_100": 85.03
       },
       {
         "date": "2003-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 403.04,
-        "index_100": 85.86
+        "index_100": 85.88
       },
       {
         "date": "2003-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 405.48,
-        "index_100": 86.38
+        "index_100": 86.4
       },
       {
         "date": "2003-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 409.41,
-        "index_100": 87.22
+        "index_100": 87.23
       },
       {
         "date": "2003-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 414.83,
-        "index_100": 88.38
+        "index_100": 88.39
       },
       {
         "date": "2004-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 421.93,
-        "index_100": 89.89
+        "index_100": 89.9
       },
       {
         "date": "2004-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 428.8,
-        "index_100": 91.35
+        "index_100": 91.37
       },
       {
         "date": "2004-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 433.95,
-        "index_100": 92.45
+        "index_100": 92.46
       },
       {
         "date": "2004-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 440.76,
-        "index_100": 93.9
+        "index_100": 93.92
       },
       {
         "date": "2004-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 447.6,
-        "index_100": 95.36
+        "index_100": 95.37
       },
       {
         "date": "2004-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 457.01,
-        "index_100": 97.36
+        "index_100": 97.38
       },
       {
         "date": "2004-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 461.42,
-        "index_100": 98.3
+        "index_100": 98.32
       },
       {
         "date": "2004-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 468.98,
-        "index_100": 99.91
+        "index_100": 99.93
       },
       {
         "date": "2004-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 474.9,
-        "index_100": 101.17
+        "index_100": 101.19
       },
       {
         "date": "2004-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 483.07,
-        "index_100": 102.91
+        "index_100": 102.93
       },
       {
         "date": "2004-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 490.16,
-        "index_100": 104.42
+        "index_100": 104.44
       },
       {
         "date": "2004-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 496.59,
-        "index_100": 105.79
+        "index_100": 105.81
       },
       {
         "date": "2005-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 503.63,
-        "index_100": 107.29
+        "index_100": 107.31
       },
       {
         "date": "2005-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 506.26,
-        "index_100": 107.85
+        "index_100": 107.87
       },
       {
         "date": "2005-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 511.22,
-        "index_100": 108.91
+        "index_100": 108.93
       },
       {
         "date": "2005-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 515.75,
-        "index_100": 109.88
+        "index_100": 109.89
       },
       {
         "date": "2005-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 517.09,
-        "index_100": 110.16
+        "index_100": 110.18
       },
       {
         "date": "2005-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 524.28,
-        "index_100": 111.69
+        "index_100": 111.71
       },
       {
         "date": "2005-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 529.63,
-        "index_100": 112.83
+        "index_100": 112.85
       },
       {
         "date": "2005-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 533.11,
-        "index_100": 113.57
+        "index_100": 113.59
       },
       {
         "date": "2005-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 537.27,
-        "index_100": 114.46
+        "index_100": 114.48
       },
       {
         "date": "2005-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 538.69,
-        "index_100": 114.76
+        "index_100": 114.78
       },
       {
         "date": "2005-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 542.96,
-        "index_100": 115.67
+        "index_100": 115.69
       },
       {
         "date": "2005-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 551.81,
-        "index_100": 117.56
+        "index_100": 117.58
       },
       {
         "date": "2006-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 555.71,
-        "index_100": 118.39
+        "index_100": 118.41
       },
       {
         "date": "2006-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 563.69,
-        "index_100": 120.09
+        "index_100": 120.11
       },
       {
         "date": "2006-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 571.56,
-        "index_100": 121.77
+        "index_100": 121.78
       },
       {
         "date": "2006-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 579.13,
-        "index_100": 123.38
+        "index_100": 123.4
       },
       {
         "date": "2006-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 587.17,
-        "index_100": 125.09
+        "index_100": 125.11
       },
       {
         "date": "2006-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 590.53,
-        "index_100": 125.81
+        "index_100": 125.83
       },
       {
         "date": "2006-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 594.01,
-        "index_100": 126.55
+        "index_100": 126.57
       },
       {
         "date": "2006-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 597.7,
-        "index_100": 127.33
+        "index_100": 127.35
       },
       {
         "date": "2006-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 596.68,
-        "index_100": 127.12
+        "index_100": 127.14
       },
       {
         "date": "2006-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 602.01,
-        "index_100": 128.25
+        "index_100": 128.27
       },
       {
         "date": "2006-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 606.26,
-        "index_100": 129.16
+        "index_100": 129.18
       },
       {
         "date": "2006-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 605.12,
-        "index_100": 128.92
+        "index_100": 128.94
       },
       {
         "date": "2007-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 602.64,
-        "index_100": 128.39
+        "index_100": 128.41
       },
       {
         "date": "2007-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 603.03,
-        "index_100": 128.47
+        "index_100": 128.49
       },
       {
         "date": "2007-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 604.92,
-        "index_100": 128.87
+        "index_100": 128.89
       },
       {
         "date": "2007-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 600.32,
-        "index_100": 127.89
+        "index_100": 127.91
       },
       {
         "date": "2007-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 600.56,
-        "index_100": 127.94
+        "index_100": 127.96
       },
       {
         "date": "2007-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 596.87,
-        "index_100": 127.16
+        "index_100": 127.18
       },
       {
         "date": "2007-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 594.97,
-        "index_100": 126.75
+        "index_100": 126.77
       },
       {
         "date": "2007-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 593.95,
-        "index_100": 126.54
+        "index_100": 126.56
       },
       {
         "date": "2007-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 593.09,
-        "index_100": 126.35
+        "index_100": 126.37
       },
       {
         "date": "2007-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 589.89,
-        "index_100": 125.67
+        "index_100": 125.69
       },
       {
         "date": "2007-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 578.51,
-        "index_100": 123.25
+        "index_100": 123.27
       },
       {
         "date": "2007-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 572.87,
-        "index_100": 122.05
+        "index_100": 122.06
       },
       {
         "date": "2008-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 572.03,
-        "index_100": 121.87
+        "index_100": 121.89
       },
       {
         "date": "2008-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 569.35,
-        "index_100": 121.29
+        "index_100": 121.31
       },
       {
         "date": "2008-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 563.62,
-        "index_100": 120.07
+        "index_100": 120.09
       },
       {
         "date": "2008-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 558.26,
-        "index_100": 118.93
+        "index_100": 118.95
       },
       {
         "date": "2008-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 551.18,
-        "index_100": 117.42
+        "index_100": 117.44
       },
       {
         "date": "2008-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 541.76,
-        "index_100": 115.42
+        "index_100": 115.44
       },
       {
         "date": "2008-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 531.03,
-        "index_100": 113.13
+        "index_100": 113.15
       },
       {
         "date": "2008-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 518.72,
-        "index_100": 110.51
+        "index_100": 110.53
       },
       {
         "date": "2008-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 509.21,
-        "index_100": 108.48
+        "index_100": 108.5
       },
       {
         "date": "2008-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 500.17,
-        "index_100": 106.56
+        "index_100": 106.57
       },
       {
         "date": "2008-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 492.5,
-        "index_100": 104.92
+        "index_100": 104.94
       },
       {
         "date": "2008-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 478.23,
-        "index_100": 101.88
+        "index_100": 101.9
       },
       {
         "date": "2009-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 464.91,
-        "index_100": 99.05
+        "index_100": 99.06
       },
       {
         "date": "2009-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 445.64,
-        "index_100": 94.94
+        "index_100": 94.95
       },
       {
         "date": "2009-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 429.38,
-        "index_100": 91.48
+        "index_100": 91.49
       },
       {
         "date": "2009-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 417.45,
-        "index_100": 88.93
+        "index_100": 88.95
       },
       {
         "date": "2009-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 403.24,
-        "index_100": 85.91
+        "index_100": 85.92
       },
       {
         "date": "2009-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 392.97,
-        "index_100": 83.72
+        "index_100": 83.73
       },
       {
         "date": "2009-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 388.87,
-        "index_100": 82.85
+        "index_100": 82.86
       },
       {
         "date": "2009-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 383.38,
-        "index_100": 81.68
+        "index_100": 81.69
       },
       {
         "date": "2009-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 380.51,
-        "index_100": 81.06
+        "index_100": 81.08
       },
       {
         "date": "2009-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 377.53,
-        "index_100": 80.43
+        "index_100": 80.44
       },
       {
         "date": "2009-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 378.15,
-        "index_100": 80.56
+        "index_100": 80.57
       },
       {
         "date": "2009-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 381.21,
-        "index_100": 81.21
+        "index_100": 81.23
       },
       {
         "date": "2010-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 384.38,
-        "index_100": 81.89
+        "index_100": 81.9
       },
       {
         "date": "2010-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 393.67,
-        "index_100": 83.87
+        "index_100": 83.88
       },
       {
         "date": "2010-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 404.89,
-        "index_100": 86.26
+        "index_100": 86.27
       },
       {
         "date": "2010-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 415.15,
-        "index_100": 88.44
+        "index_100": 88.46
       },
       {
         "date": "2010-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 425.48,
-        "index_100": 90.64
+        "index_100": 90.66
       },
       {
         "date": "2010-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 436.64,
-        "index_100": 93.02
+        "index_100": 93.04
       },
       {
         "date": "2010-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 447.29,
-        "index_100": 95.29
+        "index_100": 95.31
       },
       {
         "date": "2010-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 454.71,
-        "index_100": 96.87
+        "index_100": 96.89
       },
       {
         "date": "2010-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 462.52,
-        "index_100": 98.54
+        "index_100": 98.55
       },
       {
         "date": "2010-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 466.62,
-        "index_100": 99.41
+        "index_100": 99.42
       },
       {
         "date": "2010-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 469.6,
-        "index_100": 100.04
+        "index_100": 100.06
       },
       {
         "date": "2010-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 474.44,
-        "index_100": 101.08
+        "index_100": 101.09
       },
       {
         "date": "2011-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 481.68,
-        "index_100": 102.62
+        "index_100": 102.63
       },
       {
         "date": "2011-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 482.95,
-        "index_100": 102.89
+        "index_100": 102.9
       },
       {
         "date": "2011-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 480.01,
-        "index_100": 102.26
+        "index_100": 102.28
       },
       {
         "date": "2011-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 480.02,
-        "index_100": 102.26
+        "index_100": 102.28
       },
       {
         "date": "2011-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 485.39,
-        "index_100": 103.41
+        "index_100": 103.43
       },
       {
         "date": "2011-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 488.56,
-        "index_100": 104.08
+        "index_100": 104.1
       },
       {
         "date": "2011-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 490.36,
-        "index_100": 104.47
+        "index_100": 104.48
       },
       {
         "date": "2011-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 498.48,
-        "index_100": 106.2
+        "index_100": 106.21
       },
       {
         "date": "2011-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 504.47,
-        "index_100": 107.47
+        "index_100": 107.49
       },
       {
         "date": "2011-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 507.21,
-        "index_100": 108.06
+        "index_100": 108.07
       },
       {
         "date": "2011-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 513.56,
-        "index_100": 109.41
+        "index_100": 109.43
       },
       {
         "date": "2011-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 519.25,
-        "index_100": 110.62
+        "index_100": 110.64
       },
       {
         "date": "2012-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 517.57,
-        "index_100": 110.26
+        "index_100": 110.28
       },
       {
         "date": "2012-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 518.39,
-        "index_100": 110.44
+        "index_100": 110.45
       },
       {
         "date": "2012-03-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 519.31,
-        "index_100": 110.63
+        "index_100": 110.65
       },
       {
         "date": "2012-04-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 521.76,
-        "index_100": 111.16
+        "index_100": 111.17
       },
       {
         "date": "2012-05-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 518.75,
-        "index_100": 110.51
+        "index_100": 110.53
       },
       {
         "date": "2012-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 515.54,
-        "index_100": 109.83
+        "index_100": 109.85
       },
       {
         "date": "2012-07-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 509.94,
-        "index_100": 108.64
+        "index_100": 108.66
       },
       {
         "date": "2012-08-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 511.75,
-        "index_100": 109.02
+        "index_100": 109.04
       },
       {
         "date": "2012-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 503.37,
-        "index_100": 107.24
+        "index_100": 107.25
       },
       {
         "date": "2012-10-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 499.75,
-        "index_100": 106.47
+        "index_100": 106.48
       },
       {
         "date": "2012-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 492.84,
-        "index_100": 104.99
+        "index_100": 105.01
       },
       {
         "date": "2012-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 486.56,
-        "index_100": 103.66
+        "index_100": 103.67
       },
       {
         "date": "2013-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 486.8,
-        "index_100": 103.71
+        "level_k": 486.79,
+        "index_100": 103.72
       },
       {
         "date": "2013-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 494.51,
-        "index_100": 105.35
+        "level_k": 494.49,
+        "index_100": 105.36
       },
       {
         "date": "2013-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 494.84,
-        "index_100": 105.42
+        "level_k": 494.83,
+        "index_100": 105.44
       },
       {
         "date": "2013-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 485.42,
-        "index_100": 103.41
+        "level_k": 485.43,
+        "index_100": 103.43
       },
       {
         "date": "2013-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 476.15,
-        "index_100": 101.44
+        "level_k": 476.17,
+        "index_100": 101.46
       },
       {
         "date": "2013-06-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 468.38,
-        "index_100": 99.78
+        "index_100": 99.8
       },
       {
         "date": "2013-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 459.77,
-        "index_100": 97.95
+        "level_k": 459.8,
+        "index_100": 97.97
       },
       {
         "date": "2013-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 441.66,
-        "index_100": 94.09
+        "level_k": 441.67,
+        "index_100": 94.11
       },
       {
         "date": "2013-09-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 433.2,
-        "index_100": 92.29
+        "index_100": 92.3
       },
       {
         "date": "2013-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 428.5,
-        "index_100": 91.29
+        "level_k": 428.51,
+        "index_100": 91.31
       },
       {
         "date": "2013-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 424.07,
-        "index_100": 90.34
+        "level_k": 424.04,
+        "index_100": 90.35
       },
       {
         "date": "2013-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 417.04,
-        "index_100": 88.85
+        "level_k": 417.03,
+        "index_100": 88.86
       },
       {
         "date": "2014-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 407.39,
-        "index_100": 86.79
+        "level_k": 407.41,
+        "index_100": 86.81
       },
       {
         "date": "2014-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 392.74,
-        "index_100": 83.67
+        "level_k": 392.76,
+        "index_100": 83.69
       },
       {
         "date": "2014-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 388.79,
-        "index_100": 82.83
+        "level_k": 388.81,
+        "index_100": 82.85
       },
       {
         "date": "2014-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 383.3,
-        "index_100": 81.66
+        "level_k": 383.31,
+        "index_100": 81.67
       },
       {
         "date": "2014-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 382.89,
-        "index_100": 81.57
+        "level_k": 382.86,
+        "index_100": 81.58
       },
       {
         "date": "2014-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 381.47,
-        "index_100": 81.27
+        "level_k": 381.45,
+        "index_100": 81.28
       },
       {
         "date": "2014-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 383.01,
-        "index_100": 81.6
+        "level_k": 383.03,
+        "index_100": 81.61
       },
       {
         "date": "2014-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 382.79,
-        "index_100": 81.55
+        "level_k": 382.81,
+        "index_100": 81.57
       },
       {
         "date": "2014-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 382.58,
-        "index_100": 81.5
+        "level_k": 382.61,
+        "index_100": 81.52
       },
       {
         "date": "2014-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 379.26,
-        "index_100": 80.8
+        "level_k": 379.27,
+        "index_100": 80.81
       },
       {
         "date": "2014-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 375.17,
-        "index_100": 79.93
+        "level_k": 375.18,
+        "index_100": 79.94
       },
       {
         "date": "2014-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 373.86,
-        "index_100": 79.65
+        "level_k": 373.85,
+        "index_100": 79.66
       },
       {
         "date": "2015-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 373.57,
+        "level_k": 373.54,
         "index_100": 79.59
       },
       {
         "date": "2015-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 370.05,
-        "index_100": 78.83
+        "level_k": 370.0,
+        "index_100": 78.84
       },
       {
         "date": "2015-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 365.43,
-        "index_100": 77.85
+        "level_k": 365.39,
+        "index_100": 77.86
       },
       {
         "date": "2015-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 369.88,
+        "level_k": 369.84,
         "index_100": 78.8
       },
       {
         "date": "2015-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 368.36,
-        "index_100": 78.48
+        "level_k": 368.38,
+        "index_100": 78.49
       },
       {
         "date": "2015-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 372.05,
-        "index_100": 79.26
+        "level_k": 372.07,
+        "index_100": 79.28
       },
       {
         "date": "2015-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 372.04,
+        "level_k": 372.0,
         "index_100": 79.26
       },
       {
         "date": "2015-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 376.01,
-        "index_100": 80.1
+        "level_k": 375.97,
+        "index_100": 80.11
       },
       {
         "date": "2015-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 378.42,
+        "level_k": 378.38,
         "index_100": 80.62
       },
       {
         "date": "2015-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 382.38,
-        "index_100": 81.46
+        "level_k": 382.35,
+        "index_100": 81.47
       },
       {
         "date": "2015-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 391.15,
-        "index_100": 83.33
+        "level_k": 391.14,
+        "index_100": 83.34
       },
       {
         "date": "2015-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 396.42,
-        "index_100": 84.45
+        "level_k": 396.45,
+        "index_100": 84.47
       },
       {
         "date": "2016-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 399.05,
-        "index_100": 85.01
+        "level_k": 399.1,
+        "index_100": 85.04
       },
       {
         "date": "2016-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 407.21,
-        "index_100": 86.75
+        "level_k": 407.29,
+        "index_100": 86.78
       },
       {
         "date": "2016-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 409.27,
-        "index_100": 87.19
+        "level_k": 409.37,
+        "index_100": 87.23
       },
       {
         "date": "2016-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 415.3,
-        "index_100": 88.48
+        "level_k": 415.38,
+        "index_100": 88.51
       },
       {
         "date": "2016-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 422.7,
-        "index_100": 90.05
+        "level_k": 422.76,
+        "index_100": 90.08
       },
       {
         "date": "2016-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 425.0,
-        "index_100": 90.54
+        "level_k": 425.05,
+        "index_100": 90.57
       },
       {
         "date": "2016-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 430.18,
-        "index_100": 91.65
+        "level_k": 430.21,
+        "index_100": 91.67
       },
       {
         "date": "2016-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 435.11,
-        "index_100": 92.7
+        "level_k": 435.14,
+        "index_100": 92.72
       },
       {
         "date": "2016-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 444.68,
-        "index_100": 94.73
+        "level_k": 444.73,
+        "index_100": 94.76
       },
       {
         "date": "2016-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 449.09,
-        "index_100": 95.67
+        "level_k": 449.14,
+        "index_100": 95.7
       },
       {
         "date": "2016-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 454.51,
-        "index_100": 96.83
+        "level_k": 454.55,
+        "index_100": 96.85
       },
       {
         "date": "2016-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 460.52,
-        "index_100": 98.11
+        "level_k": 460.53,
+        "index_100": 98.13
       },
       {
         "date": "2017-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 462.0,
-        "index_100": 98.42
+        "level_k": 462.02,
+        "index_100": 98.44
       },
       {
         "date": "2017-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 462.64,
-        "index_100": 98.56
+        "level_k": 462.63,
+        "index_100": 98.58
       },
       {
         "date": "2017-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 472.37,
+        "level_k": 472.3,
         "index_100": 100.64
       },
       {
         "date": "2017-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 472.95,
+        "level_k": 472.88,
         "index_100": 100.76
       },
       {
         "date": "2017-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 476.09,
+        "level_k": 476.01,
         "index_100": 101.43
       },
       {
         "date": "2017-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 480.88,
+        "level_k": 480.81,
         "index_100": 102.45
       },
       {
         "date": "2017-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 486.22,
-        "index_100": 103.58
+        "level_k": 486.19,
+        "index_100": 103.59
       },
       {
         "date": "2017-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 488.93,
-        "index_100": 104.16
+        "level_k": 488.92,
+        "index_100": 104.18
       },
       {
         "date": "2017-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 490.84,
-        "index_100": 104.57
+        "level_k": 490.81,
+        "index_100": 104.58
       },
       {
         "date": "2017-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 491.43,
-        "index_100": 104.69
+        "level_k": 491.41,
+        "index_100": 104.71
       },
       {
         "date": "2017-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 487.02,
-        "index_100": 103.76
+        "level_k": 487.03,
+        "index_100": 103.77
       },
       {
         "date": "2017-12-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 486.47,
-        "index_100": 103.64
+        "index_100": 103.65
       },
       {
         "date": "2018-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 488.46,
-        "index_100": 104.06
+        "level_k": 488.45,
+        "index_100": 104.08
       },
       {
         "date": "2018-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 492.07,
-        "index_100": 104.83
+        "level_k": 492.05,
+        "index_100": 104.84
       },
       {
         "date": "2018-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 487.8,
-        "index_100": 103.92
+        "level_k": 487.79,
+        "index_100": 103.94
       },
       {
         "date": "2018-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 487.43,
-        "index_100": 103.84
+        "level_k": 487.41,
+        "index_100": 103.86
       },
       {
         "date": "2018-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 487.49,
-        "index_100": 103.85
+        "level_k": 487.46,
+        "index_100": 103.87
       },
       {
         "date": "2018-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 481.75,
-        "index_100": 102.63
+        "level_k": 481.73,
+        "index_100": 102.64
       },
       {
         "date": "2018-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 474.01,
-        "index_100": 100.98
+        "level_k": 473.97,
+        "index_100": 100.99
       },
       {
         "date": "2018-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 471.08,
-        "index_100": 100.36
+        "level_k": 471.04,
+        "index_100": 100.37
       },
       {
         "date": "2018-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 467.43,
+        "level_k": 467.36,
         "index_100": 99.58
       },
       {
         "date": "2018-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 466.52,
-        "index_100": 99.39
+        "level_k": 466.49,
+        "index_100": 99.4
       },
       {
         "date": "2018-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 465.35,
-        "index_100": 99.14
+        "level_k": 465.31,
+        "index_100": 99.15
       },
       {
         "date": "2018-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 460.07,
-        "index_100": 98.01
+        "level_k": 460.02,
+        "index_100": 98.02
       },
       {
         "date": "2019-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 459.92,
-        "index_100": 97.98
+        "level_k": 459.87,
+        "index_100": 97.99
       },
       {
         "date": "2019-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 451.54,
+        "level_k": 451.49,
         "index_100": 96.2
       },
       {
         "date": "2019-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 449.93,
-        "index_100": 95.85
+        "level_k": 449.88,
+        "index_100": 95.86
       },
       {
         "date": "2019-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 449.86,
+        "level_k": 449.82,
         "index_100": 95.84
       },
       {
@@ -1692,2737 +1692,2751 @@
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 445.36,
-        "index_100": 94.88
+        "index_100": 94.89
       },
       {
         "date": "2019-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 445.92,
-        "index_100": 95.0
+        "level_k": 445.89,
+        "index_100": 95.01
       },
       {
         "date": "2019-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 446.57,
-        "index_100": 95.14
+        "level_k": 446.54,
+        "index_100": 95.15
       },
       {
         "date": "2019-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 442.9,
+        "level_k": 442.87,
         "index_100": 94.36
       },
       {
         "date": "2019-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 437.7,
-        "index_100": 93.25
+        "level_k": 437.71,
+        "index_100": 93.27
       },
       {
         "date": "2019-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 440.49,
-        "index_100": 93.84
+        "level_k": 440.46,
+        "index_100": 93.85
       },
       {
         "date": "2019-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 441.6,
-        "index_100": 94.08
+        "level_k": 441.58,
+        "index_100": 94.09
       },
       {
         "date": "2019-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 446.79,
-        "index_100": 95.19
+        "level_k": 446.81,
+        "index_100": 95.2
       },
       {
         "date": "2020-01-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 449.63,
-        "index_100": 95.79
+        "index_100": 95.8
       },
       {
         "date": "2020-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 455.87,
-        "index_100": 97.12
+        "level_k": 455.9,
+        "index_100": 97.14
       },
       {
         "date": "2020-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 453.64,
-        "index_100": 96.64
+        "level_k": 453.7,
+        "index_100": 96.67
       },
       {
         "date": "2020-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 430.71,
-        "index_100": 91.76
+        "level_k": 430.77,
+        "index_100": 91.79
       },
       {
         "date": "2020-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 416.85,
-        "index_100": 88.81
+        "level_k": 416.9,
+        "index_100": 88.83
       },
       {
         "date": "2020-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 410.94,
-        "index_100": 87.55
+        "level_k": 411.0,
+        "index_100": 87.57
       },
       {
         "date": "2020-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 404.13,
-        "index_100": 86.1
+        "level_k": 404.18,
+        "index_100": 86.12
       },
       {
         "date": "2020-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 401.74,
-        "index_100": 85.59
+        "level_k": 401.81,
+        "index_100": 85.62
       },
       {
         "date": "2020-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 401.48,
-        "index_100": 85.53
+        "level_k": 401.51,
+        "index_100": 85.55
       },
       {
         "date": "2020-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 396.58,
-        "index_100": 84.49
+        "level_k": 396.59,
+        "index_100": 84.5
       },
       {
         "date": "2020-11-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 398.11,
-        "index_100": 84.81
+        "index_100": 84.83
       },
       {
         "date": "2020-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 394.07,
-        "index_100": 83.95
+        "level_k": 394.05,
+        "index_100": 83.96
       },
       {
         "date": "2021-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 391.28,
-        "index_100": 83.36
+        "level_k": 391.26,
+        "index_100": 83.37
       },
       {
         "date": "2021-02-01",
         "series": "Permis de construire",
         "key": "permis",
         "level_k": 389.16,
-        "index_100": 82.91
+        "index_100": 82.92
       },
       {
         "date": "2021-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 391.62,
-        "index_100": 83.43
+        "level_k": 391.64,
+        "index_100": 83.45
       },
       {
         "date": "2021-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 414.61,
-        "index_100": 88.33
+        "level_k": 414.65,
+        "index_100": 88.35
       },
       {
         "date": "2021-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 430.95,
-        "index_100": 91.81
+        "level_k": 430.97,
+        "index_100": 91.83
       },
       {
         "date": "2021-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 438.57,
-        "index_100": 93.43
+        "level_k": 438.51,
+        "index_100": 93.44
       },
       {
         "date": "2021-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 448.85,
-        "index_100": 95.62
+        "level_k": 448.82,
+        "index_100": 95.63
       },
       {
         "date": "2021-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 453.0,
-        "index_100": 96.51
+        "level_k": 453.01,
+        "index_100": 96.52
       },
       {
         "date": "2021-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 460.77,
-        "index_100": 98.16
+        "level_k": 460.8,
+        "index_100": 98.18
       },
       {
         "date": "2021-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 463.6,
-        "index_100": 98.77
+        "level_k": 463.61,
+        "index_100": 98.78
       },
       {
         "date": "2021-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 463.94,
-        "index_100": 98.84
+        "level_k": 463.92,
+        "index_100": 98.85
       },
       {
         "date": "2021-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 466.04,
+        "level_k": 466.0,
         "index_100": 99.29
       },
       {
         "date": "2022-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 469.39,
+        "level_k": 469.32,
         "index_100": 100.0
       },
       {
         "date": "2022-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 481.84,
+        "level_k": 481.77,
         "index_100": 102.65
       },
       {
         "date": "2022-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 493.74,
+        "level_k": 493.68,
         "index_100": 105.19
       },
       {
         "date": "2022-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 500.09,
+        "level_k": 500.03,
         "index_100": 106.54
       },
       {
         "date": "2022-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 506.04,
+        "level_k": 505.97,
         "index_100": 107.81
       },
       {
         "date": "2022-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 508.85,
+        "level_k": 508.8,
         "index_100": 108.41
       },
       {
         "date": "2022-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 509.94,
-        "index_100": 108.64
+        "level_k": 509.83,
+        "index_100": 108.63
       },
       {
         "date": "2022-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 522.36,
+        "level_k": 522.27,
         "index_100": 111.28
       },
       {
         "date": "2022-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 514.51,
-        "index_100": 109.61
+        "level_k": 514.34,
+        "index_100": 109.59
       },
       {
         "date": "2022-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 505.23,
-        "index_100": 107.63
+        "level_k": 505.06,
+        "index_100": 107.61
       },
       {
         "date": "2022-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 496.69,
-        "index_100": 105.82
+        "level_k": 496.51,
+        "index_100": 105.79
       },
       {
         "date": "2022-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 488.58,
-        "index_100": 104.09
+        "level_k": 488.43,
+        "index_100": 104.07
       },
       {
         "date": "2023-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 480.65,
-        "index_100": 102.4
+        "level_k": 480.49,
+        "index_100": 102.38
       },
       {
         "date": "2023-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 465.07,
-        "index_100": 99.08
+        "level_k": 464.94,
+        "index_100": 99.07
       },
       {
         "date": "2023-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 447.01,
-        "index_100": 95.23
+        "level_k": 446.87,
+        "index_100": 95.22
       },
       {
         "date": "2023-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 434.13,
-        "index_100": 92.49
+        "level_k": 434.05,
+        "index_100": 92.48
       },
       {
         "date": "2023-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 419.08,
-        "index_100": 89.28
+        "level_k": 418.95,
+        "index_100": 89.27
       },
       {
         "date": "2023-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 410.85,
-        "index_100": 87.53
+        "level_k": 410.88,
+        "index_100": 87.55
       },
       {
         "date": "2023-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 400.08,
-        "index_100": 85.23
+        "level_k": 400.1,
+        "index_100": 85.25
       },
       {
         "date": "2023-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 382.52,
-        "index_100": 81.49
+        "level_k": 382.49,
+        "index_100": 81.5
       },
       {
         "date": "2023-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 375.43,
-        "index_100": 79.98
+        "level_k": 375.49,
+        "index_100": 80.01
       },
       {
         "date": "2023-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 376.54,
-        "index_100": 80.22
+        "level_k": 376.63,
+        "index_100": 80.25
       },
       {
         "date": "2023-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 376.25,
-        "index_100": 80.16
+        "level_k": 376.52,
+        "index_100": 80.23
       },
       {
         "date": "2023-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 376.19,
-        "index_100": 80.14
+        "level_k": 376.36,
+        "index_100": 80.19
       },
       {
         "date": "2024-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 371.48,
-        "index_100": 79.14
+        "level_k": 371.61,
+        "index_100": 79.18
       },
       {
         "date": "2024-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 365.96,
-        "index_100": 77.97
+        "level_k": 366.09,
+        "index_100": 78.0
       },
       {
         "date": "2024-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 360.59,
-        "index_100": 76.82
+        "level_k": 360.72,
+        "index_100": 76.86
       },
       {
         "date": "2024-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 354.01,
-        "index_100": 75.42
+        "level_k": 354.1,
+        "index_100": 75.45
       },
       {
         "date": "2024-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 349.84,
-        "index_100": 74.53
+        "level_k": 349.59,
+        "index_100": 74.49
       },
       {
         "date": "2024-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 342.2,
-        "index_100": 72.9
+        "level_k": 341.99,
+        "index_100": 72.87
       },
       {
         "date": "2024-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 339.35,
-        "index_100": 72.3
+        "level_k": 339.18,
+        "index_100": 72.27
       },
       {
         "date": "2024-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 334.75,
-        "index_100": 71.32
+        "level_k": 334.58,
+        "index_100": 71.29
       },
       {
         "date": "2024-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 332.58,
-        "index_100": 70.85
+        "level_k": 332.37,
+        "index_100": 70.82
       },
       {
         "date": "2024-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 328.84,
-        "index_100": 70.06
+        "level_k": 328.64,
+        "index_100": 70.02
       },
       {
         "date": "2024-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 325.28,
-        "index_100": 69.3
+        "level_k": 324.67,
+        "index_100": 69.18
       },
       {
         "date": "2024-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 321.04,
-        "index_100": 68.39
+        "level_k": 320.54,
+        "index_100": 68.3
       },
       {
         "date": "2025-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 319.86,
-        "index_100": 68.14
+        "level_k": 319.29,
+        "index_100": 68.03
       },
       {
         "date": "2025-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 318.18,
-        "index_100": 67.79
+        "level_k": 317.55,
+        "index_100": 67.66
       },
       {
         "date": "2025-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 321.69,
-        "index_100": 68.53
+        "level_k": 321.09,
+        "index_100": 68.42
       },
       {
         "date": "2025-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 330.79,
-        "index_100": 70.47
+        "level_k": 330.02,
+        "index_100": 70.32
       },
       {
         "date": "2025-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 335.66,
-        "index_100": 71.51
+        "level_k": 334.99,
+        "index_100": 71.38
       },
       {
         "date": "2025-06-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 344.82,
-        "index_100": 73.46
+        "level_k": 344.52,
+        "index_100": 73.41
       },
       {
         "date": "2025-07-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 349.65,
-        "index_100": 74.49
+        "level_k": 349.45,
+        "index_100": 74.46
       },
       {
         "date": "2025-08-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 352.54,
-        "index_100": 75.1
+        "level_k": 352.27,
+        "index_100": 75.06
       },
       {
         "date": "2025-09-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 359.6,
-        "index_100": 76.61
+        "level_k": 359.18,
+        "index_100": 76.53
       },
       {
         "date": "2025-10-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 362.76,
-        "index_100": 77.28
+        "level_k": 362.16,
+        "index_100": 77.17
       },
       {
         "date": "2025-11-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 364.59,
-        "index_100": 77.67
+        "level_k": 364.46,
+        "index_100": 77.66
       },
       {
         "date": "2025-12-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 368.7,
-        "index_100": 78.55
+        "level_k": 368.5,
+        "index_100": 78.52
       },
       {
         "date": "2026-01-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 372.99,
-        "index_100": 79.46
+        "level_k": 372.83,
+        "index_100": 79.44
       },
       {
         "date": "2026-02-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 376.14,
-        "index_100": 80.13
+        "level_k": 375.63,
+        "index_100": 80.04
       },
       {
         "date": "2026-03-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 387.43,
-        "index_100": 82.54
+        "level_k": 385.24,
+        "index_100": 82.09
       },
       {
         "date": "2026-04-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 380.62,
-        "index_100": 81.09
+        "level_k": 378.16,
+        "index_100": 80.58
       },
       {
         "date": "2026-05-01",
         "series": "Permis de construire",
         "key": "permis",
-        "level_k": 384.94,
-        "index_100": 82.01
+        "level_k": 380.39,
+        "index_100": 81.05
+      },
+      {
+        "date": "2026-06-01",
+        "series": "Permis de construire",
+        "key": "permis",
+        "level_k": 376.24,
+        "index_100": 80.17
       },
       {
         "date": "2000-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 341.0,
-        "index_100": 81.7
+        "index_100": 81.78
       },
       {
         "date": "2001-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 343.09,
-        "index_100": 82.2
+        "index_100": 82.28
       },
       {
         "date": "2001-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 341.1,
-        "index_100": 81.72
+        "index_100": 81.81
       },
       {
         "date": "2001-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 337.68,
-        "index_100": 80.9
+        "index_100": 80.99
       },
       {
         "date": "2001-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 340.46,
-        "index_100": 81.57
+        "index_100": 81.65
       },
       {
         "date": "2001-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 339.73,
-        "index_100": 81.39
+        "index_100": 81.48
       },
       {
         "date": "2001-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 339.99,
-        "index_100": 81.46
+        "index_100": 81.54
       },
       {
         "date": "2001-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 340.52,
-        "index_100": 81.58
+        "index_100": 81.67
       },
       {
         "date": "2001-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 335.41,
-        "index_100": 80.36
+        "index_100": 80.44
       },
       {
         "date": "2001-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 335.4,
-        "index_100": 80.36
+        "index_100": 80.44
       },
       {
         "date": "2001-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 336.77,
-        "index_100": 80.68
+        "index_100": 80.77
       },
       {
         "date": "2001-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 336.27,
-        "index_100": 80.56
+        "index_100": 80.65
       },
       {
         "date": "2001-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 337.58,
-        "index_100": 80.88
+        "index_100": 80.96
       },
       {
         "date": "2002-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 337.2,
-        "index_100": 80.79
+        "index_100": 80.87
       },
       {
         "date": "2002-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 338.46,
-        "index_100": 81.09
+        "index_100": 81.17
       },
       {
         "date": "2002-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 339.67,
-        "index_100": 81.38
+        "index_100": 81.46
       },
       {
         "date": "2002-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 339.88,
-        "index_100": 81.43
+        "index_100": 81.51
       },
       {
         "date": "2002-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 338.56,
-        "index_100": 81.12
+        "index_100": 81.2
       },
       {
         "date": "2002-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 338.85,
-        "index_100": 81.18
+        "index_100": 81.27
       },
       {
         "date": "2002-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 340.76,
-        "index_100": 81.64
+        "index_100": 81.72
       },
       {
         "date": "2002-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.51,
-        "index_100": 82.06
+        "index_100": 82.14
       },
       {
         "date": "2002-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.21,
-        "index_100": 81.99
+        "index_100": 82.07
       },
       {
         "date": "2002-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 341.57,
-        "index_100": 81.84
+        "index_100": 81.92
       },
       {
         "date": "2002-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.5,
-        "index_100": 82.06
+        "index_100": 82.14
       },
       {
         "date": "2002-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 343.19,
-        "index_100": 82.22
+        "index_100": 82.31
       },
       {
         "date": "2003-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.36,
-        "index_100": 82.03
+        "index_100": 82.11
       },
       {
         "date": "2003-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.02,
-        "index_100": 81.94
+        "index_100": 82.03
       },
       {
         "date": "2003-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 345.44,
-        "index_100": 82.76
+        "index_100": 82.85
       },
       {
         "date": "2003-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 345.15,
-        "index_100": 82.69
+        "index_100": 82.78
       },
       {
         "date": "2003-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 347.09,
-        "index_100": 83.16
+        "index_100": 83.24
       },
       {
         "date": "2003-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 349.73,
-        "index_100": 83.79
+        "index_100": 83.88
       },
       {
         "date": "2003-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 351.86,
-        "index_100": 84.3
+        "index_100": 84.39
       },
       {
         "date": "2003-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 351.17,
-        "index_100": 84.14
+        "index_100": 84.22
       },
       {
         "date": "2003-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 355.44,
-        "index_100": 85.16
+        "index_100": 85.25
       },
       {
         "date": "2003-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 357.67,
-        "index_100": 85.69
+        "index_100": 85.78
       },
       {
         "date": "2003-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 360.48,
-        "index_100": 86.37
+        "index_100": 86.45
       },
       {
         "date": "2003-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 362.79,
-        "index_100": 86.92
+        "index_100": 87.01
       },
       {
         "date": "2004-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 367.43,
-        "index_100": 88.03
+        "index_100": 88.12
       },
       {
         "date": "2004-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 372.41,
-        "index_100": 89.23
+        "index_100": 89.32
       },
       {
         "date": "2004-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 373.85,
-        "index_100": 89.57
+        "index_100": 89.66
       },
       {
         "date": "2004-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 379.13,
-        "index_100": 90.83
+        "index_100": 90.93
       },
       {
         "date": "2004-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 382.46,
-        "index_100": 91.63
+        "index_100": 91.73
       },
       {
         "date": "2004-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 386.55,
-        "index_100": 92.61
+        "index_100": 92.71
       },
       {
         "date": "2004-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 389.95,
-        "index_100": 93.43
+        "index_100": 93.52
       },
       {
         "date": "2004-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 396.63,
-        "index_100": 95.03
+        "index_100": 95.12
       },
       {
         "date": "2004-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 399.79,
-        "index_100": 95.78
+        "index_100": 95.88
       },
       {
         "date": "2004-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 403.36,
-        "index_100": 96.64
+        "index_100": 96.74
       },
       {
         "date": "2004-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 410.44,
-        "index_100": 98.34
+        "index_100": 98.44
       },
       {
         "date": "2004-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 413.59,
-        "index_100": 99.09
+        "index_100": 99.19
       },
       {
         "date": "2005-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 420.09,
-        "index_100": 100.65
+        "index_100": 100.75
       },
       {
         "date": "2005-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 422.11,
-        "index_100": 101.13
+        "index_100": 101.24
       },
       {
         "date": "2005-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 426.81,
-        "index_100": 102.26
+        "index_100": 102.36
       },
       {
         "date": "2005-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 429.18,
-        "index_100": 102.83
+        "index_100": 102.93
       },
       {
         "date": "2005-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 437.57,
-        "index_100": 104.84
+        "index_100": 104.94
       },
       {
         "date": "2005-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 440.59,
-        "index_100": 105.56
+        "index_100": 105.67
       },
       {
         "date": "2005-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 443.1,
-        "index_100": 106.16
+        "index_100": 106.27
       },
       {
         "date": "2005-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 448.4,
-        "index_100": 107.43
+        "index_100": 107.54
       },
       {
         "date": "2005-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 453.96,
-        "index_100": 108.76
+        "index_100": 108.87
       },
       {
         "date": "2005-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 457.55,
-        "index_100": 109.62
+        "index_100": 109.73
       },
       {
         "date": "2005-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 457.68,
-        "index_100": 109.65
+        "index_100": 109.77
       },
       {
         "date": "2005-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 463.71,
-        "index_100": 111.1
+        "index_100": 111.21
       },
       {
         "date": "2006-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 464.65,
-        "index_100": 111.32
+        "index_100": 111.44
       },
       {
         "date": "2006-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 469.11,
-        "index_100": 112.39
+        "index_100": 112.51
       },
       {
         "date": "2006-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 472.81,
-        "index_100": 113.28
+        "index_100": 113.39
       },
       {
         "date": "2006-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 478.58,
-        "index_100": 114.66
+        "index_100": 114.78
       },
       {
         "date": "2006-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 481.01,
-        "index_100": 115.24
+        "index_100": 115.36
       },
       {
         "date": "2006-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 486.15,
-        "index_100": 116.48
+        "index_100": 116.59
       },
       {
         "date": "2006-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 487.56,
-        "index_100": 116.81
+        "index_100": 116.93
       },
       {
         "date": "2006-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 492.59,
-        "index_100": 118.02
+        "index_100": 118.14
       },
       {
         "date": "2006-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 492.23,
-        "index_100": 117.93
+        "index_100": 118.05
       },
       {
         "date": "2006-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 494.41,
-        "index_100": 118.46
+        "index_100": 118.58
       },
       {
         "date": "2006-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 497.98,
-        "index_100": 119.31
+        "index_100": 119.43
       },
       {
         "date": "2006-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 495.76,
-        "index_100": 118.78
+        "index_100": 118.9
       },
       {
         "date": "2007-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 496.65,
-        "index_100": 118.99
+        "index_100": 119.11
       },
       {
         "date": "2007-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 496.92,
-        "index_100": 119.06
+        "index_100": 119.18
       },
       {
         "date": "2007-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 496.37,
-        "index_100": 118.92
+        "index_100": 119.04
       },
       {
         "date": "2007-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 495.11,
-        "index_100": 118.62
+        "index_100": 118.74
       },
       {
         "date": "2007-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 494.31,
-        "index_100": 118.43
+        "index_100": 118.55
       },
       {
         "date": "2007-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 492.79,
-        "index_100": 118.07
+        "index_100": 118.19
       },
       {
         "date": "2007-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 497.59,
-        "index_100": 119.22
+        "index_100": 119.34
       },
       {
         "date": "2007-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 491.78,
-        "index_100": 117.82
+        "index_100": 117.94
       },
       {
         "date": "2007-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 491.52,
-        "index_100": 117.76
+        "index_100": 117.88
       },
       {
         "date": "2007-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 493.66,
-        "index_100": 118.27
+        "index_100": 118.39
       },
       {
         "date": "2007-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 490.11,
-        "index_100": 117.42
+        "index_100": 117.54
       },
       {
         "date": "2007-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 487.69,
-        "index_100": 116.84
+        "index_100": 116.96
       },
       {
         "date": "2008-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 487.07,
-        "index_100": 116.7
+        "index_100": 116.81
       },
       {
         "date": "2008-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 486.92,
-        "index_100": 116.66
+        "index_100": 116.78
       },
       {
         "date": "2008-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 482.49,
-        "index_100": 115.6
+        "index_100": 115.72
       },
       {
         "date": "2008-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 476.69,
-        "index_100": 114.21
+        "index_100": 114.33
       },
       {
         "date": "2008-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 468.85,
-        "index_100": 112.33
+        "index_100": 112.45
       },
       {
         "date": "2008-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 461.55,
-        "index_100": 110.58
+        "index_100": 110.69
       },
       {
         "date": "2008-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 449.59,
-        "index_100": 107.72
+        "index_100": 107.83
       },
       {
         "date": "2008-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 443.07,
-        "index_100": 106.15
+        "index_100": 106.26
       },
       {
         "date": "2008-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 434.92,
-        "index_100": 104.2
+        "index_100": 104.31
       },
       {
         "date": "2008-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 422.88,
-        "index_100": 101.32
+        "index_100": 101.42
       },
       {
         "date": "2008-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 410.28,
-        "index_100": 98.3
+        "index_100": 98.4
       },
       {
         "date": "2008-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 398.6,
-        "index_100": 95.5
+        "index_100": 95.6
       },
       {
         "date": "2009-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 385.56,
-        "index_100": 92.37
+        "index_100": 92.47
       },
       {
         "date": "2009-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 370.71,
-        "index_100": 88.82
+        "index_100": 88.91
       },
       {
         "date": "2009-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 360.62,
-        "index_100": 86.4
+        "index_100": 86.49
       },
       {
         "date": "2009-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 354.22,
-        "index_100": 84.87
+        "index_100": 84.95
       },
       {
         "date": "2009-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 346.7,
-        "index_100": 83.07
+        "index_100": 83.15
       },
       {
         "date": "2009-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.07,
-        "index_100": 81.96
+        "index_100": 82.04
       },
       {
         "date": "2009-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 342.56,
-        "index_100": 82.07
+        "index_100": 82.16
       },
       {
         "date": "2009-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 343.69,
-        "index_100": 82.34
+        "index_100": 82.43
       },
       {
         "date": "2009-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 339.75,
-        "index_100": 81.4
+        "index_100": 81.48
       },
       {
         "date": "2009-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 337.83,
-        "index_100": 80.94
+        "index_100": 81.02
       },
       {
         "date": "2009-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 340.94,
-        "index_100": 81.68
+        "index_100": 81.77
       },
       {
         "date": "2009-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 346.43,
-        "index_100": 83.0
+        "index_100": 83.08
       },
       {
         "date": "2010-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 347.58,
-        "index_100": 83.28
+        "index_100": 83.36
       },
       {
         "date": "2010-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 350.9,
-        "index_100": 84.07
+        "index_100": 84.16
       },
       {
         "date": "2010-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 355.35,
-        "index_100": 85.14
+        "index_100": 85.22
       },
       {
         "date": "2010-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 358.2,
-        "index_100": 85.82
+        "index_100": 85.91
       },
       {
         "date": "2010-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 364.19,
-        "index_100": 87.25
+        "index_100": 87.34
       },
       {
         "date": "2010-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 368.62,
-        "index_100": 88.32
+        "index_100": 88.41
       },
       {
         "date": "2010-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 371.52,
-        "index_100": 89.01
+        "index_100": 89.1
       },
       {
         "date": "2010-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 377.45,
-        "index_100": 90.43
+        "index_100": 90.53
       },
       {
         "date": "2010-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 387.04,
-        "index_100": 92.73
+        "index_100": 92.82
       },
       {
         "date": "2010-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 397.66,
-        "index_100": 95.28
+        "index_100": 95.37
       },
       {
         "date": "2010-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 406.87,
-        "index_100": 97.48
+        "index_100": 97.58
       },
       {
         "date": "2010-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 411.32,
-        "index_100": 98.55
+        "index_100": 98.65
       },
       {
         "date": "2011-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 417.57,
-        "index_100": 100.04
+        "index_100": 100.15
       },
       {
         "date": "2011-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 421.9,
-        "index_100": 101.08
+        "index_100": 101.18
       },
       {
         "date": "2011-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 425.93,
-        "index_100": 102.05
+        "index_100": 102.15
       },
       {
         "date": "2011-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 428.47,
-        "index_100": 102.65
+        "index_100": 102.76
       },
       {
         "date": "2011-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 432.22,
-        "index_100": 103.55
+        "index_100": 103.66
       },
       {
         "date": "2011-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 429.05,
-        "index_100": 102.79
+        "index_100": 102.9
       },
       {
         "date": "2011-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 428.12,
-        "index_100": 102.57
+        "index_100": 102.68
       },
       {
         "date": "2011-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 425.29,
-        "index_100": 101.89
+        "index_100": 102.0
       },
       {
         "date": "2011-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 423.42,
-        "index_100": 101.44
+        "index_100": 101.55
       },
       {
         "date": "2011-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 419.74,
-        "index_100": 100.56
+        "index_100": 100.67
       },
       {
         "date": "2011-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 424.59,
-        "index_100": 101.73
+        "index_100": 101.83
       },
       {
         "date": "2011-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 426.64,
-        "index_100": 102.22
+        "index_100": 102.32
       },
       {
         "date": "2012-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 424.24,
-        "index_100": 101.64
+        "index_100": 101.75
       },
       {
         "date": "2012-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 424.29,
-        "index_100": 101.65
+        "index_100": 101.76
       },
       {
         "date": "2012-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 425.7,
-        "index_100": 101.99
+        "index_100": 102.1
       },
       {
         "date": "2012-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 418.86,
-        "index_100": 100.35
+        "index_100": 100.46
       },
       {
         "date": "2012-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 410.83,
-        "index_100": 98.43
+        "index_100": 98.53
       },
       {
         "date": "2012-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 411.36,
-        "index_100": 98.56
+        "index_100": 98.66
       },
       {
         "date": "2012-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 408.0,
-        "index_100": 97.75
+        "index_100": 97.85
       },
       {
         "date": "2012-08-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 402.67,
-        "index_100": 96.47
+        "index_100": 96.57
       },
       {
         "date": "2012-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 395.82,
-        "index_100": 94.83
+        "index_100": 94.93
       },
       {
         "date": "2012-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 393.12,
-        "index_100": 94.19
+        "index_100": 94.28
       },
       {
         "date": "2012-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 380.87,
-        "index_100": 91.25
+        "index_100": 91.34
       },
       {
         "date": "2012-12-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 379.59,
-        "index_100": 90.94
+        "index_100": 91.04
       },
       {
         "date": "2013-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 378.07,
-        "index_100": 90.58
+        "index_100": 90.67
       },
       {
         "date": "2013-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 378.3,
-        "index_100": 90.64
+        "level_k": 378.31,
+        "index_100": 90.73
       },
       {
         "date": "2013-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 376.19,
-        "index_100": 90.13
+        "level_k": 376.2,
+        "index_100": 90.22
       },
       {
         "date": "2013-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 378.65,
-        "index_100": 90.72
+        "level_k": 378.66,
+        "index_100": 90.81
       },
       {
         "date": "2013-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 380.24,
-        "index_100": 91.1
+        "level_k": 380.25,
+        "index_100": 91.2
       },
       {
         "date": "2013-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 379.39,
-        "index_100": 90.9
+        "level_k": 379.42,
+        "index_100": 91.0
       },
       {
         "date": "2013-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 377.83,
-        "index_100": 90.52
+        "level_k": 377.85,
+        "index_100": 90.62
       },
       {
         "date": "2013-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 375.25,
-        "index_100": 89.9
+        "level_k": 375.24,
+        "index_100": 89.99
       },
       {
         "date": "2013-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 375.08,
-        "index_100": 89.86
+        "index_100": 89.95
       },
       {
         "date": "2013-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 370.76,
-        "index_100": 88.83
+        "level_k": 370.77,
+        "index_100": 88.92
       },
       {
         "date": "2013-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 367.84,
-        "index_100": 88.13
+        "level_k": 367.85,
+        "index_100": 88.22
       },
       {
         "date": "2013-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 359.25,
-        "index_100": 86.07
+        "level_k": 359.26,
+        "index_100": 86.16
       },
       {
         "date": "2014-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 357.95,
-        "index_100": 85.76
+        "level_k": 357.96,
+        "index_100": 85.85
       },
       {
         "date": "2014-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 350.49,
-        "index_100": 83.97
+        "index_100": 84.06
       },
       {
         "date": "2014-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 345.17,
-        "index_100": 82.7
+        "index_100": 82.78
       },
       {
         "date": "2014-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 344.48,
-        "index_100": 82.53
+        "level_k": 344.49,
+        "index_100": 82.62
       },
       {
         "date": "2014-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 341.55,
-        "index_100": 81.83
+        "level_k": 341.54,
+        "index_100": 81.91
       },
       {
         "date": "2014-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 338.6,
-        "index_100": 81.12
+        "level_k": 338.59,
+        "index_100": 81.2
       },
       {
         "date": "2014-07-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 339.13,
-        "index_100": 81.25
+        "index_100": 81.33
       },
       {
         "date": "2014-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 336.45,
-        "index_100": 80.61
+        "level_k": 336.47,
+        "index_100": 80.7
       },
       {
         "date": "2014-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 336.67,
-        "index_100": 80.66
+        "level_k": 336.69,
+        "index_100": 80.75
       },
       {
         "date": "2014-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 336.04,
-        "index_100": 80.51
+        "level_k": 336.05,
+        "index_100": 80.59
       },
       {
         "date": "2014-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 335.42,
-        "index_100": 80.36
+        "index_100": 80.44
       },
       {
         "date": "2014-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 335.64,
-        "index_100": 80.41
+        "level_k": 335.63,
+        "index_100": 80.49
       },
       {
         "date": "2015-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 333.53,
-        "index_100": 79.91
+        "level_k": 333.52,
+        "index_100": 79.99
       },
       {
         "date": "2015-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 333.94,
-        "index_100": 80.01
+        "level_k": 333.93,
+        "index_100": 80.09
       },
       {
         "date": "2015-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 333.77,
-        "index_100": 79.97
+        "level_k": 333.75,
+        "index_100": 80.04
       },
       {
         "date": "2015-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 330.43,
-        "index_100": 79.17
+        "level_k": 330.42,
+        "index_100": 79.25
       },
       {
         "date": "2015-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 327.67,
-        "index_100": 78.51
+        "level_k": 327.7,
+        "index_100": 78.59
       },
       {
         "date": "2015-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 329.06,
-        "index_100": 78.84
+        "index_100": 78.92
       },
       {
         "date": "2015-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 327.53,
-        "index_100": 78.47
+        "level_k": 327.52,
+        "index_100": 78.55
       },
       {
         "date": "2015-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 331.86,
-        "index_100": 79.51
+        "level_k": 331.85,
+        "index_100": 79.59
       },
       {
         "date": "2015-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 333.7,
-        "index_100": 79.95
+        "level_k": 333.68,
+        "index_100": 80.03
       },
       {
         "date": "2015-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 334.64,
-        "index_100": 80.17
+        "level_k": 334.63,
+        "index_100": 80.25
       },
       {
         "date": "2015-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 337.44,
-        "index_100": 80.85
+        "level_k": 337.42,
+        "index_100": 80.92
       },
       {
         "date": "2015-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 340.14,
-        "index_100": 81.49
+        "level_k": 340.13,
+        "index_100": 81.57
       },
       {
         "date": "2016-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 340.81,
-        "index_100": 81.65
+        "level_k": 340.82,
+        "index_100": 81.74
       },
       {
         "date": "2016-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 346.32,
-        "index_100": 82.97
+        "level_k": 346.34,
+        "index_100": 83.06
       },
       {
         "date": "2016-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 343.76,
-        "index_100": 82.36
+        "level_k": 343.8,
+        "index_100": 82.45
       },
       {
         "date": "2016-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 347.67,
-        "index_100": 83.3
+        "level_k": 347.69,
+        "index_100": 83.39
       },
       {
         "date": "2016-05-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 356.8,
-        "index_100": 85.49
+        "index_100": 85.57
       },
       {
         "date": "2016-06-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 358.07,
-        "index_100": 85.79
+        "index_100": 85.88
       },
       {
         "date": "2016-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 359.24,
-        "index_100": 86.07
+        "level_k": 359.25,
+        "index_100": 86.16
       },
       {
         "date": "2016-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 360.15,
-        "index_100": 86.29
+        "level_k": 360.16,
+        "index_100": 86.38
       },
       {
         "date": "2016-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 361.45,
-        "index_100": 86.6
+        "level_k": 361.46,
+        "index_100": 86.69
       },
       {
         "date": "2016-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 365.37,
-        "index_100": 87.54
+        "index_100": 87.63
       },
       {
         "date": "2016-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 367.44,
-        "index_100": 88.03
+        "level_k": 367.45,
+        "index_100": 88.13
       },
       {
         "date": "2016-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 369.65,
-        "index_100": 88.56
+        "level_k": 369.64,
+        "index_100": 88.65
       },
       {
         "date": "2017-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 376.66,
-        "index_100": 90.24
+        "level_k": 376.63,
+        "index_100": 90.33
       },
       {
         "date": "2017-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 379.71,
-        "index_100": 90.97
+        "level_k": 379.72,
+        "index_100": 91.07
       },
       {
         "date": "2017-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 392.05,
-        "index_100": 93.93
+        "index_100": 94.03
       },
       {
         "date": "2017-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 396.77,
-        "index_100": 95.06
+        "level_k": 396.79,
+        "index_100": 95.16
       },
       {
         "date": "2017-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 397.2,
-        "index_100": 95.16
+        "level_k": 397.24,
+        "index_100": 95.27
       },
       {
         "date": "2017-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 402.32,
-        "index_100": 96.39
+        "level_k": 402.35,
+        "index_100": 96.5
       },
       {
         "date": "2017-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 408.68,
-        "index_100": 97.91
+        "level_k": 408.71,
+        "index_100": 98.02
       },
       {
         "date": "2017-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 412.88,
-        "index_100": 98.92
+        "level_k": 412.92,
+        "index_100": 99.03
       },
       {
         "date": "2017-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 415.96,
-        "index_100": 99.66
+        "level_k": 416.0,
+        "index_100": 99.77
       },
       {
         "date": "2017-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 418.5,
-        "index_100": 100.27
+        "level_k": 418.54,
+        "index_100": 100.38
       },
       {
         "date": "2017-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 424.05,
-        "index_100": 101.6
+        "level_k": 424.06,
+        "index_100": 101.7
       },
       {
         "date": "2017-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 432.04,
-        "index_100": 103.51
+        "level_k": 432.06,
+        "index_100": 103.62
       },
       {
         "date": "2018-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 429.71,
-        "index_100": 102.95
+        "level_k": 429.74,
+        "index_100": 103.06
       },
       {
         "date": "2018-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 427.3,
-        "index_100": 102.38
+        "level_k": 427.32,
+        "index_100": 102.48
       },
       {
         "date": "2018-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 422.35,
-        "index_100": 101.19
+        "level_k": 422.37,
+        "index_100": 101.3
       },
       {
         "date": "2018-04-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 422.33,
-        "index_100": 101.18
+        "index_100": 101.29
       },
       {
         "date": "2018-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 423.4,
-        "index_100": 101.44
+        "level_k": 423.45,
+        "index_100": 101.56
       },
       {
         "date": "2018-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 422.38,
-        "index_100": 101.2
+        "level_k": 422.42,
+        "index_100": 101.31
       },
       {
         "date": "2018-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 418.78,
-        "index_100": 100.33
+        "level_k": 418.77,
+        "index_100": 100.43
       },
       {
         "date": "2018-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 414.35,
-        "index_100": 99.27
+        "level_k": 414.33,
+        "index_100": 99.37
       },
       {
         "date": "2018-09-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 412.48,
-        "index_100": 98.82
+        "index_100": 98.93
       },
       {
         "date": "2018-10-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 413.5,
-        "index_100": 99.07
+        "index_100": 99.17
       },
       {
         "date": "2018-11-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 409.38,
-        "index_100": 98.08
+        "index_100": 98.18
       },
       {
         "date": "2018-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 400.44,
-        "index_100": 95.94
+        "level_k": 400.43,
+        "index_100": 96.04
       },
       {
         "date": "2019-01-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 401.56,
-        "index_100": 96.21
+        "index_100": 96.31
       },
       {
         "date": "2019-02-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 401.44,
-        "index_100": 96.18
+        "index_100": 96.28
       },
       {
         "date": "2019-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 398.79,
-        "index_100": 95.54
+        "level_k": 398.77,
+        "index_100": 95.64
       },
       {
         "date": "2019-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 398.0,
-        "index_100": 95.36
+        "level_k": 397.95,
+        "index_100": 95.44
       },
       {
         "date": "2019-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 393.39,
-        "index_100": 94.25
+        "level_k": 393.33,
+        "index_100": 94.33
       },
       {
         "date": "2019-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 388.88,
-        "index_100": 93.17
+        "level_k": 388.86,
+        "index_100": 93.26
       },
       {
         "date": "2019-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 390.59,
-        "index_100": 93.58
+        "level_k": 390.54,
+        "index_100": 93.66
       },
       {
         "date": "2019-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 386.08,
-        "index_100": 92.5
+        "level_k": 386.04,
+        "index_100": 92.58
       },
       {
         "date": "2019-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 385.6,
-        "index_100": 92.38
+        "level_k": 385.55,
+        "index_100": 92.47
       },
       {
         "date": "2019-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 382.18,
-        "index_100": 91.57
+        "level_k": 382.14,
+        "index_100": 91.65
       },
       {
         "date": "2019-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 381.63,
-        "index_100": 91.43
+        "level_k": 381.6,
+        "index_100": 91.52
       },
       {
         "date": "2019-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 382.72,
-        "index_100": 91.7
+        "level_k": 382.67,
+        "index_100": 91.78
       },
       {
         "date": "2020-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 383.43,
-        "index_100": 91.87
+        "level_k": 383.38,
+        "index_100": 91.95
       },
       {
         "date": "2020-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 383.37,
-        "index_100": 91.85
+        "level_k": 383.38,
+        "index_100": 91.95
       },
       {
         "date": "2020-03-01",
         "series": "Mises en chantier",
         "key": "mises",
         "level_k": 377.32,
-        "index_100": 90.4
+        "index_100": 90.49
       },
       {
         "date": "2020-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 360.46,
-        "index_100": 86.36
+        "level_k": 360.49,
+        "index_100": 86.46
       },
       {
         "date": "2020-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 356.76,
-        "index_100": 85.48
+        "level_k": 356.82,
+        "index_100": 85.58
       },
       {
         "date": "2020-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 359.69,
-        "index_100": 86.18
+        "level_k": 359.73,
+        "index_100": 86.27
       },
       {
         "date": "2020-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 360.97,
-        "index_100": 86.48
+        "level_k": 361.01,
+        "index_100": 86.58
       },
       {
         "date": "2020-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 372.65,
-        "index_100": 89.28
+        "level_k": 372.69,
+        "index_100": 89.38
       },
       {
         "date": "2020-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 372.85,
-        "index_100": 89.33
+        "level_k": 372.88,
+        "index_100": 89.43
       },
       {
         "date": "2020-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 373.61,
-        "index_100": 89.51
+        "level_k": 373.63,
+        "index_100": 89.61
       },
       {
         "date": "2020-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 374.07,
-        "index_100": 89.62
+        "level_k": 374.05,
+        "index_100": 89.71
       },
       {
         "date": "2020-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 372.36,
-        "index_100": 89.21
+        "level_k": 372.33,
+        "index_100": 89.3
       },
       {
         "date": "2021-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 370.95,
-        "index_100": 88.88
+        "level_k": 370.98,
+        "index_100": 88.97
       },
       {
         "date": "2021-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 372.91,
-        "index_100": 89.34
+        "level_k": 372.95,
+        "index_100": 89.45
       },
       {
         "date": "2021-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 385.08,
-        "index_100": 92.26
+        "level_k": 385.11,
+        "index_100": 92.36
       },
       {
         "date": "2021-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 403.49,
-        "index_100": 96.67
+        "level_k": 403.52,
+        "index_100": 96.78
       },
       {
         "date": "2021-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 412.17,
-        "index_100": 98.75
+        "level_k": 411.85,
+        "index_100": 98.77
       },
       {
         "date": "2021-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 412.03,
-        "index_100": 98.72
+        "level_k": 411.66,
+        "index_100": 98.73
       },
       {
         "date": "2021-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 410.48,
-        "index_100": 98.35
+        "level_k": 410.05,
+        "index_100": 98.34
       },
       {
         "date": "2021-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 407.3,
-        "index_100": 97.58
+        "level_k": 406.82,
+        "index_100": 97.57
       },
       {
         "date": "2021-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 408.75,
-        "index_100": 97.93
+        "level_k": 408.27,
+        "index_100": 97.92
       },
       {
         "date": "2021-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 412.53,
-        "index_100": 98.84
+        "level_k": 412.09,
+        "index_100": 98.83
       },
       {
         "date": "2021-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 413.67,
-        "index_100": 99.11
+        "level_k": 413.22,
+        "index_100": 99.1
       },
       {
         "date": "2021-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 415.2,
+        "level_k": 414.78,
         "index_100": 99.48
       },
       {
         "date": "2022-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 417.38,
+        "level_k": 416.96,
         "index_100": 100.0
       },
       {
         "date": "2022-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 417.16,
-        "index_100": 99.95
+        "level_k": 416.73,
+        "index_100": 99.94
       },
       {
         "date": "2022-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 417.13,
-        "index_100": 99.94
+        "level_k": 416.77,
+        "index_100": 99.95
       },
       {
         "date": "2022-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 413.54,
-        "index_100": 99.08
+        "level_k": 413.29,
+        "index_100": 99.12
       },
       {
         "date": "2022-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 409.79,
-        "index_100": 98.18
+        "level_k": 409.96,
+        "index_100": 98.32
       },
       {
         "date": "2022-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 409.93,
-        "index_100": 98.21
+        "level_k": 410.0,
+        "index_100": 98.33
       },
       {
         "date": "2022-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 407.13,
-        "index_100": 97.54
+        "level_k": 407.21,
+        "index_100": 97.66
       },
       {
         "date": "2022-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 406.39,
-        "index_100": 97.37
+        "level_k": 406.57,
+        "index_100": 97.51
       },
       {
         "date": "2022-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 403.3,
-        "index_100": 96.62
+        "level_k": 403.44,
+        "index_100": 96.76
       },
       {
         "date": "2022-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 396.87,
-        "index_100": 95.08
+        "level_k": 396.96,
+        "index_100": 95.2
       },
       {
         "date": "2022-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 393.32,
-        "index_100": 94.24
+        "level_k": 393.4,
+        "index_100": 94.35
       },
       {
         "date": "2022-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 391.74,
-        "index_100": 93.86
+        "level_k": 391.73,
+        "index_100": 93.95
       },
       {
         "date": "2023-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 386.7,
-        "index_100": 92.65
+        "level_k": 386.67,
+        "index_100": 92.74
       },
       {
         "date": "2023-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 379.2,
-        "index_100": 90.85
+        "level_k": 379.15,
+        "index_100": 90.93
       },
       {
         "date": "2023-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 368.9,
-        "index_100": 88.38
+        "level_k": 368.83,
+        "index_100": 88.46
       },
       {
         "date": "2023-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 363.34,
-        "index_100": 87.05
+        "level_k": 363.2,
+        "index_100": 87.11
       },
       {
         "date": "2023-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 357.62,
-        "index_100": 85.68
+        "level_k": 357.59,
+        "index_100": 85.76
       },
       {
         "date": "2023-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 350.04,
-        "index_100": 83.86
+        "level_k": 350.0,
+        "index_100": 83.94
       },
       {
         "date": "2023-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 343.58,
-        "index_100": 82.32
+        "level_k": 343.61,
+        "index_100": 82.41
       },
       {
         "date": "2023-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 329.67,
-        "index_100": 78.98
+        "level_k": 329.73,
+        "index_100": 79.08
       },
       {
         "date": "2023-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 322.33,
-        "index_100": 77.23
+        "level_k": 322.43,
+        "index_100": 77.33
       },
       {
         "date": "2023-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 313.7,
-        "index_100": 75.16
+        "level_k": 313.89,
+        "index_100": 75.28
       },
       {
         "date": "2023-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 305.22,
-        "index_100": 73.13
+        "level_k": 305.52,
+        "index_100": 73.27
       },
       {
         "date": "2023-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 296.94,
-        "index_100": 71.14
+        "level_k": 297.37,
+        "index_100": 71.32
       },
       {
         "date": "2024-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 287.6,
-        "index_100": 68.91
+        "level_k": 288.1,
+        "index_100": 69.1
       },
       {
         "date": "2024-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 282.16,
-        "index_100": 67.6
+        "level_k": 282.69,
+        "index_100": 67.8
       },
       {
         "date": "2024-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 276.68,
-        "index_100": 66.29
+        "level_k": 277.26,
+        "index_100": 66.5
       },
       {
         "date": "2024-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 271.89,
-        "index_100": 65.14
+        "level_k": 272.5,
+        "index_100": 65.35
       },
       {
         "date": "2024-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 268.69,
-        "index_100": 64.37
+        "level_k": 269.45,
+        "index_100": 64.62
       },
       {
         "date": "2024-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 264.21,
-        "index_100": 63.3
+        "level_k": 265.08,
+        "index_100": 63.58
       },
       {
         "date": "2024-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 262.72,
-        "index_100": 62.94
+        "level_k": 263.51,
+        "index_100": 63.2
       },
       {
         "date": "2024-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 264.55,
-        "index_100": 63.38
+        "level_k": 265.22,
+        "index_100": 63.61
       },
       {
         "date": "2024-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 259.96,
-        "index_100": 62.28
+        "level_k": 260.73,
+        "index_100": 62.53
       },
       {
         "date": "2024-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 259.49,
-        "index_100": 62.17
+        "level_k": 260.26,
+        "index_100": 62.42
       },
       {
         "date": "2024-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 258.48,
-        "index_100": 61.93
+        "level_k": 259.26,
+        "index_100": 62.18
       },
       {
         "date": "2024-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 257.66,
-        "index_100": 61.73
+        "level_k": 258.47,
+        "index_100": 61.99
       },
       {
         "date": "2025-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 258.35,
-        "index_100": 61.9
+        "level_k": 259.08,
+        "index_100": 62.14
       },
       {
         "date": "2025-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 256.95,
-        "index_100": 61.56
+        "level_k": 257.79,
+        "index_100": 61.83
       },
       {
         "date": "2025-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 255.65,
-        "index_100": 61.25
+        "level_k": 256.61,
+        "index_100": 61.54
       },
       {
         "date": "2025-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 254.27,
-        "index_100": 60.92
+        "level_k": 255.22,
+        "index_100": 61.21
       },
       {
         "date": "2025-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 248.36,
-        "index_100": 59.5
+        "level_k": 249.14,
+        "index_100": 59.75
       },
       {
         "date": "2025-06-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 251.09,
-        "index_100": 60.16
+        "level_k": 251.51,
+        "index_100": 60.32
       },
       {
         "date": "2025-07-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 250.8,
-        "index_100": 60.09
+        "level_k": 251.15,
+        "index_100": 60.23
       },
       {
         "date": "2025-08-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 247.95,
-        "index_100": 59.41
+        "level_k": 248.15,
+        "index_100": 59.51
       },
       {
         "date": "2025-09-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 250.33,
-        "index_100": 59.98
+        "level_k": 250.34,
+        "index_100": 60.04
       },
       {
         "date": "2025-10-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 252.17,
-        "index_100": 60.42
+        "level_k": 252.03,
+        "index_100": 60.45
       },
       {
         "date": "2025-11-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 254.0,
-        "index_100": 60.86
+        "level_k": 253.6,
+        "index_100": 60.82
       },
       {
         "date": "2025-12-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 258.87,
-        "index_100": 62.02
+        "level_k": 258.11,
+        "index_100": 61.9
       },
       {
         "date": "2026-01-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 263.3,
-        "index_100": 63.08
+        "level_k": 262.59,
+        "index_100": 62.98
       },
       {
         "date": "2026-02-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 267.88,
-        "index_100": 64.18
+        "level_k": 266.47,
+        "index_100": 63.91
       },
       {
         "date": "2026-03-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 278.62,
-        "index_100": 66.75
+        "level_k": 276.2,
+        "index_100": 66.24
       },
       {
         "date": "2026-04-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 285.44,
-        "index_100": 68.39
+        "level_k": 282.6,
+        "index_100": 67.77
       },
       {
         "date": "2026-05-01",
         "series": "Mises en chantier",
         "key": "mises",
-        "level_k": 295.25,
-        "index_100": 70.74
+        "level_k": 290.71,
+        "index_100": 69.72
+      },
+      {
+        "date": "2026-06-01",
+        "series": "Mises en chantier",
+        "key": "mises",
+        "level_k": 293.41,
+        "index_100": 70.37
       },
       {
         "date": "2001-12-01",
