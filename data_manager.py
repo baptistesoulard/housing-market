@@ -97,6 +97,13 @@ RENO_PREVUE_CSV = os.path.join("data_manual_input", "reno-activite-prevue.csv")
 # "ventes aux particuliers": réservations, mises en vente, annulations, encours, délai
 # d'écoulement (en trimestres) et prix au m² du collectif. Its own dataset (data/ecln.csv).
 ECLN_CSV = os.path.join("data_manual_input", "ecln-commercialisation-neuf.csv")
+# Colonnes de valeurs du dataset ECLN. Énoncées une seule fois : la coercition numérique
+# (build_ecln_from_manual_input) et la frame vide de repli doivent rester alignées.
+ECLN_VALUE_COLUMNS = ["Reservations", "MisesEnVente", "Annulations", "Encours",
+                      "DelaiEcoulement", "PrixM2_Collectif",
+                      "Resa_Sociaux", "Resa_Institutionnels"]
+ECLN_COLUMNS = ["Date"] + ECLN_VALUE_COLUMNS
+REVENUE_COLUMNS = ["Date", "Company", "CA_MEUR"]
 
 # --- Real "company revenue" benchmark series (quarterly, national, €) ---
 # One CSV per company in data_manual_input/, named "ca-<slug>.csv", each holding
@@ -145,6 +152,32 @@ _MACRO_OPTIONAL = [
 ]
 
 
+def _sitadel_macro_sources():
+    """Every manual-input file generate_sitadel_and_macro() reads: the SIT@DEL CSV plus
+    each macro series (deduplicated — one CSV can carry several columns)."""
+    paths = {SITADEL_MANUAL_CSV}
+    paths.update(path for path, _ in _MACRO_REQUIRED + _MACRO_OPTIONAL)
+    return sorted(paths)
+
+
+def sitadel_macro_is_stale(sitadel_csv, macro_csv):
+    """True when data/sitadel.csv or data/macro.csv is missing, or older than any of the
+    manual-input sources it was derived from.
+
+    These two caches are the only ones that used to be built once and never invalidated,
+    while ventes_ancien / sales / ecln / revenue are all mtime-aware. The weekly refresh
+    (fetch_new_sources.py + the GitHub Actions workflow) rewrites data_manual_input/ but
+    commits neither derived file, so without this check the app kept serving the stale
+    committed CSVs and silently dropped the newest month of every macro series.
+    """
+    for cache in (sitadel_csv, macro_csv):
+        if not os.path.exists(cache):
+            return True
+    oldest_cache = min(os.path.getmtime(sitadel_csv), os.path.getmtime(macro_csv))
+    return any(os.path.getmtime(src) > oldest_cache
+               for src in _sitadel_macro_sources() if os.path.exists(src))
+
+
 def build_macro_from_files(date_range):
     """
     Build the national macro dataframe [Date, Insee_Confiance_Menages,
@@ -168,9 +201,14 @@ def build_macro_from_files(date_range):
     for path, col in _MACRO_REQUIRED:
         out[col] = _load(path, col).to_numpy()   # missing file -> FileNotFoundError
     for path, col in _MACRO_OPTIONAL:
+        # An OPTIONAL series stays NaN when it cannot be read — whether the file is
+        # absent (FileNotFoundError) or present but no longer exposes the column
+        # (KeyError). The latter is real: these CSVs are refreshed weekly from the
+        # INSEE / BCE / DiDo APIs, so an upstream rename or dropped column must
+        # degrade to a gap in one chart, never crash the whole data build at startup.
         try:
             out[col] = _load(path, col).to_numpy()
-        except FileNotFoundError:
+        except (FileNotFoundError, KeyError):
             out[col] = np.nan
     return pd.DataFrame(out)
 
@@ -307,11 +345,15 @@ def build_sales(df_sitadel, df_ventes_ancien):
     # discarded synthetic proxy.
     tx_total = df_ventes_ancien.groupby("Date")["Transactions"].sum()
 
+    # Fallback for the first months, before the lagged driver exists. Constant, so it is
+    # read once rather than re-evaluated as a default argument on every iteration.
+    ph0, pc0, tx0 = permits_house.iloc[0], permits_coll.iloc[0], tx_total.iloc[0]
+
     sales_data = []
     for date in date_range:
-        ph = permits_house.get(date - pd.DateOffset(months=12), permits_house.iloc[0])
-        pc = permits_coll.get(date - pd.DateOffset(months=18), permits_coll.iloc[0])
-        tx = tx_total.get(date - pd.DateOffset(months=2), tx_total.iloc[0])
+        ph = permits_house.get(date - pd.DateOffset(months=12), ph0)
+        pc = permits_coll.get(date - pd.DateOffset(months=18), pc0)
+        tx = tx_total.get(date - pd.DateOffset(months=2), tx0)
 
         fermetures = int(ph * 4.8 + pc * 1.5 + np.random.normal(3000, 400))
         exterieur = int(ph * 0.95 + np.random.normal(600, 100))
@@ -362,9 +404,12 @@ class DataManager:
         self.ensure_ventes_ancien(force_rebuild=force_regenerate)
         df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
 
-        # 2. Real SIT@DEL + macro, generated & cached together.
-        if not (os.path.exists(self.paths["sitadel"]) and os.path.exists(self.paths["macro"])) \
-                or force_regenerate:
+        # 2. Real SIT@DEL + macro, generated & cached together. Rebuilt when forced,
+        #    missing, OR stale relative to any manual-input source — same mtime-aware
+        #    contract as ventes_ancien / sales / ecln / revenue, so a data refresh
+        #    actually propagates instead of leaving the committed CSVs a month behind.
+        if force_regenerate or sitadel_macro_is_stale(self.paths["sitadel"],
+                                                      self.paths["macro"]):
             df_sitadel, df_macro = generate_sitadel_and_macro()
             df_sitadel.to_csv(self.paths["sitadel"], index=False, encoding="utf-8")
             df_macro.to_csv(self.paths["macro"], index=False, encoding="utf-8")
@@ -388,21 +433,12 @@ class DataManager:
         # Real company-revenue benchmark (quarterly, €). Rebuilt from the ca-*.csv
         # manual-input files; empty frame when none are present.
         self.ensure_revenue(force_rebuild=force_regenerate)
-        if os.path.exists(self.paths["revenue"]):
-            df_revenue = pd.read_csv(self.paths["revenue"], parse_dates=["Date"])
-        else:
-            df_revenue = pd.DataFrame(columns=["Date", "Company", "CA_MEUR"])
+        df_revenue = self._read_optional("revenue", REVENUE_COLUMNS)
 
         # Real ECLN commercialisation-of-new-dwellings series (quarterly). Rebuilt from
         # the SDES manual-input CSV; empty frame when the source file is absent.
         self.ensure_ecln(force_rebuild=force_regenerate)
-        if os.path.exists(self.paths["ecln"]):
-            df_ecln = pd.read_csv(self.paths["ecln"], parse_dates=["Date"])
-        else:
-            df_ecln = pd.DataFrame(columns=[
-                "Date", "Reservations", "MisesEnVente", "Annulations",
-                "Encours", "DelaiEcoulement", "PrixM2_Collectif",
-                "Resa_Sociaux", "Resa_Institutionnels"])
+        df_ecln = self._read_optional("ecln", ECLN_COLUMNS)
 
         # User-imported monthly company sales (optional benchmark). Canonical
         # [Date, Company, Serie, Sales] shape; empty frame when nothing imported yet.
@@ -431,19 +467,18 @@ class DataManager:
         df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
         df_macro = pd.read_csv(self.paths["macro"], parse_dates=["Date"])
         df_sales = pd.read_csv(self.paths["sales"], parse_dates=["Date"])
-        if os.path.exists(self.paths["revenue"]):
-            df_revenue = pd.read_csv(self.paths["revenue"], parse_dates=["Date"])
-        else:
-            df_revenue = pd.DataFrame(columns=["Date", "Company", "CA_MEUR"])
-        if os.path.exists(self.paths["ecln"]):
-            df_ecln = pd.read_csv(self.paths["ecln"], parse_dates=["Date"])
-        else:
-            df_ecln = pd.DataFrame(columns=[
-                "Date", "Reservations", "MisesEnVente", "Annulations",
-                "Encours", "DelaiEcoulement", "PrixM2_Collectif",
-                "Resa_Sociaux", "Resa_Institutionnels"])
+        df_revenue = self._read_optional("revenue", REVENUE_COLUMNS)
+        df_ecln = self._read_optional("ecln", ECLN_COLUMNS)
         df_company_sales = self._read_company_sales()
         return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
+
+    def _read_optional(self, key, columns):
+        """Read an OPTIONAL dataset, or return a correctly-typed empty frame when its CSV
+        has never been built (no ca-*.csv compiled, no ECLN source file). Shared by
+        load_or_generate_all and read_frames so the fallback shape is stated once."""
+        if os.path.exists(self.paths[key]):
+            return pd.read_csv(self.paths[key], parse_dates=["Date"])
+        return pd.DataFrame(columns=columns)
 
     def _read_company_sales(self):
         """Return the canonical [Date, Company, Serie, Sales] company-sales frame.
@@ -634,9 +669,7 @@ class DataManager:
         """
         df = pd.read_csv(path)
         df["Date"] = pd.to_datetime(df["Date"])
-        for c in ["Reservations", "MisesEnVente", "Annulations", "Encours",
-                  "DelaiEcoulement", "PrixM2_Collectif",
-                  "Resa_Sociaux", "Resa_Institutionnels"]:
+        for c in ECLN_VALUE_COLUMNS:
             if c in df.columns:
                 df[c] = pd.to_numeric(df[c], errors="coerce")
         return df.sort_values("Date").reset_index(drop=True)
@@ -781,7 +814,3 @@ class DataManager:
         except Exception as e:
             return False, f"Erreur lors du traitement du fichier: {str(e)}"
             
-    def get_geography_hierarchy(self, df):
-        """Region -> sorted departments, derived from the data (national: France)."""
-        return {r: sorted(df[df["Region"] == r]["Department"].unique().tolist())
-                for r in df["Region"].unique()}

@@ -222,6 +222,122 @@ def test_composite_optimizer_reports_out_of_sample():
     assert res["max_correlation"] > res["test_correlation"]  # overfit unmasked on noise
 
 
+# --- Derived-cache invalidation & source resilience -------------------------------------
+
+def test_sitadel_macro_cache_is_invalidated_by_a_newer_source():
+    """data/sitadel.csv and data/macro.csv must be rebuilt when any manual-input source is
+    newer, like every other derived dataset. They used to be built once and never
+    invalidated, so the weekly refresh silently left the app serving frozen CSVs.
+
+    Fully hermetic: the source list is stubbed onto a temp directory, so the test never
+    reads or re-stamps a real file in data_manual_input/.
+    """
+    import tempfile
+    import data_manager as dmod
+    with tempfile.TemporaryDirectory() as tmp:
+        sit = os.path.join(tmp, "sitadel.csv")
+        mac = os.path.join(tmp, "macro.csv")
+        assert dmod.sitadel_macro_is_stale(sit, mac), "missing caches must count as stale"
+
+        src = os.path.join(tmp, "source.csv")
+        for p in (src, sit, mac):
+            open(p, "w").write("Date\n2020-01-01\n")
+
+        real_sources = dmod._sitadel_macro_sources
+        dmod._sitadel_macro_sources = lambda: [src]
+        try:
+            # Caches strictly newer than the source -> fresh, no rebuild.
+            os.utime(src, (1_000_000, 1_000_000))
+            for p in (sit, mac):
+                os.utime(p, (2_000_000, 2_000_000))
+            assert not dmod.sitadel_macro_is_stale(sit, mac)
+
+            # Source refreshed after the caches -> stale, rebuild.
+            os.utime(src, (3_000_000, 3_000_000))
+            assert dmod.sitadel_macro_is_stale(sit, mac)
+        finally:
+            dmod._sitadel_macro_sources = real_sources
+
+
+def test_macro_optional_column_missing_degrades_to_nan():
+    """An OPTIONAL series whose column disappears upstream must leave that column NaN, not
+    raise. These CSVs are refreshed weekly from public APIs, so a rename must not take the
+    whole app down at startup."""
+    import tempfile
+    import data_manager as dmod
+    idx = pd.date_range("2020-01-01", periods=24, freq="MS")
+    with tempfile.TemporaryDirectory() as tmp:
+        req = [(os.path.join(tmp, "r.csv"), "Insee_Confiance_Menages"),
+               (os.path.join(tmp, "r2.csv"), "Credit_Logement_Taux_Interet")]
+        for path, col in req:
+            pd.DataFrame({"Date": idx, col: np.arange(24.0)}).to_csv(path, index=False)
+        # Present file, but the requested column is gone.
+        drifted = os.path.join(tmp, "drift.csv")
+        pd.DataFrame({"Date": idx, "SomethingElse": 1.0}).to_csv(drifted, index=False)
+        opt = [(drifted, "Euribor_3M"), (os.path.join(tmp, "absent.csv"), "OAT_10ans")]
+
+        orig_req, orig_opt = dmod._MACRO_REQUIRED, dmod._MACRO_OPTIONAL
+        dmod._MACRO_REQUIRED, dmod._MACRO_OPTIONAL = req, opt
+        try:
+            out = dmod.build_macro_from_files(idx)          # must not raise
+        finally:
+            dmod._MACRO_REQUIRED, dmod._MACRO_OPTIONAL = orig_req, orig_opt
+    assert out["Euribor_3M"].isna().all(), "drifted column must degrade to NaN"
+    assert out["OAT_10ans"].isna().all(), "absent file must still degrade to NaN"
+    assert out["Insee_Confiance_Menages"].notna().any(), "required series must survive"
+
+
+def test_search_tx_lags_scores_every_candidate_on_one_window():
+    """Every candidate's R² must be computed on the SAME months. Otherwise a longer lag is
+    scored on a smaller sample and the comparison that picks the winner is not like-for-like.
+
+    Spies on the OLS calls search_tx_lags makes and asserts they all saw one sample size.
+    """
+    idx = pd.date_range("2005-01-01", periods=240, freq="MS")
+    rng = np.random.default_rng(3)
+    macro = pd.DataFrame({
+        "Date": idx,
+        "Credit_Logement_Taux_Interet": rng.normal(2, 0.3, 240),
+        "Intentions_Achat_Logement": rng.normal(0, 1, 240),
+        "Taux_Chomage_BIT": rng.normal(8, 0.5, 240),
+    })
+    tx12 = pd.Series(rng.normal(9e5, 5e4, 240), index=idx, name="tx12")
+
+    seen = []
+    real_ols = fc.ols
+    fc.ols = lambda X, y: (seen.append(len(y)), real_ols(X, y))[1]
+    try:
+        lags = fc.search_tx_lags(macro, tx12, split="2021-12-01")
+    finally:
+        fc.ols = real_ols
+
+    assert len(seen) > 100, "the grid should have scored many candidates"
+    assert len(set(seen)) == 1, f"candidates scored on differing sample sizes: {sorted(set(seen))}"
+    assert set(lags) and {"kr", "ki", "kc"} == set(lags)
+
+    # The shared window must also respect the train/test split.
+    m = fc._macro_indexed(macro)
+    common = fc._grid_common_index(m, tx12, range(0, 13), range(0, 19, 2),
+                                   range(0, 13, 2), split="2021-12-01")
+    assert len(common) == seen[0]
+    assert common.max() <= pd.Timestamp("2021-12-01")
+
+
+def test_optional_fallback_frames_match_the_real_datasets():
+    """The empty frame returned when an optional dataset is missing must carry exactly the
+    columns the real CSV has. The ECLN schema used to be spelled out three times; it now
+    lives in one constant, and this pins it to the actual file so the two cannot drift."""
+    import tempfile
+    import data_manager as dmod
+    for key, columns, real in (("revenue", dmod.REVENUE_COLUMNS, "data/revenue.csv"),
+                               ("ecln", dmod.ECLN_COLUMNS, "data/ecln.csv")):
+        with tempfile.TemporaryDirectory() as tmp:
+            empty = dmod.DataManager(data_dir=tmp)._read_optional(key, columns)
+        assert empty.empty and list(empty.columns) == columns
+        if os.path.exists(real):
+            assert list(pd.read_csv(real).columns) == columns, f"{key}: schéma désaligné"
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     passed = 0

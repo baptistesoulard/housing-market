@@ -209,10 +209,7 @@ from translations import T
 st.sidebar.caption(T[lang_code]["demand_planning_caption"])
 st.sidebar.markdown("---")
 # National-only tracking: no geographic filter or map. Every series is followed
-# at the France level, so downstream filtering is a no-op.
-internal_geo_level = "National"
-selected_regions = []
-selected_departments = []
+# at the France level.
 
 # --- Year range slicer: filters every series to the chosen period ---
 _all_dates = pd.concat([df_sitadel["Date"], df_ventes_ancien["Date"], df_sales["Date"], df_macro["Date"]])
@@ -258,10 +255,11 @@ if "pdf_report_bytes" in st.session_state:
 # --- Main Page Title ---
 st.title(T[lang_code]["title"])
 
-# Filter dataframes according to geographical choices
-filtered_sitadel = ana.filter_by_geography(df_sitadel, internal_geo_level, selected_regions, selected_departments)
-filtered_ventes_ancien = ana.filter_by_geography(df_ventes_ancien, internal_geo_level, selected_regions, selected_departments)
-filtered_sales = ana.filter_by_geography(df_sales, internal_geo_level, selected_regions, selected_departments)
+# National-only: every series is already France-level, so there is nothing to filter.
+# These aliases are read-only downstream (slicing / groupby, which build new frames).
+filtered_sitadel = df_sitadel
+filtered_ventes_ancien = df_ventes_ancien
+filtered_sales = df_sales
 
 _FR_MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin",
               "juillet", "août", "septembre", "octobre", "novembre", "décembre"]

@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 def format_for_sap_ibp(df_indicator, indicator_name, date_col="Date", value_col="Value", 
                        loc_col=None, location_val="FR", time_granularity="Monthly", 
@@ -29,13 +28,9 @@ def format_for_sap_ibp(df_indicator, indicator_name, date_col="Date", value_col=
     
     # 1. Handle Time Granularity
     if time_granularity == "Weekly":
-        # Convert to weekly frequency (W-MON)
-        # We can set the date as index, resample weekly, and interpolate the values
-        df_temp = df.set_index(date_col)
-        # Weekly resampling, linear interpolation of the values
-        df_weekly = df_temp[[value_col]].resample('W-MON').interpolate(method='linear')
-        
-        # If there are locations, we would need to do this per location
+        # Weekly resampling (W-MON) with linear interpolation of the values, per location
+        # when the frame carries one. The whole-frame resample only makes sense in the
+        # single-series case, so it is computed there rather than upfront and discarded.
         if loc_col and loc_col in df.columns:
             weekly_rows = []
             for loc in df[loc_col].unique():
@@ -45,7 +40,8 @@ def format_for_sap_ibp(df_indicator, indicator_name, date_col="Date", value_col=
                 weekly_rows.append(df_loc_w.reset_index())
             df = pd.concat(weekly_rows, ignore_index=True)
         else:
-            df = df_weekly.reset_index()
+            df = (df.set_index(date_col)[[value_col]]
+                    .resample('W-MON').interpolate(method='linear').reset_index())
     else:
         # Standard monthly (ensuring it is grouped properly if locations exist)
         if loc_col and loc_col in df.columns:

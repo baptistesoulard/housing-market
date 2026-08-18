@@ -58,11 +58,6 @@ def fit_rate_model(df_macro):
     return {"beta": beta, "r2": r2, "rmse": rmse, "frame": frame}
 
 
-def predict_rate(beta, oat, euribor):
-    """Scenario credit rate from Stage-1 coefficients."""
-    return float(beta[0] + beta[1] * oat + beta[2] * euribor)
-
-
 def _design(m, tx12, kr, ki, kc):
     """Aligned design matrix for Stage 2 with the given lead-lags (months)."""
     X = pd.DataFrame({
@@ -73,6 +68,40 @@ def _design(m, tx12, kr, ki, kc):
     return X.join(tx12).dropna()
 
 
+def _grid_common_index(m, tx12, kr_range, ki_range, kc_range, split=None):
+    """The months usable by EVERY candidate in the lag grid.
+
+    A larger lag shifts a predictor further forward and so loses more rows at the start of
+    the sample: scored on their own natural windows, two candidates are fitted on different
+    numbers of observations (here 216 to 228), and their R² are not directly comparable —
+    part of the gap between them is just the sample changing underneath. Restricting every
+    candidate to this common index makes the comparison apples-to-apples, at the cost of a
+    few early months.
+
+    Returns a DatetimeIndex (possibly empty when the grid is wider than the sample).
+    """
+    cols = {"rate": "Credit_Logement_Taux_Interet",
+            "intent": "Intentions_Achat_Logement",
+            "chom": "Taux_Chomage_BIT"}
+    full = pd.DataFrame({k: m[v] for k, v in cols.items() if v in m}).join(tx12, how="outer")
+    if full.empty or "tx12" not in full:
+        return pd.DatetimeIndex([])
+    # Complete monthly grid, so shifting by k months is exactly a k-row shift.
+    idx = pd.date_range(full.index.min(), full.index.max(), freq="MS")
+    full = full.reindex(idx)
+
+    usable = full["tx12"].notna()
+    for key, rng in (("rate", kr_range), ("intent", ki_range), ("chom", kc_range)):
+        if key not in full:
+            return pd.DatetimeIndex([])
+        observed = full[key].notna()
+        for k in rng:                      # month t must be observed at EVERY lag tested
+            usable &= observed.shift(k, fill_value=False)
+    if split is not None:
+        usable &= idx <= pd.Timestamp(split)
+    return idx[usable]
+
+
 def search_tx_lags(df_macro, tx12, kr_range=range(0, 13), ki_range=range(0, 19, 2),
                    kc_range=range(0, 13, 2), min_obs=60, split=None):
     """Grid-search the predictor lead-lags that maximise R² for Stage 2.
@@ -81,16 +110,20 @@ def search_tx_lags(df_macro, tx12, kr_range=range(0, 13), ki_range=range(0, 19, 
     (index ≤ split) — exactly the window the backtest then trains on. This avoids the
     leakage of picking the lags on the full sample (including the test period) and then
     reporting an out-of-sample MAPE on that same period, which flatters the metric.
+
+    Every candidate is scored on the SAME months (see _grid_common_index), so the R² that
+    picks the winner reflects the lags alone and not a sample that shrinks as lags grow.
     """
     m = _macro_indexed(df_macro)
+    common = _grid_common_index(m, tx12, kr_range, ki_range, kc_range, split)
+    if len(common) < min_obs:
+        return {"kr": 9, "ki": 4, "kc": 0}
     best = None
     for kr in kr_range:
         for ki in ki_range:
             for kc in kc_range:
-                d = _design(m, tx12, kr, ki, kc)
-                if split is not None:
-                    d = d[d.index <= split]
-                if len(d) < min_obs:
+                d = _design(m, tx12, kr, ki, kc).reindex(common)
+                if d.isna().any().any() or len(d) < min_obs:
                     continue
                 _, r2, _, _ = ols(d[["rate", "intent", "chom"]].values, d["tx12"].values)
                 if best is None or r2 > best[0]:
@@ -121,11 +154,6 @@ def fit_tx_model(df_macro, tx12, kr, ki, kc, split="2021-12-01"):
         bt["train_beta"] = bbeta
     return {"beta": beta, "r2": r2, "rmse": rmse, "frame": frame,
             "lags": {"kr": kr, "ki": ki, "kc": kc}, "backtest": bt}
-
-
-def predict_tx(beta, rate, intent, chom):
-    """Scenario transactions (12-month) from Stage-2 coefficients."""
-    return float(beta[0] + beta[1] * rate + beta[2] * intent + beta[3] * chom)
 
 
 def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816):
