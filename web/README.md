@@ -84,9 +84,10 @@ Deux règles de mise en page valent d'être connues avant de toucher au CSS :
   `ul`/`ol`) sont neutralisés : sans ça, la page a trois bords droits différents et les
   encadrés sont plus larges que le texte qu'ils contiennent. Ne pas remettre de
   `max-width` sur un bloc `.hm-*`.
-- **La navigation est dans l'en-tête**, pas seulement dans la barre latérale : celle-ci ne
-  s'épingle qu'au-delà de 1008 px. `PAGES` alimente les deux, elles ne peuvent pas
-  diverger.
+- **La navigation vit dans la barre latérale**, rendue par Observable Framework à partir
+  de `PAGES`. Elle ne s'épingle qu'au-delà de 1008 px ; en dessous elle se replie derrière
+  un bouton, avec la frise de période qu'elle héberge. Un bandeau d'onglets en en-tête a
+  été essayé puis retiré : redondant avec la barre latérale dès qu'elle est visible.
 
 ## Construire le site statique
 
