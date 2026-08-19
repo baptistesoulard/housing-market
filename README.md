@@ -119,7 +119,7 @@ La phase 2 avait laissé `app.py` à moitié migré : les onglets d'affichage pa
 - **`q.macro_rolling`** : nouveau helper pour les cumuls de crédits à l'habitat. Contrairement à `rolling_sum`, il CONSERVE les lignes à cumul NULL et les colonnes brutes — la vue superpose des barres mensuelles et une courbe cumulée sur le même axe, elle a besoin des deux.
 - **Un seul calcul reste délibérément en pandas** : le lissage 12 mois de l'atelier Time-Lag (`min_periods=1`). C'est un lissage d'affichage appliqué en aval à la série déjà agrégée, quelle que soit sa provenance parmi trois branches ; le passer en SQL obligerait à pousser toute la sélection d'indicateur dans la requête, sans gain numérique. La raison est écrite à côté du code.
 - **Parité vérifiée sous trois états de widgets** : `app.py` rendu via le harnais Streamlit donne des valeurs identiques à l'état par défaut, avec le slicer déplacé (2015-2020), **et avec 13 selectbox basculés sur leur dernière option** — c'est ce dernier état qui exerce réellement les branches `Product` / `Company` / `Serie`. Métriques, markdown, légendes et tableaux comparés.
-- **Tests** : `tests/test_queries_parity.py` passe de 15 à 18 (filtre de catégorie sur les trois datasets non-`Type`, `macro_rolling` vs `dropna().rolling()`). 57 tests verts au total.
+- **Tests** : `tests/test_queries_parity.py` passe de 15 à 19 cas (filtre de catégorie sur les trois datasets non-`Type`, `macro_rolling` vs `dropna().rolling()`). 58 collectés sur l'ensemble des suites : 57 verts, 1 skip légitime (`company_sales` vide tant qu'aucun import utilisateur n'a eu lieu).
 
 ## Modules
 
