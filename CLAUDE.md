@@ -143,8 +143,12 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 | Branche | Devant `main` | Note |
 |---|---|---|
 | `main` | — | porte les DEUX axes en entier : compute (phases 0-4) et stockage (socle + bascule) |
-| `refactor/duckdb-storage` | 0 | axe stockage, **fusionné dans `main` par la PR #3** — supprimable |
-| `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, **fusionné dans `main`** — supprimable |
-| `refactor/duckdb-engine` | 0 | axe compute, **fusionné dans `main` par la PR #2** — supprimable |
-| `claude/duckdb-parquet-refactor-p2-tvs0b2` | 1 | abandonnée sur décision utilisateur — travail hors sujet (axe stockage). À supprimer. |
+| `refactor/duckdb-storage` | 0 | axe stockage, fusionné par la PR #3 |
+| `refactor/duckdb-engine` | 0 | axe compute, fusionné par la PR #2 |
+| `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, fusionnés |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
+
+Les quatre branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base
+--is-ancestor` vérifié) : leurs copies locales ont été supprimées, il ne reste que les
+copies distantes, à supprimer d'un `git push origin --delete`. `claude/duckdb-parquet-
+refactor-p2-tvs0b2`, qui figurait ici, n'existe plus ni en local ni sur le distant.
