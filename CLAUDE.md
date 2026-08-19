@@ -14,7 +14,7 @@ touchent les mêmes fichiers. Les confondre est l'erreur par défaut.
 |---|---|---|
 | Question | *où* les données sont persistées | *qui* calcule les agrégations |
 | Livrable | `housing_data/` — contrats pandera + entrepôt Parquet, vue SQL par dataset | `queries.py` — DuckDB comme moteur d'agrégation unique |
-| État | **fusionné dans `main`** (`c21950d`, `fa38edb`, `d7f38e7`) | **branche `refactor/duckdb-engine`**, PR #2 en attente |
+| État | socle fusionné dans `main` ; bascule de la LECTURE en cours sur `refactor/duckdb-storage` | **fusionné dans `main`** — PR #2, phases 0-4 |
 | Vocabulaire des commits | messages libres | `refactor(compute) phase N:` |
 
 L'axe compute **s'appuie** sur l'axe stockage : `queries.open_warehouse()` ouvre une
@@ -41,6 +41,27 @@ d'exécution y reste délibérément (voir invariants).
 
 Un chantier **distinct** reste ouvert, côté front web : `web/README.md` liste les onglets
 Prévision / Atelier / Données & Export à porter vers Observable. Ce n'est pas du compute.
+
+## Axe stockage — plan et état
+
+Objectif : le Parquet est le chemin de lecture au runtime, les CSV restent la copie
+versionnée et diffable — et le repli.
+
+| Étape | Portée | État |
+|---|---|---|
+| socle | `housing_data/` : contrats pandera + écriture Parquet à côté des CSV | ✅ dans `main` |
+| bascule | `read_frames()` lit le Parquet ; garde de fraîcheur ; `signature()` ; diagnostics | 🔄 `refactor/duckdb-storage` |
+
+**Pourquoi la bascule compte** : avant elle, l'app lisait les mêmes données par DEUX
+chemins — DuckDB sur les Parquet pour les agrégations, pandas sur les CSV pour tout le
+reste (options de widgets, entrées macro des modèles). Ils ne s'accordaient que parce que
+`load_or_generate_all()` réécrivait les 7 Parquet à chaque démarrage.
+
+**La garde de fraîcheur est le point porteur** : `warehouse.resolve()` ne retient un
+Parquet que s'il est au moins aussi récent que son CSV. Les CSV sont versionnés, les
+Parquet gitignorés — donc un `git pull` apportant des CSV rafraîchis laisse mécaniquement
+le Parquet local en retard. Les vues SQL appliquent la même règle, donc DuckDB et
+`read_dataset()` ne peuvent pas diverger.
 
 ## Invariants à ne pas casser
 
@@ -121,7 +142,8 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 
 | Branche | Devant `main` | Note |
 |---|---|---|
-| `main` | — | porte l'axe stockage, pas l'axe compute |
-| `refactor/duckdb-engine` | 9 | phases 0-4, correctif CI, ce document. **PR #2 ouverte vers `main`, non fusionnée.** |
+| `main` | — | porte l'axe compute (phases 0-4) et le socle stockage |
+| `refactor/duckdb-storage` | 1 | bascule de la lecture en Parquet (axe stockage). **PR à ouvrir.** |
+| `refactor/duckdb-engine` | 0 | axe compute, **fusionné dans `main` par la PR #2** — supprimable |
 | `claude/duckdb-parquet-refactor-p2-tvs0b2` | 1 | abandonnée sur décision utilisateur — travail hors sujet (axe stockage). À supprimer. |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
