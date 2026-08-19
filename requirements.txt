@@ -16,8 +16,12 @@ plotly>=5.10.0        # graphiques (courbes, KPI)
 xlrd>=2.0.1           # lecture du .xls IGEDD (ventes anciennes) via pandas.read_excel
 matplotlib>=3.7.0     # graphiques du rapport PDF (rendu PNG en mémoire, backend Agg)
 reportlab>=4.0.0      # génération du rapport PDF (module report.py, bouton sidebar)
-# --- Couche données réutilisable (housing_data/) : contrats typés + entrepôt Parquet/SQL.
-# Import gardé dans data_manager.py : l'app tourne encore sur CSV si ces libs manquent.
+# --- Couche données (housing_data/) + couche de calcul (queries.py) : contrats typés,
+# entrepôt Parquet, et DuckDB comme MOTEUR D'AGRÉGATION des trois surfaces.
+# NON optionnelles depuis le refactor compute (phases 1-3) : app.py, web_export.py et
+# report.py importent queries.py au niveau module, donc housing_data, donc ces trois libs.
+# L'import reste gardé dans data_manager.py, mais ce repli ne couvre plus que le seul
+# fetch_new_sources.py — les applis, elles, ne démarrent pas sans.
 pandera>=0.20.0       # contrats de schéma (validation des datasets avant écriture)
 pyarrow>=12.0.0       # moteur Parquet (format d'échange typé, colonnaire)
 duckdb>=1.0.0         # moteur SQL embarqué (zéro serveur) au-dessus des Parquet

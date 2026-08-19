@@ -32,9 +32,9 @@ if _REPO_ROOT not in sys.path:
 
 from data_manager import DataManager          # noqa: E402
 import analysis as ana                         # noqa: E402
-import forecast as fc                          # noqa: E402
 import actualites as actu                      # noqa: E402
 import theme                                    # noqa: E402  (palette partagée web/theme.json)
+import queries as q                             # noqa: E402  (couche SQL DuckDB partagée)
 
 # Cible BPCE 2026 (miroir des constantes d'app.py, bloc Perspective).
 BPCE_TX_ANCIEN_2026 = 890_000
@@ -143,36 +143,24 @@ def _rows_from(df, mapping, date_col="Date"):
 
 
 # ============================ construction du payload =============================
-def build_synthese(frames: dict) -> dict:
-    df_sitadel_full = frames["sitadel"]
-    df_ventes_ancien_full = frames["ventes_ancien"]
-    df_macro_full = frames["macro"]
+def build_synthese(con, frames: dict) -> dict:
     df_ecln_full = frames["ecln"]
+    macro_cols = q.macro_data_columns(con)
 
-    # --- Momentum & niveaux 12 m (indépendants de tout filtre, comme dans app.py) ---
-    sit = ana.aggregate_sitadel(df_sitadel_full)
-    va = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
-    roll_sit = ana.calculate_rolling_12m(sit, ["Permis", "MisesEnChantier"])
-    roll_va = ana.calculate_rolling_12m(va, ["Transactions"])
-    m_permis = ana.momentum_metrics(sit, "Permis")
-    m_mises = ana.momentum_metrics(sit, "MisesEnChantier")
-    m_tx = ana.momentum_metrics(va, "Transactions")
+    # --- Momentum & niveaux 12 m (SQL, national plein, indépendant de tout filtre) ---
+    roll_sit = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], (12,))
+    roll_va = q.monthly(con, "ventes_ancien", ["Transactions"], (12,))
+    m_permis = ana.momentum_metrics(roll_sit, "Permis")
+    m_mises = ana.momentum_metrics(roll_sit, "MisesEnChantier")
+    m_tx = ana.momentum_metrics(roll_va, "Transactions")
     k_permis = ana.calculate_kpis(roll_sit, "Permis")
     k_mises = ana.calculate_kpis(roll_sit, "MisesEnChantier")
     k_tx = ana.calculate_kpis(roll_va, "Transactions")
 
-    mi = df_macro_full.set_index("Date").sort_index()
-
     def _last_prev(col, months=12):
-        if col not in mi.columns:
+        if col not in macro_cols:
             return None, None
-        s = mi[col].dropna()
-        if s.empty:
-            return None, None
-        last = float(s.iloc[-1])
-        cutoff = s.index[-1] - pd.DateOffset(months=months)
-        older = s[s.index <= cutoff]
-        return last, (float(older.iloc[-1]) if not older.empty else None)
+        return q.macro_last_and_year_ago(con, col, months)
 
     # ---------------------------- Pastilles par pilier ----------------------------
     neuf_l3 = [v for v in (m_permis.get("last3_yoy"), m_mises.get("last3_yoy")) if v is not None]
@@ -197,7 +185,8 @@ def build_synthese(frames: dict) -> dict:
 
     # ------------------------------- À retenir ------------------------------------
     mom_ip = ana.momentum_metrics(
-        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+        q.monthly(con, "sitadel", ["MisesEnChantier"], (12,), types=ana.SITADEL_INDIVIDUEL_PUR),
+        "MisesEnChantier")
     takeaways = []
     neuf_head = {"up": "la construction accélère", "flat": "la construction est stable",
                  "down": "la construction recule"}[pill_neuf]
@@ -301,16 +290,10 @@ def build_synthese(frames: dict) -> dict:
                           "value": f"{bls_last:+.0f}",
                           "sub": bls_word + " par les banques · enquête BLS, 3 prochains mois"})
     # Indice d'accessibilité (capacité d'emprunt ÷ prix, base 100 = 2015, prêt 25 ans).
-    if "Prix_Ancien_Ensemble" in df_macro_full.columns:
-        af = df_macro_full.dropna(subset=["Credit_Logement_Taux_Interet", "Prix_Ancien_Ensemble"]).copy()
-        cap15 = _borrow_capacity_factor(
-            df_macro_full.loc[(df_macro_full["Date"].dt.year == 2015)
-                              & df_macro_full["Credit_Logement_Taux_Interet"].notna(),
-                              "Credit_Logement_Taux_Interet"], 25).mean() if not af.empty else None
-        if cap15 and cap15 > 0:
-            af["_access"] = (_borrow_capacity_factor(af["Credit_Logement_Taux_Interet"], 25)
-                             / cap15 * 100) / af["Prix_Ancien_Ensemble"] * 100
-            acc_s = af.set_index("Date")["_access"].dropna()
+    if "Prix_Ancien_Ensemble" in macro_cols:
+        _acc_df = q.capacity_accessibility(con, 25)
+        if not _acc_df.empty:
+            acc_s = _acc_df.set_index("Date")["access"].dropna()
             if not acc_s.empty:
                 a_last = float(acc_s.iloc[-1])
                 older = acc_s[acc_s.index <= acc_s.index[-1] - pd.DateOffset(months=12)]
@@ -328,7 +311,7 @@ def build_synthese(frames: dict) -> dict:
                                   "value": f"{a_last:.0f}", "sub": a_sub})
 
     # ---------------------- Bloc 3 : Perspective ----------------------------------
-    tx12 = fc.build_target(df_ventes_ancien_full).dropna()
+    tx12 = roll_va.set_index("Date")["Transactions_12M"].dropna()
     gap = None
     last_tx = None
     if not tx12.empty:
@@ -353,8 +336,7 @@ def build_synthese(frames: dict) -> dict:
             "value": _human(last_tx),
             "sub": _pct_fr(gap) + (" au-dessus de la cible BPCE 2026 (890 k)" if gap >= 0
                                    else " sous la cible BPCE 2026 (890 k)")})
-    if ("Reno_Activite_Batiment" in df_macro_full.columns
-            and df_macro_full["Reno_Activite_Batiment"].notna().any()):
+    if "Reno_Activite_Batiment" in macro_cols:
         rn_last, rn_prev = _last_prev("Reno_Activite_Batiment")
         if rn_last is not None:
             rn_d = None if rn_prev is None else rn_last - rn_prev
@@ -449,14 +431,11 @@ def _yoy_kpi(kpis, mom, label, month_label):
     }
 
 
-def build_neuf(frames: dict) -> dict:
-    df_sitadel_full = frames["sitadel"]
+def build_neuf(con, frames: dict) -> dict:
     df_ecln = frames["ecln"]
 
-    # --- Série principale SIT@DEL (national, tous types) : brut + 12M + 6M -------------
-    agg = ana.aggregate_sitadel(df_sitadel_full)
-    roll = ana.calculate_rolling_12m(agg, ["Permis", "MisesEnChantier"])
-    roll = ana.calculate_rolling(roll, ["Permis", "MisesEnChantier"], 6)
+    # --- Série principale SIT@DEL (national, tous types) : brut + 12M + 6M (SQL) -------
+    roll = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], (12, 6))
     series_meta = [
         {"key": "permis", "name": "Permis de Construire", "color": COLOR_BRICK, "dash": None,
          "raw": "Permis", "r12": "Permis_12M", "r6": "Permis_6M"},
@@ -476,8 +455,8 @@ def build_neuf(frames: dict) -> dict:
     # --- KPIs (national plein, dernier mois) ------------------------------------------
     kpi_permis = ana.calculate_kpis(roll, "Permis")
     kpi_mises = ana.calculate_kpis(roll, "MisesEnChantier")
-    mom_permis = ana.momentum_metrics(agg, "Permis")
-    mom_mises = ana.momentum_metrics(agg, "MisesEnChantier")
+    mom_permis = ana.momentum_metrics(roll, "Permis")
+    mom_mises = ana.momentum_metrics(roll, "MisesEnChantier")
     _sit_month = _fmt_month_year(_last_valid_date(roll, "Permis"))
     kpis = [
         _yoy_kpi(kpi_permis, mom_permis, "Permis de Construire (Cumul 12m glissant)", _sit_month),
@@ -506,36 +485,35 @@ def build_neuf(frames: dict) -> dict:
     #     commencent le même mois, donc leurs trous initiaux coïncident.
     #   - `kpis_by_type` : les KPI PRÉ-CALCULÉS pour chacun des 15 sous-ensembles non
     #     vides, produits ici par les mêmes fonctions `analysis` que le reste de l'app.
-    sit_types = sorted(df_sitadel_full["Type"].unique())
+    sit_types = sorted(r[0] for r in con.execute('SELECT DISTINCT Type FROM sitadel').fetchall())
     codes = {t: _TYPE_CODES.get(t, t[:2].lower()) for t in sit_types}
     date_axis = [d.strftime("%Y-%m-%d") for d in roll["Date"]]
 
     def _arr(col):
         return [None if pd.isna(v) else round(float(v), 3) for v in col]
 
+    # Séries par type en UNE requête (monthly_by_group), réindexées sur l'axe commun.
+    bt = q.monthly_by_group(con, "sitadel", {codes[t]: [t] for t in sit_types},
+                            ["Permis", "MisesEnChantier"], (12, 6))
     by_type_series = []
     for t in sit_types:
-        agg_t = ana.aggregate_sitadel(df_sitadel_full, [t])
-        roll_t = ana.calculate_rolling_12m(agg_t, ["Permis", "MisesEnChantier"])
-        roll_t = ana.calculate_rolling(roll_t, ["Permis", "MisesEnChantier"], 6)
-        roll_t = roll_t.set_index("Date").reindex(roll["Date"])
+        sub = bt[bt["Groupe"] == codes[t]].set_index("Date").reindex(roll["Date"])
         for m in series_meta:
             by_type_series.append({
-                "type": codes[t], "key": m["key"], "raw": _arr(roll_t[m["raw"]]),
-                "roll12": _arr(roll_t[m["r12"]]), "roll6": _arr(roll_t[m["r6"]])})
+                "type": codes[t], "key": m["key"], "raw": _arr(sub[m["raw"]]),
+                "roll12": _arr(sub[m["r12"]]), "roll6": _arr(sub[m["r6"]])})
 
     kpis_by_type = {}
     for size in range(1, len(sit_types) + 1):
         for combo in itertools.combinations(sit_types, size):
-            agg_c = ana.aggregate_sitadel(df_sitadel_full, list(combo))
-            roll_c = ana.calculate_rolling_12m(agg_c, ["Permis", "MisesEnChantier"])
+            roll_c = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], (12,), types=list(combo))
             month_c = _fmt_month_year(_last_valid_date(roll_c, "Permis"))
             kpis_by_type["+".join(sorted(codes[t] for t in combo))] = [
                 _yoy_kpi(ana.calculate_kpis(roll_c, "Permis"),
-                         ana.momentum_metrics(agg_c, "Permis"),
+                         ana.momentum_metrics(roll_c, "Permis"),
                          "Permis de Construire (Cumul 12m glissant)", month_c),
                 _yoy_kpi(ana.calculate_kpis(roll_c, "MisesEnChantier"),
-                         ana.momentum_metrics(agg_c, "MisesEnChantier"),
+                         ana.momentum_metrics(roll_c, "MisesEnChantier"),
                          "Mises en Chantier (Cumul 12m glissant)", month_c)]
 
     # --- Individuel vs collectif -------------------------------------------------------
@@ -544,14 +522,16 @@ def build_neuf(frames: dict) -> dict:
         ("Individuel total (pur + groupé)", ana.SITADEL_INDIVIDUEL, COLOR_TERRACOTTA),
         ("Collectif", ana.SITADEL_COLLECTIF, COLOR_BLUE),
     ]
+    # Les 3 groupes (types possiblement chevauchants) en une requête, pour les 2 métriques.
+    ivg = q.monthly_by_group(con, "sitadel", {lbl: types for lbl, types, _c in iv_groups},
+                             ["MisesEnChantier", "Permis"], (12,))
     iv = {}
     for metric in ("MisesEnChantier", "Permis"):
         g_kpis, g_lines = [], []
         for lbl, types, clr in iv_groups:
-            g_agg = ana.aggregate_sitadel(df_sitadel_full, types)
-            g_roll = ana.calculate_rolling_12m(g_agg, [metric])
+            g_roll = ivg[ivg["Groupe"] == lbl].sort_values("Date")
             v12 = g_roll[f"{metric}_12M"].dropna()
-            g_mom = ana.momentum_metrics(g_agg, metric)
+            g_mom = ana.momentum_metrics(g_roll, metric)
             g_kpis.append({"label": lbl, "color": clr,
                            "val12": _th(v12.iloc[-1]) if not v12.empty else "—",
                            "roll12_yoy": _pct_fr(g_mom["roll12_yoy"]) if g_mom["roll12_yoy"] is not None else None,
@@ -564,8 +544,8 @@ def build_neuf(frames: dict) -> dict:
         iv[metric] = {"kpis": g_kpis, "lines": g_lines}
 
     # --- Comparaison mensuelle par année ----------------------------------------------
-    monthly_rows = _rows_from(agg, {"permis": "Permis", "mises": "MisesEnChantier"})
-    last_month_num = int(pd.Timestamp(agg["Date"].max()).month) if not agg.empty else 12
+    monthly_rows = _rows_from(roll, {"permis": "Permis", "mises": "MisesEnChantier"})
+    last_month_num = int(pd.Timestamp(roll["Date"].max()).month) if not roll.empty else 12
 
     # --- ECLN --------------------------------------------------------------------------
     ecln = None
@@ -620,15 +600,12 @@ def build_neuf(frames: dict) -> dict:
     }
 
 
-def build_ancien(frames: dict) -> dict:
-    df_va_full = frames["ventes_ancien"]
-    df_macro = frames["macro"]
+def build_ancien(con, frames: dict) -> dict:
+    macro_cols = q.macro_data_columns(con)
 
-    agg = ana.aggregate_ventes_ancien(df_va_full)
-    roll = ana.calculate_rolling_12m(agg, ["Transactions"])
-    roll = ana.calculate_rolling(roll, ["Transactions"], 6)
+    roll = q.monthly(con, "ventes_ancien", ["Transactions"], (12, 6))
     kpi_tx = ana.calculate_kpis(roll, "Transactions")
-    mom_tx = ana.momentum_metrics(agg, "Transactions")
+    mom_tx = ana.momentum_metrics(roll, "Transactions")
     tx_month = _fmt_month_year(_last_valid_date(roll, "Transactions"))
 
     main_rows = []
@@ -638,66 +615,55 @@ def build_ancien(frames: dict) -> dict:
                           "roll12": None if pd.isna(r["Transactions_12M"]) else round(float(r["Transactions_12M"]), 3),
                           "roll6": None if pd.isna(r["Transactions_6M"]) else round(float(r["Transactions_6M"]), 3)})
 
-    monthly_rows = _rows_from(agg, {"tx": "Transactions"})
-    last_month_num = int(pd.Timestamp(agg["Date"].max()).month) if not agg.empty else 12
+    monthly_rows = _rows_from(roll, {"tx": "Transactions"})
+    last_month_num = int(pd.Timestamp(roll["Date"].max()).month) if not roll.empty else 12
 
-    # --- Prix & accessibilité ----------------------------------------------------------
+    # --- Prix & accessibilité (SQL) ----------------------------------------------------
     prix = {"available": False}
-    if "Prix_Ancien_Ensemble" in df_macro.columns and not df_macro["Prix_Ancien_Ensemble"].dropna().empty:
+    if "Prix_Ancien_Ensemble" in macro_cols:
         labels = {"Prix_Ancien_Ensemble": "Ensemble", "Prix_Ancien_Appartements": "Appartements",
                   "Prix_Ancien_Maisons": "Maisons"}
         colors = {"Prix_Ancien_Ensemble": COLOR_BRICK, "Prix_Ancien_Appartements": COLOR_BLUE,
                   "Prix_Ancien_Maisons": COLOR_GREEN}
-        cols = [c for c in labels if c in df_macro.columns]
+        cols = [c for c in labels if c in macro_cols]
 
         def _long(colmap, yoy=False):
-            """Séries en format long, un dropna PAR série puis pct_change(4)=1 an si yoy."""
-            rows = []
+            """Séries longues via SQL : niveaux (macro_series) ou YoY (series_with_lag_pct)."""
+            out = []
             for key, (col, name) in colmap.items():
-                s = df_macro.dropna(subset=[col]).sort_values("Date")
-                vals = (s[col].pct_change(4) * 100) if yoy else s[col]
-                for d, v in zip(s["Date"], vals):
-                    if pd.notna(v):
-                        rows.append({"date": pd.Timestamp(d).strftime("%Y-%m-%d"),
-                                     "series": name, "key": key, "value": round(float(v), 3)})
-            return rows
+                pts = (q.series_with_lag_pct(con, col, lag=4, digits=3) if yoy
+                       else q.macro_series(con, col, digits=3))
+                for p in pts:
+                    out.append({"date": p["date"], "series": name, "key": key, "value": p["value"]})
+            return out
 
         p_kpis = []
         for c in cols:
-            s = df_macro.dropna(subset=[c])
-            if len(s) >= 5:
-                last, prev = float(s[c].iloc[-1]), float(s[c].iloc[-5])
+            pts = q.macro_series(con, c, digits=10)
+            if len(pts) >= 5:
+                last, prev = pts[-1]["value"], pts[-5]["value"]
                 p_kpis.append({"label": labels[c], "color": colors[c],
                                "value": f"{last:.1f}".replace(".", ","),
                                "yoy": _pct_fr((last / prev - 1) * 100)})
-        last_date = df_macro.dropna(subset=["Prix_Ancien_Ensemble"])["Date"].iloc[-1]
+        last_date = q.macro_series(con, "Prix_Ancien_Ensemble")[-1]["date"][:7]
         _pmap = {labels[c].lower(): (c, labels[c]) for c in cols}
         levels = _long(_pmap)
         yoy = _long(_pmap, yoy=True)
 
         # Capacité d'emprunt & accessibilité, pour 25 et 20 ans (base 100 = 2015).
-        cap = {}
-        full = df_macro.dropna(subset=["Credit_Logement_Taux_Interet"]).copy()
-        acc_base = df_macro.dropna(subset=["Credit_Logement_Taux_Interet", "Prix_Ancien_Ensemble"]).copy()
-        for term in (25, 20):
-            cap15 = _borrow_capacity_factor(
-                full.loc[full["Date"].dt.year == 2015, "Credit_Logement_Taux_Interet"], term).mean()
-            if not (cap15 and cap15 > 0):
-                cap15 = _borrow_capacity_factor(full["Credit_Logement_Taux_Interet"].iloc[:1], term)[0]
-            a = acc_base.copy()
-            a["_capidx"] = _borrow_capacity_factor(a["Credit_Logement_Taux_Interet"], term) / cap15 * 100
-            a["_access"] = a["_capidx"] / a["Prix_Ancien_Ensemble"] * 100
-            cap[str(term)] = _rows_from(a, {"capidx": "_capidx", "prix": "Prix_Ancien_Ensemble", "access": "_access"})
+        cap = {str(term): _rows_from(q.capacity_accessibility(con, term),
+                                     {"capidx": "capidx", "prix": "prix", "access": "access"})
+               for term in (25, 20)}
 
         new_vs_old = {"available": False}
-        if "Prix_Neuf" in df_macro.columns and df_macro["Prix_Neuf"].notna().any():
+        if "Prix_Neuf" in macro_cols:
             _nmap = {"neuf": ("Prix_Neuf", "Neuf"), "ancien": ("Prix_Ancien_Ensemble", "Ancien")}
             new_vs_old = {"available": True, "levels": _long(_nmap), "yoy": _long(_nmap, yoy=True),
                           "series_meta": [{"key": "neuf", "name": "Neuf", "color": COLOR_BLUE},
                                           {"key": "ancien", "name": "Ancien", "color": COLOR_BRICK}]}
 
         prix = {"available": True, "kpis": p_kpis,
-                "last_date": pd.Timestamp(last_date).strftime("%Y-%m"),
+                "last_date": last_date,
                 "price_levels": levels, "price_yoy": yoy, "capacity": cap, "new_vs_old": new_vs_old,
                 "series_meta": [{"key": labels[c].lower(), "name": labels[c], "color": colors[c]} for c in cols]}
 
@@ -720,13 +686,11 @@ def build_ancien(frames: dict) -> dict:
     }
 
 
-def build_macro(frames: dict) -> dict:
-    m = frames["macro"]
+def build_macro(con, frames: dict) -> dict:
+    macro_cols = q.macro_data_columns(con)
 
     def series(col):
-        s = m.dropna(subset=[col]).sort_values("Date")
-        return [{"date": d.strftime("%Y-%m-%d"), "value": round(float(v), 4)}
-                for d, v in zip(s["Date"], s[col])]
+        return q.macro_series(con, col, digits=4)
 
     # Taux : format long des 3 séries togglables.
     rate_defs = [("Credit_Logement_Taux_Interet", "Taux Crédit Habitat", COLOR_TEXT),
@@ -734,42 +698,47 @@ def build_macro(frames: dict) -> dict:
                  ("OAT_10ans", "OAT 10 ans", COLOR_GREEN)]
     rate_rows, rate_meta = [], []
     for col, name, color in rate_defs:
-        if col in m.columns and m[col].notna().any():
+        if col in macro_cols:
             rate_meta.append({"name": name, "color": color})
             for r in series(col):
                 rate_rows.append({"date": r["date"], "series": name, "value": r["value"]})
 
-    # Intentions d'achat : centrées-réduites (z-score).
-    intentions = []
-    if "Intentions_Achat_Logement" in m.columns:
-        s = m.dropna(subset=["Intentions_Achat_Logement"])
-        mu, sd = s["Intentions_Achat_Logement"].mean(), s["Intentions_Achat_Logement"].std()
-        if pd.notna(sd) and sd > 0:
-            intentions = [{"date": d.strftime("%Y-%m-%d"), "value": round(float((v - mu) / sd), 4)}
-                          for d, v in zip(s["Date"], s["Intentions_Achat_Logement"])]
+    # Intentions d'achat : centrées-réduites (z-score, SQL).
+    intentions = q.macro_zscore(con, "Intentions_Achat_Logement", digits=4) \
+        if "Intentions_Achat_Logement" in macro_cols else []
 
     # Volume de crédits (mensuel stacked + cumul 12m), conditionnel.
     credit = None
-    if "Production_Credits_Habitat" in m.columns and m["Production_Credits_Habitat"].notna().any():
-        cr = m.dropna(subset=["Production_Credits_Habitat"]).sort_values("Date").copy()
-        cr["_cum12"] = cr["Production_Credits_Habitat"].rolling(12).sum()
-        has_split = bool("Production_Credits_Pure" in m.columns and m["Production_Credits_Pure"].notna().any())
-        monthly, cum = [], []
+    if "Production_Credits_Habitat" in macro_cols:
+        has_split = "Production_Credits_Pure" in macro_cols
+        monthly = []
         if has_split:
-            cr["_pure_cum12"] = cr["Production_Credits_Pure"].rolling(12).sum()
-            sp = m.dropna(subset=["Production_Credits_Pure"]).sort_values("Date")
-            monthly = _rows_from(sp, {"pure": "Production_Credits_Pure", "renego": "Production_Credits_Renego"})
-        cum = _rows_from(cr.dropna(subset=["_cum12"]),
-                         {"total": "_cum12", **({"pure": "_pure_cum12"} if has_split else {})})
+            monthly = q.rows(con, """
+                SELECT strftime(Date, '%Y-%m-%d') AS date,
+                       Production_Credits_Pure AS pure, Production_Credits_Renego AS renego
+                FROM macro WHERE Production_Credits_Pure IS NOT NULL ORDER BY Date""")
+        # Cumuls 12m calculés sur les lignes où Habitat est renseigné (même axe qu'avant) :
+        # `pure` reste NULL tant que sa fenêtre de 12 n'est pas pleine (min_periods=12).
+        pure_expr = (", CASE WHEN COUNT(Production_Credits_Pure) OVER w = 12 "
+                     "THEN SUM(Production_Credits_Pure) OVER w END AS pure") if has_split else ""
+        cum = q.rows(con, f"""
+            WITH s AS (SELECT * FROM macro WHERE Production_Credits_Habitat IS NOT NULL)
+            SELECT strftime(Date, '%Y-%m-%d') AS date,
+                   CASE WHEN COUNT(Production_Credits_Habitat) OVER w = 12
+                        THEN SUM(Production_Credits_Habitat) OVER w END AS total{pure_expr}
+            FROM s
+            WINDOW w AS (ORDER BY Date ROWS BETWEEN 11 PRECEDING AND CURRENT ROW)
+            QUALIFY total IS NOT NULL
+            ORDER BY Date""")
         credit = {"has_split": has_split, "monthly": monthly, "cum": cum}
 
     # Demande de crédits (BLS), conditionnel.
     bls = None
-    if "Demande_Credit_Perspectives" in m.columns and m["Demande_Credit_Perspectives"].notna().any():
+    if "Demande_Credit_Perspectives" in macro_cols:
         rows = []
         for col, name in (("Demande_Credit_Realisee", "Réalisé (3 derniers mois)"),
                           ("Demande_Credit_Perspectives", "Perspectives (3 prochains mois)")):
-            if col in m.columns:
+            if col in macro_cols:
                 for r in series(col):
                     rows.append({"date": r["date"], "series": name, "value": r["value"]})
         bls = {"rows": rows,
@@ -780,7 +749,7 @@ def build_macro(frames: dict) -> dict:
     reno_defs = [("Reno_Activite_Batiment", "Activité passée — second œuvre", COLOR_BRICK),
                  ("Reno_Activite_Prevue", "Activité prévue — second œuvre", COLOR_GREEN)]
     reno = [{"title": name, "color": color, "rows": series(col)}
-            for col, name, color in reno_defs if col in m.columns and m[col].notna().any()]
+            for col, name, color in reno_defs if col in macro_cols]
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -805,7 +774,7 @@ def build_macro(frames: dict) -> dict:
     }
 
 
-def build_actualites(frames: dict) -> dict:
+def build_actualites(con, frames: dict) -> dict:
     items_all = actu.items_sorted()
     L = "FR"
 
@@ -908,11 +877,12 @@ def _write_if_changed(path, payload):
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
     theme.write_theme_js()  # régénère components/theme.js depuis web/theme.json
-    frames = load_frames()
+    frames = load_frames()  # rafraîchit les CSV + miroirs Parquet validés
+    con = q.open_warehouse(refresh=False)  # vue DuckDB sur les Parquet déjà à jour
     changed = []
     for name, builder in _BUILDERS.items():
         path = os.path.join(DATA_DIR, f"{name}.json")
-        if _write_if_changed(path, builder(frames)):
+        if _write_if_changed(path, builder(con, frames)):
             changed.append(name)
             print(f"[web_export] écrit {name}.json")
         else:

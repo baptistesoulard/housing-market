@@ -96,6 +96,41 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - **Import versionné des ventes** : `data_manual_input/ventes-<famille>.csv` (comme `ca-*.csv`), ingérés automatiquement quand aucun upload ad-hoc n'est présent ; **table récap « une famille = un décalage »** dans l'onglet Prévision.
 - **Tests étendus** (`tests/test_logic.py`, 10 tests) : anti-fuite du lag search, propagation ventes, modèle 2 facteurs, split de l'optimiseur composite.
 
+### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 2)
+
+Après la phase 0 (couche SQL `queries.py` + tests de parité) et la phase 1 (`web_export.py`), la phase 2 bascule les **deux surfaces restantes**. DuckDB est désormais le moteur d'agrégation unique du projet.
+
+- **`report.py` sur la couche SQL** : les 4 graphiques et le bloc KPI/commentaire du rapport PDF passent par `queries.py`. `build_pdf_report(con, lang)` ne reçoit plus de DataFrame — le rapport est slicer-indépendant, donc les vues de l'entrepôt suffisent. Le graphique individuel/collectif fait une requête au lieu d'un agrégat par groupe.
+- **`app.py` sur la couche SQL** : toutes les chaînes `aggregate_* -> calculate_rolling_12m -> calculate_rolling` remplacées par `q.monthly` / `q.monthly_by_group`, avec la connexion DuckDB en `@st.cache_resource`. Le bloc individuel/collectif passe de **8 passes pandas sur l'historique à 1 requête** (fenêtres partitionnées par groupe).
+- **`queries.py` élargi** : filtre `years=(min, max)` (le slicer d'années fait côté SQL), support de `windows=()` (agrégat mensuel nu, sans cumul), et `macro_frame()` pour les traceurs.
+- **Parité vérifiée de bout en bout, pas seulement en test unitaire** :
+  - le **PDF est strictement identique** octet pour octet entre la voie pandas et la voie SQL (graphiques, KPI et commentaire compris) ;
+  - `app.py` exécuté via le harnais Streamlit rend des valeurs **identiques** — 35 métriques, 185 blocs markdown, 90 légendes — à l'état par défaut **et** avec le slicer déplacé (2015-2020), ce qui exerce le filtre SQL.
+- **`analysis.py` change de statut** : ses agrégations ne sont plus sur le chemin d'exécution mais sont conservées comme **implémentation de référence** des tests de parité (`tests/test_queries_parity.py`, 15 tests). Ses helpers de post-agrégation (`calculate_kpis`, `momentum_metrics`, `build_market_commentary`) restent, eux, appelés au runtime.
+- **Effet de bord bienvenu** : les calculs faits par DuckDB ne dépendent plus de la version de pandas/numpy. L'export web, qui variait au 1e-14 près sur `capidx`/`access` selon l'environnement, est maintenant reproductible bit-pour-bit.
+- **CI réparée** : le workflow hebdomadaire n'installait que `pandas numpy xlrd` alors que la phase 1 avait rendu `duckdb`/`pandera`/`pyarrow` obligatoires pour l'export — l'étape « Régénérer les données du front web » échouait à l'import.
+
+### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 3)
+
+La phase 2 avait laissé `app.py` à moitié migré : les onglets d'affichage passaient par SQL, mais les onglets d'analyse interactive (Prévision, Atelier exploratoire, Données & Export) gardaient 11 agrégations pandas. La phase 3 les traite.
+
+- **`q.monthly` généralisé** : le filtre de catégorie codait en dur la colonne `Type`, donc seuls sitadel et ventes_ancien étaient filtrables côté SQL. Le paramètre `category_col` ouvre les trois autres datasets — `Product` (sales), `Serie` (company_sales), `Company` (revenue).
+- **8 sites migrés** : sélecteur de série des ventes société importées, table récap « une famille = un décalage », les deux indicateurs de l'atelier Time-Lag, les benchmarks CA société et ventes second-œuvre, et la composante 1 de l'indicateur composite.
+- **`q.macro_rolling`** : nouveau helper pour les cumuls de crédits à l'habitat. Contrairement à `rolling_sum`, il CONSERVE les lignes à cumul NULL et les colonnes brutes — la vue superpose des barres mensuelles et une courbe cumulée sur le même axe, elle a besoin des deux.
+- **Un seul calcul reste délibérément en pandas** : le lissage 12 mois de l'atelier Time-Lag (`min_periods=1`). C'est un lissage d'affichage appliqué en aval à la série déjà agrégée, quelle que soit sa provenance parmi trois branches ; le passer en SQL obligerait à pousser toute la sélection d'indicateur dans la requête, sans gain numérique. La raison est écrite à côté du code.
+- **Parité vérifiée sous trois états de widgets** : `app.py` rendu via le harnais Streamlit donne des valeurs identiques à l'état par défaut, avec le slicer déplacé (2015-2020), **et avec 13 selectbox basculés sur leur dernière option** — c'est ce dernier état qui exerce réellement les branches `Product` / `Company` / `Serie`. Métriques, markdown, légendes et tableaux comparés.
+- **Tests** : `tests/test_queries_parity.py` passe de 15 à 19 cas (filtre de catégorie sur les trois datasets non-`Type`, `macro_rolling` vs `dropna().rolling()`). 58 collectés sur l'ensemble des suites : 57 verts, 1 skip légitime (`company_sales` vide tant qu'aucun import utilisateur n'a eu lieu).
+
+### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 4)
+
+Dernière série définie deux fois : le cumul 12 mois des transactions. L'onglet « Marché de l'ancien » affichait `Transactions_12M` calculé en SQL, tandis que toute la chaîne de prévision recalculait le même cumul en pandas (`forecast.build_target`).
+
+- **`q.transactions_run_rate(con)`** produit désormais cette série pilote — conforme au principe posé en phase 0 : les modèles restent en numpy (DuckDB n'est pas un moteur de régression), mais **leurs séries d'entrée sont produites par la couche SQL**. Renvoie une Series indexée par Date, car les modèles la manipulent par son index (`.shift()`, `.resample("QS")`, jointures).
+- **`_forecast_bundle` prend `tx12` en paramètre** au lieu de la dériver : la fonction est `@st.cache_data` et une connexion DuckDB n'est ni hachable ni sérialisable, alors qu'une Series est une clé de cache valide.
+- **`forecast.build_target` conservée** comme implémentation de référence des tests de parité, au même titre que les agrégations d'`analysis.py`. Le docstring le dit.
+- **Nettoyages** : `import forecast` était mort dans `web_export.py` depuis la phase 1 ; les alias `df_sitadel_full` / `df_ventes_ancien_full` n'ont plus d'utilisateur, l'entrepôt étant par nature l'historique complet.
+- **Parité** : `tx12` SQL vs pandas à **maxdiff 0**, même index, même dtype, même nom. `app.py` identique sous les trois états de widgets. 59 tests collectés, 58 verts, 1 skip légitime.
+
 ## Modules
 
 - `app.py` — interface Streamlit (8 onglets dont la Synthèse, bilingue FR/EN).
@@ -105,10 +140,11 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - `simulation.py` — décalage temporel et indicateur composite.
 - `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→CA/ventes).
 - `actualites.py` — veille curatée des dispositifs d'aide FR/UE (onglet « Actualités & Aides ») : items, jalons et impacts qualitatifs par pilier.
+- `queries.py` — **couche de calcul SQL partagée** : DuckDB est le moteur d'agrégation unique des trois surfaces (`app.py`, `web/export/web_export.py`, `report.py`). Cumuls glissants (fonctions de fenêtre), YoY, z-score, capacité d'emprunt, regroupements par type — définis UNE fois, donc les trois surfaces affichent les mêmes chiffres par construction.
 - `export.py` — export SAP IBP.
 - `fetch_new_sources.py` — acquisition des sources réelles (INSEE / SDES / BCE).
 - `report.py` — génération du **rapport PDF** (bilan : chiffres clés, commentaire, graphiques, repère BPCE) via reportlab + matplotlib. Bouton « 📄 Rapport PDF » dans la barre latérale.
 
 ## Stack
 
-Python · Streamlit · pandas · numpy · plotly · xlrd · matplotlib · reportlab
+Python · Streamlit · pandas · numpy · plotly · xlrd · matplotlib · reportlab · DuckDB (moteur de calcul) · pyarrow (Parquet) · pandera (contrats)
