@@ -31,10 +31,14 @@ web/
 │   ├── web_export.py            # agrégats Python → 5 JSON statiques + theme.js
 │   └── theme.py                 # charge web/theme.json, génère components/theme.js
 ├── observable/
-│   ├── observablehq.config.js   # config du site
+│   ├── observablehq.config.js   # config du site (+ CSS partagé, dont la frise)
 │   ├── package.json
 │   └── src/
 │       ├── index.md             # page Synthèse (chips, cartes, graphique)
+│       ├── components/
+│       │   ├── hm.js            # graphiques & helpers partagés
+│       │   ├── period.js        # frise de période globale (barre latérale)
+│       │   └── theme.js         # palette, généré depuis web/theme.json
 │       └── data/synthese.json   # généré par web_export.py (commité pour le déploiement)
 └── README.md
 ```
@@ -124,13 +128,32 @@ légendes cliquables) :
 
 ### Parité des contrôles
 
-- **Filtre de période** — présent sur *Marché du neuf*, *Marché de l'ancien* et
-  *Environnement & Financement*, comme le curseur d'années de la barre latérale
-  Streamlit. Il ne rogne que l'affichage : cumuls glissants et moyennes mobiles sont
-  calculés en amont sur l'historique complet, exactement comme `app.py` qui filtre après
-  avoir calculé — une fenêtre étroite montre donc les mêmes valeurs, jamais des cumuls
-  tronqués. La *Synthèse* n'en a pas, ses chiffres étant déjà indépendants du curseur
-  côté Streamlit.
+- **Filtre de période** — une **frise à deux poignées dans la barre latérale**
+  (`src/components/period.js`), montée sur **toutes** les pages, comme le curseur
+  « Période (années) » de la barre latérale Streamlit. Son domaine vient de l'export
+  Python (bloc `period` des 5 JSON, même union de datasets qu'`app.py`), donc il est
+  identique d'un onglet à l'autre quelle que soit l'étendue des séries de la page.
+
+  Le site étant un ensemble de pages HTML distinctes, changer d'onglet **recharge** la
+  page : la position de la frise est donc persistée dans `localStorage`, ce qui lui donne
+  le comportement d'un contrôle unique qui suit l'utilisateur — la barre latérale
+  Streamlit, elle, survit aux changements d'onglet sans rien faire.
+
+  Il ne rogne que l'affichage : cumuls glissants et moyennes mobiles sont calculés en
+  amont sur l'historique complet, exactement comme `app.py` qui filtre après avoir
+  calculé — une fenêtre étroite montre donc les mêmes valeurs, jamais des cumuls
+  tronqués. Deux nuances par page :
+
+  - *Marché du neuf*, *Marché de l'ancien*, *Environnement & Financement* : tous les
+    graphiques suivent la fenêtre ; les cartes « Chiffres clés » restent au dernier mois
+    disponible, comme dans Streamlit.
+  - *Synthèse* : seul le graphique croisé neuf/ancien suit la fenêtre. Pastilles, « à
+    retenir » et cartes restent indépendants du curseur, exactement comme `app.py` qui
+    les calcule sur les frames non filtrées.
+  - *Actualités & Aides* : la frise est affichée pour rester présente partout, mais la
+    page ne la consomme pas (l'échéancier porte sur des mesures à venir, au-delà du
+    domaine du curseur). Une mention « Sans effet sur cet onglet » le dit sous le
+    contrôle.
 - **Segmentation par type de logement** — sur *Marché du neuf*, les quatre types SIT@DEL
   se cochent/décochent et rejouent la courbe **et** les KPI, comme le panneau repliable
   d'`app.py` (aucun type coché = tous, même convention que le multiselect vide).

@@ -5,7 +5,17 @@ toc: false
 
 ```js
 import {status, ui} from "./components/theme.js";
+import {filterYears} from "./components/hm.js";
+import {periodFilter} from "./components/period.js";
 const data = await FileAttachment("./data/synthese.json").json();
+```
+
+```js
+// Frise de période GLOBALE (barre latérale) — même contrôle sur tous les onglets.
+// Les cartes et les pastilles de cette page n'en dépendent pas : comme dans `app.py`,
+// elles lisent le national plein au dernier mois disponible, indépendamment du curseur.
+// Seul le graphique croisé neuf/ancien ci-dessous suit la fenêtre choisie.
+const rangeS = Generators.input(periodFilter({min: data.period.min, max: data.period.max}));
 ```
 
 ```js
@@ -72,8 +82,9 @@ compare les dynamiques sans distorsion d'échelle.
 </div>
 
 ```js
-// Préparation : parse des dates + métadonnées de séries (noms, couleurs).
-const rows = data.chart.rows.map((d) => ({ ...d, date: new Date(d.date) }));
+// Métadonnées de séries (noms, couleurs). Les lignes, elles, dépendent de la frise :
+// elles sont préparées dans leur propre bloc pour que bouger le curseur ne réinitialise
+// pas l'état `visible` de la légende, défini ici.
 const meta = data.chart.series_meta;
 const colorDomain = meta.map((m) => m.name);
 const colorRange = meta.map((m) => m.color);
@@ -99,7 +110,7 @@ function legend(active) {
 }
 
 // Dernier point de chaque série visible, pour l'étiquette de valeur en bout de courbe.
-function lastPoints(field, active) {
+function lastPoints(rows, field, active) {
   return meta.filter((m) => active.has(m.name)).map((m) => {
     const s = rows.filter((d) => d.series === m.name && d[field] != null);
     return s[s.length - 1];
@@ -121,7 +132,7 @@ function tipTitle(d, y) {
   return `${d.series}\n${fmtMonthFR(d.date)}\n${val}`;
 }
 
-function panel({ y, ylabel, baseline, active }) {
+function panel({ rows, y, ylabel, baseline, active }) {
   const shown = (d) => d[y] != null && active.has(d.series);
   const solid = rows.filter((d) => !dashedKeys.has(d.series) && shown(d));
   const dashed = rows.filter((d) => dashedKeys.has(d.series) && shown(d));
@@ -138,7 +149,7 @@ function panel({ y, ylabel, baseline, active }) {
       baseline != null ? Plot.ruleY([baseline], { stroke: ui.rule, strokeDasharray: "2,3" }) : null,
       Plot.lineY(solid, { x: "date", y, stroke: "series", strokeWidth: 2.5 }),
       Plot.lineY(dashed, { x: "date", y, stroke: "series", strokeWidth: 2.5, strokeDasharray: "6,4" }),
-      Plot.text(lastPoints(y, active), {
+      Plot.text(lastPoints(rows, y, active), {
         x: "date", y, text: (d) => (y === "level_k" ? `${Math.round(d[y])} k` : `${Math.round(d[y])}`),
         fill: (d) => meta.find((m) => m.name === d.series).color,
         dx: 8, textAnchor: "start", fontWeight: 700,
@@ -154,17 +165,24 @@ function panel({ y, ylabel, baseline, active }) {
 }
 ```
 
+```js
+// Parse des dates, après le filtre de période : `filterYears` lit l'année sur la chaîne
+// 'YYYY-MM-DD' de l'export. Comme ailleurs, le filtre ne rogne que l'AFFICHAGE — les
+// cumuls 12 mois et la base 100 sont calculés côté Python sur l'historique complet.
+const rows = filterYears(data.chart.rows, rangeS).map((d) => ({ ...d, date: new Date(d.date) }));
+```
+
 ${legend(visible)}
 <div class="hm-caption" style="margin-top:0.1rem">Cliquez une série de la légende pour la masquer ou l'afficher (les deux graphiques suivent).</div>
 
 <div class="hm-panels">
   <div>
     <div class="hm-panel-title">Niveaux réels — échelle unique</div>
-    ${panel({ y: "level_k", ylabel: "Milliers /12 m", baseline: null, active: visible })}
+    ${panel({ rows, y: "level_k", ylabel: "Milliers /12 m", baseline: null, active: visible })}
   </div>
   <div>
     <div class="hm-panel-title">Base 100 = ${data.chart.base_date_label}</div>
-    ${panel({ y: "index_100", ylabel: "Indice (base 100)", baseline: 100, active: visible })}
+    ${panel({ rows, y: "index_100", ylabel: "Indice (base 100)", baseline: 100, active: visible })}
   </div>
 </div>
 

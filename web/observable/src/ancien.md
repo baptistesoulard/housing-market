@@ -4,8 +4,9 @@ toc: false
 ---
 
 ```js
-import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears, yearsExtent,
+import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears,
         MONTHS_FULL, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const anc = await FileAttachment("./data/ancien.json").json();
 ```
@@ -20,17 +21,9 @@ const anc = await FileAttachment("./data/ancien.json").json();
 </details>
 
 ```js
-// Filtre de période (parité avec le curseur d'années de la barre latérale Streamlit).
-const extA = yearsExtent(anc.main_series.rows);
-// Années en CHAÎNES : Inputs.select formate les nombres selon la locale et
-// afficherait « 2 020 » au lieu de « 2020 ».
-const YEARS_A = d3.range(extA[0], extA[1] + 1).map(String);
-const yFromA = view(Inputs.select(YEARS_A, {value: String(extA[0]), label: "Période — de"}));
-const yToA = view(Inputs.select(YEARS_A, {value: String(extA[1]), label: "Période — à"}));
-```
-
-```js
-const rangeA = [+yFromA, +yToA];
+// Filtre de période : la frise GLOBALE de la barre latérale, partagée par tous les
+// onglets (parité avec le curseur d'années de la barre latérale Streamlit).
+const rangeA = Generators.input(periodFilter({min: anc.period.min, max: anc.period.max}));
 ```
 
 ## 🔑 Chiffres Clés

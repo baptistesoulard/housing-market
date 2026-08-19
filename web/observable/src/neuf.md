@@ -5,8 +5,9 @@ toc: false
 
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
-        filterYears, yearsExtent, sumByType,
+        filterYears, sumByType,
         MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
 ```
@@ -21,20 +22,17 @@ const neuf = await FileAttachment("./data/neuf.json").json();
 </details>
 
 ```js
-// --- Contrôles globaux de la page (parité avec la barre latérale + le panneau
+// --- Contrôles de la page (parité avec la barre latérale + le panneau
 // « paramètres supplémentaires » de l'app Streamlit). --------------------------------
-const extN = yearsExtent(neuf.main_series.rows);
-// Années en CHAÎNES : Inputs.select formate les nombres selon la locale et
-// afficherait « 2 020 » au lieu de « 2020 ».
-const YEARS_N = d3.range(extN[0], extN[1] + 1).map(String);
-const yFromN = view(Inputs.select(YEARS_N, {value: String(extN[0]), label: "Période — de"}));
-const yToN = view(Inputs.select(YEARS_N, {value: String(extN[1]), label: "Période — à"}));
+// La période vient de la frise GLOBALE de la barre latérale (components/period.js) :
+// même contrôle et même valeur sur tous les onglets, comme le curseur d'années de la
+// barre latérale Streamlit.
+const rangeN = Generators.input(periodFilter({min: neuf.period.min, max: neuf.period.max}));
 const typesN = view(Inputs.checkbox(neuf.by_type.types.map((t) => t.name),
   {value: neuf.by_type.types.map((t) => t.name), label: "Types de logement (SIT@DEL)"}));
 ```
 
 ```js
-const rangeN = [+yFromN, +yToN];
 // Aucun type coché = tous les types, comme le multiselect vide d'app.py.
 const pickedN = neuf.by_type.types.filter((t) => typesN.includes(t.name)).map((t) => t.code);
 const codesN = pickedN.length ? pickedN : neuf.by_type.types.map((t) => t.code);

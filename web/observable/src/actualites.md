@@ -6,7 +6,16 @@ toc: false
 ```js
 import {kpiCard, cardGrid} from "./components/hm.js";
 import {series, delta, ui} from "./components/theme.js";
+import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/actualites.json").json();
+```
+
+```js
+// La frise reste montée ici pour être présente sur TOUS les onglets, comme la barre
+// latérale Streamlit — mais cette page ne la consomme pas : son échéancier porte sur des
+// mesures à venir, au-delà du domaine du curseur (borné par les données observées).
+const periodeActus = periodFilter({min: A.period.min, max: A.period.max,
+                                   note: "Sans effet sur cet onglet."});
 ```
 
 # ${A.title}

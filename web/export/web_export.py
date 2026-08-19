@@ -129,6 +129,18 @@ def load_frames() -> dict:
             "company_sales": df_company_sales}
 
 
+def _period_bounds(frames: dict) -> dict:
+    """Bornes du curseur d'années partagé par tout le front (barre latérale).
+
+    Même union que la barre latérale d'`app.py` (« Période (années) ») : SIT@DEL,
+    ventes anciennes, ventes second-œuvre et macro. Publiée dans les CINQ payloads
+    pour que la frise ait exactement le même domaine sur toutes les pages, quelle que
+    soit l'étendue des séries de la page affichée."""
+    dates = pd.concat([frames[k]["Date"] for k in ("sitadel", "ventes_ancien", "sales", "macro")
+                       if frames.get(k) is not None and not frames[k].empty]).dropna()
+    return {"min": int(dates.dt.year.min()), "max": int(dates.dt.year.max())}
+
+
 def _rows_from(df, mapping, date_col="Date"):
     """Sérialise un DataFrame en liste de dicts {date: 'YYYY-MM-DD', **mapping} en
     ignorant les valeurs NaN (mapping = {json_key: df_col})."""
@@ -879,10 +891,13 @@ def main():
     theme.write_theme_js()  # régénère components/theme.js depuis web/theme.json
     frames = load_frames()  # rafraîchit les CSV + miroirs Parquet validés
     con = q.open_warehouse(refresh=False)  # vue DuckDB sur les Parquet déjà à jour
+    period = _period_bounds(frames)        # domaine de la frise de la barre latérale
     changed = []
     for name, builder in _BUILDERS.items():
         path = os.path.join(DATA_DIR, f"{name}.json")
-        if _write_if_changed(path, builder(con, frames)):
+        payload = builder(con, frames)
+        payload["period"] = period
+        if _write_if_changed(path, payload):
             changed.append(name)
             print(f"[web_export] écrit {name}.json")
         else:

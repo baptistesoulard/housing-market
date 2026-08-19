@@ -150,21 +150,12 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd"}) {
 }
 
 // --- Filtre de période ------------------------------------------------------------
-// Parité avec le curseur d'années de la barre latérale Streamlit. Il ne rogne que
+// Rognage des lignes par la frise de la barre latérale (components/period.js), dont le
+// domaine vient de l'export Python (`period` dans chaque JSON). Il ne rogne que
 // l'AFFICHAGE : cumuls glissants et moyennes mobiles sont calculés en amont sur
 // l'historique complet (côté Python), exactement comme app.py qui filtre APRÈS avoir
 // calculé. Une fenêtre étroite montre donc les mêmes valeurs qu'en vue complète, jamais
 // des cumuls tronqués sur les premiers mois affichés.
-export function yearsExtent(rows, field = "date") {
-  let lo = Infinity, hi = -Infinity;
-  for (const r of rows) {
-    const y = +String(r[field]).slice(0, 4);
-    if (y < lo) lo = y;
-    if (y > hi) hi = y;
-  }
-  return [lo, hi];
-}
-
 export function filterYears(rows, range, field = "date") {
   if (!range || !rows) return rows;
   const lo = Math.min(range[0], range[1]), hi = Math.max(range[0], range[1]);

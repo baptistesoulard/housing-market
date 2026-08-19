@@ -71,6 +71,32 @@ a, a:visited { color: var(--hm-link); }
 .hm-chart-title .sub { color: var(--hm-subtle); font-weight: 400; }
 details.hm-howto { margin: 0.2rem 0 0.8rem; max-width: 64rem; }
 details.hm-howto summary { cursor: pointer; color: var(--theme-foreground-muted); }
+
+/* --- Frise de période (barre latérale) : miroir du curseur « Période (années) »
+   de la barre latérale Streamlit. Deux <input type=range> superposés sur un rail
+   commun ; seules les poignées captent les clics, pour que les deux cohabitent. */
+#hm-period-slot { padding: 0.55rem 1rem 0.75rem; border-bottom: 1px solid var(--hm-border-light); }
+.hm-period-label { font-size: 0.82rem; font-weight: 600; color: var(--hm-ink); margin-bottom: 0.15rem; }
+.hm-period-values { position: relative; height: 1.05rem; }
+.hm-period-val { position: absolute; transform: translateX(-50%); white-space: nowrap;
+  font-size: 0.78rem; font-weight: 700; color: var(--hm-brick); }
+.hm-period-track { position: relative; height: 20px; }
+.hm-period-rail { position: absolute; top: 8px; left: 0; right: 0; height: 4px; border-radius: 2px; background: var(--hm-border); }
+.hm-period-fill { position: absolute; top: 8px; height: 4px; border-radius: 2px; background: var(--hm-brick); }
+.hm-period-track input[type="range"] { position: absolute; top: 0; left: 0; width: 100%; height: 20px;
+  margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; }
+.hm-period-track input[type="range"]:focus { outline: none; }
+.hm-period-track input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto;
+  width: 14px; height: 14px; border-radius: 50%; background: var(--hm-brick); border: 2px solid var(--hm-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35); cursor: grab; }
+.hm-period-track input[type="range"]::-moz-range-thumb { pointer-events: auto; box-sizing: border-box;
+  width: 14px; height: 14px; border-radius: 50%; background: var(--hm-brick); border: 2px solid var(--hm-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35); cursor: grab; }
+.hm-period-track input[type="range"]::-moz-range-track { background: transparent; height: 4px; }
+.hm-period-track input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
+.hm-period-track input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
+.hm-period-bounds { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--theme-foreground-muted); }
+.hm-period-note { font-size: 0.72rem; color: var(--theme-foreground-muted); margin-top: 0.3rem; line-height: 1.35; }
 </style>`;
 
 export default {

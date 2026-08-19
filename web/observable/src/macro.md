@@ -4,7 +4,8 @@ toc: false
 ---
 
 ```js
-import {legend, multiLine, filterYears, yearsExtent, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {legend, multiLine, filterYears, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
 ```
@@ -19,17 +20,9 @@ const macro = await FileAttachment("./data/macro.json").json();
 </details>
 
 ```js
-// Filtre de période (parité avec le curseur d'années de la barre latérale Streamlit).
-const extM = yearsExtent(macro.confidence);
-// Années en CHAÎNES : Inputs.select formate les nombres selon la locale et
-// afficherait « 2 020 » au lieu de « 2020 ».
-const YEARS_M = d3.range(extM[0], extM[1] + 1).map(String);
-const yFromM = view(Inputs.select(YEARS_M, {value: String(extM[0]), label: "Période — de"}));
-const yToM = view(Inputs.select(YEARS_M, {value: String(extM[1]), label: "Période — à"}));
-```
-
-```js
-const rangeM = [+yFromM, +yToM];
+// Filtre de période : la frise GLOBALE de la barre latérale, partagée par tous les
+// onglets (parité avec le curseur d'années de la barre latérale Streamlit).
+const rangeM = Generators.input(periodFilter({min: macro.period.min, max: macro.period.max}));
 ```
 
 ```js
