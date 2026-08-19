@@ -56,6 +56,26 @@ def open_warehouse(refresh: bool = True):
 
 
 # ============================ exécution ===========================================
+def _cur(con):
+    """Curseur DuckDB **isolé** pour UNE requête — jamais la connexion partagée.
+
+    `app.py` met sa connexion en cache avec `@st.cache_resource`, donc UN SEUL objet
+    connexion est partagé par toutes les sessions Streamlit, qui s'exécutent chacune dans
+    son thread. Or un `DuckDBPyConnection` porte le résultat de son dernier `execute()` :
+    deux threads qui l'utilisent en même temps se volent mutuellement leur jeu de
+    résultats. Le symptôme n'est pas une erreur SQL mais un DataFrame **bien formé et
+    faux** — celui de la requête de l'autre session : `q.monthly(con, "ventes_ancien",
+    ["Transactions"])` renvoyait les colonnes de la requête sitadel concurrente, d'où un
+    `KeyError: 'Transactions'` dans `analysis.calculate_kpis`, en production seulement
+    (en local il n'y a qu'une session, donc jamais de concurrence).
+
+    `con.cursor()` ouvre une connexion indépendante sur la MÊME base en mémoire — les
+    vues créées par `housing_data.connect()` restent visibles, l'état de résultat ne l'est
+    plus. Coût négligeable, et pas de verrou qui sérialiserait les sessions.
+    """
+    return con.cursor()
+
+
 def rows(con, sql: str, params=(), digits: dict | None = None) -> list[dict]:
     """Exécute `sql` et renvoie des dicts JSON-ready.
 
@@ -63,7 +83,7 @@ def rows(con, sql: str, params=(), digits: dict | None = None) -> list[dict]:
     `round()` Python n'ont pas la même règle de départage (moitié-vers-le-haut vs
     banquier), et l'arrondi est du formatage, pas de l'agrégation.
     """
-    cur = con.execute(sql, list(params))
+    cur = _cur(con).execute(sql, list(params))
     cols = [d[0] for d in cur.description]
     out = []
     for rec in cur.fetchall():
@@ -82,7 +102,7 @@ def rows(con, sql: str, params=(), digits: dict | None = None) -> list[dict]:
 def frame(con, sql: str, params=()) -> pd.DataFrame:
     """Résultat en DataFrame, `Date` normalisée en datetime64[ns] pour les helpers
     d'`analysis.py` (qui comparent des Timestamp et appliquent des DateOffset)."""
-    df = con.execute(sql, list(params)).df()
+    df = _cur(con).execute(sql, list(params)).df()
     if "Date" in df.columns:
         df["Date"] = pd.to_datetime(df["Date"])
     return df
@@ -90,7 +110,7 @@ def frame(con, sql: str, params=()) -> pd.DataFrame:
 
 def scalar(con, sql: str, params=()):
     """Première colonne de la première ligne, ou None si le résultat est vide."""
-    r = con.execute(sql, list(params)).fetchone()
+    r = _cur(con).execute(sql, list(params)).fetchone()
     return r[0] if r else None
 
 
@@ -229,10 +249,10 @@ def macro_data_columns(con) -> set:
     Remplace les gardes `col in df.columns and df[col].notna().any()` : un seul
     aller-retour SQL au lieu d'un scan pandas par colonne.
     """
-    cols = [r[0] for r in con.execute('DESCRIBE "macro"').fetchall() if r[0] != "Date"]
+    cols = [r[0] for r in _cur(con).execute('DESCRIBE "macro"').fetchall() if r[0] != "Date"]
     if not cols:
         return set()
-    counts = con.execute(
+    counts = _cur(con).execute(
         "SELECT " + ", ".join(f'COUNT("{c}")' for c in cols) + ' FROM "macro"').fetchone()
     return {c for c, n in zip(cols, counts) if n}
 
@@ -284,7 +304,7 @@ def macro_rolling(con, dropna_col: str, roll_cols, window: int = 12,
 def macro_last_and_year_ago(con, col: str, months: int = 12):
     """(dernière valeur, dernière valeur d'au moins `months` mois plus tôt) — la
     comparaison glissante des cartes de synthèse, faite par SQL sur deux LIMIT 1."""
-    r = con.execute(f"""
+    r = _cur(con).execute(f"""
         WITH s AS (SELECT Date, "{col}" AS v FROM "macro" WHERE "{col}" IS NOT NULL),
              dernier AS (SELECT Date, v FROM s ORDER BY Date DESC LIMIT 1)
         SELECT (SELECT v FROM dernier) AS last,
@@ -376,7 +396,7 @@ def macro_zscore(con, col: str, digits: int = 4) -> list[dict]:
     """Série centrée-réduite (z-score, écart-type d'échantillon comme `pandas.Series.std`)
     sur les valeurs non NULL de `col`. AVG/STDDEV_SAMP sont calculés par DuckDB en un
     seul passage plutôt que par un `.mean()`/`.std()` pandas séparé."""
-    r = con.execute(f"""
+    r = _cur(con).execute(f"""
         SELECT AVG("{col}"), STDDEV_SAMP("{col}") FROM "macro" WHERE "{col}" IS NOT NULL
     """).fetchone()
     mu, sd = (r or (None, None))

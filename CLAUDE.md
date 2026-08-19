@@ -79,6 +79,17 @@ environnement qui exécute une de ces trois surfaces doit les installer, y compr
 runner GitHub Actions. L'import gardé de `data_manager.py` ne couvre plus que
 `fetch_new_sources.py`.
 
+**Une requête = un curseur, jamais la connexion partagée.** `app.py` met sa connexion
+DuckDB en cache avec `@st.cache_resource` : UN seul objet connexion sert toutes les
+sessions Streamlit, qui tournent chacune dans son thread. Un `DuckDBPyConnection` porte le
+résultat de son dernier `execute()`, donc deux threads simultanés se volent leur jeu de
+résultats — et le symptôme n'est pas une erreur SQL mais un DataFrame **bien formé et
+faux**, celui de la requête de l'autre session (`KeyError: 'Transactions'` en production,
+jamais en local où il n'y a qu'une session). Tout `execute()` de `queries.py` passe donc
+par `_cur(con)` → `con.cursor()`, connexion indépendante sur la même base en mémoire (les
+vues restent visibles, l'état de résultat non). `tests/test_queries_concurrency.py` rejoue
+la course. Ne jamais réintroduire un `con.execute(...)` direct sur le chemin Streamlit.
+
 **Ce qui reste en pandas y reste exprès.** Un `grep "groupby\|rolling\|resample"` sur le
 chemin d'exécution ne doit plus renvoyer que ces quatre cas, et aucun n'est un oubli :
 
