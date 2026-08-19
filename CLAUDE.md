@@ -147,6 +147,36 @@ Les clés de traduction devenues orphelines *par ce retrait* ont été supprimé
 `translations.py` (71 clés × 2 langues). Une dizaine d'autres clés étaient déjà orphelines
 avant (reliquat du code géo/carte) et ont été laissées en place, hors périmètre.
 
+**Onglet « Données & Sources » réduit à l'import des ventes société (même jour).** Y ont
+aussi été retirés : le navigateur « Données Actuelles du Système » (selectbox + aperçu +
+modèle CSV), le téléversement qui écrasait un dataset par CSV, la « Réinitialisation
+Générale », et le bouton de reconstruction des ventes anciennes depuis le fichier IGEDD.
+Motif : l'acquisition est scriptée de bout en bout (`fetch_new_sources.py` + workflow
+hebdo), donc l'écrasement en application était un second chemin de mutation des mêmes
+fichiers, non versionné et non tracé.
+
+Deux conséquences à connaître :
+
+- **Le bouton IGEDD ne manque pas.** `load_or_generate_all()` appelle déjà
+  `ensure_ventes_ancien()` au démarrage, et celle-ci est mtime-aware : la reconstruction
+  se déclenche toute seule dès que le fichier IGEDD source est plus récent que
+  `data/ventes_ancien.csv`. Le bouton ne faisait que forcer ce que le démarrage fait.
+- **⚠️ On perd le panneau de diagnostic de l'entrepôt typé.** C'était le seul endroit de
+  l'interface où l'on voyait `warehouse_status` (contrat pandera respecté ou non, par
+  dataset) et `dataset_sources()` (« lu en Parquet » vs « lu en CSV (repli) »). Or la
+  garde de fraîcheur est précisément le mécanisme porteur de l'axe stockage : un `git
+  pull` qui apporte des CSV rafraîchis fait mécaniquement basculer des datasets en repli
+  CSV, et **plus rien ne le signale à l'écran**. Les deux méthodes de `DataManager`
+  existent toujours ; si le sujet ressort, la remettre sous forme d'un badge compact
+  suffit — il n'est pas nécessaire de restaurer tout l'onglet.
+
+`dm.update_with_custom_csv()` n'est désormais appelée par rien : elle devient du code mort
+dans `data_manager.py` (elle figurait au backlog « brancher update_with_custom_csv sur les
+contrats/logging » — ce backlog est caduc tant que l'import CSV ad hoc n'est pas rétabli).
+21 clés de traduction supplémentaires ont été supprimées. La fonction
+`synthetic_circularity_warning()` d'`app.py`, devenue morte avec le benchmark synthétique
+du Time-Lag, a été supprimée elle aussi.
+
 ## Vérifier la parité
 
 Trois recettes, par ordre de coût croissant. Les tests unitaires seuls ne suffisent pas :

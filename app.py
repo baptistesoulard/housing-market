@@ -490,21 +490,6 @@ def pick_company_series(df, key, label=None, years=None):
                     category_col="Serie", years=years)
     return serie, agg
 
-def synthetic_circularity_warning():
-    """Shown when an exploratory engine is benchmarked on the SYNTHETIC second-œuvre sales:
-    those are built FROM the same permits/transactions, so a high correlation is mechanical,
-    not evidence. Nudges the user toward importing real company sales."""
-    st.warning(_L(
-        "⚠️ Cible = ventes **synthétiques**, construites à partir des permis SIT@DEL et des "
-        "transactions IGEDD. Une corrélation élevée est ici **mécanique** (l'indicateur "
-        "explique une série dérivée de lui-même), pas une preuve de pouvoir prédictif. "
-        "Importez vos ventes réelles (onglet « ⚙️ Données & Sources ») "
-        "« Sources & Imports ») pour une analyse valide.",
-        "⚠️ Target = **synthetic** sales, built FROM SIT@DEL permits and IGEDD transactions. "
-        "A high correlation here is **mechanical** (the indicator explains a series derived "
-        "from itself), not evidence of predictive power. Import your real company sales "
-        "(『⚙️ Data & Sources』 tab) for a valid analysis."))
-
 # Published BPCE L'Observatoire targets for 2026 (RDV Immobilier press conference,
 # 2 June 2026) — external validation benchmark for our own model. Defined here (above the
 # tabs) so both the Synthèse landing page and the Forecast tab can reference them.
@@ -2808,139 +2793,30 @@ with tab_forecast:
 # ==============================================================================
 with tab_donnees:
     st.caption(T[lang_code]["donnees_caption"])
-    st.header(T[lang_code]["source_header"])
-    st.write(T[lang_code]["source_desc"])
-    
-    st.markdown(f"### {T[lang_code]['source_status']}")
-    
-    _synth_sales_lbl = ("Ventes second-œuvre (synthétiques)" if lang_code == "FR"
-                        else "Second-œuvre sales (synthetic)")
-    db_cat_opts = (["SIT@DEL (Construction neuve)", "Ventes anciennes (IGEDD)", "Indicateurs Macro", _synth_sales_lbl]
-                   if lang_code == "FR" else
-                   ["SIT@DEL (New Construction)", "Existing-home sales (IGEDD)", "Macro Indicators", _synth_sales_lbl])
-    db_cat = st.selectbox(
-        T[lang_code]["select_db_view"],
-        db_cat_opts
-    )
-
-    internal_cat = "sitadel"
-    if db_cat in ["Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)"]:
-        internal_cat = "ventes_ancien"
-    elif db_cat in ["Indicateurs Macro", "Macro Indicators"]:
-        internal_cat = "macro"
-    elif db_cat == _synth_sales_lbl:
-        internal_cat = "sales"
-        
-    if internal_cat == "sitadel":
-        display_df = df_sitadel
-        req_cols = ["Date", "Region", "Department", "Type", "Permis", "MisesEnChantier"]
-    elif internal_cat == "ventes_ancien":
-        display_df = df_ventes_ancien
-        req_cols = ["Date", "Region", "Department", "Type", "Transactions"]
-    elif internal_cat == "macro":
-        display_df = df_macro
-        req_cols = ["Date", "Insee_Confiance_Menages", "Credit_Logement_Taux_Interet"]
-    else:
-        display_df = df_sales
-        req_cols = ["Date", "Region", "Department", "Product", "Sales_Units"]
-        
-    col_db1, col_db2 = st.columns([2, 1])
-    
-    with col_db1:
-        st.write(T[lang_code]["db_preview_label"].format(name=internal_cat.upper(), count=len(display_df)))
-        st.dataframe(display_df.head(100), use_container_width=True)
-        if internal_cat not in ("ventes_ancien", "sitadel", "macro"):
-            st.caption(T[lang_code]["synthetic_note"])
-        
-        csv_template = display_df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label=T[lang_code]["btn_download_template"].format(name=internal_cat),
-            data=csv_template,
-            file_name=f"{internal_cat}_template.csv",
-            mime="text/csv"
-        )
-        
-    with col_db2:
-        st.markdown(f"### {T[lang_code]['upload_new_data']}")
-        st.write(T[lang_code]["upload_desc"].format(name=internal_cat.upper()))
-        st.info(f"**{T[lang_code]['required_cols']}** {', '.join(req_cols)}")
-        
-        uploaded_file = st.file_uploader(T[lang_code]["file_uploader_label"].format(name=internal_cat.upper()), type="csv")
-        
-        if uploaded_file is not None:
-            if st.button(T[lang_code]["btn_import_overwrite"].format(name=internal_cat.upper()), key=f"btn_up_{internal_cat}"):
-                success, msg = dm.update_with_custom_csv(internal_cat, uploaded_file)
-                if success:
-                    st.success(msg)
-                    st.cache_resource.clear()
-                    st.cache_data.clear()
-                    st.rerun()
-                else:
-                    st.error(msg)
-                    
-        st.markdown("---")
-        st.subheader(T[lang_code]["reset_title"])
-        st.write(T[lang_code]["reset_desc"])
-        if st.button(T[lang_code]["btn_reset_all"], key="btn_reset_all"):
-            with st.spinner(T[lang_code]["reset_spinner"]):
-                dm.load_or_generate_all(force_regenerate=True)
-                st.cache_resource.clear()
-                st.cache_data.clear()
-                st.success(T[lang_code]["reset_success"])
-                st.rerun()
-
-        # --- Entrepôt typé (housing_data) : statut de validation des datasets ---
-        wh_status = getattr(dm, "warehouse_status", None)
-        if wh_status:
-            n_ok = sum(1 for ok, _ in wh_status.values() if ok)
-            n_tot = len(wh_status)
-            _read_from = dm.dataset_sources()
-            with st.expander(f"🗄️ Entrepôt typé (Parquet/DuckDB) — {n_ok}/{n_tot} datasets validés",
-                             expanded=(n_ok < n_tot)):
-                st.caption("Chaque dataset est validé (schéma typé, pandera) avant d'être "
-                           "écrit en Parquet, format typé et colonnaire interrogeable en SQL "
-                           "(DuckDB, zéro serveur). **Le Parquet est le chemin de lecture au "
-                           "runtime** ; les CSV restent la copie versionnée et lisible — et la "
-                           "solution de repli quand un Parquet manque ou est plus ancien "
-                           "que son CSV (rafraîchissement hebdo sans les libs optionnelles).")
-                for name, (ok, msg) in wh_status.items():
-                    _src = _read_from.get(name)
-                    _lu = {"parquet": " — lu en Parquet", "csv": " — lu en CSV (repli)"}.get(_src, "")
-                    if ok:
-                        st.markdown(f"- ✅ **{name}** — écrit et validé{_lu}")
-                    else:
-                        st.markdown(f"- ❌ **{name}** — contrat non respecté : `{msg}`{_lu}")
-        elif getattr(dm, "warehouse_status", None) == {}:
-            st.caption("🗄️ Entrepôt typé indisponible (pandera/duckdb/pyarrow non installés). "
-                       "L'app fonctionne sur CSV.")
-
-    # --- Section: rebuild "ventes dans l'ancien" from the IGEDD national file ---
-    st.markdown("---")
-    st.header(T[lang_code]["igedd_header"])
-    st.write(T[lang_code]["igedd_desc"])
-
-    if st.button(T[lang_code]["igedd_btn"], key="btn_igedd_import"):
-        with st.spinner(T[lang_code]["igedd_spinner"]):
-            success, msg = dm.ensure_ventes_ancien(force_rebuild=True)
-            if success:
-                st.success(msg)
-                st.cache_resource.clear()
-                st.cache_data.clear()
-                st.rerun()
-            else:
-                st.error(msg)
-
-    # --- Section: import a company's MONTHLY sales (benchmark for the engines) ---
-    st.markdown("---")
-    st.header(_L("🏢 Ventes mensuelles d'une société (benchmark)",
-                 "🏢 Company monthly sales (benchmark)"))
+    # Single-purpose tab. The source-data browser, the per-dataset CSV overwrite, the
+    # "réinitialisation générale" and the IGEDD rebuild button all lived here and were
+    # removed: acquisition is fully scripted (fetch_new_sources.py + the weekly GitHub
+    # Actions workflow), so an in-app overwrite path was a second, unversioned way to
+    # mutate the same files. The typed-warehouse validation panel went with them — see
+    # the note in CLAUDE.md about the diagnostics this costs.
+    st.header(_L("🏢 Ventes mensuelles de votre société",
+                 "🏢 Your company's monthly sales"))
     st.write(_L(
         "Importez les ventes mensuelles de votre société (CSV) pour les utiliser comme cible "
-        "dans les moteurs de corrélation et de prévision : Atelier Time-Lag, Modèle Composite "
-        "et Prévision & Scénarios. Une seule société à la fois — chaque import remplace le précédent.",
-        "Import your company's monthly sales (CSV) to use as a target in the correlation and "
-        "forecast engines: Time-Lag workshop, Composite model and Forecast & Scenarios. One "
-        "company at a time — each import replaces the previous one."))
+        "dans « 📡 Prévision & Scénarios » : propagation du scénario à vos ventes, décalage "
+        "transactions→ventes par famille, et comparaison au driver permis. Une seule société "
+        "à la fois — chaque import remplace le précédent.",
+        "Import your company's monthly sales (CSV) to use as a target in '📡 Forecast & "
+        "Scenarios': scenario propagation to your sales, transactions→sales lag per family, and "
+        "comparison against the permits driver. One company at a time — each import replaces "
+        "the previous one."))
+    st.caption(_L(
+        "Les jeux de données sources (SIT@DEL, IGEDD, macro, ECLN…) ne se chargent plus "
+        "depuis l'application : ils sont rafraîchis par `python fetch_new_sources.py`, que le "
+        "workflow hebdomadaire GitHub Actions exécute déjà.",
+        "The source datasets (SIT@DEL, IGEDD, macro, ECLN…) are no longer loaded from the app: "
+        "they are refreshed by `python fetch_new_sources.py`, which the weekly GitHub Actions "
+        "workflow already runs."))
     st.info(_L(
         "**Format attendu :** un CSV avec une colonne **`Date`** (mensuelle, ex. `2023-01-01` ou "
         "`2023-01`) et une colonne de ventes nommée **`Sales`** (ou `Ventes`). Colonnes `Company` "

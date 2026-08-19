@@ -114,27 +114,6 @@ T = {
         # Tab 4
         
         # Tab 5
-        "source_header": "📂 Gestion des Données Ingestion & Open Data",
-        "source_desc": "Ce module gère le stockage local et permet d'ingérer de nouvelles données en téléversant des fichiers CSV personnalisés pour écraser les données historiques.",
-        "source_status": "📊 Données Actuelles du Système",
-        "select_db_view": "Sélectionnez la base à visualiser / mettre à jour",
-        "db_preview_label": "Aperçu de la base **{name}** ({count} lignes) :",
-        "btn_download_template": "📥 Télécharger le modèle CSV ({name}.csv)",
-        "upload_new_data": "📤 Téléverser de Nouvelles Données",
-        "upload_desc": "Mettez à jour la table **{name}** avec vos propres données locales ou des extractions directes SAP / Ministères.",
-        "required_cols": "Colonnes requises :",
-        "file_uploader_label": "Choisir un fichier CSV pour {name}",
-        "btn_import_overwrite": "Importer et Écraser {name}",
-        "reset_title": "⚠️ Réinitialisation Générale",
-        "reset_desc": "Rétablir toutes les bases de données par défaut de l'application (historique complet, 2001 → dernière donnée disponible).",
-        "btn_reset_all": "Réinitialiser toutes les bases",
-        "reset_spinner": "Rétablissement des données en cours...",
-        "reset_success": "Toutes les bases ont été réinitialisées aux données d'origine !",
-        "synthetic_note": "⚠️ Données synthétiques, en attente de source officielle.",
-        "igedd_header": "🏛️ Ventes dans l'ancien (source IGEDD)",
-        "igedd_desc": "La série des ventes de logements anciens provient du fichier national IGEDD « data_manual_input/nombre-vente-maison-appartement-ancien.xls » (cumul 12 mois glissant, national). Cliquez pour la reconstruire si vous avez mis à jour le fichier.",
-        "igedd_btn": "🔄 Reconstruire les ventes anciennes (IGEDD)",
-        "igedd_spinner": "Lecture du fichier IGEDD et reconstruction de la série...",
     },
     "EN": {
         "title": "🏠 Real Estate Market Intelligence & Forecasting Tool",
@@ -244,26 +223,5 @@ T = {
         # Tab 4
         
         # Tab 5
-        "source_header": "📂 Source Data & Open Data Management",
-        "source_desc": "This module manages local storage and enables data ingestion by uploading custom CSV files to overwrite historical data.",
-        "source_status": "📊 Current System Databases",
-        "select_db_view": "Select database to view / update",
-        "db_preview_label": "Database preview for **{name}** ({count} rows):",
-        "btn_download_template": "📥 Download CSV template ({name}.csv)",
-        "upload_new_data": "📤 Upload New Data",
-        "upload_desc": "Update the **{name}** table with your own local data or direct extractions from SAP / Ministries.",
-        "required_cols": "Required columns:",
-        "file_uploader_label": "Choose CSV file for {name}",
-        "btn_import_overwrite": "Import & Overwrite {name}",
-        "reset_title": "⚠️ System General Reset",
-        "reset_desc": "Restore all databases to application defaults (full history, 2001 → latest available data).",
-        "btn_reset_all": "Reset all databases",
-        "reset_spinner": "Restoring data, please wait...",
-        "reset_success": "All databases have been successfully restored to factory defaults!",
-        "synthetic_note": "⚠️ Synthetic data, pending an official source.",
-        "igedd_header": "🏛️ Existing-home sales (IGEDD source)",
-        "igedd_desc": "The existing-home sales series comes from the IGEDD national file 'data_manual_input/nombre-vente-maison-appartement-ancien.xls' (12-month rolling total, national). Click to rebuild it if you have updated the file.",
-        "igedd_btn": "🔄 Rebuild existing-home sales (IGEDD)",
-        "igedd_spinner": "Reading the IGEDD file and rebuilding the series...",
     }
 }
