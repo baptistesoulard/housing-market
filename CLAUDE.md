@@ -14,7 +14,7 @@ touchent les mêmes fichiers. Les confondre est l'erreur par défaut.
 |---|---|---|
 | Question | *où* les données sont persistées | *qui* calcule les agrégations |
 | Livrable | `housing_data/` — contrats pandera + entrepôt Parquet, vue SQL par dataset | `queries.py` — DuckDB comme moteur d'agrégation unique |
-| État | socle fusionné dans `main` ; bascule de la LECTURE en PR #3 | **fusionné dans `main`** — PR #2, phases 0-4 |
+| État | **fusionné dans `main`** — socle, puis bascule de la LECTURE par la PR #3 | **fusionné dans `main`** — PR #2, phases 0-4 |
 | Vocabulaire des commits | messages libres | `refactor(compute) phase N:` |
 
 L'axe compute **s'appuie** sur l'axe stockage : `queries.open_warehouse()` ouvre une
@@ -50,7 +50,7 @@ versionnée et diffable — et le repli.
 | Étape | Portée | État |
 |---|---|---|
 | socle | `housing_data/` : contrats pandera + écriture Parquet à côté des CSV | ✅ dans `main` |
-| bascule | `read_frames()` lit le Parquet ; garde de fraîcheur ; `signature()` ; diagnostics | 🔄 PR #3 |
+| bascule | `read_frames()` lit le Parquet ; garde de fraîcheur ; `signature()` ; diagnostics | ✅ PR #3, fusionnée le 2026-08-19 |
 
 **Pourquoi la bascule compte** : avant elle, l'app lisait les mêmes données par DEUX
 chemins — DuckDB sur les Parquet pour les agrégations, pandas sur les CSV pour tout le
@@ -142,8 +142,9 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 
 | Branche | Devant `main` | Note |
 |---|---|---|
-| `main` | — | porte l'axe compute (phases 0-4) et le socle stockage |
-| `refactor/duckdb-storage` | 3 | bascule de la lecture en Parquet (axe stockage). **PR #3 ouverte vers `main`.** |
+| `main` | — | porte les DEUX axes en entier : compute (phases 0-4) et stockage (socle + bascule) |
+| `refactor/duckdb-storage` | 0 | axe stockage, **fusionné dans `main` par la PR #3** — supprimable |
+| `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, **fusionné dans `main`** — supprimable |
 | `refactor/duckdb-engine` | 0 | axe compute, **fusionné dans `main` par la PR #2** — supprimable |
 | `claude/duckdb-parquet-refactor-p2-tvs0b2` | 1 | abandonnée sur décision utilisateur — travail hors sujet (axe stockage). À supprimer. |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
