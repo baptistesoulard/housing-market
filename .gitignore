@@ -20,8 +20,11 @@ Thumbs.db
 .idea/
 data/company_sales.csv
 
-# Entrepôt Parquet : miroir typé RÉGÉNÉRÉ des CSV à chaque chargement (housing_data/).
-# Pas de binaire versionné pendant la migration — les CSV restent la source de vérité.
+# Entrepôt Parquet : cache typé RECONSTRUIT depuis les CSV au premier chargement
+# (housing_data/). C'est le chemin de lecture au runtime, mais pas un artefact versionné :
+# du binaire dans git ne se relit pas en diff, et un Parquet plus ancien que son CSV est
+# de toute façon ignoré (garde de fraîcheur de warehouse.resolve). Les CSV restent donc la
+# copie versionnée, diffable et échangeable.
 data/*.parquet
 
 # Manifeste de provenance : artefact RÉGÉNÉRÉ par fetch_new_sources.py (horodatages

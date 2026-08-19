@@ -31,6 +31,11 @@ jobs:
       # pandas/numpy/xlrd : acquisition des sources. pandera/pyarrow/duckdb : depuis la
       # phase 1 du refactor compute, web_export.py passe par queries.py -> housing_data,
       # donc la couche SQL n'est plus optionnelle pour l'étape d'export ci-dessous.
+      #
+      # Ce job réécrit les CSV puis reconstruit les Parquet dans la foulée, donc les deux
+      # repartent cohérents ici. La garde de fraîcheur de warehouse.resolve() protège le
+      # cas SYMÉTRIQUE, côté poste de travail : après un `git pull` qui apporte des CSV
+      # rafraîchis, le Parquet local est plus ancien et serait servi à sa place.
       - name: Installer les dépendances (acquisition + couche SQL)
         run: pip install pandas numpy xlrd pandera pyarrow duckdb
 

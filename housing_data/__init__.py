@@ -6,9 +6,10 @@ Two independent pieces, usable together or apart:
   * warehouse : Parquet persistence + an embedded DuckDB SQL surface over the files.
 
 Typical uses:
-    from housing_data import validate, write_all, read_dataset, connect, query
+    from housing_data import validate, write_all, read_all, read_dataset, connect, query
     write_all({"macro": df_macro, "sitadel": df_sitadel})      # validate -> Parquet
     df = read_dataset("macro")                                  # Parquet (CSV fallback)
+    frames = read_all()                                         # every dataset on disk
     df = query("SELECT Date, Reservations FROM ecln ORDER BY Date")   # SQL, no server
 
 The layer is deliberately decoupled from Streamlit so an API, a notebook or an HTML/CSS
@@ -20,7 +21,10 @@ from .warehouse import (
     connect,
     parquet_path,
     query,
+    read_all,
     read_dataset,
+    resolve,
+    signature,
     write_all,
     write_dataset,
 )
@@ -33,7 +37,10 @@ __all__ = [
     "connect",
     "parquet_path",
     "query",
+    "read_all",
     "read_dataset",
+    "resolve",
+    "signature",
     "write_all",
     "write_dataset",
 ]

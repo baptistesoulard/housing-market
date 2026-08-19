@@ -9,7 +9,7 @@ couche back-office Python**. Ce PoC couvre les **5 premiers onglets** de l'app.
 ```
   [ INCHANGÉ — back-office Python ]                 [ NOUVEAU — couche produit ]
   data_manager / analysis / forecast  ──►  web_export.py  ──►  5 JSON statiques
-  actualites / DataManager (CSV+DuckDB)                              │
+  actualites / DataManager (Parquet→CSV)                             │
                                                                      ▼
                                               Observable Framework  ──►  dist/ (HTML/JS)
                                                                      ▼

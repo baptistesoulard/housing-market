@@ -131,6 +131,18 @@ Dernière série définie deux fois : le cumul 12 mois des transactions. L'ongle
 - **Nettoyages** : `import forecast` était mort dans `web_export.py` depuis la phase 1 ; les alias `df_sitadel_full` / `df_ventes_ancien_full` n'ont plus d'utilisateur, l'entrepôt étant par nature l'historique complet.
 - **Parité** : `tx12` SQL vs pandas à **maxdiff 0**, même index, même dtype, même nom. `app.py` identique sous les trois états de widgets. 59 tests collectés, 58 verts, 1 skip légitime.
 
+### Réalisés le 2026-08-19 (entrepôt Parquet — axe *stockage*)
+
+⚠️ Axe distinct de celui ci-dessus. Les phases 0-4 précédentes portent sur *qui calcule* (DuckDB comme moteur d'agrégation). Celle-ci porte sur *où l'on lit* : la couche `housing_data/` écrivait les Parquet **à côté** des CSV, qui restaient le chemin de lecture. Elle bascule la lecture sur l'entrepôt.
+
+- **Le Parquet est le chemin de lecture au runtime.** `DataManager.read_frames()` et le chargement à froid passent par `housing_data.read_dataset()` : les séries sont lues typées et colonnaires, sans re-parsing des dates ni devinette de dtype à chaque démarrage. Cela supprime la situation où l'app lisait les mêmes données par deux chemins — DuckDB sur les Parquet pour les agrégations, pandas sur les CSV pour tout le reste.
+- **Garde de fraîcheur — le point porteur.** `warehouse.resolve()` ne retient un Parquet que s'il est **au moins aussi récent que son CSV**. Cas protégé : un `git pull` apporte les CSV rafraîchis par le job hebdomadaire, alors que le Parquet local date de la session précédente — sans cette règle, l'app servirait le miroir périmé. Les vues SQL appliquent la même règle, donc DuckDB et `read_dataset()` ne peuvent pas diverger.
+- **Repli CSV intégral.** Toute lecture retombe sur le CSV si le Parquet manque (clone neuf : `data/*.parquet` est gitignoré), s'il est périmé, ou si les libs sont absentes.
+- **Clé de cache alignée** : `DataManager.data_signature()` porte sur le fichier **réellement lu** (type, mtime, taille), donc le cache Streamlit se vide aussi quand un rafraîchissement fait basculer Parquet → CSV.
+- **API entrepôt élargie** : `read_all()`, `resolve()`, `signature()`, et `dataset_sources()` côté `DataManager` — la barre latérale affiche, dataset par dataset, s'il est lu en Parquet ou en repli CSV.
+- **Tests** (`tests/test_housing_data.py`) : garde anti-Parquet-périmé (y compris côté vue SQL), `read_all`, mouvement de la signature, parité Parquet/CSV de `read_frames()`.
+
+
 ## Modules
 
 - `app.py` — interface Streamlit (8 onglets dont la Synthèse, bilingue FR/EN).
@@ -140,6 +152,7 @@ Dernière série définie deux fois : le cumul 12 mois des transactions. L'ongle
 - `simulation.py` — décalage temporel et indicateur composite.
 - `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→CA/ventes).
 - `actualites.py` — veille curatée des dispositifs d'aide FR/UE (onglet « Actualités & Aides ») : items, jalons et impacts qualitatifs par pilier.
+- `housing_data/` — **couche données réutilisable** : `schema.py` (contrats typés pandera, un par dataset) et `warehouse.py` (persistance **Parquet** + surface SQL **DuckDB** embarquée, zéro serveur). Découplée de Streamlit : une API, un notebook ou un front statique peuvent consommer le même entrepôt.
 - `queries.py` — **couche de calcul SQL partagée** : DuckDB est le moteur d'agrégation unique des trois surfaces (`app.py`, `web/export/web_export.py`, `report.py`). Cumuls glissants (fonctions de fenêtre), YoY, z-score, capacité d'emprunt, regroupements par type — définis UNE fois, donc les trois surfaces affichent les mêmes chiffres par construction.
 - `export.py` — export SAP IBP.
 - `fetch_new_sources.py` — acquisition des sources réelles (INSEE / SDES / BCE).

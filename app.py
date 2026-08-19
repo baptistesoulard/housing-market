@@ -161,18 +161,18 @@ def get_connection():
 con = get_connection()
 
 def _data_signature():
-    """mtimes of the persisted datasets, used as the cache key below so a plain rerun
-    (moving a slider) reuses the in-memory frames instead of re-reading every CSV and
-    re-writing the seven Parquet mirrors. The warehouse mirror now runs only in
-    get_data_manager (once per session / cache clear) or on an explicit rebuild button."""
-    sig = []
-    for p in dm.paths.values():
-        sig.append(os.path.getmtime(p) if os.path.exists(p) else 0.0)
-    return tuple(sig)
+    """Freshness key of the persisted datasets, used as the cache key below so a plain
+    rerun (moving a slider) reuses the in-memory frames instead of re-reading and
+    re-validating everything. `DataManager.data_signature()` keys on the file each dataset
+    is actually READ from — the typed Parquet, or the CSV when the Parquet is missing or
+    older — so the cache also drops when a refresh flips which of the two wins. Writing
+    the warehouse happens only in get_data_manager (once per session / cache clear) or on
+    an explicit rebuild button."""
+    return dm.data_signature()
 
 @st.cache_data(show_spinner=False)
 def _load_frames(signature):
-    # `signature` (file mtimes) is the only cache key; `dm` is a stable module global.
+    # `signature` (warehouse freshness key) is the only cache key; `dm` is a stable global.
     return dm.read_frames()
 
 # Load datasets (national-level series), cached on the source files' mtimes.
@@ -3457,16 +3457,22 @@ with tab_source:
         if wh_status:
             n_ok = sum(1 for ok, _ in wh_status.values() if ok)
             n_tot = len(wh_status)
+            _read_from = dm.dataset_sources()
             with st.expander(f"🗄️ Entrepôt typé (Parquet/DuckDB) — {n_ok}/{n_tot} datasets validés",
                              expanded=(n_ok < n_tot)):
                 st.caption("Chaque dataset est validé (schéma typé, pandera) avant d'être "
-                           "écrit en Parquet, miroir réutilisable interrogeable en SQL "
-                           "(DuckDB, zéro serveur). Les CSV restent la source au runtime.")
+                           "écrit en Parquet, format typé et colonnaire interrogeable en SQL "
+                           "(DuckDB, zéro serveur). **Le Parquet est le chemin de lecture au "
+                           "runtime** ; les CSV restent la copie versionnée et lisible — et la "
+                           "solution de repli quand un Parquet manque ou est plus ancien "
+                           "que son CSV (rafraîchissement hebdo sans les libs optionnelles).")
                 for name, (ok, msg) in wh_status.items():
+                    _src = _read_from.get(name)
+                    _lu = {"parquet": " — lu en Parquet", "csv": " — lu en CSV (repli)"}.get(_src, "")
                     if ok:
-                        st.markdown(f"- ✅ **{name}** — écrit et validé")
+                        st.markdown(f"- ✅ **{name}** — écrit et validé{_lu}")
                     else:
-                        st.markdown(f"- ❌ **{name}** — contrat non respecté : `{msg}`")
+                        st.markdown(f"- ❌ **{name}** — contrat non respecté : `{msg}`{_lu}")
         elif getattr(dm, "warehouse_status", None) == {}:
             st.caption("🗄️ Entrepôt typé indisponible (pandera/duckdb/pyarrow non installés). "
                        "L'app fonctionne sur CSV.")

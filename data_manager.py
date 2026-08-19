@@ -3,8 +3,12 @@ import glob
 import pandas as pd
 import numpy as np
 
-# Reusable data layer (typed contracts + Parquet/DuckDB warehouse). Imported guardedly so
-# the app still runs on plain CSV if the optional deps (pandera/duckdb/pyarrow) are absent.
+# Reusable data layer (typed contracts + Parquet/DuckDB warehouse). The Parquet files are
+# the RUNTIME READ PATH: frames are loaded typed and columnar instead of being re-parsed
+# from CSV on every cold start. The import stays guarded and every read has a CSV fallback,
+# so this module alone still works on pandas — but note that app.py / web_export.py /
+# report.py now import queries.py at module level, so THEY require the SQL layer outright.
+# The guarded import only covers fetch_new_sources.py.
 try:
     import housing_data as hd
 except Exception:  # pragma: no cover - optional layer
@@ -402,7 +406,7 @@ class DataManager:
         # 1. Real IGEDD "ventes dans l'ancien" first — it anchors both the display and the
         #    transaction-linked synthetic sales, so it must exist before sales are built.
         self.ensure_ventes_ancien(force_rebuild=force_regenerate)
-        df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
+        df_ventes_ancien = self._read_dataset("ventes_ancien")
 
         # 2. Real SIT@DEL + macro, generated & cached together. Rebuilt when forced,
         #    missing, OR stale relative to any manual-input source — same mtime-aware
@@ -414,8 +418,8 @@ class DataManager:
             df_sitadel.to_csv(self.paths["sitadel"], index=False, encoding="utf-8")
             df_macro.to_csv(self.paths["macro"], index=False, encoding="utf-8")
         else:
-            df_sitadel = pd.read_csv(self.paths["sitadel"], parse_dates=["Date"])
-            df_macro = pd.read_csv(self.paths["macro"], parse_dates=["Date"])
+            df_sitadel = self._read_dataset("sitadel")
+            df_macro = self._read_dataset("macro")
 
         # 3. Synthetic second-œuvre sales, DERIVED FROM real SIT@DEL permits + real IGEDD
         #    transactions. Rebuild when forced, missing, or when a driver (ventes_ancien/sitadel) is
@@ -428,7 +432,7 @@ class DataManager:
             df_sales = build_sales(df_sitadel, df_ventes_ancien)
             df_sales.to_csv(self.paths["sales"], index=False, encoding="utf-8")
         else:
-            df_sales = pd.read_csv(self.paths["sales"], parse_dates=["Date"])
+            df_sales = self._read_dataset("sales")
 
         # Real company-revenue benchmark (quarterly, €). Rebuilt from the ca-*.csv
         # manual-input files; empty frame when none are present.
@@ -444,9 +448,10 @@ class DataManager:
         # [Date, Company, Serie, Sales] shape; empty frame when nothing imported yet.
         df_company_sales = self._read_company_sales()
 
-        # Mirror the loaded frames to the typed Parquet/DuckDB warehouse (validated,
-        # non-fatal). CSV stays the runtime source of truth during the migration.
-        self._mirror_to_warehouse({
+        # Persist the loaded frames to the typed Parquet/DuckDB warehouse (validated,
+        # non-fatal). This is what subsequent reads load from — the CSVs stay next to them
+        # as the versioned, diffable interchange copy and as the fallback.
+        self._persist_to_warehouse({
             "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
             "sales": df_sales, "revenue": df_revenue, "ecln": df_ecln,
             "company_sales": df_company_sales,
@@ -455,30 +460,79 @@ class DataManager:
         return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
 
     def read_frames(self):
-        """Read the already-persisted CSVs into frames WITHOUT re-generating or re-mirroring
-        to the warehouse. Cheap, side-effect-free path meant to sit behind a Streamlit
-        cache keyed on the files' mtimes, so a plain rerun (moving a slider) does not
-        re-validate and re-write the seven Parquet mirrors on every interaction.
+        """Read the already-persisted datasets into frames WITHOUT re-generating or
+        re-writing the warehouse. Cheap, side-effect-free path meant to sit behind a
+        Streamlit cache keyed on `data_signature()`, so a plain rerun (moving a slider)
+        does not re-validate and re-write the seven Parquet files on every interaction.
 
-        Assumes load_or_generate_all() has already run once (files exist); optional
-        datasets absent on disk return correctly-typed empty frames.
+        Reads Parquet when it is present and fresh, the CSV otherwise (see
+        `housing_data.warehouse.resolve`). Assumes load_or_generate_all() has already run
+        once; optional datasets absent on disk return correctly-typed empty frames.
         """
-        df_sitadel = pd.read_csv(self.paths["sitadel"], parse_dates=["Date"])
-        df_ventes_ancien = pd.read_csv(self.paths["ventes_ancien"], parse_dates=["Date"])
-        df_macro = pd.read_csv(self.paths["macro"], parse_dates=["Date"])
-        df_sales = pd.read_csv(self.paths["sales"], parse_dates=["Date"])
+        df_sitadel = self._read_dataset("sitadel")
+        df_ventes_ancien = self._read_dataset("ventes_ancien")
+        df_macro = self._read_dataset("macro")
+        df_sales = self._read_dataset("sales")
         df_revenue = self._read_optional("revenue", REVENUE_COLUMNS)
         df_ecln = self._read_optional("ecln", ECLN_COLUMNS)
         df_company_sales = self._read_company_sales()
         return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
 
+    def _read_dataset(self, key):
+        """Read one REQUIRED dataset by warehouse name.
+
+        Single entry point for every runtime read: the typed Parquet when it exists and is
+        no older than its CSV, the CSV otherwise. Falls back to a plain CSV read when the
+        optional data layer is unavailable, which keeps the whole app runnable on pandas
+        alone (the weekly refresh job runs exactly like that).
+        """
+        if hd is not None:
+            try:
+                return hd.read_dataset(key, data_dir=self.data_dir)
+            except FileNotFoundError:
+                raise
+            except Exception:  # unreadable Parquet (corrupt/partial write) — use the CSV
+                pass
+        return pd.read_csv(self.paths[key], parse_dates=["Date"])
+
     def _read_optional(self, key, columns):
-        """Read an OPTIONAL dataset, or return a correctly-typed empty frame when its CSV
-        has never been built (no ca-*.csv compiled, no ECLN source file). Shared by
+        """Read an OPTIONAL dataset, or return a correctly-typed empty frame when it has
+        never been built (no ca-*.csv compiled, no ECLN source file). Shared by
         load_or_generate_all and read_frames so the fallback shape is stated once."""
+        if hd is not None and hd.resolve(key, data_dir=self.data_dir)[1] is not None:
+            try:
+                return self._read_dataset(key)
+            except FileNotFoundError:
+                return pd.DataFrame(columns=columns)
         if os.path.exists(self.paths[key]):
             return pd.read_csv(self.paths[key], parse_dates=["Date"])
         return pd.DataFrame(columns=columns)
+
+    def data_signature(self):
+        """Hashable freshness key over every persisted dataset, for the Streamlit cache.
+
+        Prefers the warehouse signature (it keys on the file actually read — Parquet or
+        CSV — plus its size, so it also moves when a rewrite flips which of the two wins).
+        Degrades to plain CSV mtimes when the data layer is unavailable.
+        """
+        if hd is not None:
+            return hd.signature(self.data_dir)
+        return tuple(os.path.getmtime(p) if os.path.exists(p) else 0.0
+                     for p in self.paths.values())
+
+    def dataset_sources(self):
+        """{dataset: "parquet" | "csv" | None} — which file each read currently resolves
+        to. Diagnostics only (the sidebar reports it), so a silent fallback to CSV is
+        visible instead of being mistaken for a working Parquet path."""
+        if hd is None:
+            out = {k: ("csv" if os.path.exists(p) else None) for k, p in self.paths.items()}
+        else:
+            out = {k: hd.resolve(k, data_dir=self.data_dir)[1] for k in self.paths}
+        # company_sales only reaches the warehouse when an ad-hoc upload exists; otherwise
+        # it is rebuilt from data_manual_input/ventes-*.csv (see _read_company_sales).
+        if not os.path.exists(self.paths["company_sales"]):
+            out["company_sales"] = "csv"
+        return out
 
     def _read_company_sales(self):
         """Return the canonical [Date, Company, Serie, Sales] company-sales frame.
@@ -488,8 +542,12 @@ class DataManager:
         empty frame. Back-compatible with the legacy single-series upload (no Serie column):
         Serie then defaults to Company so downstream code always has a series label.
         """
+        # Deliberately keyed on the ad-hoc upload CSV rather than on the Parquet: the
+        # warehouse copy is written from whichever source won last time, so trusting it
+        # here would freeze an old import and hide a changed data_manual_input/ventes-*.csv
+        # (the Parquet freshness guard only watches data/company_sales.csv).
         if os.path.exists(self.paths["company_sales"]):
-            df = pd.read_csv(self.paths["company_sales"], parse_dates=["Date"])
+            df = self._read_dataset("company_sales")
             if "Serie" not in df.columns:
                 df["Serie"] = df["Company"] if "Company" in df.columns else "Ventes"
             return df
@@ -527,14 +585,17 @@ class DataManager:
             return pd.DataFrame(columns=cols)
         return pd.concat(frames, ignore_index=True).sort_values(["Serie", "Date"]).reset_index(drop=True)
 
-    def _mirror_to_warehouse(self, frames):
+    def _persist_to_warehouse(self, frames):
         """Validate the datasets against their contracts and persist them as Parquet next
-        to the CSVs (the reusable, typed warehouse consumed by DuckDB/other apps).
+        to the CSVs (the reusable, typed warehouse consumed by DuckDB/other apps, and the
+        runtime read path since phase 2).
 
         Best-effort and non-fatal: if the optional data layer is unavailable the app just
         keeps running on CSV. A contract breach (bad column, stray NaN, non-national row)
         does NOT crash the app, but the failing dataset is reported via `warehouse_status`
-        so it surfaces instead of corrupting the warehouse silently.
+        so it surfaces instead of corrupting the warehouse silently. A dataset that fails
+        here simply has no fresh Parquet, so reads fall back to its CSV — never to a stale
+        mirror, since `resolve()` compares the two files' mtimes.
         """
         self.warehouse_status = {}
         if hd is None:
