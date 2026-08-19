@@ -100,6 +100,62 @@ def test_monthly_type_filter_matches_pandas(con):
     _same(sql["Permis_12M"], roll["Permis_12M"], name="pur Permis_12M")
 
 
+def test_monthly_without_windows_matches_bare_aggregate(con):
+    """`windows=()` = agrégat mensuel nu, sans cumul glissant. C'est ce que consomment les
+    barres de comparaison mois-par-mois d'app.py et les métriques de momentum : une clause
+    WINDOW vide produirait du SQL invalide, ce chemin doit donc rester couvert."""
+    types = ana.SITADEL_INDIVIDUEL_PUR
+    sql = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], windows=(),
+                    types=types).sort_values("Date").reset_index(drop=True)
+    df = pd.read_parquet(os.path.join(_DATA, "sitadel.parquet"))
+    agg = ana.aggregate_sitadel(df, types).sort_values("Date").reset_index(drop=True)
+
+    assert list(sql.columns) == ["Date", "Permis", "MisesEnChantier"]   # aucune colonne _NM
+    assert sql["Date"].tolist() == agg["Date"].tolist()
+    for c in ["Permis", "MisesEnChantier"]:
+        _same(sql[c], agg[c], name=f"nu {c}")
+
+
+@pytest.mark.parametrize("years", [(2015, 2020), (2019, 2019)])
+def test_monthly_years_filter_matches_pandas_slicer(con, years):
+    """`years=` reproduit le `_filter_years` d'app.py (bornes incluses, sur l'année civile),
+    appliqué avant le GROUP BY comme le faisait le filtrage pandas en amont de l'agrégat."""
+    sql = q.monthly(con, "ventes_ancien", ["Transactions"], windows=(),
+                    years=years).sort_values("Date").reset_index(drop=True)
+    df = pd.read_parquet(os.path.join(_DATA, "ventes_ancien.parquet"))
+    filtre = df[(df["Date"].dt.year >= years[0]) & (df["Date"].dt.year <= years[1])]
+    agg = ana.aggregate_ventes_ancien(filtre).sort_values("Date").reset_index(drop=True)
+
+    assert sql["Date"].tolist() == agg["Date"].tolist(), f"bornes {years}"
+    _same(sql["Transactions"], agg["Transactions"], name=f"années {years}")
+
+
+def test_years_filter_and_type_filter_combine(con):
+    """Les deux filtres se cumulent dans la même clause WHERE — combinaison utilisée par
+    l'onglet « Marché du neuf » (segmentation par type + slicer d'années)."""
+    types, years = ana.SITADEL_COLLECTIF, (2018, 2022)
+    sql = q.monthly(con, "sitadel", ["Permis"], windows=(), types=types,
+                    years=years).sort_values("Date").reset_index(drop=True)
+    df = pd.read_parquet(os.path.join(_DATA, "sitadel.parquet"))
+    filtre = df[(df["Date"].dt.year >= years[0]) & (df["Date"].dt.year <= years[1])]
+    agg = ana.aggregate_sitadel(filtre, types).sort_values("Date").reset_index(drop=True)
+
+    assert sql["Date"].tolist() == agg["Date"].tolist()
+    _same(sql["Permis"], agg["Permis"], name="collectif 2018-2022")
+
+
+def test_macro_frame_matches_macro_series(con):
+    """`macro_frame` (consommé par les graphiques du rapport PDF) et `macro_series`
+    (consommé par l'export JSON) doivent décrire exactement la même série."""
+    col = "OAT_10ans"
+    fr = q.macro_frame(con, col)
+    rw = q.macro_series(con, col, digits=12)
+    assert len(fr) == len(rw)
+    _same(fr["value"], [r["value"] for r in rw], name="macro_frame vs macro_series")
+    df = pd.read_parquet(os.path.join(_DATA, "macro.parquet")).dropna(subset=[col])
+    _same(fr["value"], df[col].values, name="macro_frame vs pandas dropna")
+
+
 # ------------------------------------------------------------------ macro & transforms
 def test_macro_series_matches_dropna(con):
     col = "Insee_Confiance_Menages"

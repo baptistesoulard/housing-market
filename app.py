@@ -7,6 +7,7 @@ import os
 
 from data_manager import DataManager
 import analysis as ana
+import queries as q          # couche SQL DuckDB partagée (moteur de calcul)
 import simulation as sim
 import export as exp
 import forecast as fc
@@ -146,6 +147,19 @@ def get_data_manager():
 
 dm = get_data_manager()
 
+@st.cache_resource
+def get_connection():
+    """Connexion DuckDB (une vue par dataset) sur les Parquet de l'entrepôt.
+
+    `refresh=False` : get_data_manager() vient de reconstruire les CSV et les Parquet,
+    inutile de le refaire. Les vues lisent les fichiers à la demande, donc la connexion
+    mise en cache reste valable après une régénération — et `st.cache_resource.clear()`
+    (bouton de reset) la rouvre de toute façon.
+    """
+    return q.open_warehouse(refresh=False)
+
+con = get_connection()
+
 def _data_signature():
     """mtimes of the persisted datasets, used as the cache key below so a plain rerun
     (moving a slider) reuses the in-memory frames instead of re-reading every CSV and
@@ -169,10 +183,11 @@ df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_compan
 # slicer never moves that base.
 df_macro_full = df_macro
 
-# Keep untouched references to the full national series. The "Chiffres Clés" cards
-# use these so the headline figures stay independent of the sidebar year slicer and
-# the on-chart segment selector (which reassign / filter the working dataframes below).
-df_sitadel_full, df_ventes_ancien_full = df_sitadel, df_ventes_ancien
+# Keep an untouched reference to the full national series. Depuis la phase 2, les cartes
+# « Chiffres Clés » ne passent plus par ces frames — elles interrogent l'entrepôt, qui est
+# par nature l'historique complet, donc indépendant du slicer et du sélecteur de segment.
+# Seul le pendant SIT@DEL est devenu inutile ; celui-ci sert encore aux modèles de prévision.
+df_ventes_ancien_full = df_ventes_ancien
 # Full-history macro & revenue for the forecast models (they must not depend on the slicer).
 df_revenue_full = df_revenue
 # Full-history ECLN for the slicer-independent headline cards (Synthèse & Marché du neuf).
@@ -243,8 +258,7 @@ st.sidebar.markdown("### 📄 " + _L("Rapport PDF", "PDF report"))
 if st.sidebar.button(_L("Générer le rapport", "Generate report"), key="btn_gen_pdf"):
     with st.spinner(_L("Génération du PDF…", "Generating PDF…")):
         import report as _rep
-        st.session_state["pdf_report_bytes"] = _rep.build_pdf_report(
-            df_sitadel_full, df_ventes_ancien_full, df_macro_full, lang_code)
+        st.session_state["pdf_report_bytes"] = _rep.build_pdf_report(con, lang_code)
 if "pdf_report_bytes" in st.session_state:
     st.sidebar.download_button(
         _L("📥 Télécharger le bilan (PDF)", "📥 Download the review (PDF)"),
@@ -541,13 +555,13 @@ with tab_synthese:
         "below."))
 
     # Full-history national momentum & 12m levels (slicer-independent).
-    _sy_sit = ana.aggregate_sitadel(df_sitadel_full)
-    _sy_va = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
-    _sy_roll_sit = ana.calculate_rolling_12m(_sy_sit, ["Permis", "MisesEnChantier"])
-    _sy_roll_va = ana.calculate_rolling_12m(_sy_va, ["Transactions"])
-    _sy_m_permis = ana.momentum_metrics(_sy_sit, "Permis")
-    _sy_m_mises = ana.momentum_metrics(_sy_sit, "MisesEnChantier")
-    _sy_m_tx = ana.momentum_metrics(_sy_va, "Transactions")
+    # Agrégat mensuel + cumul 12 mois en une requête par dataset (le cumul est calculé
+    # par DuckDB en fonction de fenêtre, plus par un rolling pandas sur une copie).
+    _sy_roll_sit = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"])
+    _sy_roll_va = q.monthly(con, "ventes_ancien", ["Transactions"])
+    _sy_m_permis = ana.momentum_metrics(_sy_roll_sit, "Permis")
+    _sy_m_mises = ana.momentum_metrics(_sy_roll_sit, "MisesEnChantier")
+    _sy_m_tx = ana.momentum_metrics(_sy_roll_va, "Transactions")
     _sy_k_permis = ana.calculate_kpis(_sy_roll_sit, "Permis")
     _sy_k_mises = ana.calculate_kpis(_sy_roll_sit, "MisesEnChantier")
     _sy_k_tx = ana.calculate_kpis(_sy_roll_va, "Transactions")
@@ -649,7 +663,8 @@ with tab_synthese:
     # --- Key takeaways: one bullet per pillar (one or two figures each) + the business
     # implication for second-œuvre demand — instead of a dense numbers paragraph.
     _sy_mom_ip = ana.momentum_metrics(
-        ana.aggregate_sitadel(df_sitadel_full, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+        q.monthly(con, "sitadel", ["MisesEnChantier"], windows=(),
+                  types=ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
     _lines = []
     _neuf_head = {"up": _L("la construction accélère", "construction is accelerating"),
                   "flat": _L("la construction est stable", "construction is flat"),
@@ -1075,33 +1090,33 @@ with tab_neuf:
 
     # Aggregate data according to the segment selection. The year-filtered aggregate
     # feeds the month-by-year comparison bars below.
-    agg_sitadel = ana.aggregate_sitadel(filtered_sitadel, sitadel_types)
+    agg_sitadel = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], windows=(),
+                            types=sitadel_types, years=year_range)
 
     # Rolling 12m + 6m sums (and the moving-average overlays) are computed on the FULL
     # history, then the DISPLAY is clipped to the selected years — so a 12m cumul / moving
     # average at Jan 2023 uses its real Feb 2022→Jan 2023 window instead of showing an empty
     # first-12-months gap after the year slicer moves the start.
-    agg_sitadel_full = ana.aggregate_sitadel(df_sitadel_full, sitadel_types)
-    rolling_sitadel = ana.calculate_rolling_12m(agg_sitadel_full, ["Permis", "MisesEnChantier"])
-    rolling_sitadel = ana.calculate_rolling(rolling_sitadel, ["Permis", "MisesEnChantier"], 6)
-    rolling_sitadel = _filter_years(rolling_sitadel)
+    # Les deux fenêtres (12 et 6 mois) sortent de la MÊME requête ; le découpage à la
+    # période choisie reste après coup, pour que le cumul de janvier garde sa vraie
+    # fenêtre des 12 mois précédents.
+    rolling_sitadel = _filter_years(
+        q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], windows=(12, 6),
+                  types=sitadel_types))
 
     # KPI Calculations. The "Chiffres Clés" cards always reflect the full national
     # total (all housing types, full history) for the last available month, independent
     # of the sidebar year slicer and the SIT@DEL segment selector. The charts above use
     # the filtered series; these headline figures use the untouched full series.
-    rolling_sitadel_total = ana.calculate_rolling_12m(
-        ana.aggregate_sitadel(df_sitadel_full), ["Permis", "MisesEnChantier"]
-    )
+    rolling_sitadel_total = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"])
     kpi_permis = ana.calculate_kpis(rolling_sitadel_total, "Permis")
     kpi_mises = ana.calculate_kpis(rolling_sitadel_total, "MisesEnChantier")
 
     # Momentum (BPCE style): 3 derniers mois vs mêmes mois n-1, computed from the
     # monthly national series (independent of the year slicer). Surfaces inflections
     # ("coup d'arrêt") faster than the 12m rolling YoY.
-    _mom_sitadel = ana.aggregate_sitadel(df_sitadel_full)
-    mom_permis = ana.momentum_metrics(_mom_sitadel, "Permis")
-    mom_mises = ana.momentum_metrics(_mom_sitadel, "MisesEnChantier")
+    mom_permis = ana.momentum_metrics(rolling_sitadel_total, "Permis")
+    mom_mises = ana.momentum_metrics(rolling_sitadel_total, "MisesEnChantier")
 
     # Last available month behind the headline figures.
     _kpi_sitadel_month = format_month_year(last_valid_month(rolling_sitadel_total, "Permis"), lang_code)
@@ -1259,11 +1274,17 @@ with tab_neuf:
         (_L("Collectif", "Collective"), ana.SITADEL_COLLECTIF, COLOR_BLUE),
     ]
 
+    # Les trois groupes en UNE requête (fenêtres partitionnées par groupe côté SQL), là
+    # où le code refaisait un agrégat + un cumul 12 mois par groupe, puis un second
+    # agrégat par groupe pour le momentum — soit huit passes pandas sur l'historique.
+    _iv_all = q.monthly_by_group(con, "sitadel",
+                                 {lbl: types for lbl, types, _ in _iv_groups}, [_iv_col])
+
     iv_cols = st.columns(3)
     for _i, (_lbl, _types, _clr) in enumerate(_iv_groups):
-        _full_g = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel_full, _types), [_iv_col])
+        _full_g = _iv_all[_iv_all["Groupe"] == _lbl]
         _val12 = _full_g[f"{_iv_col}_12M"].dropna()
-        _mom_g = ana.momentum_metrics(ana.aggregate_sitadel(df_sitadel_full, _types), _iv_col)
+        _mom_g = ana.momentum_metrics(_full_g, _iv_col)
         with iv_cols[_i]:
             st.metric(
                 _lbl,
@@ -1283,8 +1304,7 @@ with tab_neuf:
     )
     fig_iv = go.Figure()
     for _lbl, _types, _clr in [_iv_groups[0], _iv_groups[2]]:
-        _g = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel_full, _types), [_iv_col])
-        _g = _filter_years(_g)
+        _g = _filter_years(_iv_all[_iv_all["Groupe"] == _lbl])
         fig_iv.add_trace(go.Scatter(x=_g["Date"], y=_g[f"{_iv_col}_12M"] / 1000.0,
                                     name=_lbl, line=dict(color=_clr, width=3)))
     fig_iv.update_layout(
@@ -1357,12 +1377,9 @@ with tab_ancien:
     st.write(T[lang_code]["ancien_desc"])
 
     # --- KPI (full national series, independent of the year slicer) ---
-    rolling_ventes_ancien_total = ana.calculate_rolling_12m(
-        ana.aggregate_ventes_ancien(df_ventes_ancien_full), ["Transactions"]
-    )
+    rolling_ventes_ancien_total = q.monthly(con, "ventes_ancien", ["Transactions"])
     kpi_transactions = ana.calculate_kpis(rolling_ventes_ancien_total, "Transactions")
-    mom_transactions = ana.momentum_metrics(
-        ana.aggregate_ventes_ancien(df_ventes_ancien_full), "Transactions")
+    mom_transactions = ana.momentum_metrics(rolling_ventes_ancien_total, "Transactions")
     _kpi_ventes_ancien_month = format_month_year(
         last_valid_month(rolling_ventes_ancien_total, "Transactions"), lang_code)
 
@@ -1402,10 +1419,9 @@ with tab_ancien:
     # Rolling sums computed on the FULL history, display clipped to the selected years
     # (same rationale as the new-build tab). The year-filtered monthly aggregate feeds
     # the month-by-year comparison bars below.
-    agg_ventes_ancien = ana.aggregate_ventes_ancien(filtered_ventes_ancien)
-    agg_ventes_ancien_full = ana.aggregate_ventes_ancien(df_ventes_ancien_full)
-    rolling_ventes_ancien = ana.calculate_rolling_12m(agg_ventes_ancien_full, ["Transactions"])
-    rolling_ventes_ancien = ana.calculate_rolling(rolling_ventes_ancien, ["Transactions"], 6)
+    agg_ventes_ancien = q.monthly(con, "ventes_ancien", ["Transactions"], windows=(),
+                                  years=year_range)
+    rolling_ventes_ancien = q.monthly(con, "ventes_ancien", ["Transactions"], windows=(12, 6))
     rolling_ventes_ancien = _filter_years(rolling_ventes_ancien)
 
     disp_ventes_ancien = rolling_ventes_ancien.copy()

@@ -110,26 +110,55 @@ def _window_clause(windows, partition: str | None = None) -> str:
         for w in windows)
 
 
-def monthly(con, dataset: str, value_cols, windows=(12,), types=None) -> pd.DataFrame:
+def _row_filter(types=None, years=None):
+    """Clause WHERE + paramètres communs aux agrégats : filtre de types et/ou de période.
+
+    `years=(min, max)` reproduit le `_filter_years` d'app.py (bornes incluses, sur
+    l'ANNÉE civile), appliqué avant le GROUP BY comme le faisait le filtrage pandas.
+    """
+    clauses, params = [], []
+    if types:
+        clauses.append("Type IN (" + ", ".join(["?"] * len(types)) + ")")
+        params += list(types)
+    if years:
+        clauses.append("year(Date) BETWEEN ? AND ?")
+        params += [int(years[0]), int(years[1])]
+    return (" WHERE " + " AND ".join(clauses) if clauses else ""), params
+
+
+def _select_with_windows(value_cols, windows):
+    """Projection + clause WINDOW, en tolérant `windows=()` (agrégat mensuel nu, sans
+    cumul glissant : c'est le cas des barres de comparaison mois-par-mois d'app.py, où
+    une clause WINDOW vide produirait du SQL invalide)."""
+    quoted = ", ".join(f'"{c}"' for c in value_cols)
+    if not windows:
+        return quoted, ""
+    return f"{quoted}, {_roll_exprs(value_cols, windows)}", _window_clause(windows)
+
+
+def monthly(con, dataset: str, value_cols, windows=(12,), types=None,
+            years=None) -> pd.DataFrame:
     """Série mensuelle nationale d'un dataset + ses cumuls glissants, en UN passage SQL.
 
     Remplace la chaîne `analysis.aggregate_* -> calculate_rolling_12m -> calculate_rolling`,
     qui recopiait le DataFrame à chaque étape. `types` filtre la colonne Type côté SQL
-    (aucune ligne inutile ne remonte).
+    (aucune ligne inutile ne remonte) ; `years=(min, max)` restreint à une période, pour
+    les vues où l'agrégat lui-même est borné par le slicer d'années.
+
+    Attention : borner par `years` borne AUSSI les fenêtres glissantes. Les vues qui
+    veulent un cumul 12 mois correct en début de période doivent agréger sur l'historique
+    complet puis découper à l'affichage — c'est ce que fait app.py.
     """
-    quoted = ", ".join(f'"{c}"' for c in value_cols)
     sums = ", ".join(f'SUM("{c}")::DOUBLE AS "{c}"' for c in value_cols)
-    where, params = "", []
-    if types:
-        where = " WHERE Type IN (" + ", ".join(["?"] * len(types)) + ")"
-        params = list(types)
+    where, params = _row_filter(types, years)
+    projection, window = _select_with_windows(value_cols, windows)
     return frame(con, f"""
         WITH mensuel AS (
             SELECT Date, {sums} FROM "{dataset}"{where} GROUP BY Date
         )
-        SELECT Date, {quoted}, {_roll_exprs(value_cols, windows)}
+        SELECT Date, {projection}
         FROM mensuel
-        {_window_clause(windows)}
+        {window}
         ORDER BY Date
     """, params)
 
@@ -186,6 +215,16 @@ def macro_series(con, col: str, digits: int = 4, key: str = "value") -> list[dic
         SELECT strftime(Date, '%Y-%m-%d') AS date, "{col}" AS "{key}"
         FROM "macro" WHERE "{col}" IS NOT NULL ORDER BY Date
     """, digits={key: digits})
+
+
+def macro_frame(con, col: str, key: str = "value") -> pd.DataFrame:
+    """Variante DataFrame de `macro_series` : [Date, <key>], NULL filtrés côté SQL.
+    Pour les consommateurs qui tracent la série (matplotlib du rapport PDF) plutôt que
+    de la sérialiser en JSON."""
+    return frame(con, f"""
+        SELECT Date, "{col}" AS "{key}"
+        FROM "macro" WHERE "{col}" IS NOT NULL ORDER BY Date
+    """)
 
 
 def macro_last_and_year_ago(con, col: str, months: int = 12):

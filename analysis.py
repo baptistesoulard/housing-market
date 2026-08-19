@@ -1,3 +1,16 @@
+"""Helpers d'analyse en pandas.
+
+Statut depuis la phase 2 du refactor compute : les agrégations (`aggregate_sitadel`,
+`aggregate_ventes_ancien`, `calculate_rolling_12m`, `calculate_rolling`) ne sont plus sur
+le chemin d'exécution — les trois surfaces (app.py, web_export.py, report.py) passent par
+la couche SQL `queries.py`. Elles sont CONSERVÉES à dessein comme **implémentation de
+référence** : `tests/test_queries_parity.py` compare chaque requête DuckDB à son
+équivalent pandas ici. Les supprimer supprimerait le filet de sécurité de la migration.
+
+Les helpers de POST-agrégation (`calculate_kpis`, `momentum_metrics`,
+`build_market_commentary`) restent eux bel et bien appelés au runtime : ils opèrent sur
+les petites frames déjà agrégées que renvoie la couche SQL.
+"""
 import pandas as pd
 
 def aggregate_sitadel(df_sitadel, types=None):

@@ -25,6 +25,7 @@ from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table, Tab
                                 Image, KeepTogether)
 
 import analysis as ana
+import queries as q                 # couche SQL DuckDB partagée
 
 # --- Brand palette (mirrors app.py) ---
 BRICK = "#E64A19"
@@ -98,9 +99,8 @@ def _legend(ax):
 
 # --- Charts -----------------------------------------------------------------------------
 
-def _chart_construction(df_sitadel, lang):
-    agg = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel),
-                                    ["Permis", "MisesEnChantier"]).dropna(subset=["Permis_12M"])
+def _chart_construction(con, lang):
+    agg = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"]).dropna(subset=["Permis_12M"])
     fig, ax = plt.subplots(figsize=(7.4, 2.7))
     ax.plot(agg["Date"], agg["Permis_12M"] / 1000, color=BRICK, lw=2,
             label=_L("Permis de construire", "Building permits", lang))
@@ -112,9 +112,8 @@ def _chart_construction(df_sitadel, lang):
     return _png(fig)
 
 
-def _chart_transactions(df_ventes_ancien, lang):
-    agg = ana.calculate_rolling_12m(ana.aggregate_ventes_ancien(df_ventes_ancien),
-                                    ["Transactions"]).dropna(subset=["Transactions_12M"])
+def _chart_transactions(con, lang):
+    agg = q.monthly(con, "ventes_ancien", ["Transactions"]).dropna(subset=["Transactions_12M"])
     fig, ax = plt.subplots(figsize=(7.4, 2.7))
     ax.plot(agg["Date"], agg["Transactions_12M"] / 1000, color=GREEN, lw=2,
             label=_L("Ventes anciennes (IGEDD)", "Existing-home sales (IGEDD)", lang))
@@ -126,13 +125,16 @@ def _chart_transactions(df_ventes_ancien, lang):
     return _png(fig)
 
 
-def _chart_indiv_collectif(df_sitadel, lang):
+def _chart_indiv_collectif(con, lang):
     fig, ax = plt.subplots(figsize=(7.4, 2.7))
     groups = [(_L("Maison individuelle pure", "Detached houses", lang), ana.SITADEL_INDIVIDUEL_PUR, BRICK),
               (_L("Collectif", "Collective", lang), ana.SITADEL_COLLECTIF, BLUE)]
-    for lbl, types, clr in groups:
-        g = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel, types),
-                                      ["MisesEnChantier"]).dropna(subset=["MisesEnChantier_12M"])
+    # Une seule requête pour les deux groupes (fenêtres partitionnées côté SQL) là où le
+    # code faisait un agrégat + un cumul glissant complet par groupe.
+    allg = q.monthly_by_group(con, "sitadel", {lbl: types for lbl, types, _ in groups},
+                              ["MisesEnChantier"])
+    for lbl, _types, clr in groups:
+        g = allg[allg["Groupe"] == lbl].dropna(subset=["MisesEnChantier_12M"])
         ax.plot(g["Date"], g["MisesEnChantier_12M"] / 1000, color=clr, lw=2, label=lbl)
     ax.set_ylabel(_L("Milliers (mises en chantier)", "Thousands (starts)", lang), fontsize=8)
     _style_ax(ax)
@@ -140,15 +142,18 @@ def _chart_indiv_collectif(df_sitadel, lang):
     return _png(fig)
 
 
-def _chart_rates(df_macro, lang):
+def _chart_rates(con, lang):
     fig, ax = plt.subplots(figsize=(7.4, 2.7))
     series = [("Credit_Logement_Taux_Interet", BRICK, _L("Taux crédit habitat", "Housing loan rate", lang)),
               ("OAT_10ans", GREEN, _L("OAT 10 ans", "10-year OAT", lang)),
               ("Euribor_3M", BLUE, _L("Euribor 3 mois", "3-month Euribor", lang))]
+    # Un aller-retour SQL donne les indicateurs réellement renseignés, au lieu d'un
+    # `col in df.columns and df[col].notna().any()` par série.
+    renseignes = q.macro_data_columns(con)
     for col, clr, lbl in series:
-        if col in df_macro.columns and df_macro[col].notna().any():
-            d = df_macro.dropna(subset=[col])
-            ax.plot(d["Date"], d[col], color=clr, lw=1.8, label=lbl)
+        if col in renseignes:
+            d = q.macro_frame(con, col)
+            ax.plot(d["Date"], d["value"], color=clr, lw=1.8, label=lbl)
     ax.set_ylabel("%", fontsize=8)
     _style_ax(ax)
     _legend(ax)
@@ -166,26 +171,33 @@ def _img(png_buf, width_mm=170.0):
 
 # --- Document ---------------------------------------------------------------------------
 
-def build_pdf_report(df_sitadel, df_ventes_ancien, df_macro, lang="FR"):
-    """Build the market 'bilan' PDF and return it as bytes. Inputs are the FULL-history
-    national frames (df_*_full in the app). Everything is derived from the numbers so the
-    report matches the dashboard."""
+def build_pdf_report(con, lang="FR"):
+    """Build the market 'bilan' PDF and return it as bytes.
+
+    `con` is a DuckDB connection on the warehouse (`queries.open_warehouse`). The report
+    is deliberately computed on the FULL national history — it is slicer-independent —
+    which is exactly what the warehouse views expose, so no frame has to be threaded in.
+    Everything is derived from the numbers so the report matches the dashboard.
+    """
     # --- Headline figures (full national history, 12m rolling) ---
-    roll_sit = ana.calculate_rolling_12m(ana.aggregate_sitadel(df_sitadel),
-                                         ["Permis", "MisesEnChantier"])
-    roll_ventes_ancien = ana.calculate_rolling_12m(ana.aggregate_ventes_ancien(df_ventes_ancien), ["Transactions"])
+    # Une requête par dataset : l'agrégat mensuel ET son cumul 12 mois en un passage.
+    # Les helpers de post-agrégation (calculate_kpis / momentum_metrics) opèrent ensuite
+    # sur ces petites frames déjà agrégées et restent réutilisés tels quels.
+    roll_sit = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"])
+    roll_ventes_ancien = q.monthly(con, "ventes_ancien", ["Transactions"])
     kpi_p = ana.calculate_kpis(roll_sit, "Permis")
     kpi_m = ana.calculate_kpis(roll_sit, "MisesEnChantier")
     kpi_t = ana.calculate_kpis(roll_ventes_ancien, "Transactions")
-    mom_p = ana.momentum_metrics(ana.aggregate_sitadel(df_sitadel), "Permis")
-    mom_m = ana.momentum_metrics(ana.aggregate_sitadel(df_sitadel), "MisesEnChantier")
-    mom_t = ana.momentum_metrics(ana.aggregate_ventes_ancien(df_ventes_ancien), "Transactions")
+    mom_p = ana.momentum_metrics(roll_sit, "Permis")
+    mom_m = ana.momentum_metrics(roll_sit, "MisesEnChantier")
+    mom_t = ana.momentum_metrics(roll_ventes_ancien, "Transactions")
     mom_ip = ana.momentum_metrics(
-        ana.aggregate_sitadel(df_sitadel, ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
+        q.monthly(con, "sitadel", ["MisesEnChantier"], windows=(),
+                  types=ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
     commentary = ana.build_market_commentary(kpi_p, kpi_m, kpi_t, mom_p, mom_m, mom_t, mom_ip, lang)
 
-    last_sit = ana.aggregate_sitadel(df_sitadel)["Date"].max()
-    last_ventes_ancien = ana.aggregate_ventes_ancien(df_ventes_ancien)["Date"].max()
+    last_sit = roll_sit["Date"].max()
+    last_ventes_ancien = roll_ventes_ancien["Date"].max()
     last_tx12 = float(roll_ventes_ancien.dropna(subset=["Transactions_12M"])["Transactions_12M"].iloc[-1])
     gap = (last_tx12 - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
 
@@ -251,16 +263,16 @@ def build_pdf_report(df_sitadel, df_ventes_ancien, df_macro, lang="FR"):
 
     _section(_L("Construction neuve (cumul 12 mois, en milliers)",
                 "New construction (12-month total, thousands)", lang),
-             _chart_construction(df_sitadel, lang))
+             _chart_construction(con, lang))
     _section(_L("Ventes de logements anciens (cumul 12 mois, en milliers)",
                 "Existing-home sales (12-month total, thousands)", lang),
-             _chart_transactions(df_ventes_ancien, lang))
+             _chart_transactions(con, lang))
     _section(_L("Individuel pur vs collectif (mises en chantier, cumul 12 mois)",
                 "Detached vs collective (starts, 12-month total)", lang),
-             _chart_indiv_collectif(df_sitadel, lang))
+             _chart_indiv_collectif(con, lang))
     _section(_L("Taux d'intérêt et conditions de financement (%)",
                 "Interest rates and financing conditions (%)", lang),
-             _chart_rates(df_macro, lang))
+             _chart_rates(con, lang))
 
     # --- BPCE benchmark ---
     story.append(Paragraph(_L("Repère : prévisions BPCE L'Observatoire 2026",
