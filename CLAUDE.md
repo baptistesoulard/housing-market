@@ -197,7 +197,7 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 | `refactor/duckdb-engine` | 0 | axe compute, fusionné par la PR #2 |
 | `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, fusionnés |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
-| `refactor/fusion-timelag-previsions` | 1 commit | fusion Time-Lag → Prévision, retrait Atelier + export SAP IBP (voir « Onglets retirés ») |
+| `refactor/fusion-timelag-previsions` | 0 | fusion Time-Lag → Prévision, retrait Atelier + export SAP IBP (voir « Onglets retirés ») ; fusionnée dans `main` en fast-forward le 2026-08-20 |
 
 Les quatre branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base
 --is-ancestor` vérifié) : leurs copies locales ont été supprimées, il ne reste que les
