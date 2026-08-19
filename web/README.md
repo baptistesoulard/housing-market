@@ -71,9 +71,22 @@ streamlit run app.py    # http://localhost:8501
 
 ## Look & feel
 
-Typo et couleurs alignées sur l'app Streamlit : pile de polices Calibri / Segoe UI,
-titres soulignés en rouge brique (#E64A19), texte anthracite (#2D3748). Les graphiques
-affichent les valeurs **au survol** (infobulle « closest » type Plotly, mois en français).
+Typo et couleurs alignées sur ce que l'app Streamlit **rend** : corps de texte en Source
+Sans 3 (la police que Streamlit embarque ; chargée ici via `globalStylesheets`), titres
+dans la pile Segoe UI d'`app.py`, soulignés en rouge brique (#E64A19), texte anthracite
+(#2D3748). Les graphiques affichent les valeurs **au survol** (infobulle « closest » type
+Plotly, mois en français).
+
+Deux règles de mise en page valent d'être connues avant de toucher au CSS :
+
+- **Une seule largeur de colonne.** `--hm-measure` (64 rem) cadre `main` *et* la barre
+  d'en-tête. Les plafonds par élément du thème `air` (640 px sur `p`/`h1-h6`, 600 px sur
+  `ul`/`ol`) sont neutralisés : sans ça, la page a trois bords droits différents et les
+  encadrés sont plus larges que le texte qu'ils contiennent. Ne pas remettre de
+  `max-width` sur un bloc `.hm-*`.
+- **La navigation est dans l'en-tête**, pas seulement dans la barre latérale : celle-ci ne
+  s'épingle qu'au-delà de 1008 px. `PAGES` alimente les deux, elles ne peuvent pas
+  diverger.
 
 ## Construire le site statique
 

@@ -1,9 +1,10 @@
 // Configuration Observable Framework — dashboard HousingMarket (site statique).
 // `npm run build` produit web/observable/dist/, déployé sur Cloudflare Pages (Node-only).
 //
-// Les couleurs viennent de web/theme.json (source unique de vérité, partagée avec le
-// Python d'export et le module src/components/theme.js). Elles sont projetées ici en
-// variables CSS --hm-* : aucune valeur hexadécimale n'est écrite en dur dans ce fichier.
+// Les couleurs ET les polices viennent de web/theme.json (source unique de vérité,
+// partagée avec le Python d'export et le module src/components/theme.js). Elles sont
+// projetées ici en variables CSS --hm-* : aucune valeur hexadécimale, aucun nom de police
+// n'est écrit en dur dans ce fichier.
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {dirname, join} from "node:path";
@@ -14,6 +15,7 @@ const T = JSON.parse(readFileSync(join(_dir, "..", "theme.json"), "utf-8"));
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
   "font-sans": T.font.sans,
+  "font-heading": T.font.heading,
   bg: T.brand.bg,
   surface: T.brand.surface,
   ink: T.brand.ink,
@@ -36,26 +38,41 @@ const STYLE = `
 ${VARS}
   --sans-serif: var(--hm-font-sans);
   --serif: var(--hm-font-sans);
+  /* Largeur de la colonne de contenu — cadre commun à l'en-tête et à « main ». */
+  --hm-measure: 64rem;
 }
 body { font-family: var(--sans-serif); color: var(--hm-ink); background: var(--hm-bg); }
-h1, h2, h3, h4 { font-family: var(--sans-serif); color: var(--hm-ink); }
+h1, h2, h3, h4 { font-family: var(--hm-font-heading); color: var(--hm-ink); }
 h1 { font-weight: 700; border-bottom: 2px solid var(--hm-brick); padding-bottom: 8px; margin-bottom: 0.15rem; }
+
+/* --- UNE seule largeur de colonne -------------------------------------------------
+   Trois plafonds de largeur se superposaient ici, et la page avait donc trois bords
+   droits différents : le thème « air » plafonne p/h1-h6 à 640 px et ul/ol à 600 px, les
+   blocs .hm-* portaient chacun leur propre max-width de 64 rem, et .hm-grid/.hm-meta
+   n'avaient aucun plafond. Mesuré à 930 px de large : le filet du h1 s'arrêtait à 672 px,
+   le texte de « À retenir » à 671 px, mais sa boîte allait jusqu'à 883 px.
+   On neutralise donc les plafonds par élément du thème et on cadre la colonne UNE fois,
+   sur « main » — tout partage alors le même bord gauche et le même bord droit. Corollaire :
+   ne pas remettre de max-width sur un bloc .hm-*, ça recréerait un second bord. */
+#observablehq-main { max-width: var(--hm-measure); }
+#observablehq-main :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6,
+                       table, figure, figcaption, .note, .tip, .warning, .caution) { max-width: none; }
 main h2 { font-size: 1.55rem; font-weight: 700; margin-top: 2.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border); }
 main h3 { font-size: 1.3rem; font-weight: 700; color: var(--hm-ink); margin-top: 2.2rem; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border-light); }
 a, a:visited { color: var(--hm-link); }
-.hm-caption { color: var(--theme-foreground-muted); font-size: 0.92rem; max-width: 64rem; margin: 0.2rem 0 1rem; }
+.hm-caption { color: var(--theme-foreground-muted); font-size: 0.92rem; margin: 0.2rem 0 1rem; }
 .hm-chips { margin: 0.4rem 0 1.2rem; }
 .hm-takeaways { background: color-mix(in srgb, var(--hm-blue) 12%, transparent); border-left: 4px solid var(--hm-blue);
-  border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.6rem 0 1rem; max-width: 64rem; }
+  border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.6rem 0 1rem; }
 .hm-takeaways ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
 .hm-takeaways li { margin: 0.35rem 0; line-height: 1.5; }
 .hm-meta { color: var(--theme-foreground-muted); font-size: 0.85rem; margin: 0.4rem 0 0.2rem; }
 .hm-grid { display: grid; gap: 1.8rem 1.6rem; margin: 0.8rem 0 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .hm-card { padding: 0.15rem 0; background: transparent; border: none; }
-.hm-card-title { font-weight: 600; font-size: 0.86rem; color: var(--hm-muted); letter-spacing: 0.2px; }
-.hm-card-value { font-size: 1.6rem; font-weight: 700; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.15; }
-.hm-card-sub { font-size: 0.8rem; color: var(--theme-foreground-muted); line-height: 1.45; }
+.hm-card-title { font-weight: 600; font-size: 0.9rem; color: var(--hm-muted); letter-spacing: 0.2px; }
+.hm-card-value { font-size: 2rem; font-weight: 700; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.15; }
+.hm-card-sub { font-size: 0.875rem; color: var(--hm-muted); line-height: 1.45; }
 .hm-delta { font-size: 0.95rem; font-weight: 700; }
 .hm-delta.pos { color: var(--hm-delta-pos); }
 .hm-delta.neg { color: var(--hm-delta-neg); }
@@ -69,7 +86,7 @@ a, a:visited { color: var(--hm-link); }
 .hm-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
 .hm-chart-title { font-weight: 600; margin: 1rem 0 0; }
 .hm-chart-title .sub { color: var(--hm-subtle); font-weight: 400; }
-details.hm-howto { margin: 0.2rem 0 0.8rem; max-width: 64rem; }
+details.hm-howto { margin: 0.2rem 0 0.8rem; }
 details.hm-howto summary { cursor: pointer; color: var(--theme-foreground-muted); }
 
 /* --- Frise de période (barre latérale) : miroir du curseur « Période (années) »
@@ -97,20 +114,66 @@ details.hm-howto summary { cursor: pointer; color: var(--theme-foreground-muted)
 .hm-period-track input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
 .hm-period-bounds { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--theme-foreground-muted); }
 .hm-period-note { font-size: 0.72rem; color: var(--theme-foreground-muted); margin-top: 0.3rem; line-height: 1.35; }
+
+/* --- Barre de navigation permanente (en-tête) -------------------------------------
+   Équivalent de la frise « st.tabs » de l'app Streamlit. La barre latérale d'Observable
+   ne s'épingle qu'à partir de 1008 px : en dessous elle se replie derrière un bouton et
+   la page n'affiche alors NI identité, NI onglet courant, NI onglets voisins. Cette
+   barre-ci est visible à toutes les largeurs et déborde en défilement horizontal,
+   comme le chevron « > » de Streamlit. */
+:root { --observablehq-header-height: 2.6rem; }
+#observablehq-header { padding-top: 0.7rem; }
+.hm-topbar { display: flex; align-items: baseline; gap: 0.4rem 1.4rem; width: 100%;
+  max-width: var(--hm-measure); margin: 0 auto; min-width: 0; }
+.hm-brand { flex: none; font-weight: 700; font-size: 1rem; white-space: nowrap; }
+.hm-brand, .hm-brand:visited { color: var(--hm-ink); text-decoration: none; }
+.hm-tabs { display: flex; gap: 1.1rem; overflow-x: auto; scrollbar-width: thin; min-width: 0; }
+.hm-tabs a, .hm-tabs a:visited { flex: none; color: var(--hm-muted); text-decoration: none;
+  font-size: 0.92rem; font-weight: 500; white-space: nowrap; padding-bottom: 0.45rem;
+  border-bottom: 2px solid transparent; }
+.hm-tabs a:hover { color: var(--hm-ink); }
+.hm-tabs a[aria-current="page"] { color: var(--hm-brick); border-bottom-color: var(--hm-brick); }
 </style>`;
+
+// Source unique des pages : sert à la fois la barre latérale (`pages`) et la barre
+// d'onglets de l'en-tête (`header`), pour qu'elles ne puissent pas diverger.
+const PAGES = [
+  {name: "🧭 Synthèse", path: "/"},
+  {name: "🏗️ Marché du neuf", path: "/neuf"},
+  {name: "🏠 Marché de l'ancien", path: "/ancien"},
+  {name: "🏦 Environnement & Financement", path: "/macro"},
+  {name: "📰 Actualités & Aides", path: "/actualites"},
+];
+
+const BRAND = "🏠 Market Intelligence Immobilier";
+
+// `header` reçoit {title, data, path} — `path` est la page en cours de rendu, ce qui
+// permet de marquer l'onglet actif comme le fait Streamlit. La racine est rendue sous le
+// chemin "/index" alors qu'elle est déclarée "/" : sans cette normalisation, la page
+// d'accueil serait la seule à n'avoir aucun onglet actif.
+function header({path}) {
+  const here = path === "/index" ? "/" : path;
+  const tabs = PAGES.map((p) => {
+    const current = p.path === here ? ' aria-current="page"' : "";
+    return `<a href="${p.path}"${current}>${p.name}</a>`;
+  }).join("");
+  return `<div class="hm-topbar"><a class="hm-brand" href="/">${BRAND}</a>` +
+         `<nav class="hm-tabs">${tabs}</nav></div>`;
+}
 
 export default {
   title: "HousingMarket",
   root: "src",
   theme: ["air", "wide"],
   head: STYLE,
-  pages: [
-    {name: "🧭 Synthèse", path: "/"},
-    {name: "🏗️ Marché du neuf", path: "/neuf"},
-    {name: "🏠 Marché de l'ancien", path: "/ancien"},
-    {name: "🏦 Environnement & Financement", path: "/macro"},
-    {name: "📰 Actualités & Aides", path: "/actualites"},
+  header,
+  // Remplace le Source Serif 4 chargé par défaut avec le thème `air` : cette police
+  // n'était jamais rendue (--serif est réécrit sur la pile de theme.json), le site la
+  // téléchargeait pour rien. Source Sans 3 est, elle, la police du corps de texte.
+  globalStylesheets: [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap",
   ],
+  pages: PAGES,
   toc: false,
   pager: false,
   footer: "PoC de migration — front statique alimenté par la pipeline Python existante.",

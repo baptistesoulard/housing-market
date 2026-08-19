@@ -51,7 +51,8 @@ export const THEME = {
     "borderLight": "#EDEFF2"
   },
   "font": {
-    "sans": "Calibri, \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
+    "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif",
+    "heading": "\"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
   }
 };
 
