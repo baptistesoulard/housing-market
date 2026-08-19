@@ -9,7 +9,6 @@ from data_manager import DataManager
 import analysis as ana
 import queries as q          # couche SQL DuckDB partagée (moteur de calcul)
 import simulation as sim
-import export as exp
 import forecast as fc
 import actualites as actu
 
@@ -499,12 +498,12 @@ def synthetic_circularity_warning():
         "⚠️ Cible = ventes **synthétiques**, construites à partir des permis SIT@DEL et des "
         "transactions IGEDD. Une corrélation élevée est ici **mécanique** (l'indicateur "
         "explique une série dérivée de lui-même), pas une preuve de pouvoir prédictif. "
-        "Importez vos ventes réelles (onglet « ⚙️ Données & Export », sous-onglet "
+        "Importez vos ventes réelles (onglet « ⚙️ Données & Sources ») "
         "« Sources & Imports ») pour une analyse valide.",
         "⚠️ Target = **synthetic** sales, built FROM SIT@DEL permits and IGEDD transactions. "
         "A high correlation here is **mechanical** (the indicator explains a series derived "
         "from itself), not evidence of predictive power. Import your real company sales "
-        "(『⚙️ Data & Export』 tab, 『Sources & Imports』 sub-tab) for a valid analysis."))
+        "(『⚙️ Data & Sources』 tab) for a valid analysis."))
 
 # Published BPCE L'Observatoire targets for 2026 (RDV Immobilier press conference,
 # 2 June 2026) — external validation benchmark for our own model. Defined here (above the
@@ -517,32 +516,26 @@ BPCE_PRICE_YOY_Q4_2026 = -0.1      # existing-home price, YoY at Q4 2026 (%)
 # --- Define Streamlit Tabs ---
 # First level follows the reading funnel: where does the market stand (new-build,
 # existing homes) → why (macro environment, policy) → where is it going (forecast) →
-# toolbox (workshops, data & export). Each market tab owns its whole segment: the
+# on what data (sources & imports). Each market tab owns its whole segment: the
 # new-build tab covers SIT@DEL permits/starts AND ECLN commercialisation; the
 # existing-home tab covers IGEDD transactions AND Notaires-INSEE prices/affordability.
+#
+# There is deliberately NO separate "workshop" tab. The lag exploration that used to
+# live there is now folded INTO the forecast tab, next to the model whose lags it
+# explains (see the two sections at the end of `with tab_forecast:`): a free-floating
+# lag sandbox next to an auto-calibrated model gave two different answers to the same
+# question. What survived is the part the model does NOT cover — SIT@DEL permits as an
+# upstream driver of company sales.
 (tab_synthese, tab_neuf, tab_ancien, tab_macro, tab_actus, tab_forecast,
- tab_atelier, tab_donnees) = st.tabs([
+ tab_donnees) = st.tabs([
     _L("🧭 Synthèse", "🧭 Overview"),
     T[lang_code]["tab_neuf"],
     T[lang_code]["tab_ancien"],
     T[lang_code]["tab_macro"],
     _L("📰 Actualités & Aides", "📰 News & Policy"),
     T[lang_code]["tab_forecast"],
-    T[lang_code]["tab_atelier"],
     T[lang_code]["tab_donnees"]
 ])
-
-# Nested sub-tabs: the two exploratory workshops share one first-level tab, and the
-# data/export plumbing shares another. The `with tab_timelag:` / `with tab_composite:` /
-# `with tab_source:` / `with tab_export:` blocks further down render into these containers.
-with tab_atelier:
-    st.caption(T[lang_code]["atelier_caption"])
-    tab_timelag, tab_composite = st.tabs(
-        [T[lang_code]["subtab_timelag"], T[lang_code]["subtab_composite"]])
-with tab_donnees:
-    st.caption(T[lang_code]["donnees_caption"])
-    tab_source, tab_export = st.tabs(
-        [T[lang_code]["subtab_source"], T[lang_code]["subtab_export"]])
 
 # ==============================================================================
 # TAB 0: SYNTHÈSE (landing page — traffic-light read of the market + auto commentary)
@@ -2312,6 +2305,88 @@ with tab_forecast:
             "the 2025-26 rebound — without having seen them. That is the proof the leading indicators genuinely "
             "'forecast'. Sources: IGEDD (sales), INSEE + BdF/ECB (indicators)."))
 
+        # ---- 2 ter. Why THESE lags: move one, watch R² fall ----------------------
+        # Folded in from the former "Atelier / Time-Lag" tab. That workshop hunted a lag by
+        # maximising Pearson r on SMOOTHED LEVELS — a second, weaker answer to a question
+        # this model already answers by grid-searching R² on the train window only
+        # (fc.search_tx_lags). Two methods meant two numbers and no way to arbitrate, so the
+        # exploration survives but is now scored with the MODEL's own criterion: refit at the
+        # lag you pick and compare. Moving a lag away from the retained one must LOWER R² —
+        # that is what makes the grid-search result auditable instead of asserted.
+        with st.expander(_L("🔬 Vérifier les décalages retenus (en déplacer un, voir le R² bouger)",
+                            "🔬 Inspect the retained lags (move one, watch R² move)")):
+            _lag_specs = {
+                _L("Taux de crédit", "Credit rate"):
+                    ("kr", "Credit_Logement_Taux_Interet", 0, 12, _L("Taux (%)", "Rate (%)")),
+                _L("Intentions d'achat", "Purchase intentions"):
+                    ("ki", "Intentions_Achat_Logement", 0, 18, _L("Solde d'opinion", "Opinion balance")),
+                _L("Taux de chômage", "Unemployment rate"):
+                    ("kc", "Taux_Chomage_BIT", 0, 12, _L("Chômage (%)", "Unemployment (%)")),
+            }
+            _pc1, _pc2 = st.columns([1, 2])
+            with _pc1:
+                _pick = st.selectbox(_L("Prédicteur à inspecter", "Predictor to inspect"),
+                                     list(_lag_specs.keys()), key="fc_lag_probe")
+                _pk, _pcol, _plo, _phi, _payl = _lag_specs[_pick]
+                _kman = st.slider(_L("Décalage appliqué (mois)", "Applied lag (months)"),
+                                  _plo, _phi, int(_lags[_pk]), 1, key="fc_lag_probe_val",
+                                  help=_L("Le curseur part sur le décalage retenu par la recherche "
+                                          "en grille. Déplacez-le pour réestimer le modèle.",
+                                          "The slider starts on the lag picked by the grid search. "
+                                          "Move it to refit the model."))
+                _trial = dict(_lags); _trial[_pk] = int(_kman)
+                _tm_try = fc.fit_tx_model(df_macro_full, _tx12, split=_FORECAST_SPLIT, **_trial)
+                _d_r2 = _tm_try["r2"] - _tm["r2"]
+                st.metric(_L("R² au décalage choisi", "R² at the chosen lag"),
+                          f"{_tm_try['r2']:.3f}".replace(".", ",") if lang_code == "FR"
+                          else f"{_tm_try['r2']:.3f}",
+                          (f"{_d_r2:+.3f}".replace(".", ",") if lang_code == "FR"
+                           else f"{_d_r2:+.3f}") + _L(" vs retenu", " vs retained"))
+                if int(_kman) == int(_lags[_pk]):
+                    st.caption(_L(f"Décalage retenu par le modèle : {_lags[_pk]} mois.",
+                                  f"Lag retained by the model: {_lags[_pk]} months."))
+                elif _d_r2 > 0:
+                    st.warning(_L(
+                        f"Ce décalage fait MIEUX que celui retenu ({_lags[_pk]} mois) sur "
+                        f"l'échantillon complet — normal : la grille cherche sur la fenêtre "
+                        f"d'entraînement seule (≤ {_FORECAST_SPLIT[:4]}) pour ne pas contaminer "
+                        f"le backtest. Un gain ici n'est donc pas une erreur du modèle.",
+                        f"This lag beats the retained one ({_lags[_pk]} months) on the full sample — "
+                        f"expected: the grid searches the TRAIN window only (≤ {_FORECAST_SPLIT[:4]}) "
+                        f"so as not to contaminate the backtest. A gain here is not a model error."))
+                else:
+                    st.caption(_L(
+                        f"Dégradation de {abs(_d_r2):.3f} de R² par rapport au décalage retenu "
+                        f"({_lags[_pk]} mois) : la grille avait raison.".replace(".", ",", 1),
+                        f"R² drops by {abs(_d_r2):.3f} versus the retained lag ({_lags[_pk]} months): "
+                        f"the grid search was right."))
+            with _pc2:
+                _ps = df_macro_full[["Date", _pcol]].dropna().copy()
+                _ps["Date"] = pd.to_datetime(_ps["Date"])
+                _ps_sh = sim.shift_indicator(_ps, "Date", _pcol, int(_kman))
+                _shcol = f"{_pcol}_shifted_{int(_kman)}"
+                fig_probe = make_subplots(specs=[[{"secondary_y": True}]])
+                fig_probe.add_trace(go.Scatter(
+                    x=_tm["frame"]["Date"], y=_tm["frame"]["obs"],
+                    name=_L("Transactions (cumul 12 m)", "Transactions (12-month sum)"),
+                    line=dict(color=COLOR_TEXT, width=2.5)), secondary_y=False)
+                fig_probe.add_trace(go.Scatter(
+                    x=_ps_sh["Date"], y=_ps_sh[_shcol],
+                    name=f"{_pick} " + _L(f"décalé +{int(_kman)} m", f"lagged +{int(_kman)}mo"),
+                    line=dict(color=COLOR_BRICK, width=2, dash="dot")), secondary_y=True)
+                apply_macro_chart_layout(fig_probe, _L("Ventes sur 12 mois", "12-month sales"))
+                fig_probe.update_yaxes(title_text=_payl, secondary_y=True)
+                st.plotly_chart(fig_probe, use_container_width=True)
+            st.caption(_L(
+                "Lecture : le prédicteur est décalé vers l'avant du nombre de mois choisi, de sorte "
+                "qu'il se superpose aux transactions qu'il est censé annoncer. Le R² affiché est celui "
+                "du modèle complet réestimé avec ce seul décalage modifié — les deux autres restent à "
+                "leur valeur retenue. Sources : IGEDD (ventes) ; INSEE, Banque de France/BCE.",
+                "Reading: the predictor is shifted forward by the chosen number of months so it overlays "
+                "the transactions it is meant to lead. The R² shown is the full model refitted with this "
+                "single lag changed — the other two stay at their retained values. Sources: IGEDD (sales); "
+                "INSEE, Banque de France/ECB."))
+
         # ---- 2bis. Forward projection to horizon --------------------------------
         # Because the predictors enter with estimated lags, their ALREADY-OBSERVED values
         # pin down transactions for the coming months with no assumption on where macro
@@ -2374,18 +2449,11 @@ with tab_forecast:
                 "Jusqu'au repère, la projection n'utilise que des valeurs d'indicateurs déjà publiées "
                 "(décalées de leurs délais estimés) — sans hypothèse. Au-delà, chaque indicateur manquant "
                 "est maintenu à sa dernière valeur connue (report). Bande = ±1,28·RMSE (hors échantillon "
-                "si disponible). Sources : IGEDD (ventes) ; INSEE, Banque de France/BCE (indicateurs). "
-                "Exportable vers SAP IBP (onglet « ⚙️ Données & Export »).",
+                "si disponible). Sources : IGEDD (ventes) ; INSEE, Banque de France/BCE (indicateurs).",
                 "Up to the marker, the projection uses only already-published indicator values (shifted "
                 "by their estimated lags) — assumption-free. Beyond it, each missing indicator is held at "
                 "its last known value (carry-forward). Band = ±1.28·RMSE (out-of-sample when available). "
-                "Sources: IGEDD (sales); INSEE, Banque de France/ECB (indicators). "
-                "Exportable to SAP IBP ('⚙️ Data & Export' tab)."))
-            # Persist for the SAP IBP export tab (a real, dated forecast — not synthetic).
-            _fc_export = _fpath.rename(columns={"pred": "Transactions_Prevues"})[["Date", "Transactions_Prevues"]]
-            st.session_state["forecast_export_df"] = _fc_export
-            st.session_state["forecast_export_col"] = "Transactions_Prevues"
-            st.session_state["forecast_export_name"] = "KF_PREVISION_TRANSACTIONS_12M"
+                "Sources: IGEDD (sales); INSEE, Banque de France/ECB (indicators)."))
 
         # ---- BPCE 2026 published targets (external validation benchmark) ----------
         st.markdown("**" + _L("📌 Repère : prévisions publiées BPCE L'Observatoire 2026",
@@ -2556,7 +2624,7 @@ with tab_forecast:
 
                 # Monthly sales FORECAST: drive the imported series with the transactions
                 # projection path (_fpath) through the estimated elasticity — the actual
-                # demand-planning deliverable, exportable to SAP IBP.
+                # demand-planning deliverable.
                 _spath = fc.propagate_to_series(
                     _sf, _tx12, _fpath if (_fpath is not None) else None,
                     _df_serie_f, "Sales", sigma_tx=_sigma)
@@ -2580,18 +2648,10 @@ with tab_forecast:
                     st.caption(_L(
                         f"Prévision de vos ventes « {_serie_f} » jusqu'à {_sf_end:%Y-%m} "
                         f"({len(_spath)} mois), obtenue en propageant la trajectoire de transactions "
-                        f"projetée à travers l'élasticité estimée (décalage {_sf['lag_m']} mois). "
-                        f"Exportable vers SAP IBP (onglet « ⚙️ Données & Export », source « Prévision ventes société »).",
+                        f"projetée à travers l'élasticité estimée (décalage {_sf['lag_m']} mois).",
                         f"Forecast of your '{_serie_f}' sales through {_sf_end:%Y-%m} ({len(_spath)} "
                         f"months), by propagating the projected transactions path through the estimated "
-                        f"elasticity ({_sf['lag_m']}-month lag). Exportable to SAP IBP ('⚙️ Data & Export' "
-                        f"tab, 'Company-sales forecast' source)."))
-                    # Persist for the SAP export tab (a real, dated forecast — not synthetic).
-                    _sfc_export = _spath.rename(columns={"pred": "Ventes_Prevues"})[["Date", "Ventes_Prevues"]]
-                    st.session_state["forecast_sales_export_df"] = _sfc_export
-                    st.session_state["forecast_sales_export_col"] = "Ventes_Prevues"
-                    st.session_state["forecast_sales_export_name"] = \
-                        f"KF_PREVISION_VENTES_{str(_serie_f).replace(' ', '_').upper()}"
+                        f"elasticity ({_sf['lag_m']}-month lag)."))
 
                 # Renovation as a THIRD driver: when a renovation series is available, fit a
                 # two-factor model (sales ~ transactions + renovation) and compare its R² to
@@ -2624,753 +2684,130 @@ with tab_forecast:
 
 
 # ==============================================================================
-# TAB 5a: ATELIER — SIMULATION TIME LAG (sous-onglet de « Atelier exploratoire »)
+# TAB 4 (suite): PERMIS -> VENTES SOCIETE — le seul driver amont que le modele
+# n'utilise pas. Ce bloc est le rescape de l'ex-onglet « Atelier exploratoire » :
+# tout le reste de cet atelier (recherche de decalage par r de Pearson, branche
+# macro, benchmark sur ventes synthetiques, indicateur composite pondere a la main)
+# a ete retire comme redondant ou non verifiable — voir le commentaire au-dessus de
+# `st.tabs`. Ce second bloc `with tab_forecast:` s'affiche a la suite des scenarios.
 # ==============================================================================
-with tab_timelag:
-    st.header(T[lang_code]["timelag_header"])
-    st.info(_L(
-        "🔬 **Atelier exploratoire.** Testez à la main le décalage d'un indicateur unique "
-        "et sa corrélation aux ventes. Le modèle chiffré et backtesté de référence (calibré "
-        "automatiquement) se trouve dans l'onglet **📡 Prévision & Scénarios** ; cet atelier "
-        "sert à comprendre et calibrer les décalages qui l'alimentent.",
-        "🔬 **Exploratory workshop.** Manually test a single indicator's lag and its "
-        "correlation with sales. The reference, backtested quantified model (auto-calibrated) "
-        "lives in the **📡 Forecast & Scenarios** tab; this workshop helps understand and "
-        "calibrate the lags that feed it."))
-    st.write(T[lang_code]["timelag_desc"])
-
-    col_sim1, col_sim2 = st.columns([1, 2])
-    
-    with col_sim1:
-        st.markdown(T[lang_code]["sim_params"])
-        
-        # 1. Choose indicator to lag
-        indicator_category = st.selectbox(
-            T[lang_code]["src_indicator"],
-            ["Construction (SIT@DEL)", "Transactions (ventes anciennes)", "Indicateur Macro"] if lang_code == "FR" else ["Construction (SIT@DEL)", "Transactions (ventes anciennes)", "Macro Indicator"]
-        )
-        
-        internal_category = "Construction (SIT@DEL)"
-        if indicator_category in ["Transactions (ventes anciennes)"]:
-            internal_category = "Transactions (ventes anciennes)"
-        elif indicator_category in ["Indicateur Macro", "Macro Indicator"]:
-            internal_category = "Indicateur Macro"
-            
-        if internal_category == "Construction (SIT@DEL)":
-            ind_sub_type = st.selectbox(T[lang_code]["housing_type"], df_sitadel["Type"].unique().tolist())
-            ind_metric = st.selectbox(T[lang_code]["metric_sitadel"], ["Permis", "MisesEnChantier"] if lang_code == "FR" else ["Permis", "MisesEnChantier"])
-            
-            raw_ind_df = q.monthly(con, "sitadel", [ind_metric], windows=(),
-                                   types=[ind_sub_type], years=year_range)
-            raw_ind_df = raw_ind_df.rename(columns={ind_metric: "Val"})
-            ind_label = f"{ind_metric} - {ind_sub_type}"
-            
-        elif internal_category == "Transactions (ventes anciennes)":
-            # Single national IGEDD "ventes anciennes" series — no sub-type choice.
-            raw_ind_df = q.monthly(con, "ventes_ancien", ["Transactions"], windows=(),
-                                   years=year_range)
-            raw_ind_df = raw_ind_df.rename(columns={"Transactions": "Val"})
-            ind_label = "Ventes anciennes (IGEDD)"
-            
-        else: # Macro
-            # Friendly label -> df_macro column. Only columns actually present are
-            # offered (Euribor/OAT are optional and may be absent from an uploaded CSV).
-            _macro_options = {
-                T[lang_code]["insee_trace"]: "Insee_Confiance_Menages",
-                T[lang_code]["credit_trace"]: "Credit_Logement_Taux_Interet",
-                T[lang_code]["euribor_trace"]: "Euribor_3M",
-                T[lang_code]["oat_trace"]: "OAT_10ans",
-            }
-            _macro_options = {lbl: col for lbl, col in _macro_options.items() if col in df_macro.columns}
-            _macro_choice = st.selectbox(T[lang_code]["indicator_label"], list(_macro_options.keys()))
-            ind_metric = _macro_options[_macro_choice]
-
-            # Drop months the source doesn't cover (e.g. rate before 2003) so NaN don't
-            # pollute the rolling sum / correlation downstream.
-            raw_ind_df = df_macro[["Date", ind_metric]].dropna(subset=[ind_metric]).copy()
-            raw_ind_df = raw_ind_df.rename(columns={ind_metric: "Val"})
-            ind_label = _macro_choice
-            
-        # Smooth indicator with 12M rolling.
-        # Reste délibérément en pandas : c'est un lissage d'AFFICHAGE appliqué en aval, à
-        # la série déjà agrégée, quelle que soit sa provenance (SIT@DEL, transactions ou
-        # macro — trois branches distinctes ci-dessus). Le passer en SQL obligerait à
-        # pousser toute la sélection d'indicateur dans la requête, sans gain numérique.
-        # Noter aussi le min_periods=1 (la fenêtre démarre incomplète), sémantique propre
-        # à ce lissage et différente des cumuls glissants de queries.py.
-        smooth_ind = st.checkbox(T[lang_code]["smooth_ind"], value=True)
-        if smooth_ind:
-            raw_ind_df["Val_Raw"] = raw_ind_df["Val"]
-            raw_ind_df["Val"] = raw_ind_df["Val_Raw"].rolling(window=12, min_periods=1).sum()
-            ind_label += " (12M)" if lang_code == "EN" else " (Cumul 12M)"
-            
-        # 2. Time Lag Slider
-        time_lag = st.slider(
-            T[lang_code]["time_lag_label"],
-            min_value=-24,
-            max_value=24,
-            value=14,
-            help=T[lang_code]["time_lag_help"]
-        )
-        
-        # 3. Choose the sales benchmark to compare against.
-        #    Two families: the synthetic second-œuvre units, or a REAL company revenue
-        #    series (quarterly, in M€) when ca-*.csv files are available. The real series
-        #    is national and quarterly, so the indicator is compared on a quarterly grid.
-        # Prefer the REAL imported company sales as the default target when available: the
-        # synthetic units are derived from the same permits/transactions, so benchmarking
-        # against them is circular. Real imported sales are listed first (default radio).
-        _has_revenue = (df_revenue is not None) and (not df_revenue.empty)
-        _has_company = (df_company_sales is not None) and (not df_company_sales.empty)
-        _bench_company_lbl = _L("Ventes société importées (mensuel)",
-                                "Imported company sales (monthly)")
-        _bench_src_opts = []
-        if _has_company:
-            _bench_src_opts.append(_bench_company_lbl)
-        if _has_revenue:
-            _bench_src_opts.append(T[lang_code]["bench_src_revenue"])
-        _bench_src_opts.append(T[lang_code]["bench_src_synth"])  # synthetic last (fallback)
-        benchmark_src = st.radio(
-            T[lang_code]["bench_src_label"], _bench_src_opts,
-            help=T[lang_code]["bench_src_help"] if _has_revenue else None,
-        )
-        benchmark_is_revenue = (benchmark_src == T[lang_code]["bench_src_revenue"])
-        benchmark_is_company = (benchmark_src == _bench_company_lbl)
-
-        # Macro rates/levels are averaged per quarter; flows (permits, transactions,
-        # units) are summed.
-        ind_quarterly_agg = "mean" if internal_category == "Indicateur Macro" else "sum"
-
-        if benchmark_is_company:
-            # User-imported MONTHLY company sales — compared on the monthly grid like the
-            # synthetic sales (finer lag resolution than the quarterly revenue benchmark).
-            # Multi-series: pick which imported product family to benchmark.
-            _co = str(df_company_sales["Company"].iloc[0])
-            _serie, agg_sales = pick_company_series(df_company_sales, key="tl_serie", years=year_range)
-            sales_value_col = "Sales"
-            sales_trace_label = _L(f"Ventes {_co} — {_serie}", f"{_co} sales — {_serie}")
-            sales_axis_title = _L("Ventes (mensuel, importées)", "Sales (monthly, imported)")
-        elif benchmark_is_revenue:
-            company = st.selectbox(
-                T[lang_code]["bench_company"],
-                sorted(df_revenue["Company"].unique().tolist())
-            )
-            agg_sales = q.monthly(con, "revenue", ["CA_MEUR"], windows=(),
-                                  types=[company], category_col="Company", years=year_range)
-            sales_value_col = "CA_MEUR"
-            sales_trace_label = f"CA {company} (M€)"
-            sales_axis_title = "Chiffre d'affaires (M€)"
-        else:
-            selected_product = st.selectbox(
-                T[lang_code]["sales_compare"],
-                df_sales["Product"].unique().tolist()
-            )
-            agg_sales = q.monthly(con, "sales", ["Sales_Units"], windows=(),
-                                  types=[selected_product], category_col="Product",
-                                  years=year_range)
-            sales_value_col = "Sales_Units"
-            sales_trace_label = f"Sales - {selected_product}"
-            sales_axis_title = T[lang_code]["scale_sales"]
-            synthetic_circularity_warning()
-
-        st.markdown("---")
-        # 4. Auto-correlation analysis trigger
-        st.subheader(T[lang_code]["optimal_lag_search"])
-        st.write(T[lang_code]["optimal_lag_desc"])
-        
-        if st.button(T[lang_code]["btn_calc_optimal"], key="btn_corr"):
-            with st.spinner("Analyse..." if lang_code == "FR" else "Analyzing..."):
-                if benchmark_is_revenue:
-                    # Real revenue is quarterly: compare on a quarterly grid. Use the
-                    # UN-smoothed monthly indicator (Val_Raw when the 12M rolling is on)
-                    # so the quarterly aggregation isn't stacked on top of a rolling sum.
-                    _mcol = "Val_Raw" if "Val_Raw" in raw_ind_df.columns else "Val"
-                    ind_monthly = raw_ind_df[["Date", _mcol]].rename(columns={_mcol: "Val"})
-                    res_q = sim.find_optimal_lag_quarterly(
-                        ind_monthly, agg_sales, "Val", sales_value_col,
-                        ind_agg=ind_quarterly_agg
-                    )
-                    corr_res = {
-                        "lags": res_q["lags_months"],
-                        "correlations": res_q["correlations"],
-                        "correlations_yoy": res_q["correlations_yoy"],
-                        "n_points": res_q["n_points"],
-                        "optimal_lag": res_q["optimal_lag_months"],
-                        "max_correlation": res_q["max_correlation"],
-                        "max_correlation_yoy": res_q["max_correlation_yoy"],
-                        "n_at_optimal": res_q["n_at_optimal"],
-                    }
-                else:
-                    # Monthly benchmark (synthetic units OR imported company sales).
-                    corr_res = sim.find_optimal_lag(raw_ind_df, agg_sales, "Val", sales_value_col)
-
-                st.session_state["corr_results"] = corr_res
-                st.session_state["optimal_lag"] = corr_res["optimal_lag"]
-                st.session_state["max_correlation"] = corr_res["max_correlation"]
-                
-        # Display optimal correlation result if computed
-        if "corr_results" in st.session_state:
-            opt_lag = st.session_state["optimal_lag"]
-            max_r = st.session_state["max_correlation"]
-            _cres = st.session_state["corr_results"]
-            st.success(f"**{T[lang_code]['optimal_found']} : {opt_lag} {'mois' if lang_code == 'FR' else 'months'}**")
-            _rc1, _rc2 = st.columns(2)
-            _rc1.metric(T[lang_code]["max_corr"], f"r = {max_r}")
-            # Honest companion metric: correlation on YEAR-ON-YEAR changes, which strips the
-            # shared trend that inflates the level correlation of two smoothed rising series.
-            if "max_correlation_yoy" in _cres:
-                _rc2.metric(_L("r sur variations annuelles", "r on year-on-year changes"),
-                            f"r = {_cres['max_correlation_yoy']}")
-            _n_opt = _cres.get("n_at_optimal")
-            if _n_opt is not None:
-                st.caption(_L(
-                    f"{_n_opt} mois de recouvrement à ce décalage. La corrélation sur niveaux "
-                    f"({max_r}) capte en partie la tendance commune ; celle sur variations annuelles "
-                    f"({_cres.get('max_correlation_yoy', '—')}) est un test plus sévère du lien réel.",
-                    f"{_n_opt} overlapping months at this lag. The level correlation ({max_r}) partly "
-                    f"reflects the shared trend; the year-on-year one "
-                    f"({_cres.get('max_correlation_yoy', '—')}) is a stricter test of a genuine link."))
-            if smooth_ind:
-                st.warning(_L(
-                    "⚠️ Indicateur lissé (cumul 12M) : les séries lissées sont fortement "
-                    "auto-corrélées, ce qui gonfle mécaniquement la corrélation sur niveaux. "
-                    "Fiez-vous surtout au r sur variations annuelles.",
-                    "⚠️ Smoothed indicator (12M rolling): smoothed series are strongly "
-                    "autocorrelated, which mechanically inflates the level correlation. Rely "
-                    "mostly on the year-on-year r."))
-
-            # Option to apply the optimal lag
-            if st.button(T[lang_code]["btn_apply_lag"].format(lag=opt_lag)):
-                time_lag = opt_lag
-                
-    with col_sim2:
-        st.markdown(f"### {T[lang_code]['comp_view']}")
-        
-        # Create shifted indicator
-        shifted_ind_df = sim.shift_indicator(raw_ind_df, "Date", "Val", time_lag)
-        col_shifted_val = f"Val_shifted_{time_lag}"
-        
-        fig_sim = make_subplots(specs=[[{"secondary_y": True}]])
-        
-        # Trace 1: Original Indicator (Historical)
-        fig_sim.add_trace(
-            go.Scatter(
-                x=raw_ind_df["Date"], 
-                y=raw_ind_df["Val"], 
-                name=f"{ind_label} (Original)",
-                line=dict(color=COLOR_GRID, width=2)
-            ),
-            secondary_y=False
-        )
-        
-        # Trace 2: Shifted Indicator (Leading Indicator)
-        fig_sim.add_trace(
-            go.Scatter(
-                x=shifted_ind_df["Date"], 
-                y=shifted_ind_df[col_shifted_val], 
-                name=f"{ind_label} (Shifted +{time_lag}m)",
-                line=dict(color=COLOR_BRICK, width=3)
-            ),
-            secondary_y=False
-        )
-        
-        # Trace 3: Sales / real revenue benchmark (Actual). Quarterly revenue is drawn
-        # with markers so the quarterly cadence is visible against the monthly indicator.
-        fig_sim.add_trace(
-            go.Scatter(
-                x=agg_sales["Date"],
-                y=agg_sales[sales_value_col],
-                name=sales_trace_label,
-                line=dict(color=COLOR_TEXT, width=3),
-                mode="lines+markers" if benchmark_is_revenue else "lines"
-            ),
-            secondary_y=True
-        )
-        
-        fig_sim.update_layout(
-            title=T[lang_code]["alignment_title"].format(ind=ind_label, lag=time_lag,
-                                                         bench=sales_trace_label),
-            xaxis_title="Date" if lang_code == "EN" else "Temps",
-            template="plotly_white",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        
-        fig_sim.update_yaxes(title_text=T[lang_code]["scale_ind"], secondary_y=False)
-        fig_sim.update_yaxes(title_text=sales_axis_title, secondary_y=True)
-        
-        # Highlight Future Forecasting Zone
-        max_sales_date = agg_sales["Date"].max()
-        fig_sim.add_vrect(
-            x0=max_sales_date, x1=shifted_ind_df["Date"].max(),
-            fillcolor=COLOR_BRICK_ZONE, opacity=0.5,
-            layer="below", line_width=0,
-            annotation_text=T[lang_code]["zone_prev"], annotation_position="top left"
-        )
-        
-        st.plotly_chart(fig_sim, use_container_width=True)
-        # Benchmark: real company revenue (public), imported user sales, or synthetic sales.
-        if benchmark_is_revenue:
-            st.caption(T[lang_code]["revenue_note"])
-        elif benchmark_is_company:
-            st.caption(_L("✅ Ventes réelles importées (données utilisateur, mensuel).",
-                          "✅ Imported real sales (user data, monthly)."))
-        else:
-            st.caption(T[lang_code]["synthetic_note"])
-        # Source of the SHIFTED indicator itself (the benchmark note above covers the target).
-        if internal_category == "Construction (SIT@DEL)":
-            _ind_src = "SDES — SIT@DEL"
-        elif internal_category == "Transactions (ventes anciennes)":
-            _ind_src = "IGEDD"
-        else:
-            _ind_src = {"Insee_Confiance_Menages": _L("INSEE (confiance des ménages)",
-                                                      "INSEE (household confidence)"),
-                        "Credit_Logement_Taux_Interet": _L("Banque de France / BCE (taux crédit habitat, MIR)",
-                                                           "Banque de France / ECB (housing-loan rate, MIR)"),
-                        "Euribor_3M": _L("BCE (Euribor 3 mois)", "ECB (3-month Euribor)"),
-                        "OAT_10ans": _L("BCE / Banque de France (OAT 10 ans)",
-                                        "ECB / Banque de France (10-year OAT)")}.get(ind_metric, "INSEE / BCE")
-        st.caption(f"{T[lang_code]['source_label']} ({_L('indicateur', 'indicator')}) : {_ind_src}")
-
-        # Save shifted data in session state for export later
-        st.session_state["shifted_export_df"] = shifted_ind_df
-        st.session_state["shifted_export_col"] = col_shifted_val
-        st.session_state["shifted_export_name"] = f"KF_SITADEL_{ind_label.replace(' ', '_').upper()}_LAG{time_lag}"
-        # All three indicator sources are now real: SIT@DEL construction (manual CSV),
-        # IGEDD existing-home transactions, and macro (INSEE confidence + Banque de France rate).
-        # The exported shifted indicator is therefore never synthetic.
-        st.session_state["shifted_export_synthetic"] = False
-        
-        # Correlation distribution bar chart if computed
-        if "corr_results" in st.session_state:
-            st.markdown(f"### {T[lang_code]['corr_dist_title']}")
-            results = st.session_state["corr_results"]
-            
-            fig_bar = go.Figure()
-            colors = [COLOR_GRID] * len(results["lags"])
-            opt_idx = results["lags"].index(results["optimal_lag"])
-            colors[opt_idx] = COLOR_BRICK
-            
-            fig_bar.add_trace(
-                go.Bar(
-                    x=results["lags"],
-                    y=results["correlations"],
-                    marker_color=colors,
-                    name=_L("Corrélation (niveaux)", "Correlation (levels)")
-                )
-            )
-            # Overlay the stricter year-on-year correlation curve, when available.
-            if "correlations_yoy" in results:
-                fig_bar.add_trace(go.Scatter(
-                    x=results["lags"], y=results["correlations_yoy"],
-                    mode="lines+markers", name=_L("Variations annuelles", "Year-on-year"),
-                    line=dict(color=COLOR_TEXT, width=2)))
-                fig_bar.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-            fig_bar.update_layout(
-                xaxis_title="Lags (months)" if lang_code == "EN" else "Décalage (Lags en mois)",
-                yaxis_title="Pearson Correlation (r)" if lang_code == "EN" else "Coefficient de corrélation de Pearson (r)",
-                template="plotly_white",
-                title=T[lang_code]["best_align_title"].format(lag=results["optimal_lag"], r=results["max_correlation"])
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
-            if benchmark_is_revenue:
-                st.caption(T[lang_code]["revenue_note"])
-            elif benchmark_is_company:
-                st.caption(_L("✅ Ventes réelles importées (données utilisateur, mensuel).",
-                              "✅ Imported real sales (user data, monthly)."))
-            else:
-                st.caption(T[lang_code]["synthetic_note"])
-
-
-# ==============================================================================
-# TAB 5b: ATELIER — MODÈLE COMPOSITE (sous-onglet de « Atelier exploratoire »)
-# ==============================================================================
-with tab_composite:
-    st.header(T[lang_code]["composite_header"])
-    st.info(_L(
-        "🔬 **Atelier exploratoire.** Combinez plusieurs indicateurs pondérés/décalés pour "
-        "façonner un signal composite à la main. Pour une prévision chiffrée, backtestée et "
-        "calibrée automatiquement, voir l'onglet **📡 Prévision & Scénarios**.",
-        "🔬 **Exploratory workshop.** Combine several weighted/lagged indicators to shape a "
-        "composite signal by hand. For a quantified, backtested, auto-calibrated forecast, "
-        "see the **📡 Forecast & Scenarios** tab."))
-    st.write(T[lang_code]["composite_desc"])
-
-    st.markdown(f"#### {T[lang_code]['composite_config']}")
-    
-    comp_cols = st.columns(3)
-    
-    with comp_cols[0]:
-        st.subheader(T[lang_code]["comp1_title"])
-        comp1_type = st.selectbox("1. Type", df_sitadel["Type"].unique().tolist(), index=0)
-        comp1_metric = st.selectbox("1. Metric", ["Permis", "MisesEnChantier"], index=0)
-        comp1_lag = st.number_input(T[lang_code]["comp_lag"], min_value=0, max_value=24, value=12, key="c1_lag")
-        comp1_weight = st.slider(T[lang_code]["comp_weight"], 0.0, 1.0, 0.6, key="c1_w")
-        
-        df_c1 = q.monthly(con, "sitadel", [comp1_metric], windows=(), types=[comp1_type],
-                          years=year_range)
-        
-    with comp_cols[1]:
-        st.subheader(T[lang_code]["comp2_title"])
-        comp2_metric = "Insee_Confiance_Menages"
-        st.info("INSEE Consumer Confidence" if lang_code == "EN" else "Moral des ménages (Confiance)")
-        comp2_lag = st.number_input(T[lang_code]["comp_lag"], min_value=0, max_value=24, value=4, key="c2_lag")
-        comp2_weight = st.slider(T[lang_code]["comp_weight"], 0.0, 1.0, 0.2, key="c2_w")
-        
-        df_c2 = df_macro[["Date", comp2_metric]].copy()
-        
-    with comp_cols[2]:
-        st.subheader(T[lang_code]["comp3_title"])
-        comp3_metric = "Credit_Logement_Taux_Interet"
-        st.info("Housing Loan Nominal Interest Rates" if lang_code == "EN" else "Taux d'intérêt moyen du crédit")
-        comp3_lag = st.number_input(T[lang_code]["comp_lag"], min_value=0, max_value=24, value=6, key="c3_lag")
-        comp3_weight = st.slider(T[lang_code]["comp_weight"], 0.0, 1.0, 0.2, key="c3_w")
-        comp3_invert = st.checkbox(T[lang_code]["comp_invert"], value=True, help=T[lang_code]["comp_invert_help"])
-        
-        df_c3 = df_macro[["Date", comp3_metric]].copy()
-        
-    components = [
-        {
-            'df': df_c1,
-            'value_col': comp1_metric,
-            'lag': comp1_lag,
-            'weight': comp1_weight,
-            'invert': False
-        },
-        {
-            'df': df_c2,
-            'value_col': comp2_metric,
-            'lag': comp2_lag,
-            'weight': comp2_weight,
-            'invert': False
-        },
-        {
-            'df': df_c3,
-            'value_col': comp3_metric,
-            'lag': comp3_lag,
-            'weight': comp3_weight,
-            'invert': comp3_invert
-        }
-    ]
-    
-    df_composite = sim.create_composite_indicator(components)
-
-    # Benchmark target: the user-imported real company sales (default when available) or,
-    # as a fallback, the synthetic product sales. Real listed first so it is the default.
-    _has_company_comp = (df_company_sales is not None) and (not df_company_sales.empty)
-    _comp_use_company = False
-    if _has_company_comp:
-        _comp_company_lbl = _L("Ventes société importées (réelles)", "Imported company sales (real)")
-        _comp_bench_src = st.radio(
-            _L("Cible du modèle (benchmark)", "Model target (benchmark)"),
-            [_comp_company_lbl, _L("Ventes synthétiques", "Synthetic sales")],
-            horizontal=True, key="comp_bench_src")
-        _comp_use_company = (_comp_bench_src == _comp_company_lbl)
-
-    if _comp_use_company:
-        _co_c = str(df_company_sales["Company"].iloc[0])
-        _serie_c, df_sales_bench = pick_company_series(df_company_sales, key="comp_serie", years=year_range)
-        bench_col = "Sales"
-        bench_label = _L(f"Ventes {_co_c} — {_serie_c}", f"{_co_c} sales — {_serie_c}")
-    else:
-        bench_product = st.selectbox(
-            T[lang_code]["bench_product"],
-            df_sales["Product"].unique().tolist(),
-            key="comp_bench_product"
-        )
-        df_sales_bench = q.monthly(con, "sales", ["Sales_Units"], windows=(),
-                                   types=[bench_product], category_col="Product",
-                                   years=year_range)
-        bench_col = "Sales_Units"
-        bench_label = f"Sales - {bench_product}"
-        synthetic_circularity_warning()
-    
-    # --- AUTOMATED PARAMETER OPTIMIZATION ---
+with tab_forecast:
     st.markdown("---")
-    st.subheader("🎯 Optimisation Automatique des Paramètres" if lang_code == "FR" else "🎯 Automated Parameter Optimization")
-    st.write(
-        "Lancer un algorithme de recherche pour trouver la combinaison parfaite de coefficients (Poids et Lags) "
-        "qui maximise la corrélation linéaire de Pearson avec vos ventes." 
-        if lang_code == "FR" else 
-        "Run an algorithm to find the perfect combination of coefficients (Weights and Lags) "
-        "that maximizes Pearson correlation with your sales."
-    )
-    
-    if st.button("Trouver les meilleurs coefficients (Lag, Poids...)" if lang_code == "FR" else "Find Best Coefficients (Lag, Weight...)", key="btn_optimize_composite"):
-        with st.spinner("Recherche de la meilleure combinaison parmi 9504 configurations..." if lang_code == "FR" else "Searching best combination among 9504 configurations..."):
-            opt_res = sim.optimize_composite_parameters(
-                df_c1=df_c1, col_c1=comp1_metric,
-                df_c2=df_c2, col_c2=comp2_metric,
-                df_c3=df_c3, col_c3=comp3_metric,
-                df_sales=df_sales_bench, sales_col=bench_col,
-                invert_c3=comp3_invert
-            )
-            st.session_state["opt_composite_res"] = opt_res
-            
-    if "opt_composite_res" in st.session_state:
-        res = st.session_state["opt_composite_res"]
-        _test_r = res.get("test_correlation")
-        _test_txt = "—" if _test_r is None else f"{_test_r:.3f}"
-        st.success(
-            f"**Meilleure configuration trouvée !** r (train) = **{res['max_correlation']:.3f}** · "
-            f"r (test, hors échantillon) = **{_test_txt}**"
-            if lang_code == "FR" else
-            f"**Best configuration found!** r (train) = **{res['max_correlation']:.3f}** · "
-            f"r (test, out-of-sample) = **{_test_txt}**"
-        )
-        st.caption(_L(
-            "La configuration est choisie sur les ~70 % premiers mois (train) puis mesurée "
-            "sur les mois restants (test). Avec ~9 500 combinaisons testées, seul le **r hors "
-            "échantillon** est un indicateur honnête de pouvoir prédictif ; un r (train) élevé "
-            "mais un r (test) faible = sur-apprentissage.",
-            "The configuration is chosen on the first ~70% of months (train) then measured on "
-            "the rest (test). With ~9,500 combinations tried, only the **out-of-sample r** is an "
-            "honest read of predictive power; high train r but low test r = overfitting."))
+    st.markdown("#### " + _L("4. Permis de construire → vos ventes (driver amont hors modèle)",
+                             "4. Building permits → your sales (upstream driver outside the model)"))
+    st.write(_L(
+        "L'étage 2 du modèle explique les transactions par le taux, les intentions d'achat et "
+        "le chômage — SIT@DEL n'y figure pas. Or, pour une activité de second-œuvre, un permis "
+        "déposé aujourd'hui EST une commande dans quelques mois : un lien que le modèle ne peut "
+        "pas voir. Il est mesuré ici avec le MÊME estimateur que l'élasticité transactions→ventes "
+        "ci-dessus, donc les deux drivers sont directement comparables.",
+        "Stage 2 of the model explains transactions with the rate, purchase intentions and "
+        "unemployment — SIT@DEL is not in it. Yet for a second-œuvre business a permit filed today "
+        "IS an order a few months out: a link the model cannot see. It is measured here with the "
+        "SAME estimator as the transactions→sales elasticity above, so the two drivers are "
+        "directly comparable."))
 
-        c_opt1, c_opt2, c_opt3 = st.columns(3)
-        with c_opt1:
-            st.markdown(f"**SIT@DEL (Comp. 1) :**")
-            st.write(f"Lag : **{res['best_lags'][0]}** mois")
-            st.write(f"Poids / Weight : **{res['best_weights'][0]}**")
-        with c_opt2:
-            st.markdown(f"**INSEE (Comp. 2) :**")
-            st.write(f"Lag : **{res['best_lags'][1]}** mois")
-            st.write(f"Poids / Weight : **{res['best_weights'][1]}**")
-        with c_opt3:
-            st.markdown(f"**Taux / Rates (Comp. 3) :**")
-            st.write(f"Lag : **{res['best_lags'][2]}** mois")
-            st.write(f"Poids / Weight : **{res['best_weights'][2]}**")
-            
-        col_app1, col_app2 = st.columns([1, 2])
-        with col_app1:
-            if st.button("🚀 Appliquer ces coefficients" if lang_code == "FR" else "🚀 Apply these coefficients", key="btn_apply_opt_params"):
-                st.session_state["opt_c1_lag"] = int(res["best_lags"][0])
-                st.session_state["opt_c1_w"] = float(res["best_weights"][0])
-                st.session_state["opt_c2_lag"] = int(res["best_lags"][1])
-                st.session_state["opt_c2_w"] = float(res["best_weights"][1])
-                st.session_state["opt_c3_lag"] = int(res["best_lags"][2])
-                st.session_state["opt_c3_w"] = float(res["best_weights"][2])
-                st.session_state["opt_applied"] = True
-                st.rerun()
-        with col_app2:
-            st.info(
-                "💡 **Note :** Cliquez sur le bouton pour appliquer automatiquement ces coefficients aux curseurs ci-dessus."
-                if lang_code == "FR" else
-                "💡 **Note :** Click the button to automatically apply these coefficients to the sliders above."
-            )
-    
-    # Create master plot
-    fig_comp = make_subplots(specs=[[{"secondary_y": True}]])
-    
-    # 1. Composite Indicator
-    fig_comp.add_trace(
-        go.Scatter(
-            x=df_composite["Date"],
-            y=df_composite["Composite_Indicator"],
-            name="🧪 Composite Indicator" if lang_code == "EN" else "🧪 Indicateur Composite",
-            line=dict(color=COLOR_BRICK, width=4)
-        ),
-        secondary_y=False
-    )
-    
-    # 2. Benchmark Sales (synthetic product or imported company sales)
-    fig_comp.add_trace(
-        go.Scatter(
-            x=df_sales_bench["Date"],
-            y=df_sales_bench[bench_col],
-            name=bench_label,
-            line=dict(color=COLOR_TEXT, width=3)
-        ),
-        secondary_y=True
-    )
-    
-    fig_comp.update_layout(
-        title=T[lang_code]["composite_plot_title"].format(bench=bench_label),
-        xaxis_title="Date",
-        template="plotly_white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-    )
-    
-    fig_comp.update_yaxes(title_text=T[lang_code]["composite_axis"], secondary_y=False)
-    fig_comp.update_yaxes(title_text=T[lang_code]["sales_axis"], secondary_y=True)
-    
-    # Shaded forecast area
-    max_sales_bench_date = df_sales_bench["Date"].max()
-    fig_comp.add_vrect(
-        x0=max_sales_bench_date, x1=df_composite["Date"].max(),
-        fillcolor=COLOR_BRICK_ZONE, opacity=0.5,
-        layer="below", line_width=0,
-        annotation_text=T[lang_code]["zone_prev"], annotation_position="top left"
-    )
-    
-    st.plotly_chart(fig_comp, use_container_width=True)
-    st.caption(_L("✅ Cible = ventes réelles importées.", "✅ Target = imported real sales.")
-               if _comp_use_company else T[lang_code]["synthetic_note"])
-    st.caption(_L(
-        "Sources des composantes : SDES — SIT@DEL (construction) · INSEE (confiance des ménages, "
-        "idbank 001587668) · Banque de France / BCE (taux crédit habitat, MIR).",
-        "Component sources: SDES — SIT@DEL (construction) · INSEE (household confidence, "
-        "idbank 001587668) · Banque de France / ECB (housing-loan rate, MIR)."))
-
-    # Measure correlation between composite indicator and historical sales
-    merged_comp_sales = pd.merge(df_sales_bench, df_composite, on="Date", how="inner")
-    if len(merged_comp_sales) > 5:
-        r_composite = merged_comp_sales["Composite_Indicator"].corr(merged_comp_sales[bench_col])
-        st.info(T[lang_code]["composite_perf"].format(product=bench_label, r=r_composite))
-
-    # Save composite data in session state for export
-    st.session_state["composite_export_df"] = df_composite
-    st.session_state["composite_export_col"] = "Composite_Indicator"
-    st.session_state["composite_export_name"] = f"KF_COMPOSITE_{bench_label.replace(' ', '_').upper()}"
-    # Synthetic unless the target is the user's imported real company sales (the composite
-    # still blends indicators, but flag it real-targeted when benchmarked on real sales).
-    st.session_state["composite_export_synthetic"] = not _comp_use_company
-
-
-# ==============================================================================
-# TAB 6b: EXPORT SAP IBP (sous-onglet de « Données & Export »)
-# ==============================================================================
-with tab_export:
-    st.header(T[lang_code]["export_header"])
-    st.write(T[lang_code]["export_desc"])
-    
-    _src_forecast = _L("Prévision des transactions (12 mois)", "Transactions forecast (12 months)")
-    _src_sales_fc = _L("Prévision ventes société", "Company-sales forecast")
-    export_source = st.radio(
-        T[lang_code]["export_source_label"],
-        [T[lang_code]["src_simple_lag"], T[lang_code]["src_composite"], _src_forecast, _src_sales_fc],
-        horizontal=True
-    )
-
-    source_available = False
-
-    if export_source == _src_sales_fc:
-        if "forecast_sales_export_df" in st.session_state:
-            export_raw_df = st.session_state["forecast_sales_export_df"]
-            val_col_name = st.session_state["forecast_sales_export_col"]
-            default_kf_name = st.session_state["forecast_sales_export_name"]
-            export_is_synthetic = False  # a real, dated company-sales forecast
-            source_available = True
-        else:
-            st.warning(_L(
-                "⚠️ Aucune prévision de ventes société. Importez vos ventes (sous-onglet "
-                "« 📂 Sources & Imports » ci-contre) puis ouvrez « 📡 Prévision & Scénarios » "
-                "(section « Propagation à vos ventes importées »).",
-                "⚠️ No company-sales forecast. Import your sales (『📂 Sources & Imports』 sub-tab) "
-                "then open 『📡 Forecast & Scenarios』 (『Propagation to your imported sales』 section)."))
-    elif export_source == T[lang_code]["src_simple_lag"]:
-        if "shifted_export_df" in st.session_state:
-            export_raw_df = st.session_state["shifted_export_df"]
-            val_col_name = st.session_state["shifted_export_col"]
-            default_kf_name = st.session_state["shifted_export_name"]
-            export_is_synthetic = st.session_state.get("shifted_export_synthetic", True)
-            source_available = True
-        else:
-            st.warning(T[lang_code]["no_simple_lag"])
-    elif export_source == _src_forecast:
-        if "forecast_export_df" in st.session_state:
-            export_raw_df = st.session_state["forecast_export_df"]
-            val_col_name = st.session_state["forecast_export_col"]
-            default_kf_name = st.session_state["forecast_export_name"]
-            export_is_synthetic = False  # a real, dated model forecast
-            source_available = True
-        else:
-            st.warning(_L(
-                "⚠️ Aucune prévision disponible. Ouvrez l'onglet « 📡 Prévision & Scénarios » "
-                "pour la calculer (section « Projection à horizon »).",
-                "⚠️ No forecast available. Open the 『📡 Forecast & Scenarios』 tab to compute it "
-                "(『Projection to horizon』 section)."))
+    if df_company_sales_full is None or df_company_sales_full.empty:
+        st.info(_L(
+            "Importez vos ventes société (onglet « ⚙️ Données & Sources ») pour mesurer le "
+            "décalage entre les permis de construire et votre activité.",
+            "Import your company sales (『⚙️ Data & Sources』 tab) to measure the lag between "
+            "building permits and your own activity."))
     else:
-        if "composite_export_df" in st.session_state:
-            export_raw_df = st.session_state["composite_export_df"]
-            val_col_name = st.session_state["composite_export_col"]
-            default_kf_name = st.session_state["composite_export_name"]
-            export_is_synthetic = st.session_state.get("composite_export_synthetic", True)
-            source_available = True
+        _pv1, _pv2 = st.columns([1, 2])
+        with _pv1:
+            _pm_type = st.selectbox(T[lang_code]["housing_type"],
+                                    df_sitadel["Type"].unique().tolist(), key="permis_type")
+            _pm_metric = st.selectbox(T[lang_code]["metric_sitadel"],
+                                      ["Permis", "MisesEnChantier"], key="permis_metric")
+            _serie_p, _agg_p = pick_company_series(df_company_sales_full, key="permis_serie")
+
+            # Driver: 12-month rolling permits, so it sits on the same footing as the
+            # 12-month transactions run-rate the other elasticity uses.
+            _pm_df = q.monthly(con, "sitadel", [_pm_metric], windows=(12,), types=[_pm_type])
+            _pm_col = f"{_pm_metric}_12M"
+            _pm_ser = (_pm_df.dropna(subset=[_pm_col])
+                       .assign(Date=lambda d: pd.to_datetime(d["Date"]))
+                       .set_index("Date")[_pm_col].sort_index())
+
+            _fit_p = fc.best_tx_to_monthly(_agg_p, _pm_ser, "Sales")
+            _fit_t = fc.best_tx_to_monthly(_agg_p, _tx12, "Sales")
+
+        if _fit_p is None:
+            with _pv1:
+                st.info(_L("Trop peu de mois communs entre les permis et vos ventes.",
+                           "Too few overlapping months between permits and your sales."))
         else:
-            st.warning(T[lang_code]["no_composite"])
-            
-    if source_available:
-        st.success(T[lang_code]["export_ready"].format(count=len(export_raw_df)))
-        
-        col_exp1, col_exp2 = st.columns([1, 2])
-        
-        with col_exp1:
-            st.markdown(T[lang_code]["export_params"])
-            
-            kf_name = st.text_input(T[lang_code]["kf_name_label"], value=default_kf_name)
-            
-            granularity = st.selectbox(T[lang_code]["granularity_label"], ["Monthly", "Weekly"] if lang_code == "FR" else ["Monthly", "Weekly"])
-            
-            # Convert internal granularity name
-            internal_granularity = "Monthly"
-            if granularity in ["Weekly", "Hebdomadaire"]:
-                internal_granularity = "Weekly"
-                
-            date_format = st.selectbox(
-                T[lang_code]["date_format_label"],
-                ["YYYY-MM-DD", "YYYYMM", "DD/MM/YYYY"]
-            )
-            
-            delimiter = st.selectbox(
-                T[lang_code]["delimiter_label"],
-                ["; (Standard Europe)", ", (Standard US)", "Onglet (Tabulation)"] if lang_code == "FR" else ["; (Standard Europe)", ", (Standard US)", "Tab (Tabulation)"],
-                index=0
-            )
-            delim_char = ";" if ";" in delimiter else ("," if "," in delimiter else "\t")
-            
-            location_val = st.text_input(T[lang_code]["locid_default"], value="FR_DEFAULT")
-            
-            st.markdown(T[lang_code]["header_mapping"])
-            col_h1, col_h2 = st.columns(2)
-            with col_h1:
-                header_period = st.text_input(T[lang_code]["header_period"], value="PERIODID0")
-                header_loc = st.text_input(T[lang_code]["header_loc"], value="LOCID")
-            with col_h2:
-                header_ind = st.text_input(T[lang_code]["header_ind"], value="PRDID")
-                header_val = st.text_input(T[lang_code]["header_val"], value="KEYFIGUREVALUE")
-                
-            custom_headers = {
-                'PERIOD': header_period,
-                'LOCATION': header_loc,
-                'INDICATOR': header_ind,
-                'VALUE': header_val
-            }
-            
-        with col_exp2:
-            st.markdown(f"### {T[lang_code]['export_preview_title']}")
-            
-            csv_str, export_df = exp.format_for_sap_ibp(
-                df_indicator=export_raw_df,
-                indicator_name=kf_name,
-                date_col="Date",
-                value_col=val_col_name,
-                location_val=location_val,
-                time_granularity=internal_granularity,
-                date_format=date_format,
-                delimiter=delim_char,
-                custom_headers=custom_headers
-            )
-            
-            st.write(T[lang_code]["export_rows_desc"].format(count=len(export_df)))
-            st.dataframe(export_df.head(10), use_container_width=True)
-            if export_is_synthetic:
-                st.caption(T[lang_code]["synthetic_note"])
-            
-            st.markdown("---")
-            st.download_button(
-                label=T[lang_code]["btn_download_csv"],
-                data=csv_str,
-                file_name=f"{kf_name.lower()}_export.csv",
-                mime="text/csv"
-            )
-            
-            st.markdown(T[lang_code]["sap_instructions"])
+            with _pv1:
+                st.metric(_L("Décalage permis → ventes", "Permits → sales lag"),
+                          f"{_fit_p['lag_m']} " + _L("mois", "months"),
+                          "R² = " + (f"{_fit_p['r2']:.2f}".replace(".", ",")
+                                          if lang_code == "FR" else f"{_fit_p['r2']:.2f}"),
+                          delta_color="off")
+                if _fit_t is not None:
+                    _better = (_L("les permis", "permits") if _fit_p["r2"] >= _fit_t["r2"]
+                               else _L("les transactions", "transactions"))
+                    st.caption(_L(
+                        f"Comparé sur la même série : transactions R²={_fit_t['r2']:.2f} "
+                        f"(décalage {_fit_t['lag_m']} mois) contre permis R²={_fit_p['r2']:.2f} "
+                        f"(décalage {_fit_p['lag_m']} mois). Le meilleur driver amont de "
+                        f"« {_serie_p} » est ici : {_better}.",
+                        f"Same series, both drivers: transactions R²={_fit_t['r2']:.2f} "
+                        f"({_fit_t['lag_m']}-month lag) versus permits R²={_fit_p['r2']:.2f} "
+                        f"({_fit_p['lag_m']}-month lag). The better upstream driver of "
+                        f"'{_serie_p}' here is: {_better}."))
+                st.caption(_L(f"Élasticité estimée sur {_fit_p['n']} mois communs.",
+                              f"Elasticity estimated over {_fit_p['n']} overlapping months."))
+
+            with _pv2:
+                _lag_p = int(_fit_p["lag_m"])
+                _pm_plot = _pm_ser.rename("Val").reset_index()
+                _pm_sh = sim.shift_indicator(_pm_plot, "Date", "Val", _lag_p)
+                _shc = f"Val_shifted_{_lag_p}"
+                _sales_obs = _agg_p.sort_values("Date")
+
+                fig_pm = make_subplots(specs=[[{"secondary_y": True}]])
+                fig_pm.add_trace(go.Scatter(
+                    x=_pm_sh["Date"], y=_pm_sh[_shc],
+                    name=f"{_pm_metric} — {_pm_type} "
+                         + _L(f"(cumul 12 m, décalé +{_lag_p} m)",
+                              f"(12-month sum, lagged +{_lag_p}mo)"),
+                    line=dict(color=COLOR_BRICK, width=2.5)), secondary_y=False)
+                fig_pm.add_trace(go.Scatter(
+                    x=_sales_obs["Date"], y=_sales_obs["Sales"],
+                    name=_L(f"Ventes — {_serie_p}", f"Sales — {_serie_p}"),
+                    line=dict(color=COLOR_TEXT, width=2.5)), secondary_y=True)
+
+                # The payoff of the shift: permits already FILED reach beyond the last
+                # observed sale, so the shaded zone is activity already in the pipeline.
+                _last_sale = _sales_obs["Date"].max()
+                _last_shift = _pm_sh["Date"].max()
+                if pd.notna(_last_sale) and pd.notna(_last_shift) and _last_shift > _last_sale:
+                    fig_pm.add_vrect(x0=_last_sale, x1=_last_shift,
+                                     fillcolor=COLOR_BRICK_ZONE, opacity=0.5, layer="below",
+                                     line_width=0, annotation_text=T[lang_code]["zone_prev"],
+                                     annotation_position="top left")
+                apply_macro_chart_layout(fig_pm, _L("Permis (cumul 12 mois)", "Permits (12-month sum)"))
+                fig_pm.update_yaxes(title_text=_L("Ventes mensuelles", "Monthly sales"),
+                                    secondary_y=True)
+                st.plotly_chart(fig_pm, use_container_width=True)
+                st.caption(_L(
+                    "Zone ombrée : les permis y sont DÉJÀ déposés, mais les ventes correspondantes "
+                    "ne sont pas encore réalisées — c'est l'activité déjà engagée en amont. "
+                    "Sources : SDES — SIT@DEL (permis) ; vos ventes importées.",
+                    "Shaded zone: permits there are ALREADY filed but the matching sales have not "
+                    "happened yet — activity already in the pipeline. Sources: SDES — SIT@DEL "
+                    "(permits); your imported sales."))
 
 
 # ==============================================================================
-# TAB 6a: SOURCES & IMPORTS (sous-onglet de « Données & Export »)
+# TAB 5: DONNÉES & SOURCES — consultation des sources et import des ventes
+# société. L'export SAP IBP qui partageait cet onglet a été retiré (besoin
+# suspendu) ; le formateur `export.py` reste en place, non câblé, pour pouvoir
+# le rebrancher sans le réécrire.
 # ==============================================================================
-with tab_source:
+with tab_donnees:
+    st.caption(T[lang_code]["donnees_caption"])
     st.header(T[lang_code]["source_header"])
     st.write(T[lang_code]["source_desc"])
     

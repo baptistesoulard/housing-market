@@ -184,7 +184,9 @@ légendes cliquables) :
 
 ### Suite
 
-- ⏭️ Reste à porter : Prévision, Atelier exploratoire, Données & Export — même patron
-  (export Python → page).
+- ⏭️ Reste à porter : Prévision & Scénarios, Données & Sources — même patron
+  (export Python → page). L'app Streamlit ne compte plus que **7 onglets** : « Atelier
+  exploratoire » et l'export SAP IBP ont été retirés (voir `CLAUDE.md`, section
+  « Onglets retirés »), il n'y a donc plus rien à porter de ce côté.
 - ⏭️ Bilingue FR/EN, filtres interactifs côté client (DuckDB-WASM sur les Parquet
-  existants) pour les onglets exploratoires.
+  existants) pour les pages exploratoires.

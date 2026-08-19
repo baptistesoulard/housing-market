@@ -91,11 +91,13 @@ vues restent visibles, l'état de résultat non). `tests/test_queries_concurrenc
 la course. Ne jamais réintroduire un `con.execute(...)` direct sur le chemin Streamlit.
 
 **Ce qui reste en pandas y reste exprès.** Un `grep "groupby\|rolling\|resample"` sur le
-chemin d'exécution ne doit plus renvoyer que ces quatre cas, et aucun n'est un oubli :
+chemin d'exécution ne doit plus renvoyer que ces trois cas, et aucun n'est un oubli.
+`app.py` n'en a plus aucun : le dernier (le lissage 12 mois de l'atelier Time-Lag, en
+`min_periods=1`) est parti avec l'onglet Atelier — la section qui l'a remplacé prend son
+cumul 12 mois par `q.monthly(..., windows=(12,))`, donc en SQL.
 
 | Emplacement | Pourquoi |
 |---|---|
-| `app.py` — lissage 12 mois de l'atelier Time-Lag (`min_periods=1`) | Lissage d'*affichage* appliqué en aval à la série déjà agrégée, quelle que soit sa provenance parmi trois branches. Le passer en SQL obligerait à pousser toute la sélection d'indicateur dans la requête, sans gain numérique. |
 | `forecast.py` — `build_target` | N'est plus appelée : implémentation de **référence** des tests de parité (voir invariant ci-dessus). |
 | `forecast.py` — `tx12.resample("QS").mean()` | Transformation de la série pilote *par le modèle*, pas une agrégation de dataset. |
 | `forecast.py` — les deux `groupby("Date").sum()` de `fit_tx_to_monthly` / `fit_sales_two_factor` | Repli défensif contre des dates dupliquées, sur une frame passée en paramètre. Depuis la phase 3 les appelants fournissent déjà une série unique par date : c'est un no-op qu'on garde parce que ces helpers sont génériques. |
@@ -108,6 +110,43 @@ doit annoncer `0/5 fichier(s) modifié(s)`. Un diff inattendu signale une diverg
 calcul, pas du bruit — depuis que les agrégations sont en SQL, la sortie ne dépend plus de
 la version de pandas/numpy.
 
+## Onglets retirés (2026-08-20) — ne pas les restaurer par réflexe
+
+L'app est passée de **8 à 7 onglets**. Deux surfaces ont été supprimées ; les deux
+suppressions sont des décisions, pas des oublis.
+
+**« 🔬 Atelier exploratoire » (Time-Lag + Composite) — supprimé.** Il cherchait un
+décalage en maximisant le **r de Pearson sur des niveaux lissés**, alors que l'onglet
+Prévision répond déjà à la même question par une recherche en grille sur le **R²**,
+menée sur la seule fenêtre d'entraînement (`fc.search_tx_lags`, `split=_FORECAST_SPLIT`)
+pour ne pas contaminer le backtest. Deux méthodes rivales donnaient deux nombres sans
+moyen d'arbitrer — et la plus faible des deux devait afficher son propre avertissement
+sur l'auto-corrélation des séries lissées. Le sous-onglet Composite, lui, produisait un
+signal pondéré à la main **sans backtest ni score** : invérifiable par construction.
+
+Ce qui en a été **sauvé**, replié dans « 📡 Prévision & Scénarios » :
+
+| Rescapé | Où | Pourquoi il n'était pas redondant |
+|---|---|---|
+| Graphe d'alignement + curseur de décalage | expander « Vérifier les décalages retenus », section 2 ter | Rend la recherche en grille **auditable** : on déplace un décalage, le modèle est réestimé (`fc.fit_tx_model`) et le R² affiché bouge. Noté avec le critère **du modèle**, pas avec un r concurrent. |
+| Permis SIT@DEL → ventes société | section 4, second bloc `with tab_forecast:` | L'étage 2 explique les transactions par taux + intentions + chômage : **SIT@DEL n'y est pas**. Pour du second-œuvre, un permis déposé est une commande à venir — lien que le modèle ne voit pas. Mesuré par `fc.best_tx_to_monthly`, le même estimateur que l'élasticité transactions→ventes, donc les deux drivers sont comparables. |
+
+Sont partis sans remplacement : la recherche de décalage par max-r, la branche « Indicateur
+Macro » (ses indicateurs *sont* les prédicteurs du modèle), le benchmark sur ventes
+synthétiques (circulaire — le code appelait `synthetic_circularity_warning()`), et tout le
+Composite.
+
+**Export SAP IBP — retiré du câblage.** Besoin suspendu côté métier. Le dernier onglet
+n'est plus que « ⚙️ Données & Sources » (consultation + import des ventes société) et n'a
+plus de sous-onglets. **`export.py` n'est pas supprimé** : le module reste intact pour
+pouvoir être rebranché sans réécriture — mais il n'est désormais importé par *rien* et
+n'a pas de test, donc rien ne le protège d'une régression silencieuse. Le rebrancher
+suppose de le retester.
+
+Les clés de traduction devenues orphelines *par ce retrait* ont été supprimées de
+`translations.py` (71 clés × 2 langues). Une dizaine d'autres clés étaient déjà orphelines
+avant (reliquat du code géo/carte) et ont été laissées en place, hors périmètre.
+
 ## Vérifier la parité
 
 Trois recettes, par ordre de coût croissant. Les tests unitaires seuls ne suffisent pas :
@@ -118,7 +157,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 59 collectés ; 1 skip légitime si company_sales est vide
+python -m pytest tests/ -q          # 66 collectés ; 1 skip légitime si company_sales est vide
 ```
 
 **2. Rapport PDF, comparaison d'octets** — la plus forte : couvre les graphiques, les KPI
@@ -158,6 +197,7 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 | `refactor/duckdb-engine` | 0 | axe compute, fusionné par la PR #2 |
 | `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, fusionnés |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
+| `refactor/fusion-timelag-previsions` | 1 commit | fusion Time-Lag → Prévision, retrait Atelier + export SAP IBP (voir « Onglets retirés ») |
 
 Les quatre branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base
 --is-ancestor` vérifié) : leurs copies locales ont été supprimées, il ne reste que les
