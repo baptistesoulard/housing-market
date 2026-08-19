@@ -201,6 +201,27 @@ def monthly_by_group(con, dataset: str, groups: dict, value_cols, windows=(12,))
     """, params)
 
 
+def transactions_run_rate(con) -> pd.Series:
+    """Série « ventes sur un an » : cumul glissant 12 mois des transactions nationales,
+    indexée par Date et nommée `tx12`.
+
+    C'est le DRIVER de toute la chaîne de prévision (`forecast.fit_tx_model`,
+    `search_tx_lags`, `fit_tx_to_ca`, `propagate_to_series`). Les modèles eux-mêmes
+    restent en numpy — DuckDB n'est pas un moteur de régression — mais leur série
+    d'entrée est produite ici, comme le reste des agrégations.
+
+    Motif : c'était le dernier chiffre AFFICHÉ défini deux fois. L'onglet « Marché de
+    l'ancien » montre `Transactions_12M` calculé en SQL, tandis que la prévision
+    recalculait le même cumul en pandas (`forecast.build_target`). Une seule définition
+    supprime la possibilité que les deux divergent.
+
+    Renvoie une Series (et non un DataFrame) parce que les modèles la manipulent par son
+    index temporel : `.shift()`, `.resample("QS")`, `.join()`, décalage par DateOffset.
+    """
+    df = monthly(con, "ventes_ancien", ["Transactions"], windows=(12,))
+    return df.set_index("Date")["Transactions_12M"].rename("tx12")
+
+
 # ============================ macro ===============================================
 def macro_data_columns(con) -> set:
     """Indicateurs macro effectivement renseignés (au moins une valeur non NULL).

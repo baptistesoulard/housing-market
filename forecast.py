@@ -34,7 +34,13 @@ def ols(X, y):
 
 def build_target(df_ventes_ancien):
     """12-month rolling sum of national existing-home transactions (IGEDD), indexed by
-    Date. Reproduces the published 'ventes sur un an' series."""
+    Date. Reproduces the published 'ventes sur un an' series.
+
+    N'est plus appelée au runtime depuis la phase 4 : la série pilote vient de
+    `queries.transactions_run_rate()`, en SQL. Comme les agrégations d'`analysis.py`,
+    cette fonction est CONSERVÉE comme implémentation de référence — c'est elle que
+    `tests/test_queries_parity.py` compare à la requête. Ne pas la supprimer.
+    """
     tx = df_ventes_ancien.groupby("Date")["Transactions"].sum().sort_index()
     return tx.rolling(12).sum().rename("tx12")
 
@@ -251,7 +257,7 @@ def best_tx_to_ca(df_revenue, tx12, company, lags=range(0, 7)):
 
 def fit_tx_to_monthly(df_series, tx12, value_col="Sales", lag_m=0):
     """Elasticity of a MONTHLY company series (e.g. user-imported sales) to the 12-month
-    transactions run-rate, at `lag_m` months. `tx12` is a Date-indexed Series (build_target).
+    transactions run-rate, at `lag_m` months. `tx12` is a Date-indexed Series (queries.transactions_run_rate).
     The driver is shifted forward by `lag_m` so transactions at t explain sales at t+lag_m.
     Returns {beta, r2, lag_m, n} or None if too few overlapping months."""
     s = (df_series[["Date", value_col]].dropna()

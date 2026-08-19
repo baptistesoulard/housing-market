@@ -32,7 +32,6 @@ if _REPO_ROOT not in sys.path:
 
 from data_manager import DataManager          # noqa: E402
 import analysis as ana                         # noqa: E402
-import forecast as fc                          # noqa: E402
 import actualites as actu                      # noqa: E402
 import theme                                    # noqa: E402  (palette partagée web/theme.json)
 import queries as q                             # noqa: E402  (couche SQL DuckDB partagée)

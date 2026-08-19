@@ -183,11 +183,10 @@ df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_compan
 # slicer never moves that base.
 df_macro_full = df_macro
 
-# Keep an untouched reference to the full national series. Depuis la phase 2, les cartes
-# « Chiffres Clés » ne passent plus par ces frames — elles interrogent l'entrepôt, qui est
-# par nature l'historique complet, donc indépendant du slicer et du sélecteur de segment.
-# Seul le pendant SIT@DEL est devenu inutile ; celui-ci sert encore aux modèles de prévision.
-df_ventes_ancien_full = df_ventes_ancien
+# Les alias df_sitadel_full / df_ventes_ancien_full ont disparu avec les phases 2 et 4 :
+# les cartes « Chiffres Clés » comme la série pilote de la prévision viennent maintenant de
+# l'entrepôt, qui est par nature l'historique complet — donc indépendant du slicer et du
+# sélecteur de segment, ce que ces copies servaient à garantir.
 # Full-history macro & revenue for the forecast models (they must not depend on the slicer).
 df_revenue_full = df_revenue
 # Full-history ECLN for the slicer-independent headline cards (Synthèse & Marché du neuf).
@@ -867,7 +866,7 @@ with tab_synthese:
     # Gap to the published BPCE target computed first so the block header can carry
     # its one-line verdict.
     _cards_persp = []
-    _sy_tx12 = fc.build_target(df_ventes_ancien_full).dropna()
+    _sy_tx12 = q.transactions_run_rate(con).dropna()
     _sy_gap = None
     if not _sy_tx12.empty:
         _sy_last_tx = float(_sy_tx12.iloc[-1])
@@ -2207,10 +2206,14 @@ with tab_neuf:
 _FORECAST_SPLIT = "2021-12-01"
 
 @st.cache_data(show_spinner=False)
-def _forecast_bundle(macro, ventes_ancien):
+def _forecast_bundle(macro, tx12):
     """Fit the (expensive) forecast models once and cache them, so moving the scenario
-    sliders only recomputes the cheap scenario arithmetic, not the lag grid-search."""
-    tx12 = fc.build_target(ventes_ancien)
+    sliders only recomputes the cheap scenario arithmetic, not the lag grid-search.
+
+    `tx12` est passée en paramètre plutôt que dérivée ici : elle vient désormais de la
+    couche SQL, et une connexion DuckDB n'est ni hachable ni sérialisable par
+    `st.cache_data`. La Series, elle, est une clé de cache parfaitement valide.
+    """
     rm = fc.fit_rate_model(macro)
     # Lags searched on the TRAIN window only (no leakage into the backtest period).
     lags = fc.search_tx_lags(macro, tx12, split=_FORECAST_SPLIT)
@@ -2235,14 +2238,14 @@ with tab_forecast:
         "sales (12-month sum) are explained by the credit rate, purchase intentions and "
         "unemployment, each lagged. An out-of-sample backtest measures predictive value."))
 
-    _tx12 = fc.build_target(df_ventes_ancien_full)
+    _tx12 = q.transactions_run_rate(con)
     _need = {"OAT_10ans", "Euribor_3M", "Credit_Logement_Taux_Interet",
              "Intentions_Achat_Logement", "Taux_Chomage_BIT"}
     if _tx12.dropna().empty or not _need.issubset(set(df_macro_full.columns)):
         st.warning(_L("Séries macro incomplètes — impossible de calibrer le modèle.",
                       "Incomplete macro series — cannot calibrate the model."))
     else:
-        _rm, _lags, _tm = _forecast_bundle(df_macro_full, df_ventes_ancien_full)
+        _rm, _lags, _tm = _forecast_bundle(df_macro_full, _tx12)
         _bt = _tm["backtest"]
         _b = _tm["beta"]
 

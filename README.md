@@ -121,6 +121,16 @@ La phase 2 avait laissé `app.py` à moitié migré : les onglets d'affichage pa
 - **Parité vérifiée sous trois états de widgets** : `app.py` rendu via le harnais Streamlit donne des valeurs identiques à l'état par défaut, avec le slicer déplacé (2015-2020), **et avec 13 selectbox basculés sur leur dernière option** — c'est ce dernier état qui exerce réellement les branches `Product` / `Company` / `Serie`. Métriques, markdown, légendes et tableaux comparés.
 - **Tests** : `tests/test_queries_parity.py` passe de 15 à 19 cas (filtre de catégorie sur les trois datasets non-`Type`, `macro_rolling` vs `dropna().rolling()`). 58 collectés sur l'ensemble des suites : 57 verts, 1 skip légitime (`company_sales` vide tant qu'aucun import utilisateur n'a eu lieu).
 
+### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 4)
+
+Dernière série définie deux fois : le cumul 12 mois des transactions. L'onglet « Marché de l'ancien » affichait `Transactions_12M` calculé en SQL, tandis que toute la chaîne de prévision recalculait le même cumul en pandas (`forecast.build_target`).
+
+- **`q.transactions_run_rate(con)`** produit désormais cette série pilote — conforme au principe posé en phase 0 : les modèles restent en numpy (DuckDB n'est pas un moteur de régression), mais **leurs séries d'entrée sont produites par la couche SQL**. Renvoie une Series indexée par Date, car les modèles la manipulent par son index (`.shift()`, `.resample("QS")`, jointures).
+- **`_forecast_bundle` prend `tx12` en paramètre** au lieu de la dériver : la fonction est `@st.cache_data` et une connexion DuckDB n'est ni hachable ni sérialisable, alors qu'une Series est une clé de cache valide.
+- **`forecast.build_target` conservée** comme implémentation de référence des tests de parité, au même titre que les agrégations d'`analysis.py`. Le docstring le dit.
+- **Nettoyages** : `import forecast` était mort dans `web_export.py` depuis la phase 1 ; les alias `df_sitadel_full` / `df_ventes_ancien_full` n'ont plus d'utilisateur, l'entrepôt étant par nature l'historique complet.
+- **Parité** : `tx12` SQL vs pandas à **maxdiff 0**, même index, même dtype, même nom. `app.py` identique sous les trois états de widgets. 59 tests collectés, 58 verts, 1 skip légitime.
+
 ## Modules
 
 - `app.py` — interface Streamlit (8 onglets dont la Synthèse, bilingue FR/EN).

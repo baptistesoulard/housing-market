@@ -188,6 +188,22 @@ def test_macro_rolling_matches_dropna_then_rolling(con):
         _same(sql[c], ref[c], name=f"brut {c}")       # colonne brute conservée
 
 
+def test_transactions_run_rate_matches_forecast_build_target(con):
+    """La série pilote de la prévision. C'était le dernier chiffre AFFICHÉ défini deux
+    fois : `Transactions_12M` en SQL dans l'onglet Ancien, et le même cumul recalculé en
+    pandas pour alimenter les modèles. La forme compte autant que les valeurs — les
+    modèles font `.shift()`, `.resample("QS")` et des jointures sur l'index."""
+    import forecast as fc
+
+    sql = q.transactions_run_rate(con)
+    ref = fc.build_target(pd.read_parquet(os.path.join(_DATA, "ventes_ancien.parquet")))
+
+    assert sql.name == ref.name == "tx12"
+    assert sql.index.equals(ref.index)                  # même index, même dtype
+    assert str(sql.index.dtype) == "datetime64[ns]"
+    _same(sql.values, ref.values, name="tx12")
+
+
 def test_macro_frame_matches_macro_series(con):
     """`macro_frame` (consommé par les graphiques du rapport PDF) et `macro_series`
     (consommé par l'export JSON) doivent décrire exactement la même série."""
