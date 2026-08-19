@@ -22,12 +22,15 @@
     "simultanées au maximum dans un graphique : les slots 1-3 (brick/blue/green) couvrent ce cas",
     "et sont validés entre eux ; violet et gold servent aux 4e/5e identités.",
     "",
-    "`font` s'aligne sur ce que l'app Streamlit REND réellement, pas sur ce qu'elle déclare :",
-    "son corps de texte est en Source Sans (police embarquée par Streamlit) et seuls ses titres",
-    "sont dans la pile Segoe UI d'app.py. D'où deux rôles ici. `sans` cite Source Sans 3 en",
-    "tête : la police est chargée par observablehq.config.js (globalStylesheets), la suite de",
-    "la pile n'est qu'un repli. Calibri a été retiré — c'est une police de document, à petite",
-    "hauteur d'x, qui paraît plus petite et plus molle que Source Sans à taille égale."
+    "`font` s'aligne sur ce que l'app Streamlit REND réellement, pas sur ce qu'elle déclare.",
+    "Mesuré dans le navigateur : les 16 titres visibles de l'app rendent en Source Sans, PAS",
+    "en Segoe UI. La règle `h2, h3 {font-family: 'Segoe UI'}` d'app.py existe bien mais elle",
+    "perd contre `.st-emotion-cache-XXX h2 {font-family: \"Source Sans\"}` de Streamlit —",
+    "classe + élément l'emporte sur élément seul, et app.py ne met !important que sur color.",
+    "C'est donc une déclaration morte : ne pas s'aligner dessus. Un seul rôle de police ici,",
+    "Source Sans 3 (le nom actuel de Source Sans Pro), chargée par observablehq.config.js via",
+    "globalStylesheets ; la suite de la pile n'est qu'un repli. Calibri a été retiré — police",
+    "de document à petite hauteur d'x, qui paraît plus petite et plus molle à taille égale."
   ],
 
   "brand": {
@@ -73,7 +76,6 @@
   },
 
   "font": {
-    "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif",
-    "heading": "\"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
+    "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
   }
 }

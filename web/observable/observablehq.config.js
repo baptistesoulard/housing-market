@@ -15,7 +15,6 @@ const T = JSON.parse(readFileSync(join(_dir, "..", "theme.json"), "utf-8"));
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
   "font-sans": T.font.sans,
-  "font-heading": T.font.heading,
   bg: T.brand.bg,
   surface: T.brand.surface,
   ink: T.brand.ink,
@@ -41,9 +40,21 @@ ${VARS}
   /* Largeur de la colonne de contenu — cadre commun à l'en-tête et à « main ». */
   --hm-measure: 64rem;
 }
-body { font-family: var(--sans-serif); color: var(--hm-ink); background: var(--hm-bg); }
-h1, h2, h3, h4 { font-family: var(--hm-font-heading); color: var(--hm-ink); }
-h1 { font-weight: 700; border-bottom: 2px solid var(--hm-brick); padding-bottom: 8px; margin-bottom: 0.15rem; }
+/* --- Échelle typographique, relevée dans l'app Streamlit ---------------------------
+   Valeurs calculées mesurées dans le navigateur sur l'onglet Synthèse, et reproduites
+   ici. Deux surprises qui expliquent l'écart de netteté ressenti :
+   1. Streamlit n'emploie AUCUN gris pour le texte — chapô, libellés de cartes,
+      sous-titres, ligne de fraîcheur : tout est à son encre pleine. Le front dégradait
+      ce texte secondaire sur deux niveaux de gris, ce qui le faisait paraître délavé.
+   2. Les titres de l'app rendent en Source Sans, pas en Segoe UI : sa règle
+      « h2, h3 {font-family: 'Segoe UI'} » perd en spécificité (voir theme.json).
+   Corps 16px/1.6, titre de section 36px/600, libellé de carte 16px/600, valeur 28px/600,
+   sous-titre 14px/1.6 — tous en encre pleine. */
+body { font-family: var(--sans-serif); font-size: 16px; line-height: 1.6;
+  color: var(--hm-ink); background: var(--hm-bg); }
+h1, h2, h3, h4 { font-family: var(--sans-serif); color: var(--hm-ink); }
+h1 { font-size: 2.25rem; font-weight: 600; border-bottom: 2px solid var(--hm-brick);
+  padding-bottom: 8px; margin-bottom: 0.15rem; }
 
 /* --- UNE seule largeur de colonne -------------------------------------------------
    Trois plafonds de largeur se superposaient ici, et la page avait donc trois bords
@@ -57,29 +68,29 @@ h1 { font-weight: 700; border-bottom: 2px solid var(--hm-brick); padding-bottom:
 #observablehq-main { max-width: var(--hm-measure); }
 #observablehq-main :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6,
                        table, figure, figcaption, .note, .tip, .warning, .caution) { max-width: none; }
-main h2 { font-size: 1.55rem; font-weight: 700; margin-top: 2.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border); }
-main h3 { font-size: 1.3rem; font-weight: 700; color: var(--hm-ink); margin-top: 2.2rem; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border-light); }
+main h2 { font-size: 1.55rem; font-weight: 600; margin-top: 2.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border); }
+main h3 { font-size: 1.3rem; font-weight: 600; color: var(--hm-ink); margin-top: 2.2rem; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border-light); }
 a, a:visited { color: var(--hm-link); }
-.hm-caption { color: var(--theme-foreground-muted); font-size: 0.92rem; margin: 0.2rem 0 1rem; }
+.hm-caption { color: var(--hm-ink); font-size: 0.875rem; margin: 0.2rem 0 1rem; }
 .hm-chips { margin: 0.4rem 0 1.2rem; }
 .hm-takeaways { background: color-mix(in srgb, var(--hm-blue) 12%, transparent); border-left: 4px solid var(--hm-blue);
   border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.6rem 0 1rem; }
 .hm-takeaways ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
 .hm-takeaways li { margin: 0.35rem 0; line-height: 1.5; }
-.hm-meta { color: var(--theme-foreground-muted); font-size: 0.85rem; margin: 0.4rem 0 0.2rem; }
+.hm-meta { color: var(--hm-ink); font-size: 0.875rem; margin: 0.4rem 0 0.2rem; }
 .hm-grid { display: grid; gap: 1.8rem 1.6rem; margin: 0.8rem 0 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .hm-card { padding: 0.15rem 0; background: transparent; border: none; }
-.hm-card-title { font-weight: 600; font-size: 0.9rem; color: var(--hm-muted); letter-spacing: 0.2px; }
-.hm-card-value { font-size: 2rem; font-weight: 700; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.15; }
-.hm-card-sub { font-size: 0.875rem; color: var(--hm-muted); line-height: 1.45; }
+.hm-card-title { font-weight: 600; font-size: 1rem; color: var(--hm-ink); letter-spacing: 0.2px; }
+.hm-card-value { font-size: 1.75rem; font-weight: 600; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.2; }
+.hm-card-sub { font-size: 0.875rem; color: var(--hm-ink); line-height: 1.6; }
 .hm-delta { font-size: 0.95rem; font-weight: 700; }
 .hm-delta.pos { color: var(--hm-delta-pos); }
 .hm-delta.neg { color: var(--hm-delta-neg); }
-.hm-link { color: var(--theme-foreground-muted); font-size: 0.83rem; margin: 0.5rem 0 2rem; }
+.hm-link { color: var(--hm-ink); font-size: 0.875rem; margin: 0.5rem 0 2rem; }
 .hm-panels { display: grid; gap: 1rem 1.4rem; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
 .hm-panel-title { font-weight: 600; font-size: 0.98rem; color: var(--hm-ink); margin: 0.4rem 0 0.1rem; }
-.hm-panel-sub { color: var(--theme-foreground-muted); font-size: 0.82rem; margin-bottom: 0.2rem; }
+.hm-panel-sub { color: var(--hm-ink); font-size: 0.875rem; margin-bottom: 0.2rem; }
 .hm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin: 0.6rem 0 0.1rem; }
 .hm-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-size: 0.9rem; user-select: none; }
 .hm-legend-item.off { opacity: 0.4; text-decoration: line-through; }
@@ -87,7 +98,7 @@ a, a:visited { color: var(--hm-link); }
 .hm-chart-title { font-weight: 600; margin: 1rem 0 0; }
 .hm-chart-title .sub { color: var(--hm-subtle); font-weight: 400; }
 details.hm-howto { margin: 0.2rem 0 0.8rem; }
-details.hm-howto summary { cursor: pointer; color: var(--theme-foreground-muted); }
+details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 
 /* --- Frise de période (barre latérale) : miroir du curseur « Période (années) »
    de la barre latérale Streamlit. Deux <input type=range> superposés sur un rail
