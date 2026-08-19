@@ -121,18 +121,33 @@ details.hm-howto summary { cursor: pointer; color: var(--theme-foreground-muted)
    la page n'affiche alors NI identité, NI onglet courant, NI onglets voisins. Cette
    barre-ci est visible à toutes les largeurs et déborde en défilement horizontal,
    comme le chevron « > » de Streamlit. */
-:root { --observablehq-header-height: 2.6rem; }
-#observablehq-header { padding-top: 0.7rem; }
-.hm-topbar { display: flex; align-items: baseline; gap: 0.4rem 1.4rem; width: 100%;
-  max-width: var(--hm-measure); margin: 0 auto; min-width: 0; }
-.hm-brand { flex: none; font-weight: 700; font-size: 1rem; white-space: nowrap; }
+:root { --observablehq-header-height: 3.7rem; }
+#observablehq-header { padding-top: 0.6rem; align-items: stretch; }
+.hm-topbar { width: 100%; max-width: var(--hm-measure); margin: 0 auto; min-width: 0; }
+
+/* Marque sur SA ligne, onglets en dessous : sur une seule ligne et dans le même registre
+   typographique, « Market Intelligence Immobilier » se lisait comme un premier onglet. */
+.hm-brand { display: block; font-weight: 700; font-size: 1.05rem; line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.15rem; }
 .hm-brand, .hm-brand:visited { color: var(--hm-ink); text-decoration: none; }
-.hm-tabs { display: flex; gap: 1.1rem; overflow-x: auto; scrollbar-width: thin; min-width: 0; }
+
+/* Le dégradé de droite est porté par l'enveloppe, pas par la piste qui défile : il reste
+   donc collé au bord. Quand les onglets tiennent en largeur, il recouvre le vide qui suit
+   le dernier onglet et ne se voit pas ; quand ils débordent, il signale la coupe — sans
+   la barre de défilement, qui passait juste sous le soulignement de l'onglet actif et le
+   rendait illisible. */
+.hm-nav { position: relative; min-width: 0; }
+.hm-nav::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 2rem;
+  pointer-events: none; background: linear-gradient(to right, transparent, var(--hm-bg)); }
+.hm-tabs { display: flex; gap: 1.3rem; overflow-x: auto; min-width: 0;
+  scrollbar-width: none; -ms-overflow-style: none; }
+.hm-tabs::-webkit-scrollbar { display: none; }
 .hm-tabs a, .hm-tabs a:visited { flex: none; color: var(--hm-muted); text-decoration: none;
-  font-size: 0.92rem; font-weight: 500; white-space: nowrap; padding-bottom: 0.45rem;
-  border-bottom: 2px solid transparent; }
-.hm-tabs a:hover { color: var(--hm-ink); }
-.hm-tabs a[aria-current="page"] { color: var(--hm-brick); border-bottom-color: var(--hm-brick); }
+  font-size: 0.92rem; font-weight: 500; white-space: nowrap; padding-bottom: 0.5rem;
+  border-bottom: 3px solid transparent; }
+.hm-tabs a:hover { color: var(--hm-ink); border-bottom-color: var(--hm-border); }
+.hm-tabs a[aria-current="page"] { color: var(--hm-brick); font-weight: 700;
+  border-bottom-color: var(--hm-brick); }
 </style>`;
 
 // Source unique des pages : sert à la fois la barre latérale (`pages`) et la barre
@@ -158,7 +173,7 @@ function header({path}) {
     return `<a href="${p.path}"${current}>${p.name}</a>`;
   }).join("");
   return `<div class="hm-topbar"><a class="hm-brand" href="/">${BRAND}</a>` +
-         `<nav class="hm-tabs">${tabs}</nav></div>`;
+         `<div class="hm-nav"><nav class="hm-tabs">${tabs}</nav></div></div>`;
 }
 
 export default {
