@@ -34,7 +34,7 @@ mêmes chiffres par construction.
 | — | correctif : le workflow hebdo n'installait pas les libs devenues obligatoires en phase 1 | `ab2bc8c` | ✅ |
 | 2 | `report.py` et `app.py` (onglets d'affichage) | `6e58bf8` | ✅ |
 | 3 | `app.py` (onglets interactifs), `category_col`, `macro_rolling` | `0ddca27` | ✅ |
-| 4 | série pilote de la prévision (`transactions_run_rate`) | `2435eaf` | ✅ |
+| 4 | série pilote de la prévision (`transactions_run_rate`) | `cceab61` | ✅ |
 
 **Il ne reste rien de planifié sur cet axe.** Ce qui subsiste en pandas sur le chemin
 d'exécution y reste délibérément (voir invariants).
@@ -122,6 +122,6 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 | Branche | Devant `main` | Note |
 |---|---|---|
 | `main` | — | porte l'axe stockage, pas l'axe compute |
-| `refactor/duckdb-engine` | 7 | phases 0-4, correctif CI, ce document. **Non fusionnée, aucune PR ouverte.** |
+| `refactor/duckdb-engine` | 8 | phases 0-4, correctif CI, ce document. **Non fusionnée, aucune PR ouverte.** |
 | `claude/duckdb-parquet-refactor-p2-tvs0b2` | 1 | abandonnée sur décision utilisateur — travail hors sujet (axe stockage). À supprimer. |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
