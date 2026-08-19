@@ -270,10 +270,9 @@ if "pdf_report_bytes" in st.session_state:
 st.title(T[lang_code]["title"])
 
 # National-only: every series is already France-level, so there is nothing to filter.
-# These aliases are read-only downstream (slicing / groupby, which build new frames).
-filtered_sitadel = df_sitadel
-filtered_ventes_ancien = df_ventes_ancien
-filtered_sales = df_sales
+# Les alias filtered_* qui vivaient ici n'ont plus d'utilisateur depuis la phase 3 : les
+# derniers `groupby` sur ces frames sont passés en SQL, où le slicer est appliqué par le
+# paramètre `years=` de q.monthly plutôt qu'en amont sur une copie de DataFrame.
 
 _FR_MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin",
               "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
@@ -475,16 +474,22 @@ def company_series_options(df):
         return []
     return sorted(df["Serie"].dropna().astype(str).unique().tolist())
 
-def pick_company_series(df, key, label=None):
+def pick_company_series(df, key, label=None, years=None):
     """Series selector + monthly [Date, Sales] aggregate for the chosen imported product
     family. Shows a selectbox only when several series were imported; returns
-    (serie_name, agg_df) or (None, None) when no company sales are available."""
+    (serie_name, agg_df) or (None, None) when no company sales are available.
+
+    `df` ne sert plus qu'à lister les séries disponibles (un `unique()`, pas une
+    agrégation) : la somme mensuelle est faite par DuckDB. `years` doit refléter la frame
+    que l'appelant aurait passée — bornée par le slicer, ou None pour l'historique complet.
+    """
     opts = company_series_options(df)
     if not opts:
         return None, None
     serie = opts[0] if len(opts) == 1 else st.selectbox(
         label or _L("Série (famille de produits)", "Series (product family)"), opts, key=key)
-    agg = df[df["Serie"] == serie].groupby("Date")["Sales"].sum().reset_index()
+    agg = q.monthly(con, "company_sales", ["Sales"], windows=(), types=[serie],
+                    category_col="Serie", years=years)
     return serie, agg
 
 def synthetic_circularity_warning():
@@ -1612,15 +1617,15 @@ with tab_macro:
         st.markdown("#### " + _L("Volume de crédits à l'habitat", "Housing-loan volumes"))
         # 12m cumulatives are rolled on the FULL history then clipped to the selected years
         # (a cumul at Jan of the start year keeps its real prior-12-months window).
-        _cr = df_macro_full.dropna(subset=["Production_Credits_Habitat"]).copy()
-        _cr["_cum12"] = _cr["Production_Credits_Habitat"].rolling(12).sum()
         # Pure new loans (HORS renégociations) = the transaction-relevant part. The BCE
         # only publishes this decomposition from 2019 (NaN before) — so it drives the
         # monthly stacked bars and a cumulative overlay, while the long total stays 2003+.
-        _has_split = ("Production_Credits_Pure" in df_macro.columns
-                      and df_macro["Production_Credits_Pure"].notna().any())
-        if _has_split:
-            _cr["_pure_cum12"] = _cr["Production_Credits_Pure"].rolling(12).sum()
+        # (Testé AVANT la requête : la colonne pure ne rejoint le cumul que si elle existe.)
+        _has_split = "Production_Credits_Pure" in q.macro_data_columns(con)
+        _cr_roll = ["Production_Credits_Habitat"] + (["Production_Credits_Pure"] if _has_split else [])
+        _cr = q.macro_rolling(con, "Production_Credits_Habitat", _cr_roll, window=12)
+        _cr = _cr.rename(columns={"Production_Credits_Habitat_cum12": "_cum12",
+                                  "Production_Credits_Pure_cum12": "_pure_cum12"})
         _cr = _filter_years(_cr)
         cr_cols = st.columns(2)
         with cr_cols[0]:
@@ -2504,8 +2509,8 @@ with tab_forecast:
             if len(_series_all) > 1:
                 _recap = []
                 for _srn in _series_all:
-                    _agg_srn = (df_company_sales_full[df_company_sales_full["Serie"] == _srn]
-                                .groupby("Date")["Sales"].sum().reset_index())
+                    _agg_srn = q.monthly(con, "company_sales", ["Sales"], windows=(),
+                                         types=[_srn], category_col="Serie")
                     _fit_srn = fc.best_tx_to_monthly(_agg_srn, _tx12, "Sales")
                     _recap.append({
                         _L("Famille", "Family"): _srn,
@@ -2652,14 +2657,15 @@ with tab_timelag:
             ind_sub_type = st.selectbox(T[lang_code]["housing_type"], df_sitadel["Type"].unique().tolist())
             ind_metric = st.selectbox(T[lang_code]["metric_sitadel"], ["Permis", "MisesEnChantier"] if lang_code == "FR" else ["Permis", "MisesEnChantier"])
             
-            raw_ind_df = filtered_sitadel[filtered_sitadel["Type"] == ind_sub_type]
-            raw_ind_df = raw_ind_df.groupby("Date")[ind_metric].sum().reset_index()
+            raw_ind_df = q.monthly(con, "sitadel", [ind_metric], windows=(),
+                                   types=[ind_sub_type], years=year_range)
             raw_ind_df = raw_ind_df.rename(columns={ind_metric: "Val"})
             ind_label = f"{ind_metric} - {ind_sub_type}"
             
         elif internal_category == "Transactions (ventes anciennes)":
             # Single national IGEDD "ventes anciennes" series — no sub-type choice.
-            raw_ind_df = filtered_ventes_ancien.groupby("Date")["Transactions"].sum().reset_index()
+            raw_ind_df = q.monthly(con, "ventes_ancien", ["Transactions"], windows=(),
+                                   years=year_range)
             raw_ind_df = raw_ind_df.rename(columns={"Transactions": "Val"})
             ind_label = "Ventes anciennes (IGEDD)"
             
@@ -2682,7 +2688,13 @@ with tab_timelag:
             raw_ind_df = raw_ind_df.rename(columns={ind_metric: "Val"})
             ind_label = _macro_choice
             
-        # Smooth indicator with 12M rolling
+        # Smooth indicator with 12M rolling.
+        # Reste délibérément en pandas : c'est un lissage d'AFFICHAGE appliqué en aval, à
+        # la série déjà agrégée, quelle que soit sa provenance (SIT@DEL, transactions ou
+        # macro — trois branches distinctes ci-dessus). Le passer en SQL obligerait à
+        # pousser toute la sélection d'indicateur dans la requête, sans gain numérique.
+        # Noter aussi le min_periods=1 (la fenêtre démarre incomplète), sémantique propre
+        # à ce lissage et différente des cumuls glissants de queries.py.
         smooth_ind = st.checkbox(T[lang_code]["smooth_ind"], value=True)
         if smooth_ind:
             raw_ind_df["Val_Raw"] = raw_ind_df["Val"]
@@ -2731,7 +2743,7 @@ with tab_timelag:
             # synthetic sales (finer lag resolution than the quarterly revenue benchmark).
             # Multi-series: pick which imported product family to benchmark.
             _co = str(df_company_sales["Company"].iloc[0])
-            _serie, agg_sales = pick_company_series(df_company_sales, key="tl_serie")
+            _serie, agg_sales = pick_company_series(df_company_sales, key="tl_serie", years=year_range)
             sales_value_col = "Sales"
             sales_trace_label = _L(f"Ventes {_co} — {_serie}", f"{_co} sales — {_serie}")
             sales_axis_title = _L("Ventes (mensuel, importées)", "Sales (monthly, imported)")
@@ -2740,9 +2752,8 @@ with tab_timelag:
                 T[lang_code]["bench_company"],
                 sorted(df_revenue["Company"].unique().tolist())
             )
-            agg_sales = (df_revenue[df_revenue["Company"] == company]
-                         [["Date", "CA_MEUR"]]
-                         .groupby("Date")["CA_MEUR"].sum().reset_index())
+            agg_sales = q.monthly(con, "revenue", ["CA_MEUR"], windows=(),
+                                  types=[company], category_col="Company", years=year_range)
             sales_value_col = "CA_MEUR"
             sales_trace_label = f"CA {company} (M€)"
             sales_axis_title = "Chiffre d'affaires (M€)"
@@ -2751,8 +2762,9 @@ with tab_timelag:
                 T[lang_code]["sales_compare"],
                 df_sales["Product"].unique().tolist()
             )
-            agg_sales = filtered_sales[filtered_sales["Product"] == selected_product]
-            agg_sales = agg_sales.groupby("Date")["Sales_Units"].sum().reset_index()
+            agg_sales = q.monthly(con, "sales", ["Sales_Units"], windows=(),
+                                  types=[selected_product], category_col="Product",
+                                  years=year_range)
             sales_value_col = "Sales_Units"
             sales_trace_label = f"Sales - {selected_product}"
             sales_axis_title = T[lang_code]["scale_sales"]
@@ -2991,7 +3003,8 @@ with tab_composite:
         comp1_lag = st.number_input(T[lang_code]["comp_lag"], min_value=0, max_value=24, value=12, key="c1_lag")
         comp1_weight = st.slider(T[lang_code]["comp_weight"], 0.0, 1.0, 0.6, key="c1_w")
         
-        df_c1 = filtered_sitadel[filtered_sitadel["Type"] == comp1_type].groupby("Date")[comp1_metric].sum().reset_index()
+        df_c1 = q.monthly(con, "sitadel", [comp1_metric], windows=(), types=[comp1_type],
+                          years=year_range)
         
     with comp_cols[1]:
         st.subheader(T[lang_code]["comp2_title"])
@@ -3052,7 +3065,7 @@ with tab_composite:
 
     if _comp_use_company:
         _co_c = str(df_company_sales["Company"].iloc[0])
-        _serie_c, df_sales_bench = pick_company_series(df_company_sales, key="comp_serie")
+        _serie_c, df_sales_bench = pick_company_series(df_company_sales, key="comp_serie", years=year_range)
         bench_col = "Sales"
         bench_label = _L(f"Ventes {_co_c} — {_serie_c}", f"{_co_c} sales — {_serie_c}")
     else:
@@ -3061,7 +3074,9 @@ with tab_composite:
             df_sales["Product"].unique().tolist(),
             key="comp_bench_product"
         )
-        df_sales_bench = filtered_sales[filtered_sales["Product"] == bench_product].groupby("Date")["Sales_Units"].sum().reset_index()
+        df_sales_bench = q.monthly(con, "sales", ["Sales_Units"], windows=(),
+                                   types=[bench_product], category_col="Product",
+                                   years=year_range)
         bench_col = "Sales_Units"
         bench_label = f"Sales - {bench_product}"
         synthetic_circularity_warning()

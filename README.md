@@ -110,6 +110,17 @@ Après la phase 0 (couche SQL `queries.py` + tests de parité) et la phase 1 (`w
 - **Effet de bord bienvenu** : les calculs faits par DuckDB ne dépendent plus de la version de pandas/numpy. L'export web, qui variait au 1e-14 près sur `capidx`/`access` selon l'environnement, est maintenant reproductible bit-pour-bit.
 - **CI réparée** : le workflow hebdomadaire n'installait que `pandas numpy xlrd` alors que la phase 1 avait rendu `duckdb`/`pandera`/`pyarrow` obligatoires pour l'export — l'étape « Régénérer les données du front web » échouait à l'import.
 
+### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 3)
+
+La phase 2 avait laissé `app.py` à moitié migré : les onglets d'affichage passaient par SQL, mais les onglets d'analyse interactive (Prévision, Atelier exploratoire, Données & Export) gardaient 11 agrégations pandas. La phase 3 les traite.
+
+- **`q.monthly` généralisé** : le filtre de catégorie codait en dur la colonne `Type`, donc seuls sitadel et ventes_ancien étaient filtrables côté SQL. Le paramètre `category_col` ouvre les trois autres datasets — `Product` (sales), `Serie` (company_sales), `Company` (revenue).
+- **8 sites migrés** : sélecteur de série des ventes société importées, table récap « une famille = un décalage », les deux indicateurs de l'atelier Time-Lag, les benchmarks CA société et ventes second-œuvre, et la composante 1 de l'indicateur composite.
+- **`q.macro_rolling`** : nouveau helper pour les cumuls de crédits à l'habitat. Contrairement à `rolling_sum`, il CONSERVE les lignes à cumul NULL et les colonnes brutes — la vue superpose des barres mensuelles et une courbe cumulée sur le même axe, elle a besoin des deux.
+- **Un seul calcul reste délibérément en pandas** : le lissage 12 mois de l'atelier Time-Lag (`min_periods=1`). C'est un lissage d'affichage appliqué en aval à la série déjà agrégée, quelle que soit sa provenance parmi trois branches ; le passer en SQL obligerait à pousser toute la sélection d'indicateur dans la requête, sans gain numérique. La raison est écrite à côté du code.
+- **Parité vérifiée sous trois états de widgets** : `app.py` rendu via le harnais Streamlit donne des valeurs identiques à l'état par défaut, avec le slicer déplacé (2015-2020), **et avec 13 selectbox basculés sur leur dernière option** — c'est ce dernier état qui exerce réellement les branches `Product` / `Company` / `Serie`. Métriques, markdown, légendes et tableaux comparés.
+- **Tests** : `tests/test_queries_parity.py` passe de 15 à 18 (filtre de catégorie sur les trois datasets non-`Type`, `macro_rolling` vs `dropna().rolling()`). 57 tests verts au total.
+
 ## Modules
 
 - `app.py` — interface Streamlit (8 onglets dont la Synthèse, bilingue FR/EN).

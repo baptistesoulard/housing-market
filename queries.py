@@ -110,15 +110,20 @@ def _window_clause(windows, partition: str | None = None) -> str:
         for w in windows)
 
 
-def _row_filter(types=None, years=None):
-    """Clause WHERE + paramètres communs aux agrégats : filtre de types et/ou de période.
+def _row_filter(types=None, years=None, category_col: str = "Type"):
+    """Clause WHERE + paramètres communs aux agrégats : filtre de catégorie et/ou de période.
+
+    `category_col` est la colonne qui porte la catégorie du dataset : "Type" pour
+    sitadel/ventes_ancien, mais "Product" pour sales, "Serie" pour company_sales et
+    "Company" pour revenue. Sans ce paramètre, seuls les deux premiers datasets étaient
+    filtrables côté SQL et les autres restaient agrégés en pandas.
 
     `years=(min, max)` reproduit le `_filter_years` d'app.py (bornes incluses, sur
     l'ANNÉE civile), appliqué avant le GROUP BY comme le faisait le filtrage pandas.
     """
     clauses, params = [], []
     if types:
-        clauses.append("Type IN (" + ", ".join(["?"] * len(types)) + ")")
+        clauses.append(f'"{category_col}" IN (' + ", ".join(["?"] * len(types)) + ")")
         params += list(types)
     if years:
         clauses.append("year(Date) BETWEEN ? AND ?")
@@ -137,20 +142,22 @@ def _select_with_windows(value_cols, windows):
 
 
 def monthly(con, dataset: str, value_cols, windows=(12,), types=None,
-            years=None) -> pd.DataFrame:
+            years=None, category_col: str = "Type") -> pd.DataFrame:
     """Série mensuelle nationale d'un dataset + ses cumuls glissants, en UN passage SQL.
 
     Remplace la chaîne `analysis.aggregate_* -> calculate_rolling_12m -> calculate_rolling`,
-    qui recopiait le DataFrame à chaque étape. `types` filtre la colonne Type côté SQL
-    (aucune ligne inutile ne remonte) ; `years=(min, max)` restreint à une période, pour
-    les vues où l'agrégat lui-même est borné par le slicer d'années.
+    qui recopiait le DataFrame à chaque étape. `types` filtre la colonne de catégorie côté
+    SQL (aucune ligne inutile ne remonte) — `category_col` dit laquelle : "Type" par
+    défaut, mais "Product" (sales), "Serie" (company_sales) ou "Company" (revenue).
+    `years=(min, max)` restreint à une période, pour les vues où l'agrégat lui-même est
+    borné par le slicer d'années.
 
     Attention : borner par `years` borne AUSSI les fenêtres glissantes. Les vues qui
     veulent un cumul 12 mois correct en début de période doivent agréger sur l'historique
     complet puis découper à l'affichage — c'est ce que fait app.py.
     """
     sums = ", ".join(f'SUM("{c}")::DOUBLE AS "{c}"' for c in value_cols)
-    where, params = _row_filter(types, years)
+    where, params = _row_filter(types, years, category_col)
     projection, window = _select_with_windows(value_cols, windows)
     return frame(con, f"""
         WITH mensuel AS (
@@ -224,6 +231,32 @@ def macro_frame(con, col: str, key: str = "value") -> pd.DataFrame:
     return frame(con, f"""
         SELECT Date, "{col}" AS "{key}"
         FROM "macro" WHERE "{col}" IS NOT NULL ORDER BY Date
+    """)
+
+
+def macro_rolling(con, dropna_col: str, roll_cols, window: int = 12,
+                  keep_cols=()) -> pd.DataFrame:
+    """Frame macro restreinte aux lignes où `dropna_col` est renseigné, avec un cumul
+    glissant `<col>_cum{window}` par colonne de `roll_cols`.
+
+    Réplique exactement `df.dropna(subset=[dropna_col])[col].rolling(window).sum()` :
+    la fenêtre porte sur les LIGNES restantes après le filtre (pas sur des mois
+    calendaires), et vaut NULL tant qu'elle n'est pas pleine. Contrairement à
+    `rolling_sum()`, les lignes à cumul NULL sont CONSERVÉES et les colonnes brutes
+    aussi — les vues qui superposent des barres mensuelles et une courbe cumulée ont
+    besoin des deux sur le même axe temporel.
+    """
+    cols = list(dict.fromkeys([dropna_col, *roll_cols, *keep_cols]))
+    quoted = ", ".join(f'"{c}"' for c in cols)
+    rolls = ", ".join(
+        f'CASE WHEN COUNT("{c}") OVER w = {window} THEN SUM("{c}") OVER w END '
+        f'AS "{c}_cum{window}"' for c in roll_cols)
+    return frame(con, f"""
+        SELECT Date, {quoted}, {rolls}
+        FROM "macro"
+        WHERE "{dropna_col}" IS NOT NULL
+        WINDOW w AS (ORDER BY Date ROWS BETWEEN {window - 1} PRECEDING AND CURRENT ROW)
+        ORDER BY Date
     """)
 
 

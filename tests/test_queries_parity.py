@@ -144,6 +144,50 @@ def test_years_filter_and_type_filter_combine(con):
     _same(sql["Permis"], agg["Permis"], name="collectif 2018-2022")
 
 
+@pytest.mark.parametrize("dataset,col,category_col", [
+    ("sales", "Sales_Units", "Product"),
+    ("revenue", "CA_MEUR", "Company"),
+    ("company_sales", "Sales", "Serie"),
+])
+def test_category_col_filters_non_type_datasets(con, dataset, col, category_col):
+    """Trois datasets portent leur catégorie dans une colonne autre que `Type`. Sans
+    `category_col` ils restaient agrégés en pandas dans les onglets interactifs."""
+    path = os.path.join(_DATA, f"{dataset}.parquet")
+    if not os.path.exists(path):
+        pytest.skip(f"{dataset} absent (dataset optionnel)")
+    df = pd.read_parquet(path)
+    if df.empty:
+        pytest.skip(f"{dataset} vide")
+    valeur = sorted(df[category_col].dropna().unique())[0]
+
+    sql = q.monthly(con, dataset, [col], windows=(), types=[valeur],
+                    category_col=category_col).sort_values("Date").reset_index(drop=True)
+    ref = (df[df[category_col] == valeur].groupby("Date")[col].sum().reset_index()
+           .sort_values("Date").reset_index(drop=True))
+    assert sql["Date"].tolist() == ref["Date"].tolist(), f"{dataset}/{valeur}"
+    _same(sql[col], ref[col], name=f"{dataset}[{category_col}={valeur}]")
+
+
+def test_macro_rolling_matches_dropna_then_rolling(con):
+    """`macro_rolling` réplique `df.dropna(subset=[c]).rolling(w).sum()` en CONSERVANT les
+    lignes à cumul NULL et les colonnes brutes — les vues qui superposent barres mensuelles
+    et courbe cumulée ont besoin des deux sur le même axe."""
+    base = "Production_Credits_Habitat"
+    autre = "Production_Credits_Pure"
+    df = pd.read_parquet(os.path.join(_DATA, "macro.parquet"))
+    if base not in df.columns or not df[base].notna().any():
+        pytest.skip("série de crédits absente")
+    roll = [base] + ([autre] if autre in df.columns and df[autre].notna().any() else [])
+
+    sql = q.macro_rolling(con, base, roll, window=12)
+    ref = df.dropna(subset=[base]).copy()
+    assert len(sql) == len(ref)                       # aucune ligne perdue
+    for c in roll:
+        ref[f"{c}_ref"] = ref[c].rolling(12).sum()
+        _same(sql[f"{c}_cum12"], ref[f"{c}_ref"], name=f"cum12 {c}")
+        _same(sql[c], ref[c], name=f"brut {c}")       # colonne brute conservée
+
+
 def test_macro_frame_matches_macro_series(con):
     """`macro_frame` (consommé par les graphiques du rapport PDF) et `macro_series`
     (consommé par l'export JSON) doivent décrire exactement la même série."""
