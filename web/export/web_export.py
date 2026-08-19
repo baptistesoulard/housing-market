@@ -550,9 +550,13 @@ def build_neuf(con, frames: dict) -> dict:
                            "last3_yoy": _pct_fr(g_mom["last3_yoy"]) if g_mom["last3_yoy"] is not None else "—"})
             # Courbes : seulement individuel pur + collectif (comme app.py).
             if types in (ana.SITADEL_INDIVIDUEL_PUR, ana.SITADEL_COLLECTIF):
+                # La clé DOIT s'appeler "value" : c'est ce que `multiLine` trace (y: "value").
+                # Elle s'est appelée "value_k" un temps — seule série de tout l'export à
+                # diverger — et le graphique « Individuel vs Collectif » rendait ses axes
+                # sans aucune courbe, l'ordonnée étant indéfinie pour chaque point.
                 for _, r in g_roll[["Date", f"{metric}_12M"]].dropna().iterrows():
                     g_lines.append({"date": r["Date"].strftime("%Y-%m-%d"), "series": lbl,
-                                    "color": clr, "value_k": round(float(r[f"{metric}_12M"]) / 1000.0, 2)})
+                                    "color": clr, "value": round(float(r[f"{metric}_12M"]) / 1000.0, 2)})
         iv[metric] = {"kpis": g_kpis, "lines": g_lines}
 
     # --- Comparaison mensuelle par année ----------------------------------------------

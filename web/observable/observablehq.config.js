@@ -84,9 +84,19 @@ a, a:visited { color: var(--hm-link); }
 .hm-card-title { font-weight: 600; font-size: 1rem; color: var(--hm-ink); letter-spacing: 0.2px; }
 .hm-card-value { font-size: 1.75rem; font-weight: 600; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.2; }
 .hm-card-sub { font-size: 0.875rem; color: var(--hm-ink); line-height: 1.6; }
-.hm-delta { font-size: 0.95rem; font-weight: 700; }
-.hm-delta.pos { color: var(--hm-delta-pos); }
-.hm-delta.neg { color: var(--hm-delta-neg); }
+/* Cartouches type st.metric (pages Marché / Actualités), via .hm-card--metric.
+   Relevé sur st.metric : libellé 14px/400, valeur 24px/700, delta en pastille de 14px à
+   rayon plein sur un fond teinté à ~10 %, SUR SA PROPRE LIGNE. C'est ce dernier point qui
+   fait la lisibilité : collé derrière la valeur, le delta concurrençait le chiffre. */
+.hm-card--metric .hm-card-title { font-size: 0.875rem; font-weight: 400; }
+.hm-card--metric .hm-card-value { font-size: 1.5rem; font-weight: 700; margin: 0.1rem 0 0.25rem; }
+.hm-card-delta { margin: 0 0 0.4rem; }
+.hm-delta { display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 400;
+  border-radius: 9999px; padding: 2px 9px; line-height: 1.5; }
+.hm-delta.pos { color: var(--hm-delta-pos);
+  background: color-mix(in srgb, var(--hm-delta-pos) 12%, transparent); }
+.hm-delta.neg { color: var(--hm-delta-neg);
+  background: color-mix(in srgb, var(--hm-delta-neg) 12%, transparent); }
 .hm-link { color: var(--hm-ink); font-size: 0.875rem; margin: 0.5rem 0 2rem; }
 .hm-panels { display: grid; gap: 1rem 1.4rem; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
 .hm-panel-title { font-weight: 600; font-size: 0.98rem; color: var(--hm-ink); margin: 0.4rem 0 0.1rem; }

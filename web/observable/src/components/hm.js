@@ -24,12 +24,19 @@ export const nf0 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 0});
 export const nf1 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 1});
 
 // --- Carte KPI (miroir st.metric) --------------------------------------------------
+// Le delta est une PASTILLE sur sa propre ligne, comme le rend st.metric. Il était
+// auparavant collé derrière la valeur, sur la même ligne : deux nombres se disputaient
+// le même regard, et sur une colonne étroite le delta repoussait la valeur à la ligne.
+// La classe hm-card--metric porte l'échelle de st.metric (libellé plus discret, valeur
+// plus compacte), distincte des cartes de la Synthèse qui, elles, miroitent un
+// `**libellé**` + `### valeur` markdown.
 export function kpiCard({label, value, delta, yoy, subs}) {
   const d = delta ?? yoy;
   const neg = d && /^-|−/.test(d.replace("−", "-"));
-  return html`<div class="hm-card">
+  return html`<div class="hm-card hm-card--metric">
     <div class="hm-card-title">${label}</div>
-    <div class="hm-card-value">${value}${d ? html` <span class="hm-delta ${neg ? "neg" : "pos"}">${d}</span>` : ""}</div>
+    <div class="hm-card-value">${value}</div>
+    ${d ? html`<div class="hm-card-delta"><span class="hm-delta ${neg ? "neg" : "pos"}">${d}</span></div>` : ""}
     ${(subs || []).map((s) => html`<div class="hm-card-sub">${s}</div>`)}
   </div>`;
 }
