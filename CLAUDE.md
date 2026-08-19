@@ -14,7 +14,7 @@ touchent les mêmes fichiers. Les confondre est l'erreur par défaut.
 |---|---|---|
 | Question | *où* les données sont persistées | *qui* calcule les agrégations |
 | Livrable | `housing_data/` — contrats pandera + entrepôt Parquet, vue SQL par dataset | `queries.py` — DuckDB comme moteur d'agrégation unique |
-| État | **fusionné dans `main`** (`c21950d`, `fa38edb`, `d7f38e7`) | **branche `refactor/duckdb-engine`**, non fusionnée |
+| État | **fusionné dans `main`** (`c21950d`, `fa38edb`, `d7f38e7`) | **branche `refactor/duckdb-engine`**, PR #2 en attente |
 | Vocabulaire des commits | messages libres | `refactor(compute) phase N:` |
 
 L'axe compute **s'appuie** sur l'axe stockage : `queries.open_warehouse()` ouvre une
@@ -122,6 +122,6 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 | Branche | Devant `main` | Note |
 |---|---|---|
 | `main` | — | porte l'axe stockage, pas l'axe compute |
-| `refactor/duckdb-engine` | 8 | phases 0-4, correctif CI, ce document. **Non fusionnée, aucune PR ouverte.** |
+| `refactor/duckdb-engine` | 9 | phases 0-4, correctif CI, ce document. **PR #2 ouverte vers `main`, non fusionnée.** |
 | `claude/duckdb-parquet-refactor-p2-tvs0b2` | 1 | abandonnée sur décision utilisateur — travail hors sujet (axe stockage). À supprimer. |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
