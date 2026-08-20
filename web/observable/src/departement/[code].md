@@ -3,23 +3,36 @@ title: Prix de l'immobilier par département
 toc: false
 ---
 
+<!--
+  STRUCTURE CONTRAINTE — ne pas réorganiser sans relire ce qui suit.
+
+  La première version de cette page ne s'exécutait pas une fois déployée : les cellules
+  restaient en attente, la page affichait sa structure et aucun chiffre. Onze variantes
+  déployées ont montré que chaque brique fonctionne isolément (import, fetch, cartes,
+  graphique) mais que certains assemblages bloquent — notamment un `import` et un
+  `await fetch` réunis dans la MÊME cellule.
+
+  La forme retenue ci-dessous est celle qui a été vérifiée en production :
+
+    1. un bloc d'imports, et rien d'autre ;
+    2. un bloc par `await fetch`, et rien d'autre ;
+    3. les titres en markdown (`#`), pas en HTML brut avec interpolation ;
+    4. un `display()` par bloc, court.
+
+  Voir CLAUDE.md, section « Les pages départementales ».
+-->
+
 ```js
 import {multiLine, cardGrid, kpiCard, nf0, nf1} from "../components/hm.js";
 import {series, ui} from "../components/theme.js";
 ```
 
 ```js
-// Chargement par fetch(), PAS par FileAttachment — et ce n'est pas un choix de style.
-// FileAttachment est résolu au BUILD : le framework lit le nom du fichier dans le code
-// source pour savoir quoi copier dans dist/. Avec un nom construit à partir du paramètre
-// de route (`../data/departements/${code}.json`), il n'y a rien à lire, donc rien n'est
-// copié — vérifié : la page se construit et dist/_file/data/departements/ reste vide.
-//
-// Les données sont donc copiées à part par scripts/postbuild.mjs, à une adresse STABLE
-// (/data/departements/<code>.json), et lues ici au chargement de la page.
-const code = observable.params.code;
-const dep = await fetch(`/data/departements/${code}.json`).then((r) => r.json());
-const index = await fetch("/data/departements.json").then((r) => r.json());
+const dep = await fetch(`/data/departements/${observable.params.code}.json`).then((r) => r.json());
+```
+
+```js
+const annuaire = await fetch("/data/departements.json").then((r) => r.json());
 ```
 
 ```js
@@ -27,19 +40,17 @@ const euro = (v) => v == null ? "—" : nf0.format(v) + " €";
 const pct = (v) => v == null ? "—" : (v >= 0 ? "+" : "−") + nf1.format(Math.abs(v)) + " %";
 // Les dates de l'agrégat sont des débuts de trimestre : « 2025-10-01 » se lit « T4 2025 ».
 const trimestre = (iso) => `T${Math.floor(Number(iso.slice(5, 7)) / 3) + 1} ${iso.slice(0, 4)}`;
+const couvert = dep.couvert === true;
 ```
 
-<div class="hm-dep-head">
-  <h1>Prix de l'immobilier · ${dep.nom} (${dep.code})</h1>
-  <div class="hm-caption">${dep.region} · d'après les ventes réellement enregistrées
-  chez le notaire (DVF, DGFiP)</div>
-</div>
+# Prix de l'immobilier · ${dep.nom} (${dep.code})
+
+<div class="hm-caption">${dep.region} · d'après les ventes réellement enregistrées chez le notaire (DVF, DGFiP)</div>
 
 ```js
-// Le cas « non couvert » est traité EN PREMIER et arrête la page. Quatre départements
-// sont concernés et ils n'ont pas à recevoir une page de graphiques vides qui passerait
-// pour une panne du site.
-display(dep.couvert ? html`` : html`<div class="hm-absence">
+// Le cas « non couvert » arrête la page. Quatre départements sont concernés et ils n'ont
+// pas à recevoir des graphiques vides, qui passeraient pour une panne du site.
+display(couvert ? html`` : html`<div class="hm-absence">
   <div class="hm-absence-titre">Aucune donnée de prix pour ce département</div>
   <p>${dep.absence}</p>
   <p>Les autres pages du site restent valables : elles portent sur la France entière,
@@ -49,21 +60,14 @@ display(dep.couvert ? html`` : html`<div class="hm-absence">
 ```
 
 ```js
-// Tout ce qui suit n'a de sens que pour un département couvert.
-const ok = dep.couvert === true;
-```
-
-```js
-display(!ok ? html`` : cardGrid([
+display(!couvert ? html`` : cardGrid([
   {label: `Prix médian au m² · ${trimestre(dep.dernier.Ensemble.date)}`,
    value: euro(dep.dernier.Ensemble.prix_m2),
    delta: pct(dep.evolution.un_an) + " sur un an",
    subs: [`${nf0.format(dep.dernier.Ensemble.ventes)} ventes ce trimestre`]},
-  {label: "Prix médian d'un logement",
-   value: euro(dep.dernier.Ensemble.prix),
+  {label: "Prix médian d'un logement", value: euro(dep.dernier.Ensemble.prix),
    subs: ["toutes surfaces confondues"]},
-  {label: "Sur cinq ans",
-   value: pct(dep.evolution.cinq_ans),
+  {label: "Sur cinq ans", value: pct(dep.evolution.cinq_ans),
    subs: ["évolution du prix au m²"]},
 ], kpiCard));
 ```
@@ -71,15 +75,15 @@ display(!ok ? html`` : cardGrid([
 ## Combien de m² votre capacité d'emprunt achète-t-elle ici ?
 
 ```js
-// LE chiffre de la page. Il croise la capacité d'emprunt nationale (calculée à partir du
-// taux de crédit réel, même formule que le reste du site) et le prix local. La
-// comparaison à 2015 est ce qui lui donne son sens : un prix seul ne dit pas si le
-// logement s'éloigne, « votre mensualité achetait X m², elle en achète Y » le dit.
-display(!ok || !dep.capacite ? html`` : html`<div class="hm-capacite">
+// LE chiffre de la page. Il croise la capacité d'emprunt nationale (calculée sur le taux
+// de crédit réel, même formule que le reste du site) et le prix local. La comparaison à
+// 2015 lui donne son sens : un prix seul ne dit pas si le logement s'éloigne, « votre
+// mensualité achetait X m², elle en achète Y » le dit.
+display(!couvert || !dep.capacite ? html`` : html`<div class="hm-capacite">
   <div class="hm-capacite-chiffre">${nf1.format(dep.capacite.m2_aujourdhui)} m²</div>
   <div class="hm-capacite-legende">
-    pour <b>${nf0.format(index.mensualite_ref)} € par mois</b> sur
-    ${index.duree_ref_ans} ans, au taux de crédit actuel
+    pour <b>${nf0.format(annuaire.mensualite_ref)} € par mois</b> sur
+    ${annuaire.duree_ref_ans} ans, au taux de crédit actuel
     ${dep.capacite.m2_2015 != null ? html`<br>
       contre <b>${nf1.format(dep.capacite.m2_2015)} m²</b> pour la même mensualité en 2015,
       soit ${pct((dep.capacite.m2_aujourdhui / dep.capacite.m2_2015 - 1) * 100)}` : ""}
@@ -96,16 +100,15 @@ votre apport, de votre taux et de votre assurance.
 ## Le prix au m², trimestre par trimestre
 
 ```js
-display(!ok ? html`` : multiLine({
+display(!couvert ? html`` : multiLine({
   rows: [
-    ...dep.ensemble.dates.map((d, i) => ({
-      date: d, value: dep.ensemble.prix_m2[i], series: dep.nom})),
-    ...index.national.dates.map((d, i) => ({
-      date: d, value: index.national.prix_m2[i], series: "Département médian (France)"}))
+    ...dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.prix_m2[i], series: dep.nom})),
+    ...annuaire.national.dates.map((d, i) => ({date: d, value: annuaire.national.prix_m2[i],
+                                               series: "Département médian (France)"}))
   ],
   meta: [{name: dep.nom, color: series.brick},
          {name: "Département médian (France)", color: series.blue, dash: true}],
-  yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v), tipUnit: ""
+  yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v)
 }));
 ```
 
@@ -119,30 +122,30 @@ moitié des départements sont au-dessus, la moitié en dessous. Une moyenne nat
 // Maisons et appartements séparés : dans un département rural la médiane « ensemble » est
 // celle des maisons, dans une métropole celle des appartements. Les confondre masque le
 // seul écart que le lecteur regarde vraiment.
-const parType = !ok ? [] : ["maison", "appartement"]
+const parType = !couvert ? [] : ["maison", "appartement"]
   .filter((k) => dep[k])
   .flatMap((k) => dep[k].dates.map((d, i) => ({
-    date: d, value: dep[k].prix_m2[i],
-    series: k === "maison" ? "Maisons" : "Appartements"})));
+    date: d, value: dep[k].prix_m2[i], series: k === "maison" ? "Maisons" : "Appartements"})));
 ```
 
 ```js
-display(!parType.length ? html`` : html`
-  <h2>Maisons et appartements</h2>
-  ${multiLine({
-    rows: parType,
-    meta: [{name: "Maisons", color: series.green},
-           {name: "Appartements", color: series.brick}],
-    yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v)
-  })}`);
+display(!parType.length ? html`` : html`<h2>Maisons et appartements</h2>`);
+```
+
+```js
+display(!parType.length ? html`` : multiLine({
+  rows: parType,
+  meta: [{name: "Maisons", color: series.green}, {name: "Appartements", color: series.brick}],
+  yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v)
+}));
 ```
 
 ## Combien de ventes ? Le marché est-il bloqué ?
 
 ```js
-display(!ok ? html`` : multiLine({
-  rows: dep.ensemble.dates.map((d, i) => ({
-    date: d, value: dep.ensemble.ventes[i], series: "Ventes par trimestre"})),
+display(!couvert ? html`` : multiLine({
+  rows: dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.ventes[i],
+                                           series: "Ventes par trimestre"})),
   meta: [{name: "Ventes par trimestre", color: series.blue}],
   yLabel: "Nombre de ventes retenues", valueFmt: (v) => nf0.format(v)
 }));
@@ -171,8 +174,8 @@ d'accord, et le prix affiché est celui des rares transactions qui aboutissent.
 
     <p><b>Les dépendances sont conservées.</b> Une maison vendue avec son garage est une
     vente normale, et c'est le bien que l'on compare. Le prix au m² inclut donc ces
-    annexes et <b>surestime légèrement</b> le logement seul. Les exclure aurait coûté
-    les deux tiers des ventes et déformé l'échantillon.</p>
+    annexes et <b>surestime légèrement</b> le logement seul. Les exclure aurait coûté les
+    deux tiers des ventes et déformé l'échantillon.</p>
 
     <p><b>Médiane, pas moyenne.</b> La moitié des ventes sont au-dessus, la moitié en
     dessous. Une moyenne serait tirée vers le haut par quelques ventes exceptionnelles.
@@ -191,27 +194,23 @@ d'accord, et le prix affiché est celui des rares transactions qui aboutissent.
 </details>
 
 ```js
-display(!ok ? html`` : html`<div class="hm-caption">
+display(!couvert ? html`` : html`<div class="hm-caption">
   Données jusqu'à ${trimestre(dep.dernier.Ensemble.date)} · source : ${dep.source} ·
-  <a href="/a-propos">méthode et limites</a>
-</div>`);
+  <a href="/a-propos">méthode et limites</a></div>`);
 ```
 
 ## Voir un autre département
 
 ```js
-// Le sélecteur est présent sur CHAQUE page départementale : c'est le chemin naturel du
-// visiteur qui arrive par un moteur de recherche sur un département voisin du sien.
+// Le sélecteur est sur CHAQUE page départementale : c'est le chemin naturel du visiteur
+// qui arrive par un moteur de recherche sur un département voisin du sien.
 const choix = view(Inputs.select(
-  index.departements.filter((d) => d.couvert).map((d) => d.code),
-  {label: "Département", value: code,
-   format: (c) => {
-     const d = index.departements.find((x) => x.code === c);
-     return `${c} — ${d.nom}`;
-   }}));
+  annuaire.departements.filter((d) => d.couvert).map((d) => d.code),
+  {label: "Département", value: dep.code,
+   format: (c) => `${c} — ${annuaire.departements.find((x) => x.code === c).nom}`}));
 ```
 
 ```js
-display(choix === code ? html`` : html`<a class="hm-cta" href="/departement/${choix}">
-  Voir ${index.departements.find((d) => d.code === choix).nom} →</a>`);
+display(choix === dep.code ? html`` : html`<a class="hm-cta" href="/departement/${choix}">
+  Voir ${annuaire.departements.find((d) => d.code === choix).nom} →</a>`);
 ```
