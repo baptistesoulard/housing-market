@@ -42,11 +42,13 @@ web/
 │       ├── index.md             # page d'accueil — RÉDIGÉE, pas de JSON
 │       ├── a-propos.md          # méthode, sources, limites — rédigée aussi
 │       ├── synthese.md          # page Synthèse (chips, cartes, graphique)
+│       ├── previsions-passees.md  # archive : prévisions produites vs réalisé
 │       ├── components/
 │       │   ├── hm.js            # graphiques & helpers partagés
 │       │   ├── period.js        # frise de période globale (barre latérale)
 │       │   └── theme.js         # palette, généré depuis web/theme.json
 │       └── data/synthese.json   # généré par web_export.py (commité pour le déploiement)
+├── ../forecast_archive.py       # (racine) mémoire des prévisions : --record / --backfill
 └── README.md
 ```
 
@@ -154,7 +156,7 @@ donc aucun rebuild inutile.
 Le site mélange délibérément deux régimes. Le critère est simple : **ce que l'utilisateur
 consulte** est précalculé, **ce qu'il interroge** passe par l'API.
 
-| | Pages 1-5 (Synthèse, Neuf, Ancien, Macro, Actualités) | Pages 6-7 (Prévision, Données) |
+| | Pages statiques (Synthèse, Neuf, Ancien, Macro, Actualités, Prévisions passées) | Pages 6-7 (Prévision, Données) |
 |---|---|---|
 | Source | JSON statique commité, produit par `web_export.py` | `fetch()` vers l'API HTTP `api/` |
 | Interaction | filtres d'affichage sur des données déjà calculées | l'utilisateur pose des questions qui **relancent un calcul** |
@@ -210,6 +212,38 @@ vers Cloudflare. Les régressions qui en dépendent tournent donc en JavaScript
 par `forecast.best_tx_to_monthly`, `tests/test_web_js_parity.py` vérifie que les deux
 implémentations retiennent le même décalage et le même R² — sinon on aurait deux chiffres
 et aucun arbitre.
+
+## L'archive des prévisions
+
+`data/forecast_archive.csv` (à la racine du dépôt, versionné) garde chaque prévision
+produite. C'est la brique de crédibilité du site : une prévision publiée sans historique
+n'est qu'une opinion.
+
+**Deux natures de lignes**, séparées par la colonne `kind` et jamais agrégées ensemble :
+
+| `kind` | Origine | Valeur de preuve |
+|---|---|---|
+| `archive` | Enregistrée le jour même par le job hebdomadaire, avant que la suite soit connue. | Une promesse tenue — personne ne peut la retoucher. |
+| `retro` | Recalculée après coup, données tronquées au millésime visé. | La méthode tenait ; pas qu'on l'avait annoncé. |
+
+Les lignes `retro` existent pour que la page ne soit pas vide au lancement. Leur limite est
+énoncée sur la page : les transactions étant révisées, une rétro-simulation voit des
+données un peu meilleures que celles de l'époque.
+
+```bash
+python forecast_archive.py --record      # la prévision du jour (le job hebdo le fait)
+python forecast_archive.py --backfill    # rejoue les millésimes rétro-simulés (~3 s each)
+python forecast_archive.py --report      # erreur par horizon, modèle contre naïve
+```
+
+**Le résultat mérite d'être connu** : sur les millésimes rétro-simulés, le modèle est
+*moins bon* qu'une prévision naïve (« le marché reste où il est ») en deçà de 4 mois, puis
+évite jusqu'à ~65 % de son erreur vers 8-11 mois. Un MAPE unique de 4,7 % aurait masqué le
+premier fait ; la page `/previsions-passees` montre la zone où le modèle perd.
+
+Le job hebdomadaire enregistre la prévision **entre** le rafraîchissement des sources et
+l'export du front. Une prévision inchangée n'ajoute rien au fichier, donc une semaine sans
+nouveauté ne produit aucun diff.
 
 ## Être trouvable et partageable
 
@@ -290,6 +324,9 @@ légendes cliquables) :
 - ✅ **Environnement & Financement** — confiance, taux, intentions, chômage, volumes de
   crédits, demande BLS, rénovation.
 - ✅ **Actualités & Aides** — filtres, matrice d'impact, échéancier, fiches détaillées.
+
+Une **huitième page de données** s'est ajoutée, sans équivalent dans l'app Streamlit :
+**🎯 Prévisions passées**, l'archive du modèle confrontée au réalisé (voir plus bas).
 
 À ces sept pages de données s'ajoutent **deux pages rédigées**, qui n'existent pas dans
 l'app Streamlit et n'ont de sens que pour un site public : l'**accueil** (ce que le site

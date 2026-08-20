@@ -112,6 +112,9 @@ export const NAV = [
   {icon: "📡", name: "Prévision & Scénarios", path: "/previsions",
    description: "Prévision des transactions de logements à 12-18 mois : modèle à deux " +
      "étages, backtest hors échantillon et scénarios à quatre leviers."},
+  {icon: "🎯", name: "Prévisions passées", path: "/previsions-passees",
+   description: "Toutes les prévisions de transactions produites par le modèle, face au " +
+     "réalisé : erreur par horizon et comparaison avec une prévision naïve."},
   {icon: "⚙️", name: "Données & Sources", path: "/donnees",
    description: "Sources, fraîcheur des séries et méthode de calcul, avec import local " +
      "d'un fichier de ventes pour le confronter aux indicateurs de marché."},

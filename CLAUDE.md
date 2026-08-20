@@ -237,8 +237,9 @@ du Time-Lag, a été supprimée elle aussi.
 ## Le site public — ce qui doit rester vrai
 
 Le front est passé de tableau de bord déployé à **site destiné à être partagé** (LinkedIn
-et consorts). Neuf pages : `/` est désormais une page d'accueil RÉDIGÉE, la Synthèse a
-glissé à `/synthese`, et `/a-propos` porte méthode, sources et limites.
+et consorts). Dix pages : `/` est désormais une page d'accueil RÉDIGÉE, la Synthèse a
+glissé à `/synthese`, `/a-propos` porte méthode, sources et limites, et
+`/previsions-passees` publie l'archive des prévisions (voir la section suivante).
 
 **`site.config.js` est la source unique d'identité.** Adresse publique, titre et
 description de chaque page, ordre de la navigation, logo. Il est lu par le `<head>`
@@ -289,6 +290,56 @@ sous une explication en français courant et des renvois vers les pages qui fonc
 (contenu mixte), donc **ces deux pages resteront en encart pour un visiteur externe tant
 que l'API n'est pas hébergée**.
 
+## L'archive des prévisions — ce qui ne doit jamais bouger
+
+Choix produit du 2026-08-20 : le projet vise un **média d'analyse à audience large** plutôt
+qu'un outil de travail à maille fine. La crédibilité devient donc la fonctionnalité
+principale, et `forecast_archive.py` en est le pivot — une prévision publiée sans historique
+n'est qu'une opinion.
+
+**Deux natures de lignes, jamais agrégées ensemble.** La colonne `kind` sépare `archive`
+(prévision réellement publiée ce jour-là, enregistrée par le job hebdomadaire avant que la
+suite ne soit connue) et `retro` (recalculée après coup en tronquant les données au
+millésime visé). La première prouve une promesse tenue, la seconde seulement que la méthode
+tenait. `web_export.build_archive` ventile TOUT par `kind`, compteurs compris ; produire un
+« notre erreur moyenne » unique serait une tromperie.
+
+**Ce qui est publié ne se réécrit pas.** `main()` rejoue la rétro-simulation en entier à
+chaque `--backfill` (elle est déterministe) mais ne touche jamais aux lignes `archive`.
+Ne pas inverser cette asymétrie.
+
+**Le réalisé n'est PAS stocké.** Il est rejoint à la lecture (`evaluate`), depuis la série
+courante. La source révise ses chiffres : une valeur réalisée figée à l'enregistrement
+ferait comparer une prévision à un réalisé périmé. La référence naïve, elle, EST stockée —
+c'est le dernier cumul 12 mois observé au moment de la prévision, information qui n'existe
+plus une fois la série révisée.
+
+**La référence naïve n'est pas décorative.** Sur les données réelles, le modèle est *moins
+bon* qu'elle en deçà de 4 mois (`skill` négatif aux horizons 1-3) et évite ~65 % de son
+erreur vers 8-11 mois. Publier un MAPE unique de 4,7 % masquerait le premier fait. La page
+montre la zone où le modèle perd — c'est le propos, pas un aveu.
+
+**La garde de contenu évite une archive qui gonfle pour rien.** Le job hebdomadaire tourne
+même sans nouveauté ; `append_if_new` compare la prévision aux lignes du dernier
+enregistrement DE SON TYPE et n'ajoute rien si elle est identique. D'où l'arrondi à l'unité
+des transactions : sans lui, un bruit de calcul créerait une ligne par semaine.
+
+**L'ordre des étapes du workflow compte.** `forecast_archive.py --record` tourne APRÈS
+`fetch_new_sources.py` et AVANT `web_export.py`, qui lit l'archive pour construire sa page.
+Le script ouvre l'entrepôt avec `refresh=True`, donc il reconstruit lui-même CSV dérivés et
+Parquet — il ne dépend pas de l'export pour ça. Un modèle non calibrable n'interrompt pas le
+job : on perdrait une publication de données pour une ligne d'archive.
+
+**Le front compte maintenant SIX JSON**, pas cinq : `python web/export/web_export.py` doit
+annoncer `0/6 fichier(s) modifié(s)` quand rien n'a bougé. `archive.json` change, lui, dès
+qu'une prévision est enregistrée — c'est normal, contrairement aux cinq autres.
+
+**Une interpolation `${…}` ne fonctionne que dans le CONTENU d'un élément.** Dans un
+attribut HTML brut (`style=${…}`) elle reste affichée telle quelle, et dans un `<tbody>`
+écrit en HTML brut le marqueur du framework est éjecté hors de la table par l'analyseur.
+Légendes et tableaux se montent donc en JS (`display(html\`…\`)`). Les deux cas ont été
+rencontrés en écrivant `previsions-passees.md`.
+
 ## Vérifier la parité
 
 Trois recettes, par ordre de coût croissant. Les tests unitaires seuls ne suffisent pas :
@@ -299,7 +350,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 125 collectés ; 1 skip légitime si company_sales
+python -m pytest tests/ -q          # 149 collectés ; 1 skip légitime si company_sales
                                     # est vide. Les tests d'API se skippent sans Flask,
                                     # ceux de parité JS et de référencement sans Node.
 ```

@@ -35,6 +35,7 @@ import analysis as ana                         # noqa: E402
 import actualites as actu                      # noqa: E402
 import theme                                    # noqa: E402  (palette partagée web/theme.json)
 import queries as q                             # noqa: E402  (couche SQL DuckDB partagée)
+import forecast_archive as fa                   # noqa: E402  (mémoire des prévisions)
 
 # Cible BPCE 2026 (miroir des constantes d'app.py, bloc Perspective).
 BPCE_TX_ANCIEN_2026 = 890_000
@@ -863,8 +864,137 @@ def _last_valid_date(df, col, date_col="Date"):
     return valid[date_col].max() if not valid.empty else pd.NaT
 
 
+
+def _fmt_vintage(value) -> str:
+    """« juin 2024 » — les millésimes sont des MOIS de données, pas des jours."""
+    return _fmt_month_year(pd.Timestamp(value))
+
+
+def build_archive(con, frames: dict) -> dict:
+    """Page « Prévisions passées » — la seule qui juge le modèle au lieu de l'exposer.
+
+    Deux natures de lignes cohabitent dans l'archive et ne doivent JAMAIS être agrégées
+    ensemble (voir `forecast_archive`) : ce qui a été publié en direct (`archive`) et ce
+    qui a été recalculé après coup (`retro`). Tout ce que ce constructeur produit est donc
+    ventilé par `kind`, y compris les compteurs — un chiffre unique mélangeant les deux
+    laisserait croire à un historique qu'on n'a pas encore.
+    """
+    archive = fa.read()
+    realized = q.transactions_run_rate(con)
+    obs = realized.dropna()
+
+    def per_kind(kind: str) -> dict:
+        rows = archive[archive["kind"] == kind]
+        evaluated = fa.evaluate(rows, realized)
+        horizons = fa.by_horizon(evaluated)
+        return {
+            "n_rows": int(len(rows)),
+            "n_vintages": int(rows["data_vintage"].nunique()) if len(rows) else 0,
+            "n_evaluated": int(len(evaluated)),
+            "first_vintage": (_iso_month(rows["data_vintage"].min()) if len(rows) else None),
+            "last_vintage": (_iso_month(rows["data_vintage"].max()) if len(rows) else None),
+            "horizons": [
+                {"horizon": int(r.horizon), "n": int(r.n),
+                 "mape": round(float(r.mape), 2),
+                 "naive_mape": round(float(r.naive_mape), 2),
+                 "skill": (round(float(r.skill), 3) if pd.notna(r.skill) else None)}
+                for r in horizons.itertuples()
+            ],
+            # Les faisceaux : une trajectoire par millésime. La bande n'y est pas — 48
+            # bandes superposées ne se lisent pas, et le point du graphique est de montrer
+            # la DISPERSION des prévisions successives face à une seule réalité.
+            "fans": [
+                {"vintage": _iso_month(vintage),
+                 "points": [[_iso_month(t), int(p)] for t, p in
+                            zip(g["target_month"], g["predicted"])]}
+                for vintage, g in rows.sort_values("target_month").groupby("data_vintage")
+            ],
+        }
+
+    kinds = {kind: per_kind(kind) for kind in ("archive", "retro")}
+
+    # La prévision en cours : le dernier enregistrement en direct, bande comprise. C'est
+    # elle que les millésimes suivants viendront juger.
+    live = archive[archive["kind"] == "archive"]
+    current = None
+    if len(live):
+        last = live[live["data_vintage"] == live["data_vintage"].max()]
+        last = last[last["run_date"] == last["run_date"].max()].sort_values("target_month")
+        current = {
+            "vintage": _iso_month(last["data_vintage"].iloc[0]),
+            "vintage_label": _fmt_vintage(last["data_vintage"].iloc[0]),
+            "run_date": str(last["run_date"].iloc[0]),
+            "r2": round(float(last["r2"].iloc[0]), 3),
+            "points": [{"date": _iso_month(t), "predicted": int(p), "lo": int(lo),
+                        "hi": int(hi), "assured": bool(a)}
+                       for t, p, lo, hi, a in zip(last["target_month"], last["predicted"],
+                                                  last["lo"], last["hi"], last["assured"])],
+        }
+
+    # Le réalisé, borné au premier millésime archivé : au-delà, la courbe n'a rien à juger.
+    start = min([k["first_vintage"] for k in kinds.values() if k["first_vintage"]],
+                default=None)
+    observed = obs[obs.index >= pd.Timestamp(start)] if start else obs
+    series = [{"date": _iso_month(d), "value": int(v)} for d, v in observed.items()]
+
+    # `_pct_fr` signe la valeur (« +4,1% »), ce qui convient à un glissement mais pas à une
+    # ERREUR moyenne, qui est déjà une valeur absolue : un « + » y suggérerait une
+    # surestimation systématique alors que le signe a été perdu au calcul.
+    def _err(v) -> str:
+        return f"{v:.1f} %".replace(".", ",")
+
+    retro_h = {h["horizon"]: h for h in kinds["retro"]["horizons"]}
+    kpis = [
+        {"label": "Millésimes rétro-simulés", "value": str(kinds["retro"]["n_vintages"]),
+         "subs": ["depuis " + _fmt_vintage(kinds["retro"]["first_vintage"])]
+                 if kinds["retro"]["first_vintage"] else []},
+        {"label": "Prévisions publiées en direct", "value": str(kinds["archive"]["n_vintages"]),
+         "subs": ["l'archive commence à sa première publication"]},
+    ]
+    for h in (6, 12):
+        row = retro_h.get(h)
+        if row:
+            kpis.append({
+                "label": f"Erreur moyenne à {h} mois",
+                "value": _err(row["mape"]),
+                "subs": [f"une prévision naïve se trompe de {_err(row['naive_mape'])}"],
+            })
+
+    crossover = next((h["horizon"] for h in kinds["retro"]["horizons"]
+                      if h["skill"] is not None and h["skill"] > 0), None)
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "title": "🎯 Prévisions passées — ce que nous annoncions",
+        "caption": ("Toutes les prévisions de transactions produites par le modèle, face à ce "
+                    "qui s'est réellement passé. Une prévision publiée sans son historique "
+                    "n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre "
+                    "en défaut."),
+        "how_to_read": (
+            "Deux natures de prévisions cohabitent ici et ne se valent pas. Les prévisions "
+            "PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — "
+            "personne ne peut les retoucher. Les prévisions RÉTRO-SIMULÉES ont été "
+            "recalculées après coup en tronquant les données au mois visé : elles montrent "
+            "que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il "
+            "aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles "
+            "restent séparées partout. Leur limite : les transactions sont révisées, donc "
+            "une rétro-simulation voit des données un peu meilleures que celles de l'époque."),
+        "kpis": kpis,
+        "crossover_horizon": crossover,
+        "kinds": kinds,
+        "current": current,
+        "realized": series,
+        "naive_label": "Prévision naïve (le marché reste où il est)",
+    }
+
+
+def _iso_month(value) -> str:
+    return pd.Timestamp(value).strftime("%Y-%m-%d")
+
+
 _BUILDERS = {"synthese": build_synthese, "neuf": build_neuf, "ancien": build_ancien,
-             "macro": build_macro, "actualites": build_actualites}
+             "macro": build_macro, "actualites": build_actualites,
+             "archive": build_archive}
 
 
 def _payload_without_timestamp(payload):

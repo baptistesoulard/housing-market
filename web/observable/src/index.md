@@ -78,9 +78,10 @@ function chip(p) {
   </div>
   <div>
     <h3>Un modèle qu'on peut prendre en défaut</h3>
-    <p>La prévision est estimée en deux étages, ses décalages sont cherchés sur la seule
-    fenêtre d'entraînement, et elle est jugée sur un backtest hors échantillon affiché à
-    l'écran. Le score et l'incertitude sont publiés, pas seulement la courbe.</p>
+    <p>Chaque prévision produite est <a href="/previsions-passees">archivée puis confrontée
+    au réel</a>, y compris là où elle échoue : à moins de quatre mois, le modèle fait moins
+    bien qu'une prévision naïve, et la page le dit. Le score et l'incertitude sont publiés,
+    pas seulement la courbe.</p>
   </div>
   <div>
     <h3>Tenu à jour tout seul</h3>
@@ -90,7 +91,7 @@ function chip(p) {
   </div>
 </div>
 
-## Les sept pages
+## Les huit pages
 
 <div class="hm-pages">
   <a class="hm-page-card" href="/synthese">
@@ -122,6 +123,11 @@ function chip(p) {
     <span class="t">📡 Prévision & Scénarios</span>
     <span class="d">La projection des transactions à 12-18 mois, son backtest, et un
     panneau de scénarios à quatre leviers.</span>
+  </a>
+  <a class="hm-page-card" href="/previsions-passees">
+    <span class="t">🎯 Prévisions passées</span>
+    <span class="d">Toutes les prévisions déjà produites, face à ce qui s'est réellement
+    passé — et à partir de quel horizon le modèle bat une prévision naïve.</span>
   </a>
   <a class="hm-page-card" href="/donnees">
     <span class="t">⚙️ Données & Sources</span>

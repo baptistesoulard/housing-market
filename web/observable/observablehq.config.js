@@ -132,6 +132,13 @@ a, a:visited { color: var(--hm-link); }
 .hm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin: 0.6rem 0 0.1rem; }
 .hm-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-size: 0.9rem; user-select: none; }
 .hm-legend-item.off { opacity: 0.4; text-decoration: line-through; }
+/* Légende NON interactive (page « Prévisions passées ») : mêmes pastilles, mais rien à
+   cliquer. Sans ce modificateur, le curseur en main promet une interaction qui n'existe
+   pas — un contrôle qui ment sur ce qu'il fait est pire qu'un texte inerte. */
+.hm-legend--static .hm-legend-item { cursor: default; }
+/* Tableau large replié dans un « details » : c'est le conteneur qui défile, jamais la
+   page — un site qui glisse latéralement sur mobile a l'air cassé. */
+.hm-scroller { overflow-x: auto; }
 .hm-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
 .hm-chart-title { font-weight: 600; margin: 1rem 0 0; }
 .hm-chart-title .sub { color: var(--hm-subtle); font-weight: 400; }

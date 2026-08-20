@@ -51,6 +51,18 @@ jobs:
       # ci-dessus : sans elles, cette étape échoue à l'import.
       # Ignorée si l'étape précédente est sortie en erreur, c'est-à-dire uniquement
       # quand TOUTES les sources ont échoué : rien de neuf à exporter dans ce cas.
+      # AVANT l'export du front, qui lit l'archive pour construire sa page. L'ordre
+      # compte aussi dans l'autre sens : ce script ouvre l'entrepôt avec refresh=True,
+      # donc il reconstruit lui-même les CSV dérivés et les Parquet depuis les sources
+      # fraîchement écrites — il ne dépend pas de l'étape suivante pour les avoir.
+      #
+      # Une prévision inchangée n'ajoute RIEN au fichier (garde de contenu, comme pour les
+      # sources) : les semaines sans nouveauté ne produisent donc aucun diff. Et un modèle
+      # que les données du jour ne permettent pas de calibrer n'interrompt pas le job — on
+      # perdrait alors une publication de données pour une ligne d'archive.
+      - name: Enregistrer la prévision du jour dans l'archive
+        run: python forecast_archive.py --record
+
       - name: Régénérer les données du front web
         run: python web/export/web_export.py
 
@@ -58,7 +70,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data_manual_input data/ventes_ancien.csv web/observable/src/data
+          git add data_manual_input data/ventes_ancien.csv data/forecast_archive.csv web/observable/src/data
           if git diff --cached --quiet; then
             echo "Aucune donnée modifiée — rien à committer."
           else
