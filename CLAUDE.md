@@ -340,6 +340,115 @@ attribut HTML brut (`style=${…}`) elle reste affichée telle quelle, et dans u
 Légendes et tableaux se montent donc en JS (`display(html\`…\`)`). Les deux cas ont été
 rencontrés en écrivant `previsions-passees.md`.
 
+## Les pages départementales — ce qui doit rester vrai
+
+101 pages générées par UNE route paramétrée (`web/observable/src/departement/[code].md`),
+qui font passer le site de 10 à 111 pages. Elles s'adressent à un particulier et répondent
+à trois questions, pas davantage : combien coûte le m² ici, combien de ventes s'y font, et
+combien de m² une capacité d'emprunt y achète.
+
+### D'où viennent les données
+
+**Deux sources, parce que DVF ne publie qu'une fenêtre glissante de cinq ans.** Vérifié en
+interrogeant la source : `files.data.gouv.fr/geo-dvf/` ne porte qu'un seul millésime
+(`2025-12`, couvrant 2021-2025) et aucun millésime archivé — il n'y a rien à empiler.
+
+| Période | Source | Rafraîchie par | Commitée |
+|---|---|---|---|
+| 2021-2025 | `files.data.gouv.fr/geo-dvf/latest/` (officielle, LOv2) | `fetch_new_sources.build_dvf`, chaque semaine | `data_manual_input/dvf-recent.csv` |
+| 2014-2020 | miroir `data.cquest.org/dgfip_dvf/` (millésimes archivés) | `dvf_backfill.py`, à la main, **jamais en CI** | `data_manual_input/dvf-historique-2014-2020.csv` |
+
+`DataManager.ensure_dvf` recolle les deux en `data/dvf.csv` (la moitié récente l'emporte en
+cas de recouvrement), et le contrat pandera `dvf` valide le tout.
+
+**Le raccord 2020/2021 ne crée pas de marche**, et ce n'est pas une supposition. Le format
+brut n'a pas d'`id_mutation` ; la clé reconstruite ne reproduit pas la partition
+officielle, mais l'écart mesuré sur la médiane PUBLIÉE est de +0,00 % (Lozère) et +0,15 %
+(Paris), mesuré sur des données où les deux sources coexistent. Sur les 97 départements, la
+soudure donne −0,60 % d'écart médian, contre +0,78 % pour un passage de trimestre
+ordinaire.
+
+**Ne jamais commiter les fichiers DVF bruts** : ~500 Mo pour la fenêtre glissante, 1,1 Go
+pour l'historique. `build_dvf` les télécharge, les nettoie et les JETTE.
+
+**Le millésime d'une année ne doit jamais être celui qui la clôt.** DVF publie avec un
+décalage : le millésime 202104 ne porte que 27 lignes de Côte-d'Or au T3 2020 contre 6 666
+au T1, parce qu'il a été publié avant que le second semestre ne remonte. Agréger là-dessus
+produisait 19 trimestres fantômes. D'où `MIN_VENTES_TRIMESTRE = 50` dans `dvf_backfill`, un
+plancher qui **signale** ce qu'il retire — il reste 21 trimestres écartés en 2018, dernière
+année du consolidé, pour la même raison.
+
+### Le filtre retenu, et pourquoi
+
+Documenté en tête de `dvf_clean.py`, résumé sur chaque page dans le repli « La méthode, en
+clair ». Deux décisions ont été prises **par l'utilisateur**, sur mesures, parce qu'elles
+changent les chiffres publiés :
+
+- **Les dépendances sont tolérées.** Une maison vendue avec son garage est une vente
+  normale. Les écarter coûterait 66 % de l'échantillon pour ne déplacer la médiane que de
+  −6,9 % (Lozère) / −0,8 % (Paris), en déformant la composition vers les maisons sans
+  annexes. Conséquence assumée et affichée : le prix au m² surestime légèrement le
+  logement seul.
+- **Écrêtage aux percentiles 1 %/99 % par département ET par année**, pas de bornes
+  nationales : le 99ᵉ percentile parisien est à 25 730 €/m², un plafond fixe à 20 000 €
+  couperait des ventes authentiques. Enjeu faible — on publie une médiane.
+
+Le reste n'était pas un arbitrage mais une contrainte des données : `surface_reelle_bati`
+est remplie à 100 % sur les logements quand la surface Carrez ne l'est qu'à 1,5 % en
+Lozère, et `valeur_fonciere` est le prix TOTAL de la mutation répété sur chaque ligne (0
+mutation sur 2 206 ne varie) — un calcul ligne à ligne surestime de +14 % / +5,4 %.
+
+### Les quatre départements sans données
+
+`57`, `67`, `68`, `976` — vérifié un par un, chacun renvoie 404 sur toutes les années.
+L'Alsace-Moselle relève du Livre foncier, Mayotte n'est pas couverte. La liste vit dans
+`dvf_clean.DEPARTEMENTS_SANS_DVF` et un test la verrouille. **Ces quatre pages existent et
+expliquent l'absence** au lieu d'afficher des graphiques vides : une page blanche passe
+pour une panne du site.
+
+### Poids et rendu
+
+**Budget : 10 Ko bruts par département**, vérifié à l'écriture (`_verifier_budget` alerte
+en clair). Mesuré : 8,9 Ko au maximum, 8,3 Ko en moyenne, 0 dépassement, pour 12 ans
+d'historique et trois types de biens. Le format est **colonnaire** (dates une fois, valeurs
+en tableaux nus) contrairement au reste du site : sur 48 trimestres × 3 types, répéter les
+clés coûte plus que la donnée.
+
+**Un fichier par département, chargé à la demande** — un fichier unique ferait télécharger
+le pays entier à qui veut voir le sien. L'index (`departements.json`) est le seul chargé
+d'emblée, pour le sélecteur.
+
+**`FileAttachment` ne fonctionne PAS dans une page paramétrée**, et c'est vérifié, pas
+supposé : le framework le résout au build en lisant le nom du fichier dans le source, or il
+n'y a rien à lire quand le nom vient du paramètre de route. La page se construit et
+`dist/_file/data/departements/` reste vide. D'où le repli : `postbuild.mjs` copie les
+données à une adresse **stable** (`/data/departements/<code>.json`) et la page les lit par
+`fetch()`. Même raison que pour la vignette de partage — les fichiers que le framework
+copie reçoivent un nom haché.
+
+**Le `<title>` est réécrit par `postbuild.mjs`.** Une route paramétrée n'a qu'UN
+front-matter pour ses 101 pages : sans ce correctif, les 101 portent le même titre, ce qui
+est exactement la cannibalisation que des descriptions distinctes cherchent à éviter.
+`head()` ne peut pas le faire — le framework ajoute son `<title>` après. Vérifié après
+build : 101 titres distincts, 101 descriptions distinctes, 0 doublon.
+
+**Conséquence pour `npm run dev`** : le serveur de développement ne sert PAS
+`/data/departements/` (la copie est faite par `postbuild`, donc au build seulement). Une
+page départementale ouverte en préversion affichera sa structure sans ses chiffres. Se
+vérifier sur `dist/`.
+
+### Ce que ces pages ne font pas, et ne doivent pas faire
+
+- **Pas de prévision régionalisée.** Les taux, le chômage et les intentions d'achat sont
+  nationaux : un modèle « local » publierait 101 fois la même courbe sous 101 titres.
+- **Pas de filtre départemental sur les pages existantes.** Un particulier n'a que faire
+  des permis SIT@DEL ou du solde d'opinion de l'enquête BLS.
+- **Pas d'estimation de bien à l'adresse.** Autre métier, et hors de l'angle du site.
+- **Le compteur « n/6 fichier(s) modifié(s) » reste à 6.** `build_departements` est
+  volontairement hors de `_BUILDERS` : noyer ce compteur dans un total à 107 lui ferait
+  perdre son pouvoir d'alerte, alors qu'un diff inattendu sur l'un des six signale une
+  divergence de calcul.
+
 ## Vérifier la parité
 
 Trois recettes, par ordre de coût croissant. Les tests unitaires seuls ne suffisent pas :

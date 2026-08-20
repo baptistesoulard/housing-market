@@ -28,6 +28,11 @@ IGEDD_ANCIEN_XLS = os.path.join("data_manual_input",
 IGEDD_ANCIEN_SHEET = "Données - data"
 IGEDD_ANCIEN_DATE_COL = 1   # column holding the end-of-12-month date
 IGEDD_ANCIEN_VALUE_COL = 3  # column holding the count (in thousands)
+# Les deux moitiés de l'historique DVF (voir DataManager.ensure_dvf) : la fenêtre
+# glissante officielle rafraîchie par fetch_new_sources, et la reconstitution unique des
+# années que la source ne republie plus.
+DVF_RECENT_CSV = os.path.join("data_manual_input", "dvf-recent.csv")
+DVF_HISTORIQUE_CSV = os.path.join("data_manual_input", "dvf-historique-2014-2020.csv")
 
 # --- SIT@DEL construction data ---
 SITADEL_MANUAL_CSV = os.path.join("data_manual_input",
@@ -392,6 +397,9 @@ class DataManager:
             # User-imported MONTHLY company sales (one company at a time, overwritten on
             # each import). Optional benchmark for the forecast / correlation engines.
             "company_sales": os.path.join(self.data_dir, "company_sales.csv"),
+            # Prix DVF par département : assemblé à partir des deux moitiés d'historique
+            # (voir ensure_dvf). Seul dataset dont Department n'est pas "France".
+            "dvf": os.path.join(self.data_dir, "dvf.csv"),
         }
         
     def load_or_generate_all(self, force_regenerate=False):
@@ -795,6 +803,61 @@ class DataManager:
             "Type": "Ancien",
             "Transactions": np.rint(f).astype(int),
         })
+
+    def ensure_dvf(self, force_rebuild=False):
+        """Assemble data/dvf.csv à partir des DEUX moitiés de l'historique DVF.
+
+        DVF n'est pas publié d'un bloc : la source officielle ne porte qu'une fenêtre
+        glissante de cinq ans (2021-2025 aujourd'hui), rafraîchie deux fois l'an par
+        `fetch_new_sources.build_dvf` → `dvf-recent.csv`. Les années antérieures ne sont
+        plus republiées : elles ont été reconstituées une fois depuis un miroir de
+        millésimes archivés (`dvf_backfill.py`) et versionnées telles quelles.
+
+        Les deux moitiés se recollent sans marche visible : la clé de mutation, absente du
+        format brut, y est reconstruite, et l'écart mesuré sur la médiane publiée est de
+        +0,15 % au maximum. En cas de recouvrement (une année présente des deux côtés), la
+        version RÉCENTE gagne — elle vient de la source officielle et a eu plus de temps
+        pour être complétée.
+
+        Renvoie (succès, message). L'absence de la moitié historique n'est pas une erreur :
+        le site fonctionne avec la seule fenêtre glissante, sur cinq ans au lieu de douze.
+        """
+        cible = self.paths["dvf"]
+        sources = [p for p in (DVF_RECENT_CSV, DVF_HISTORIQUE_CSV) if os.path.exists(p)]
+        if not sources:
+            return False, ("Aucune source DVF : lancez « python fetch_new_sources.py » "
+                           "(fenêtre glissante) et/ou « python dvf_backfill.py ».")
+
+        # Même garde de fraîcheur mtime-aware que les autres datasets dérivés : une source
+        # plus récente que le dérivé est un signal « reconstruis-moi », sans invalidation
+        # manuelle.
+        if os.path.exists(cible) and not force_rebuild:
+            plus_recent = max(os.path.getmtime(p) for p in sources)
+            if plus_recent <= os.path.getmtime(cible):
+                return True, "Prix DVF par département déjà à jour."
+
+        morceaux = []
+        for chemin in (DVF_HISTORIQUE_CSV, DVF_RECENT_CSV):
+            if not os.path.exists(chemin):
+                continue
+            df = pd.read_csv(chemin, dtype={"Department": str})
+            df["Date"] = pd.to_datetime(df["Date"])
+            morceaux.append(df)
+        if not morceaux:
+            return False, "Sources DVF illisibles."
+
+        # `keep="last"` : la moitié récente est concaténée en second, donc elle l'emporte
+        # sur un trimestre présent des deux côtés.
+        dvf = pd.concat(morceaux, ignore_index=True)
+        dvf = dvf.drop_duplicates(subset=["Date", "Department", "Type"], keep="last")
+        dvf = dvf.sort_values(["Department", "Type", "Date"])
+        dvf["Date"] = dvf["Date"].dt.strftime("%Y-%m-%d")
+        dvf.to_csv(cible, index=False, encoding="utf-8")
+
+        annees = sorted({d[:4] for d in dvf["Date"]})
+        return True, (f"Prix DVF assemblés : {len(dvf)} lignes, "
+                      f"{dvf['Department'].nunique()} départements, "
+                      f"{annees[0]}-{annees[-1]}.")
 
     def ensure_ventes_ancien(self, force_rebuild=False):
         """

@@ -1,0 +1,9 @@
+{
+  "code": "67",
+  "nom": "Bas-Rhin",
+  "region": "Grand Est",
+  "couvert": false,
+  "source": "DVF (DGFiP) — licence ouverte v2",
+  "absence": "Le fichier DVF de la DGFiP ne couvre pas ce département. L'Alsace et la Moselle relèvent du Livre foncier, un régime de publicité foncière distinct hérité du droit local ; Mayotte n'y figure pas non plus. Il ne s'agit pas d'un trou temporaire : aucune année n'est publiée.",
+  "generated_at": "2026-08-20T17:23:40+00:00"
+}

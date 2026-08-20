@@ -8,7 +8,7 @@
 //
 // L'IDENTITÉ du site (adresse publique, descriptions de pages, navigation, logo) vit
 // dans site.config.js — ce fichier-ci ne porte que le rendu.
-import {SITE, NAV, MARK, THEME as T, pageMeta} from "./site.config.js";
+import {SITE, NAV, MARK, THEME as T, pageMeta, DEP_PATHS} from "./site.config.js";
 
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
@@ -169,6 +169,25 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-period-track input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
 .hm-period-track input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
 .hm-period-bounds { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--theme-foreground-muted); }
+.hm-dep-head h1 { margin-bottom: 0.2rem; }
+.hm-dep-invite { font-size: 0.95rem; margin: 0.2rem 0 0.8rem; }
+.hm-absence { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
+  border-radius: 6px; padding: 0.9rem 1.1rem; margin: 1rem 0; background: var(--hm-surface); }
+.hm-absence-titre { font-weight: 600; color: var(--hm-ink); margin-bottom: 0.4rem; }
+.hm-absence p { margin: 0.35rem 0; font-size: 0.9rem; }
+/* Le chiffre personnel de la page départementale : il doit se lire d'un coup d'oeil et
+   se retenir, c'est lui qu'on partage. */
+.hm-capacite { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+  border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-green);
+  border-radius: 6px; padding: 1rem 1.2rem; margin: 0.6rem 0 0.4rem;
+  background: var(--hm-surface); }
+.hm-capacite-chiffre { font-size: 2.6rem; font-weight: 700; color: var(--hm-ink);
+  line-height: 1.1; }
+.hm-capacite-legende { font-size: 0.9rem; color: var(--hm-ink); }
+.hm-cta { display: inline-block; margin: 0.5rem 0 1rem; padding: 0.5rem 0.9rem;
+  border-radius: 6px; background: var(--hm-brick); color: var(--hm-bg);
+  font-weight: 600; text-decoration: none; }
+.hm-cta:hover { filter: brightness(1.08); }
 .hm-api-offline { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
   border-radius: 6px; padding: 0.9rem 1.1rem; margin: 1rem 0; background: var(--hm-surface); }
 .hm-api-offline-title { font-weight: 600; color: var(--hm-ink); margin-bottom: 0.4rem; }
@@ -408,6 +427,9 @@ export default {
     "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap",
   ],
   pages: PAGES,
+  // Les 101 pages départementales, générées par src/departement/[code].md.
+  // La liste vient des données (site.config.js), pas d'une énumération à la main.
+  dynamicPaths: DEP_PATHS,
   toc: false,
   pager: false,
   footer: FOOTER,

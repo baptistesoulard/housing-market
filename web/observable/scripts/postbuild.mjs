@@ -22,11 +22,11 @@
 // Réécrire du HTML après coup n'est pas élégant ; c'est la seule prise disponible pour
 // les points 1 et 2 tant que le framework n'expose pas ces réglages. Le traitement est
 // idempotent : relancé sur un dist/ déjà traité, il ne double rien.
-import {copyFile, readdir, readFile, writeFile} from "node:fs/promises";
+import {copyFile, mkdir, readdir, readFile, writeFile} from "node:fs/promises";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {dirname, join, resolve} from "node:path";
-import {SITE, INDEXABLE, MARK_SVG} from "../site.config.js";
+import {SITE, INDEXABLE, MARK_SVG, depMeta} from "../site.config.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Le répertoire de sortie est paramétrable pour que les tests puissent faire tourner ce
@@ -71,6 +71,52 @@ if (existsSync(og)) await copyFile(og, join(DIST, "og-image.png"));
 else console.warn(
   `postbuild: ATTENTION — ${og} est absent. Les balises og:image pointent vers une image ` +
   "qui n'existe pas : un lien partagé s'affichera sans vignette. Régénérer avec `npm run og-image`.");
+
+// 6. Les données départementales, copiées à une adresse STABLE.
+//
+//    Le framework ne copie dans dist/ que les fichiers qu'il voit référencés par un
+//    `FileAttachment` littéral. Une page paramétrée construit le nom de son fichier à
+//    partir de son paramètre de route : il n'y a rien à voir au build, donc rien n'est
+//    copié — vérifié, dist/_file/data/departements/ reste vide. La page les lit donc par
+//    fetch("/data/departements/<code>.json"), ce qui suppose qu'elles soient là.
+//
+//    Même raison que pour la vignette de partage : les fichiers que le framework copie
+//    reçoivent un nom haché, incompatible avec une URL construite à l'exécution.
+const depSrc = join(ROOT, "src", "data", "departements");
+if (existsSync(depSrc)) {
+  const cible = join(DIST, "data", "departements");
+  await mkdir(cible, {recursive: true});
+  const fichiers = (await readdir(depSrc)).filter((f) => f.endsWith(".json"));
+  for (const f of fichiers) await copyFile(join(depSrc, f), join(cible, f));
+  const index = join(ROOT, "src", "data", "departements.json");
+  if (existsSync(index)) await copyFile(index, join(DIST, "data", "departements.json"));
+  console.log(`postbuild: ${fichiers.length} fichier(s) départemental(aux) copié(s) vers /data/departements/`);
+} else {
+  console.warn(
+    "postbuild: ATTENTION — src/data/departements/ est absent. Les pages départementales " +
+    "se construiront mais ne trouveront aucune donnée. Lancer `python web/export/web_export.py`.");
+}
+
+// 7. Le <title> des pages départementales.
+//
+//    Observable Framework écrit <title> à partir du front-matter de la page. Une route
+//    paramétrée n'a qu'UN front-matter pour ses 101 pages : sans ce correctif, les 101
+//    portent le même titre, ce qui est exactement la cannibalisation que des descriptions
+//    distinctes cherchent à éviter — le titre est la première chose que lit un moteur.
+//
+//    `head()` ne peut pas le faire : le framework y ajoute son propre <title> APRÈS. La
+//    réécriture après coup est, là encore, la seule prise disponible.
+let titres = 0;
+for (const file of pages) {
+  const rel = file.slice(DIST.length).replace(/\\/g, "/").replace(/\.html$/, "");
+  const meta = depMeta(rel);
+  if (!meta) continue;
+  const html = await readFile(file, "utf-8");
+  const attendu = `<title>${meta.title} | ${SITE.name}</title>`;
+  const patched = html.replace(/<title>[\s\S]*?<\/title>/i, attendu);
+  if (patched !== html) { await writeFile(file, patched); titres++; }
+}
+if (titres) console.log(`postbuild: ${titres} titre(s) départemental(aux) personnalisé(s)`);
 
 // Le sitemap ne liste QUE les pages voulues (site.config.js), jamais le contenu de
 // dist/ : celui-ci contient aussi la 404 et les modules internes du framework, qui n'ont

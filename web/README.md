@@ -309,6 +309,54 @@ voulues, le post-traitement est idempotent, et la vignette est un vrai PNG aux b
 dimensions. Le test injecte une adresse de test différente du repli : c'est ce qui prouve
 qu'aucune URL n'est écrite en dur.
 
+## Les pages départementales
+
+101 pages produites par une seule route paramétrée, `src/departement/[code].md`. Le site
+passe de 10 à 111 pages, toutes dans le sitemap, chacune avec son titre et sa description.
+
+### Reconstruire les données
+
+Deux moitiés, deux commandes. La première tourne déjà dans le refresh hebdomadaire :
+
+```
+python fetch_new_sources.py          # dont build_dvf : fenêtre glissante 2021-2025
+```
+
+La seconde est une opération **ponctuelle**, hors CI, qui télécharge 1,1 Go depuis un
+miroir de millésimes archivés pour reconstituer les années que DVF ne republie plus :
+
+```
+python dvf_backfill.py --download
+```
+
+Elle écrit `data_manual_input/dvf-historique-2014-2020.csv` (~0,3 Mo), qui est **commité** —
+c'est la seule façon de garder le chiffre publié reproductible sans re-télécharger un Go.
+Les fichiers bruts, eux, ne doivent jamais entrer dans le dépôt.
+
+Puis, comme pour les autres pages :
+
+```
+python web/export/web_export.py      # écrit src/data/departements/*.json + l'index
+npm --prefix web/observable run build
+```
+
+`web_export.py` compte les départements **à part** des six JSON nationaux : la ligne
+`0/6 fichier(s) modifié(s)` doit rester lisible, c'est un signal de régression.
+
+### Pourquoi ces pages ne se chargent pas comme les autres
+
+`FileAttachment` est résolu au build : le framework lit le nom du fichier dans le code
+source pour savoir quoi copier dans `dist/`. Une page paramétrée construit ce nom à partir
+de son paramètre de route — il n'y a rien à lire, donc rien n'est copié. Vérifié : la page
+se construit et `dist/_file/data/departements/` reste vide.
+
+`scripts/postbuild.mjs` copie donc les données à une adresse stable
+(`/data/departements/<code>.json`) et la page les lit par `fetch()`. Il y réécrit aussi le
+`<title>` de chaque page, que le framework tire du front-matter — unique pour les 101.
+
+**Conséquence** : en `npm run dev`, une page départementale s'affiche sans ses chiffres,
+puisque la copie n'a lieu qu'au build. Vérifier sur `dist/`.
+
 ## Périmètre du PoC / suite
 
 Les **5 premiers onglets** de l'app Streamlit sont portés, avec les mêmes sections, les

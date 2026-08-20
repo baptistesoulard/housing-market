@@ -406,3 +406,133 @@ def macro_zscore(con, col: str, digits: int = 4) -> list[dict]:
         SELECT strftime(Date, '%Y-%m-%d') AS date, (("{col}" - {mu}) / {sd}) AS value
         FROM "macro" WHERE "{col}" IS NOT NULL ORDER BY Date
     """, digits={"value": digits})
+
+
+# ======================= DVF — prix au m2 par departement =========================
+# Ces requetes servent les 101 pages departementales du site. Elles ne touchent QUE la vue
+# `dvf`, le seul dataset dont Department n'est pas "France" : les autres restent nationaux
+# et leurs tests de parite avec pandas restent valables tels quels.
+
+
+def dvf_departements(con) -> list[dict]:
+    """Les departements ayant des donnees, avec leur dernier prix au m2 connu.
+
+    Alimente le selecteur de departement et l'index des pages. Une seule requete pour les
+    97 departements : le front n'a pas a interroger 97 fichiers pour dessiner une liste.
+    """
+    return rows(con, """
+        WITH dernier AS (
+            SELECT Department, MAX(Date) AS d FROM "dvf"
+            WHERE Type = 'Ensemble' GROUP BY Department
+        )
+        SELECT v.Department AS code,
+               strftime(v.Date, '%Y-%m-%d') AS date,
+               v.PrixM2Median AS prix_m2,
+               v.NbVentes AS ventes
+        FROM "dvf" v JOIN dernier ON dernier.Department = v.Department AND dernier.d = v.Date
+        WHERE v.Type = 'Ensemble'
+        ORDER BY v.Department
+    """, digits={"prix_m2": 0})
+
+
+def dvf_series(con, departement: str, type_local: str = "Ensemble") -> list[dict]:
+    """Serie trimestrielle d'un departement : prix au m2, prix median, nombre de ventes."""
+    return rows(con, """
+        SELECT strftime(Date, '%Y-%m-%d') AS date,
+               PrixM2Median AS prix_m2, PrixMedian AS prix, NbVentes AS ventes
+        FROM "dvf" WHERE Department = ? AND Type = ? ORDER BY Date
+    """, (departement, type_local), digits={"prix_m2": 0, "prix": 0})
+
+
+def dvf_dernier(con, departement: str) -> dict:
+    """Le dernier trimestre publie d'un departement, par type de bien.
+
+    Renvoie {type: {date, prix_m2, prix, ventes}}. Sert les cartes de tete de page.
+    """
+    out = {}
+    for r in rows(con, """
+        WITH dernier AS (
+            SELECT Type, MAX(Date) AS d FROM "dvf" WHERE Department = ? GROUP BY Type
+        )
+        SELECT v.Type AS type, strftime(v.Date, '%Y-%m-%d') AS date,
+               v.PrixM2Median AS prix_m2, v.PrixMedian AS prix, v.NbVentes AS ventes
+        FROM "dvf" v JOIN dernier ON dernier.Type = v.Type AND dernier.d = v.Date
+        WHERE v.Department = ?
+    """, (departement, departement), digits={"prix_m2": 0, "prix": 0}):
+        out[r.pop("type")] = r
+    return out
+
+
+def dvf_evolution(con, departement: str, annees: int = 1) -> float | None:
+    """Variation du prix au m2 sur `annees` annees, en %, pour l'ensemble des biens.
+
+    Compare le dernier trimestre au meme trimestre N annees plus tot — jamais a la valeur
+    d'il y a 4N lignes : un trimestre manquant (retire par le plancher d'effectif) ferait
+    alors comparer deux periodes differentes sans que rien ne le signale.
+    """
+    r = _cur(con).execute("""
+        WITH s AS (SELECT Date, PrixM2Median AS v FROM "dvf"
+                   WHERE Department = ? AND Type = 'Ensemble'),
+             fin AS (SELECT MAX(Date) AS d FROM s)
+        SELECT (SELECT v FROM s, fin WHERE s.Date = fin.d),
+               (SELECT v FROM s, fin WHERE s.Date = fin.d - INTERVAL '%d years')
+    """ % annees, [departement]).fetchone()
+    if not r or r[0] is None or not r[1]:
+        return None
+    return round((r[0] / r[1] - 1) * 100, 1)
+
+
+def dvf_national_median(con) -> list[dict]:
+    """Mediane des medianes departementales, par trimestre.
+
+    Ce n'est PAS le prix median national — ce serait la mediane de toutes les ventes du
+    pays, que l'agregat departemental ne permet plus de calculer. C'est le departement
+    median, ce qui est la bonne reference pour repondre a « est-ce cher chez moi ? » :
+    on se compare a un departement typique, pas a une moyenne ecrasee par l'Ile-de-France.
+    Le libelle affiche doit le dire.
+    """
+    return rows(con, """
+        SELECT strftime(Date, '%Y-%m-%d') AS date,
+               MEDIAN(PrixM2Median) AS prix_m2, SUM(NbVentes) AS ventes
+        FROM "dvf" WHERE Type = 'Ensemble' GROUP BY Date ORDER BY Date
+    """, digits={"prix_m2": 0})
+
+
+def dvf_surface_accessible(con, departement: str, mensualite: float, annees: int,
+                           rate_col: str = "Credit_Logement_Taux_Interet") -> dict | None:
+    """Combien de m2 une mensualite achete dans ce departement, aujourd'hui et en 2015.
+
+    LE chiffre personnel de la page. Il croise deux choses deja calculees ailleurs :
+    la capacite d'emprunt nationale (`capacity_expr` / `capacity_2015_base`, transcription
+    SQL du calcul de l'app) et le prix local. Rien n'est reimplemente ici.
+
+    La comparaison a 2015 est ce qui donne son sens au chiffre : un prix au m2 seul ne dit
+    pas si le logement s'eloigne, alors que « votre mensualite achetait X m2, elle en
+    achete Y » le dit d'un coup — et integre le taux, que le prix ignore.
+    """
+    cap_now = scalar(con, f"""
+        SELECT {capacity_expr(rate_col, annees)} FROM "macro"
+        WHERE "{rate_col}" IS NOT NULL ORDER BY Date DESC LIMIT 1
+    """)
+    cap_2015 = capacity_2015_base(con, annees, rate_col)
+    if not cap_now or not cap_2015:
+        return None
+
+    prix = _cur(con).execute("""
+        WITH s AS (SELECT Date, PrixM2Median AS v FROM "dvf"
+                   WHERE Department = ? AND Type = 'Ensemble' AND PrixM2Median > 0)
+        SELECT (SELECT v FROM s ORDER BY Date DESC LIMIT 1),
+               (SELECT AVG(v) FROM s WHERE year(Date) = 2015)
+    """, [departement]).fetchone()
+    if not prix or not prix[0]:
+        return None
+    prix_now, prix_2015 = prix[0], prix[1]
+
+    out = {"m2_aujourdhui": round(mensualite * cap_now / prix_now, 1),
+           "prix_m2": round(prix_now), "mensualite": mensualite, "duree_ans": annees}
+    # 2015 n'existe que si l'historique long est present : sans lui, on affiche le chiffre
+    # du jour seul plutot qu'une comparaison muette.
+    if prix_2015:
+        out["m2_2015"] = round(mensualite * cap_2015 / prix_2015, 1)
+        out["prix_m2_2015"] = round(prix_2015)
+    return out

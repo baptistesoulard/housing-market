@@ -35,8 +35,8 @@ visible, ce qui est la condition pour publier une série qui traverse la charni�
 Les fichiers attendus dans le dossier source :
 
     dvf-2014-2018.csv.gz     consolidé du miroir (294 Mo)
-    vf-2019.txt              millésime 202104, brut DGFiP séparé par « | »
-    vf-2020.txt              millésime 202104
+    vf-2019.txt              millésime 202404, brut DGFiP séparé par « | »
+    vf-2020.txt              millésime 202404
 """
 from __future__ import annotations
 
@@ -52,9 +52,27 @@ import dvf_clean as dv
 MIROIR = "https://data.cquest.org/dgfip_dvf"
 FICHIERS = {
     "dvf-2014-2018.csv.gz": f"{MIROIR}/dvf-2014-2018.csv.gz",
-    "vf-2019.txt": f"{MIROIR}/202104/valeursfoncieres-2019.txt",
-    "vf-2020.txt": f"{MIROIR}/202104/valeursfoncieres-2020.txt",
+    "vf-2019.txt": f"{MIROIR}/202404/valeursfoncieres-2019.txt",
+    "vf-2020.txt": f"{MIROIR}/202404/valeursfoncieres-2020.txt",
 }
+
+# ATTENTION au choix du millésime ci-dessus, ce n'est pas indifférent. DVF publie avec un
+# décalage : un millésime ne contient PAS toute son année la plus récente. Constaté en
+# comparant les fichiers — le millésime 202104 ne porte que 27 lignes de Côte-d'Or au
+# T3 2020 et 18 au T4, contre 6 666 au T1 : les mutations du second semestre n'étaient pas
+# encore remontées quand il a été publié. Agréger là-dessus produisait 19 trimestres
+# fantômes en 2020, à des prix qui n'avaient aucun sens.
+#
+# Chaque année est donc prise dans un millésime NETTEMENT postérieur, où elle a eu le
+# temps d'être complétée : 202404 (avril 2024) laisse plus de trois ans à 2020. Le
+# millésime 202504, plus tardif encore, stocke des .txt.zip — format que ce script ne
+# lit pas, et le gain serait nul. Une année ne doit jamais venir du millésime qui la clôt —
+# ce qui vaut aussi pour 2018, dernière année du consolidé : voir le garde-fou ci-dessous.
+
+# Effectif plancher sous lequel un trimestre départemental n'est pas publiable : ce n'est
+# plus un prix médian mais un accident d'échantillon. Garde-fou APRÈS agrégation, pour que
+# le défaut décrit ci-dessus ne puisse pas repasser inaperçu.
+MIN_VENTES_TRIMESTRE = 50
 SORTIE = os.path.join("data_manual_input", "dvf-historique-2014-2020.csv")
 
 # Seules colonnes lues : sur 1,1 Go, tout charger sature la mémoire pour rien.
