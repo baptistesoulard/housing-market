@@ -168,6 +168,32 @@ COMPANY_SALES = DataFrameSchema(
     unique=["Date", "Serie"],
 )
 
+# --- DVF : prix au m2 par departement ---------------------------------------
+# SEUL dataset dont Department n'est PAS "France". Il est nouveau exprès : les colonnes
+# Region/Department de sitadel/sales/ventes_ancien sont contraintes a "France" et
+# tests/test_queries_parity.py compare chaque requete SQL a une implementation pandas de
+# reference sur ces datasets — en changer la cardinalite ferait sauter ce filet pour rien.
+DVF = DataFrameSchema(
+    {
+        "Date": _DATE,
+        # Code INSEE du departement : "01".."95", "2A"/"2B", "971".."974". Jamais un
+        # entier — "01" perdrait son zero et la Corse n'est pas numerique.
+        "Department": Column(str, Check.str_matches(r"^(\d{2}|2[AB]|\d{3})$"),
+                             nullable=False, coerce=True),
+        "Type": Column(str, Check.isin(["Ensemble", "Maison", "Appartement"]),
+                       nullable=False, coerce=True),
+        # Medianes, jamais des moyennes : les distributions de prix ont des queues epaisses.
+        "PrixM2Median": Column(float, Check.in_range(100, 60000), nullable=False,
+                               coerce=True, title="Prix median au m2 batie (EUR)"),
+        "PrixMedian": Column(float, Check.greater_than(0), nullable=False, coerce=True,
+                             title="Prix de vente median du logement (EUR)"),
+        "NbVentes": Column(int, Check.greater_than(0), nullable=False, coerce=True,
+                           title="Nombre de ventes retenues apres nettoyage"),
+    },
+    strict=False, coerce=True, name="dvf",
+    unique=["Date", "Department", "Type"],
+)
+
 SCHEMAS: dict[str, DataFrameSchema] = {
     "sitadel": SITADEL,
     "ventes_ancien": VENTES_ANCIEN,
@@ -176,6 +202,7 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "revenue": REVENUE,
     "ecln": ECLN,
     "company_sales": COMPANY_SALES,
+    "dvf": DVF,
 }
 
 

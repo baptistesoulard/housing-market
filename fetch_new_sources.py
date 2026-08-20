@@ -44,9 +44,12 @@ import hashlib
 import threading
 import urllib.request
 from datetime import datetime, timezone
+import gzip
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
+
+import dvf_clean
 
 CTX = ssl.create_default_context()
 _ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -426,6 +429,74 @@ def build_renovation():
 
 # Every real source file, one builder each. Failure-isolated: an API being down skips
 # that source (the app keeps serving the previous CSV) and the rest refresh.
+# --- DVF : prix au m2 par departement (fenetre glissante officielle) -----------------
+GEO_DVF = "https://files.data.gouv.fr/geo-dvf/latest/csv"
+
+
+def _dvf_departements():
+    """Les 97 departements couverts par DVF, dans l'ordre des codes INSEE.
+
+    Les quatre absents (Alsace-Moselle, sous regime du Livre foncier, et Mayotte) sont
+    exclus ici plutot que decouverts par des 404 en boucle : leur non-couverture est un
+    fait etabli, pas un incident reseau. Voir dvf_clean.DEPARTEMENTS_SANS_DVF.
+    """
+    codes = [f"{i:02d}" for i in range(1, 20)] + ["2A", "2B"]         + [f"{i:02d}" for i in range(21, 96)] + ["971", "972", "973", "974", "976"]
+    return [c for c in codes if c not in dvf_clean.DEPARTEMENTS_SANS_DVF]
+
+
+def _dvf_annees():
+    """Les annees reellement publiees par le millesime courant, lues sur la source.
+
+    Ne pas coder la fenetre en dur : elle glisse a chaque publication semestrielle, et
+    une annee ecrite en dur deviendrait un 404 silencieux six mois plus tard.
+    """
+    html = _read_url(f"{GEO_DVF}/", "text/html").decode("utf-8", "replace")
+    return sorted(set(re.findall(r'href="[^"]*/([0-9]{4})/"', html)))
+
+
+def build_dvf():
+    """Agrege DVF en medianes trimestrielles par departement, sur la fenetre officielle.
+
+    485 fichiers (97 departements x 5 annees, ~500 Mo) telecharges puis JETES : seul
+    l'agregat, quelques centaines de Ko, est ecrit. Ne jamais commiter les fichiers bruts.
+
+    Le nettoyage vit dans `dvf_clean` (filtre documente, teste sur cas fabriques) ; ce
+    builder ne fait que de la collecte. L'historique anterieur a la fenetre glissante est
+    produit separement par `dvf_backfill.py` et commite — voir son en-tete.
+    """
+    annees = _dvf_annees()
+    deps = _dvf_departements()
+    morceaux = []
+
+    def un_fichier(args):
+        annee, dep = args
+        url = f"{GEO_DVF}/{annee}/departements/{dep}.csv.gz"
+        try:
+            brut = gzip.decompress(_read_url(url, "text/csv"))
+        except Exception as e:                       # un departement absent une annee
+            print(f"dvf {annee}/{dep} indisponible ({e})")
+            return None
+        df = pd.read_csv(io.BytesIO(brut), dtype=str, low_memory=False,
+                         usecols=["id_mutation", "date_mutation", "nature_mutation",
+                                  "valeur_fonciere", "code_departement", "type_local",
+                                  "surface_reelle_bati"])
+        return dvf_clean.clean(dvf_clean.from_geo_dvf(df))
+
+    taches = [(a, d) for a in annees for d in deps]
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for propre in ex.map(un_fichier, taches):
+            if propre is not None and not propre.empty:
+                morceaux.append(propre)
+
+    if not morceaux:
+        raise ValueError("DVF : aucune vente retenue")
+    agg = dvf_clean.aggregate(pd.concat(morceaux, ignore_index=True))
+    agg["Date"] = agg["Date"].dt.strftime("%Y-%m-%d")
+    path = os.path.join(OUT_DIR, "dvf-recent.csv")
+    _write_if_changed(path, agg.to_csv(index=False), rows=len(agg),
+                      last=agg["Date"].iloc[-1], label="dvf")
+
+
 BUILDERS = [
     build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
     build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)

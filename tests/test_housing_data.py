@@ -11,6 +11,7 @@ import tempfile
 import time
 
 import pandas as pd
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -57,8 +58,26 @@ def test_empty_optional_frame_passes():
 
 
 def test_all_known_datasets_have_a_schema():
-    expected = {"sitadel", "ventes_ancien", "macro", "sales", "revenue", "ecln", "company_sales"}
+    expected = {"sitadel", "ventes_ancien", "macro", "sales", "revenue", "ecln",
+                "company_sales", "dvf"}
     assert set(S.SCHEMAS) == expected
+
+
+def test_dvf_est_le_seul_dataset_non_national():
+    """`dvf` porte de VRAIS codes de département ; les autres restent contraints à France.
+
+    C'est la raison d'être d'un dataset séparé : desserrer Region/Department sur sitadel,
+    sales ou ventes_ancien ferait sauter le filet de `tests/test_queries_parity.py`, qui
+    compare chaque requête SQL à une implémentation pandas de référence sur ces datasets.
+    """
+    import pandas as pd
+    dvf = pd.DataFrame({"Date": ["2024-01-01"], "Department": ["2A"], "Type": ["Ensemble"],
+                        "PrixM2Median": [2500.0], "PrixMedian": [200000.0], "NbVentes": [12]})
+    assert hd.validate("dvf", dvf) is not None
+    # Et l'inverse : « France » n'est PAS un code de département valide.
+    national = dvf.assign(Department=["France"])
+    with pytest.raises(Exception):
+        hd.validate("dvf", national, lazy=False)
 
 
 def test_parquet_and_duckdb_round_trip():
