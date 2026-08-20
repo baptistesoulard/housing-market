@@ -28,11 +28,13 @@ import {series, ui} from "../components/theme.js";
 ```
 
 ```js
-const dep = await fetch(`/data/departements/${observable.params.code}.json`).then((r) => r.json());
-```
-
-```js
-const annuaire = await fetch("/data/departements.json").then((r) => r.json());
+// UN SEUL bloc de chargement, et un seul `await`. Deux cellules `await fetch` séparées
+// laissaient la page en attente indéfiniment — c'est la dernière différence constatée
+// entre cette page et les variantes qui s'exécutent correctement.
+const [dep, annuaire] = await Promise.all([
+  fetch(`/data/departements/${observable.params.code}.json`).then((r) => r.json()),
+  fetch("/data/departements.json").then((r) => r.json())
+]);
 ```
 
 ```js
