@@ -496,15 +496,16 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 
 | Branche | Devant `main` | Note |
 |---|---|---|
-| `main` | — | porte les DEUX axes en entier : compute (phases 0-4) et stockage (socle + bascule) |
+| `main` | — | porte les DEUX axes de refactor, le site public, l'archive des prévisions ET les 101 pages départementales |
 | `refactor/duckdb-storage` | 0 | axe stockage, fusionné par la PR #3 |
 | `refactor/duckdb-engine` | 0 | axe compute, fusionné par la PR #2 |
 | `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, fusionnés |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
-| `claude/website-seo-accessibility-alr8mw` | +1 | site public : accueil rédigée, page À propos, métadonnées de partage/référencement, corrections d'accessibilité (voir « Le site public ») |
+| `claude/website-seo-accessibility-alr8mw` | 0 | site public : accueil rédigée, page À propos, métadonnées de partage/référencement, corrections d'accessibilité (voir « Le site public ») ; entrée dans `main` le 2026-08-20, portée par la fusion de `feat/pages-departementales` |
+| `feat/pages-departementales` | 0 | prix au m² par département (DVF) : nettoyage testé, dataset `dvf`, 101 pages + sélecteur (voir « Les pages départementales ») ; fusionnée dans `main` en fast-forward le 2026-08-20 |
 | `refactor/fusion-timelag-previsions` | 0 | fusion Time-Lag → Prévision, retrait Atelier + export SAP IBP (voir « Onglets retirés ») ; fusionnée dans `main` en fast-forward le 2026-08-20 |
 
-Les quatre branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base
+Les six branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base
 --is-ancestor` vérifié) : leurs copies locales ont été supprimées, il ne reste que les
 copies distantes, à supprimer d'un `git push origin --delete`. `claude/duckdb-parquet-
 refactor-p2-tvs0b2`, qui figurait ici, n'existe plus ni en local ni sur le distant.
