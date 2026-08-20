@@ -311,6 +311,15 @@ qu'aucune URL n'est écrite en dur.
 
 ## Les pages départementales
 
+> **⚠️ Retirées du site le 2026-08-21.** Le socle de données reste en place et
+> `web_export.py` produit toujours les 101 JSON, mais la route `src/departement/[code].md`
+> n'est plus construite : elle s'affichait **par intermittence** (même code, même URL,
+> rendu correct puis page vide sans changement). Voir `CLAUDE.md`, section « Les pages
+> départementales », pour ce qui a été éliminé et la piste de reprise (data loader
+> paramétré plutôt que `fetch`).
+>
+> La suite de cette section décrit le fonctionnement visé et reste valable pour la reprise.
+
 101 pages produites par une seule route paramétrée, `src/departement/[code].md`. Le site
 passe de 10 à 111 pages, toutes dans le sitemap, chacune avec son titre et sa description.
 

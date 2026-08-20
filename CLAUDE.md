@@ -342,6 +342,33 @@ rencontrés en écrivant `previsions-passees.md`.
 
 ## Les pages départementales — ce qui doit rester vrai
 
+> **⚠️ ÉTAT AU 2026-08-21 : le socle de données est en production, les PAGES ne le sont
+> pas.** La route `src/departement/[code].md` a été retirée du site après vérification en
+> navigateur : elle s'affiche **par intermittence**. Le même code déployé, à la même URL,
+> a rendu correctement (cartes, courbes, chiffres justes) puis, vingt-cinq minutes plus
+> tard sans aucun changement, n'a plus affiché que des indicateurs de chargement. Une page
+> publique blanche une fois sur deux ne peut pas rester en ligne.
+>
+> **Ce qui a été éliminé** (variantes déployées, vérifiées en onglet neuf) : ni le
+> sous-dossier, ni la route paramétrée, ni le `fetch`, ni `cardGrid`, ni `multiLine` —
+> chaque brique fonctionne isolément, et le graphique a affiché la vraie courbe
+> parisienne. Ce qui reste suspect, c'est l'ordonnancement des cellules quand une page
+> mêle un bloc d'`import` et un `await` de haut niveau : deux cellules `await fetch`
+> séparées bloquaient systématiquement ; les fusionner en un `Promise.all` a débloqué la
+> page — puis l'intermittence est réapparue. Le caractère non déterministe est le fait
+> nouveau, et il invalide toute bissection menée en une seule passe : un essai « qui
+> passe » ne prouve rien s'il n'est pas répété.
+>
+> **Piste pour la reprise** : ne pas charger les données par `fetch` du tout. Un *data
+> loader paramétré* (`src/departement/[code].json.js`) est le mécanisme prévu par le
+> framework pour les routes paramétrées ; il supprime le `await` de la page, donc la
+> configuration qui coince. C'est la première chose à essayer.
+>
+> Tout ce qui suit décrit le socle de données, qui lui **est en production et testé**.
+> Le front (route, `dynamicPaths`, copie par `postbuild`, sélecteur de l'accueil, entrées
+> de sitemap) a été retiré ; `web_export.py` continue de produire les 101 JSON, qui
+> attendent. Les remettre en ligne = restaurer ces cinq points.
+
 101 pages générées par UNE route paramétrée (`web/observable/src/departement/[code].md`),
 qui font passer le site de 10 à 111 pages. Elles s'adressent à un particulier et répondent
 à trois questions, pas davantage : combien coûte le m² ici, combien de ventes s'y font, et

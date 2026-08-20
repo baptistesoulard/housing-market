@@ -1,4 +1,4 @@
-import {existsSync, readFileSync} from "node:fs";
+import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {dirname, join} from "node:path";
 
@@ -123,50 +123,8 @@ export const NAV = [
      "quelles limites — sources publiques, code ouvert, calculs reproductibles."},
 ];
 
-// --- Les pages départementales -------------------------------------------------------
-// 101 pages générées par UNE route paramétrée (src/departement/[code].md). Elles ne
-// figurent pas dans NAV : une barre latérale de 111 entrées serait inutilisable. Elles
-// sont en revanche indexables et portent chacune SA description — c'est tout l'intérêt
-// de l'opération côté référencement, et deux pages qui partagent leur description se
-// cannibalisent dans les résultats de recherche.
-//
-// La liste est LUE depuis l'index que produit web_export.py, jamais recopiée : un
-// département ajouté ou retiré côté données suit tout seul.
-const DEP_INDEX = join(_dir, "src", "data", "departements.json");
-export const DEPARTEMENTS = existsSync(DEP_INDEX)
-  ? JSON.parse(readFileSync(DEP_INDEX, "utf-8")).departements
-  : [];
-
-/** Chemins des pages départementales, pour `dynamicPaths` et le sitemap. */
-export const DEP_PATHS = DEPARTEMENTS.map((d) => `/departement/${d.code}`);
-
-/** Métadonnées d'une page départementale, ou null si le chemin n'en est pas une. */
-export function depMeta(path) {
-  const m = /^\/departement\/([0-9AB]{2,3})$/.exec(path);
-  if (!m) return null;
-  const d = DEPARTEMENTS.find((x) => x.code === m[1]);
-  if (!d) return null;
-  const prix = d.prix_m2 ? `${Math.round(d.prix_m2).toLocaleString("fr-FR")} €/m²` : null;
-  return {
-    title: `Prix immobilier ${d.nom} (${d.code}) — prix au m² et volume des ventes`,
-    // La description porte le CHIFFRE quand il existe : c'est lui qui décide du clic
-    // depuis une page de résultats, pas la promesse d'en avoir un.
-    // Aucune préposition devant le nom : « en Paris » et « en Rhône » sont fautifs, et
-    // les 101 articles français ne se déduisent d'aucune règle mécanique (voir le
-    // commentaire dans departements.py). Le nom est donc apposé, jamais accordé.
-    description: d.couvert
-      ? `${d.nom} (${d.code}), ${d.region} : prix médian au m²` +
-        `${prix ? ` — ${prix}` : ""}, nombre de ventes et évolution trimestre par ` +
-        `trimestre depuis 2014, d'après les ventes enregistrées (DVF). ` +
-        `Combien de m² votre capacité d'emprunt achète.`
-      : `${d.nom} (${d.code}) : le fichier DVF de la DGFiP ne couvre pas ce ` +
-        `département. Explication du régime de publicité foncière applicable et ` +
-        `renvoi vers les indicateurs nationaux de prix et de financement.`,
-  };
-}
-
 /** Les pages indexables, dans l'ordre du sitemap. */
-export const INDEXABLE = [...NAV.map(({path}) => path), ...DEP_PATHS];
+export const INDEXABLE = NAV.map(({path}) => path);
 
 /**
  * Métadonnées de la page servie à `path`.
@@ -177,11 +135,6 @@ export const INDEXABLE = [...NAV.map(({path}) => path), ...DEP_PATHS];
  */
 export function pageMeta(path) {
   const clean = path === "/index" ? "/" : path;
-  // Les pages départementales ne sont pas dans NAV : leurs métadonnées sont dérivées du
-  // code présent dans l'URL. Sans ça, les 101 pages partageraient la description par
-  // défaut du site et se cannibaliseraient dans les résultats de recherche.
-  const dep = depMeta(clean);
-  if (dep) return {path: clean, ...dep, ogImage: SITE.ogImage};
   const entry = NAV.find((p) => p.path === clean);
   return {
     path: clean,

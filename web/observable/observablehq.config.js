@@ -8,7 +8,7 @@
 //
 // L'IDENTITÉ du site (adresse publique, descriptions de pages, navigation, logo) vit
 // dans site.config.js — ce fichier-ci ne porte que le rendu.
-import {SITE, NAV, MARK, THEME as T, pageMeta, DEP_PATHS} from "./site.config.js";
+import {SITE, NAV, MARK, THEME as T, pageMeta} from "./site.config.js";
 
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
@@ -427,9 +427,6 @@ export default {
     "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap",
   ],
   pages: PAGES,
-  // Les 101 pages départementales, générées par src/departement/[code].md.
-  // La liste vient des données (site.config.js), pas d'une énumération à la main.
-  dynamicPaths: DEP_PATHS,
   toc: false,
   pager: false,
   footer: FOOTER,

@@ -41,44 +41,6 @@ officielles, rafraîchies automatiquement chaque semaine.</p>
 
 </div>
 
-## Et chez vous ?
-
-<div class="hm-dep-invite">
-Les pages du site portent sur la France entière. Pour le prix au m² de votre département,
-le nombre de ventes qui s'y font et le nombre de m² que votre capacité d'emprunt y achète,
-choisissez-le ici.
-</div>
-
-```js
-// Le sélecteur vit sur l'accueil parce que c'est la question que se pose un particulier
-// avant toutes les autres : « et chez moi ? ». Il charge le seul index (quelques Ko), pas
-// les 101 fichiers de données — ceux-ci ne sont lus qu'à l'ouverture d'une page.
-const annuaire = await FileAttachment("./data/departements.json").json();
-```
-
-```js
-const depChoisi = view(Inputs.select(
-  annuaire.departements.map((d) => d.code),
-  {label: "Votre département",
-   format: (c) => {
-     const d = annuaire.departements.find((x) => x.code === c);
-     return `${c} — ${d.nom}`;
-   }}));
-```
-
-```js
-display((() => {
-  const d = annuaire.departements.find((x) => x.code === depChoisi);
-  // Les quatre départements hors DVF ont une page, qui explique pourquoi. On y mène donc
-  // quand même — mais en annonçant ce qu'on y trouvera, plutôt qu'en laissant découvrir
-  // une page sans chiffres.
-  return html`<a class="hm-cta" href="/departement/${d.code}">
-    ${d.couvert
-      ? `Voir les prix — ${d.nom}`
-      : `${d.nom} : pourquoi il n'y a pas de données`} →</a>`;
-})());
-```
-
 ## Le marché en ce moment
 
 ```js
