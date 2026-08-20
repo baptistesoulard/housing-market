@@ -36,9 +36,14 @@ function bold(s) {
 }
 
 function card(c) {
-  return html`<div class="hm-card">
+  // Échelle st.metric (hm-card--metric), comme les cartes des autres pages. Ces cartes
+  // reprenaient l'échelle du markdown `**libellé**` + `### valeur` d'app.py — 16 px de
+  // libellé et 28 px de valeur : trois blocs de quatre à cette taille écrasaient le
+  // reste de la page. La pastille de statut est ramenée sous la taille du chiffre
+  // (voir .hm-card-dot) pour que ce soit le nombre qu'on lise en premier, pas le rond.
+  return html`<div class="hm-card hm-card--metric">
     <div class="hm-card-title">${c.title}</div>
-    <div class="hm-card-value">${c.emoji} ${c.value}</div>
+    <div class="hm-card-value"><span class="hm-card-dot">${c.emoji}</span> ${c.value}</div>
     ${c.sub ? html`<div class="hm-card-sub">${c.sub}</div>` : ""}
   </div>`;
 }
@@ -67,7 +72,10 @@ function card(c) {
 for (const b of data.blocks) {
   display(html`<h3>${b.title}</h3>`);
   display(html`<div class="hm-grid">${b.cards.map(card)}</div>`);
-  display(html`<div class="hm-link">${b.link}</div>`);
+  // Renvois vers les pages de détail. Le JSON donne le chemin canonique de la barre
+  // latérale (« /neuf ») ; l'href est relatif à cette page, qui est la racine du site.
+  display(html`<div class="hm-shortcuts"><span class="lead">→ détail :</span>${
+    b.links.map((l) => html`<a class="hm-shortcut" href=".${l.path}">${l.icon} ${l.label}</a>`)}</div>`);
 }
 ```
 

@@ -95,6 +95,11 @@ def _dot(status: str) -> str:
     return {"up": "🟢", "flat": "🟠", "down": "🔴"}.get(status, "⚪")
 
 
+def _page(icon: str, label: str, path: str) -> dict:
+    """Un renvoi vers une page du site, tel que le front l'attend (voir `blocks`)."""
+    return {"icon": icon, "label": label, "path": path}
+
+
 def _status_yoy(v, hi: float = 1.0, lo: float = -1.0) -> str:
     if v is None:
         return "flat"
@@ -365,13 +370,20 @@ def build_synthese(con, frames: dict) -> dict:
         cards_persp.append({"emoji": "🗓️", "title": "Prochaine échéance aides",
                             "value": pd.Timestamp(j_d).strftime("%m/%Y"), "sub": j_it["court"]["FR"]})
 
+    # `links` remplace l'ancienne phrase « → détail : « X » · « Y » » : le front en fait de
+    # vrais liens vers les pages concernées. On exporte le CHEMIN CANONIQUE (« /neuf »),
+    # celui de la barre latérale, et non un href : c'est le front qui sait où il se trouve
+    # et le résout en relatif. Les libellés restent ceux des onglets, à l'identique.
     blocks = [
         {"title": "Activité", "cards": cards_act,
-         "link": "→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »"},
+         "links": [_page("🏗️", "Marché du neuf", "/neuf"),
+                   _page("🏠", "Marché de l'ancien", "/ancien")]},
         {"title": "Conditions de financement", "cards": cards_fin,
-         "link": "→ détail : « 🏦 Environnement & Financement » · « 🏠 Marché de l'ancien »"},
+         "links": [_page("🏦", "Environnement & Financement", "/macro"),
+                   _page("🏠", "Marché de l'ancien", "/ancien")]},
         {"title": "Perspective" + (f" — {persp_verdict}" if persp_verdict else ""), "cards": cards_persp,
-         "link": "→ détail : « 📡 Prévision & Scénarios » · « 📰 Actualités & Aides »"},
+         "links": [_page("📡", "Prévision & Scénarios", "/previsions"),
+                   _page("📰", "Actualités & Aides", "/actualites")]},
     ]
 
     # ---------------------- Graphique neuf vs ancien ------------------------------

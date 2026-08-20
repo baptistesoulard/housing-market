@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T17:53:51+00:00",
+  "generated_at": "2026-08-20T09:27:13+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -66,7 +66,18 @@
           "sub": "+0,6% vs même trimestre un an plus tôt"
         }
       ],
-      "link": "→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »"
+      "links": [
+        {
+          "icon": "🏗️",
+          "label": "Marché du neuf",
+          "path": "/neuf"
+        },
+        {
+          "icon": "🏠",
+          "label": "Marché de l'ancien",
+          "path": "/ancien"
+        }
+      ]
     },
     {
       "title": "Conditions de financement",
@@ -90,7 +101,18 @@
           "sub": "logement ≈ 28 % moins accessible qu'en 2015 · sur un an : +0,4 pt"
         }
       ],
-      "link": "→ détail : « 🏦 Environnement & Financement » · « 🏠 Marché de l'ancien »"
+      "links": [
+        {
+          "icon": "🏦",
+          "label": "Environnement & Financement",
+          "path": "/macro"
+        },
+        {
+          "icon": "🏠",
+          "label": "Marché de l'ancien",
+          "path": "/ancien"
+        }
+      ]
     },
     {
       "title": "Perspective — marché au-dessus de la cible BPCE 2026, infléchissement attendu",
@@ -114,7 +136,18 @@
           "sub": "MaPrimeRénov' 2026"
         }
       ],
-      "link": "→ détail : « 📡 Prévision & Scénarios » · « 📰 Actualités & Aides »"
+      "links": [
+        {
+          "icon": "📡",
+          "label": "Prévision & Scénarios",
+          "path": "/previsions"
+        },
+        {
+          "icon": "📰",
+          "label": "Actualités & Aides",
+          "path": "/actualites"
+        }
+      ]
     }
   ],
   "chart": {

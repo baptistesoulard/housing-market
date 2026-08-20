@@ -33,8 +33,9 @@ export const nf1 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 1});
 // auparavant collé derrière la valeur, sur la même ligne : deux nombres se disputaient
 // le même regard, et sur une colonne étroite le delta repoussait la valeur à la ligne.
 // La classe hm-card--metric porte l'échelle de st.metric (libellé plus discret, valeur
-// plus compacte), distincte des cartes de la Synthèse qui, elles, miroitent un
-// `**libellé**` + `### valeur` markdown.
+// plus compacte). C'est désormais l'échelle de TOUTES les cartes du site : la Synthèse
+// suivait le `**libellé**` + `### valeur` markdown d'app.py, une taille au-dessus, et
+// ses trois blocs de cartes écrasaient le reste de la page.
 export function kpiCard({label, value, delta, yoy, subs}) {
   const d = delta ?? yoy;
   const neg = d && /^-|−/.test(d.replace("−", "-"));

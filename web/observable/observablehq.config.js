@@ -31,6 +31,47 @@ const VARS = Object.entries({
   "delta-neg": T.delta.negative,
 }).map(([k, v]) => `  --hm-${k}: ${v};`).join("\n");
 
+// --- Le logo -----------------------------------------------------------------------
+// Dessiné ici plutôt que servi en fichier : les deux couleurs viennent de theme.json,
+// comme le reste du thème, et le SVG part dans le <head> avec le CSS (aucune requête).
+// Motif : le toit d'une maison au-dessus de trois barres croissantes — logement + série.
+const MARK = "data:image/svg+xml," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">` +
+  `<rect width="32" height="32" rx="8" fill="${T.brand.brick}"/>` +
+  `<path d="M6.5 15.2 16 7.5l9.5 7.7" fill="none" stroke="${T.brand.bg}" ` +
+  `stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` +
+  `<g fill="${T.brand.bg}">` +
+  `<rect x="9.6" y="21.6" width="4" height="3.9" rx="1.1"/>` +
+  `<rect x="14.9" y="19" width="4" height="6.5" rx="1.1"/>` +
+  `<rect x="20.2" y="16.3" width="4" height="9.2" rx="1.1"/>` +
+  `</g></svg>`);
+
+// Les pages du site, dans l'ordre de la barre latérale. L'emoji est séparé du libellé :
+// il n'est plus DANS le texte du lien mais posé en ::before dans une gouttière de largeur
+// fixe (voir le CSS de la barre latérale), sinon les libellés ne s'alignent pas — les
+// emojis n'ont pas tous la même chasse.
+const NAV = [
+  {icon: "🧭", name: "Synthèse", path: "/"},
+  {icon: "🏗️", name: "Marché du neuf", path: "/neuf"},
+  {icon: "🏠", name: "Marché de l'ancien", path: "/ancien"},
+  {icon: "🏦", name: "Environnement & Financement", path: "/macro"},
+  {icon: "📰", name: "Actualités & Aides", path: "/actualites"},
+  // Les deux pages suivantes n'ont PAS de JSON statique : elles appellent l'API HTTP
+  // (voir src/components/api.js). Sans instance désignée, elles affichent un encart qui
+  // explique comment en lancer une — le reste du site continue de fonctionner seul.
+  {icon: "📡", name: "Prévision & Scénarios", path: "/previsions"},
+  {icon: "⚙️", name: "Données & Sources", path: "/donnees"},
+];
+
+const PAGES = NAV.map(({name, path}) => ({name, path}));
+
+// Une règle par onglet : l'emoji en ::before, adressé par le href que rend le framework
+// (« ./ » pour la racine, « ./neuf » ailleurs). Ces règles sont concaténées dans STYLE.
+const NAV_ICONS = NAV.map(({icon, path}) =>
+  `#observablehq-sidebar > ol:nth-of-type(2) a[href="${path === "/" ? "./" : "." + path}"]::before` +
+  ` { content: "${icon}"; }
+`).join("");
+
 const STYLE = `
 <style>
 :root {
@@ -48,8 +89,10 @@ ${VARS}
       ce texte secondaire sur deux niveaux de gris, ce qui le faisait paraître délavé.
    2. Les titres de l'app rendent en Source Sans, pas en Segoe UI : sa règle
       « h2, h3 {font-family: 'Segoe UI'} » perd en spécificité (voir theme.json).
-   Corps 16px/1.6, titre de section 36px/600, libellé de carte 16px/600, valeur 28px/600,
-   sous-titre 14px/1.6 — tous en encre pleine. */
+   Corps 16px/1.6, titre de section 36px/600, sous-titre 14px/1.6 — tous en encre pleine.
+   Les cartes de la Synthèse suivaient ici le markdown d'app.py (libellé 16px/600, valeur
+   28px/600) ; elles sont passées à l'échelle st.metric ci-dessous, comme celles des
+   autres pages — trois blocs de quatre cartes à 28px écrasaient le reste de la page. */
 body { font-family: var(--sans-serif); font-size: 16px; line-height: 1.6;
   color: var(--hm-ink); background: var(--hm-bg); }
 h1, h2, h3, h4 { font-family: var(--sans-serif); color: var(--hm-ink); }
@@ -91,13 +134,27 @@ a, a:visited { color: var(--hm-link); }
 .hm-card--metric .hm-card-title { font-size: 0.875rem; font-weight: 400; }
 .hm-card--metric .hm-card-value { font-size: 1.5rem; font-weight: 700; margin: 0.1rem 0 0.25rem; }
 .hm-card-delta { margin: 0 0 0.4rem; }
+/* La pastille de statut de la Synthèse : sous la taille du chiffre, pour que le regard
+   tombe sur le nombre. À taille égale (le rendu de Streamlit, où l'emoji est dans le
+   « ### »), le rond coloré prend le pas sur la valeur qu'il ne fait que qualifier. */
+.hm-card-dot { font-size: 0.8em; }
 .hm-delta { display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 400;
   border-radius: 9999px; padding: 2px 9px; line-height: 1.5; }
 .hm-delta.pos { color: var(--hm-delta-pos);
   background: color-mix(in srgb, var(--hm-delta-pos) 12%, transparent); }
 .hm-delta.neg { color: var(--hm-delta-neg);
   background: color-mix(in srgb, var(--hm-delta-neg) 12%, transparent); }
-.hm-link { color: var(--hm-ink); font-size: 0.875rem; margin: 0.5rem 0 2rem; }
+/* Renvois de bas de bloc (page Synthèse) : de vrais liens vers les pages de détail,
+   présentés en pastilles pour qu'ils se voient comme cliquables — le texte simple
+   qu'ils remplacent nommait les onglets sans y mener. */
+.hm-shortcuts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;
+  font-size: 0.875rem; margin: 0.5rem 0 2rem; }
+.hm-shortcuts .lead { color: var(--hm-subtle); }
+.hm-shortcut { display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.15rem 0.65rem; border: 1px solid var(--hm-border); border-radius: 9999px;
+  background: var(--hm-surface); color: var(--hm-ink); text-decoration: none; }
+.hm-shortcut:hover, .hm-shortcut:focus-visible { border-color: var(--hm-brick);
+  color: var(--hm-brick); background: var(--hm-bg); }
 .hm-panels { display: grid; gap: 1rem 1.4rem; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
 .hm-panel-title { font-weight: 600; font-size: 0.98rem; color: var(--hm-ink); margin: 0.4rem 0 0.1rem; }
 .hm-panel-sub { color: var(--hm-ink); font-size: 0.875rem; margin-bottom: 0.2rem; }
@@ -146,21 +203,47 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
   background: var(--hm-surface); }
 .hm-period-note { font-size: 0.72rem; color: var(--theme-foreground-muted); margin-top: 0.3rem; line-height: 1.35; }
 
+/* --- Barre latérale : bloc de marque + gouttière d'icônes --------------------------
+   Deux défauts du rendu par défaut d'Observable Framework, tous deux visibles d'un coup
+   d'œil sur la page Synthèse :
+
+   1. Le nom du site est un LIEN DE NAVIGATION comme les autres. Sur la page d'accueil il
+      reçoit « observablehq-link-active » — donc le liseré vertical ET la couleur de lien de
+      l'onglet courant. L'écran montrait ainsi DEUX éléments actifs, dont un qui ne l'est
+      pas, et le nom du produit se lisait comme un huitième onglet. On lui redonne le
+      statut d'en-tête : logo, encre pleine, pas de liseré, une accroche en dessous.
+   2. Les libellés d'onglets sont en drapeau : l'emoji fait partie du texte du lien et les
+      emojis n'ont pas la même chasse (🏠 est plus large que 📡). D'où la gouttière de
+      largeur fixe ci-dessous, alimentée par le champ « icon » de NAV. */
+#observablehq-sidebar > ol:first-child { padding-bottom: 0.75rem; }
+/* Le liseré « actif » du titre — c'est le ::before du <li>, pas celui du <a>. */
+#observablehq-sidebar > ol:first-child > li::before { display: none; }
+#observablehq-sidebar > ol:first-child > li > a {
+  height: auto; align-items: center; gap: 0.55rem;
+  padding: 0.1rem 2rem 0.1rem 1.5rem;
+  color: var(--hm-ink); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.2px;
+  background: none; }
+#observablehq-sidebar > ol:first-child > li > a:hover { background: none; color: var(--hm-brick); }
+#observablehq-sidebar > ol:first-child > li > a::before {
+  content: ""; flex: none; width: 26px; height: 26px;
+  background: url("${MARK}") center / contain no-repeat; }
+/* L'accroche : posée sur le <li> et non dans le lien, pour rester hors de la zone
+   cliquable et hors du nom accessible de celui-ci. */
+#observablehq-sidebar > ol:first-child > li::after {
+  content: "Marché du logement en France";
+  display: block; padding: 0.1rem 1rem 0 calc(1.5rem + 26px + 0.55rem);
+  font-size: 0.72rem; font-weight: 500; line-height: 1.25; color: var(--hm-subtle); }
+#observablehq-sidebar > ol:nth-of-type(2) .observablehq-link a { gap: 0; }
+#observablehq-sidebar > ol:nth-of-type(2) .observablehq-link a::before {
+  flex: none; display: inline-block; width: 1.5em; font-size: 0.95rem; line-height: 1; }
+${NAV_ICONS}
+/* L'onglet courant : liseré à la couleur de marque (il était au bleu de focus du thème,
+   la seule teinte de l'écran qui ne vienne pas de theme.json) et libellé à l'encre. */
+#observablehq-sidebar > ol:nth-of-type(2) > li.observablehq-link-active::before { background: var(--hm-brick); }
+#observablehq-sidebar > ol:nth-of-type(2) > li.observablehq-link-active > a { color: var(--hm-ink); font-weight: 600; }
+
 </style>`;
 
-// Les pages du site, dans l'ordre de la barre latérale.
-const PAGES = [
-  {name: "🧭 Synthèse", path: "/"},
-  {name: "🏗️ Marché du neuf", path: "/neuf"},
-  {name: "🏠 Marché de l'ancien", path: "/ancien"},
-  {name: "🏦 Environnement & Financement", path: "/macro"},
-  {name: "📰 Actualités & Aides", path: "/actualites"},
-  // Les deux pages suivantes n'ont PAS de JSON statique : elles appellent l'API HTTP
-  // (voir src/components/api.js). Sans instance désignée, elles affichent un encart qui
-  // explique comment en lancer une — le reste du site continue de fonctionner seul.
-  {name: "📡 Prévision & Scénarios", path: "/previsions"},
-  {name: "⚙️ Données & Sources", path: "/donnees"},
-];
 
 export default {
   title: "HousingMarket",
@@ -176,5 +259,6 @@ export default {
   pages: PAGES,
   toc: false,
   pager: false,
-  footer: "PoC de migration — front statique alimenté par la pipeline Python existante.",
+  // Pas de pied de page : le footer par défaut d'Observable ne dirait rien d'utile.
+  footer: null,
 };
