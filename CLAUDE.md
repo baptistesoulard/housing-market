@@ -45,6 +45,10 @@ portés vers Observable. Les cinq premiers lisent un JSON statique produit par
 Ce n'est pas du compute — `api/` ne recalcule rien, il expose `queries.py` et
 `forecast.py` en JSON. Voir « L'API HTTP » plus bas et `web/README.md`.
 
+Un quatrième, **terminé** lui aussi : faire du front un **site publiable**. Deux pages
+rédigées se sont ajoutées aux sept pages de données (accueil et À propos), avec les
+métadonnées de partage et de référencement qui vont avec. Voir « Le site public » plus bas.
+
 ## Axe stockage — plan et état
 
 Objectif : le Parquet est le chemin de lecture au runtime, les CSV restent la copie
@@ -230,6 +234,61 @@ contrats/logging » — ce backlog est caduc tant que l'import CSV ad hoc n'est 
 `synthetic_circularity_warning()` d'`app.py`, devenue morte avec le benchmark synthétique
 du Time-Lag, a été supprimée elle aussi.
 
+## Le site public — ce qui doit rester vrai
+
+Le front est passé de tableau de bord déployé à **site destiné à être partagé** (LinkedIn
+et consorts). Neuf pages : `/` est désormais une page d'accueil RÉDIGÉE, la Synthèse a
+glissé à `/synthese`, et `/a-propos` porte méthode, sources et limites.
+
+**`site.config.js` est la source unique d'identité.** Adresse publique, titre et
+description de chaque page, ordre de la navigation, logo. Il est lu par le `<head>`
+(`observablehq.config.js`), par `scripts/postbuild.mjs` et par `tests/test_web_seo.py` :
+ajouter une page là la fait apparaître d'un coup dans la barre latérale, dans le sitemap et
+dans les tests. `observablehq.config.js` ne porte plus que le RENDU — ne pas y redéclarer
+de navigation.
+
+**L'accueil et À propos doivent rester en HTML rendu au build.** C'est leur seule raison
+d'être : les sept pages de données construisent leur contenu dans le navigateur à partir
+des JSON, et **aucun aperçu de partage n'exécute de JavaScript** (LinkedIn, Slack et
+WhatsApp récupèrent la page depuis leurs serveurs). Ces deux pages sont donc le seul texte
+du site que ces robots lisent. Le bloc dynamique de l'accueil (pastilles, fraîcheur) est un
+aperçu : s'il ne s'affiche pas, la page doit encore dire ce qu'elle a à dire. Déplacer son
+propos dans un bloc ```js le rendrait invisible là où il compte.
+
+**Aucune URL d'hébergement en dur.** Les balises Open Graph et l'URL canonique exigent des
+adresses ABSOLUES ; elles viennent de `HM_SITE_URL` (variable d'environnement Cloudflare
+Pages), avec un repli `*.pages.dev` que le build signale en clair. Un test injecte une
+adresse différente du repli et vérifie que tout suit — c'est ce qui empêche une URL de se
+figer dans le code. Une adresse fausse ne casse aucune page : elle casse silencieusement
+l'aperçu au partage et le référencement.
+
+**`scripts/postbuild.mjs` pose ce qu'`observable build` ne pose pas** : `lang="fr"` sur un
+`<html>` que le framework écrit NU (WCAG 3.1.1, aucun réglage offert), un lien d'évitement,
+`favicon.svg`, `sitemap.xml` et `robots.txt`. Il est **idempotent** et prend son répertoire
+de sortie en argument (les tests le lancent sur un `dist/` jetable). Réécrire du HTML après
+coup n'est pas élégant : c'est la seule prise disponible tant que le framework n'expose pas
+ces réglages.
+
+**La vignette `assets/og-image.png` est committée, pas construite.** Cloudflare ne
+construit que du Node et la produire demande un navigateur ; `npm run og-image` la
+régénère à la main (Playwright, hors dépendances du site). Elle vit hors de `src/` parce
+que les fichiers que le framework copie reçoivent un nom haché, incompatible avec l'URL
+absolue qu'annonce `og:image`.
+
+**Une légende cliquable est un `<button aria-pressed>`, jamais un `<span onclick>`.** Le
+barré et l'opacité ne disent l'état qu'à ceux qui les voient ; un `span` n'est atteignable
+ni au clavier ni au lecteur d'écran. Les deux légendes du site (`components/hm.js` et
+`synthese.md`) sont des boutons dont le CSS neutralise l'apparence — le rendu n'a pas
+changé.
+
+**L'encart « API injoignable » s'adresse d'abord à un visiteur, pas à un développeur.**
+Le site est public : tant qu'aucune instance n'est désignée, c'est ce que voit tout le
+monde sur Prévision et Données. Le mode d'emploi `python -m api` est rangé dans un repli,
+sous une explication en français courant et des renvois vers les pages qui fonctionnent.
+À noter : un site servi en HTTPS ne peut pas appeler le `http://127.0.0.1:8000` de repli
+(contenu mixte), donc **ces deux pages resteront en encart pour un visiteur externe tant
+que l'API n'est pas hébergée**.
+
 ## Vérifier la parité
 
 Trois recettes, par ordre de coût croissant. Les tests unitaires seuls ne suffisent pas :
@@ -240,9 +299,9 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 113 collectés ; 1 skip légitime si company_sales
+python -m pytest tests/ -q          # 125 collectés ; 1 skip légitime si company_sales
                                     # est vide. Les tests d'API se skippent sans Flask,
-                                    # ceux de parité JS sans Node.
+                                    # ceux de parité JS et de référencement sans Node.
 ```
 
 **2. Rapport PDF, comparaison d'octets** — la plus forte : couvre les graphiques, les KPI
@@ -282,6 +341,7 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 | `refactor/duckdb-engine` | 0 | axe compute, fusionné par la PR #2 |
 | `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, fusionnés |
 | `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
+| `claude/website-seo-accessibility-alr8mw` | +1 | site public : accueil rédigée, page À propos, métadonnées de partage/référencement, corrections d'accessibilité (voir « Le site public ») |
 | `refactor/fusion-timelag-previsions` | 0 | fusion Time-Lag → Prévision, retrait Atelier + export SAP IBP (voir « Onglets retirés ») ; fusionnée dans `main` en fast-forward le 2026-08-20 |
 
 Les quatre branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base

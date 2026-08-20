@@ -31,10 +31,17 @@ web/
 │   ├── web_export.py            # agrégats Python → 5 JSON statiques + theme.js
 │   └── theme.py                 # charge web/theme.json, génère components/theme.js
 ├── observable/
-│   ├── observablehq.config.js   # config du site (+ CSS partagé, dont la frise)
+│   ├── site.config.js           # IDENTITÉ : adresse publique, descriptions, NAV, logo
+│   ├── observablehq.config.js   # RENDU : <head>, CSS partagé, pied de page
+│   ├── scripts/
+│   │   ├── postbuild.mjs        # lang, lien d'évitement, favicon, sitemap, robots
+│   │   └── og-image.mjs         # régénère la vignette de partage (hors build)
+│   ├── assets/og-image.png      # vignette 1200×630, committée
 │   ├── package.json
 │   └── src/
-│       ├── index.md             # page Synthèse (chips, cartes, graphique)
+│       ├── index.md             # page d'accueil — RÉDIGÉE, pas de JSON
+│       ├── a-propos.md          # méthode, sources, limites — rédigée aussi
+│       ├── synthese.md          # page Synthèse (chips, cartes, graphique)
 │       ├── components/
 │       │   ├── hm.js            # graphiques & helpers partagés
 │       │   ├── period.js        # frise de période globale (barre latérale)
@@ -42,6 +49,12 @@ web/
 │       └── data/synthese.json   # généré par web_export.py (commité pour le déploiement)
 └── README.md
 ```
+
+Deux fichiers de configuration, et la frontière compte : **`site.config.js` dit ce que le
+site EST** (son adresse publique, le titre et la description de chaque page, l'ordre de la
+navigation, le logo), **`observablehq.config.js` dit à quoi il RESSEMBLE**. Le premier est
+aussi lu par `scripts/postbuild.mjs` et par `tests/test_web_seo.py` : une page ajoutée là
+apparaît d'un coup dans la barre latérale, dans le sitemap et dans les tests.
 
 ## Coexistence avec l'app Streamlit
 
@@ -95,7 +108,10 @@ Deux règles de mise en page valent d'être connues avant de toucher au CSS :
 npm --prefix web/observable run build   # → web/observable/dist/
 ```
 
-Le dossier `dist/` est un site 100 % statique, servable tel quel.
+`npm run build` enchaîne deux étapes : `observable build`, puis
+`node scripts/postbuild.mjs` qui complète le HTML et ajoute les fichiers de racine (voir
+« Être trouvable et partageable » plus bas). Le dossier `dist/` est un site 100 % statique,
+servable tel quel.
 
 ## Déploiement Cloudflare Pages (recommandé)
 
@@ -104,6 +120,15 @@ Connecter le dépôt à Cloudflare Pages avec :
 - **Build command** : `npm ci && npm run build`
 - **Build output directory** : `dist`
 - **Root directory** : `web/observable`
+
+Et **une variable d'environnement** (Settings → Environment variables) :
+
+- `HM_SITE_URL` = l'adresse publique définitive, par exemple `https://housingmarket.pages.dev`
+
+C'est elle qui écrit les URL canoniques, le sitemap et les balises Open Graph. Sans elle,
+le repli de `site.config.js` est utilisé et le build l'annonce en clair (`postbuild:
+ATTENTION — HM_SITE_URL n'est pas défini`). Une adresse fausse ne casse aucune page : elle
+casse silencieusement l'aperçu au partage et le référencement, d'où l'avertissement.
 
 Cloudflare ne construit que le front (**Node uniquement**, pas de Python). Le
 `synthese.json` est produit et commité par la pipeline Python (voir ci-dessous), donc
@@ -186,6 +211,70 @@ par `forecast.best_tx_to_monthly`, `tests/test_web_js_parity.py` vérifie que le
 implémentations retiennent le même décalage et le même R² — sinon on aurait deux chiffres
 et aucun arbitre.
 
+## Être trouvable et partageable
+
+Un tableau de bord et un site public ne demandent pas la même chose. Ce qui a été ajouté
+pour le second tient en trois idées.
+
+**Le texte indexable vit sur deux pages écrites.** Les sept pages de données construisent
+leur contenu dans le NAVIGATEUR à partir des JSON ; un robot qui n'exécute pas de
+JavaScript n'y voit presque rien, et **aucun aperçu de partage n'exécute de JavaScript**.
+`src/index.md` (accueil) et `src/a-propos.md` (méthode, sources, limites) sont donc
+rédigées en markdown rendu au build. C'est le seul contenu du site que ces robots lisent —
+d'où la règle : *ce qui compte sur ces deux pages reste statique*. Le bloc dynamique de
+l'accueil (pastilles d'état, fraîcheur) est un aperçu ; s'il ne s'affiche pas, la page dit
+toujours ce qu'elle a à dire.
+
+**Le `<head>` est calculé par page.** `head` est une fonction dans
+`observablehq.config.js` : le framework l'appelle avec le chemin de la page, elle y lit la
+description déclarée dans `site.config.js` et en tire la meta description, l'URL canonique
+et les balises Open Graph / Twitter. Sans ces dernières, **un lien collé sur LinkedIn
+s'affiche en URL nue**, sans titre ni vignette : LinkedIn récupère la page depuis ses
+propres serveurs et ne lit que le HTML servi. Leurs URL doivent être absolues, ce qui est
+la raison d'être de `HM_SITE_URL`.
+
+**Quatre choses qu'`observable build` ne pose pas** sont ajoutées par
+`scripts/postbuild.mjs`, exécuté juste après lui par `npm run build` :
+
+| Ajout | Pourquoi ce n'est pas dans le framework |
+|---|---|
+| `lang="fr"` sur `<html>` | Le framework écrit un `<html>` nu et n'offre aucun réglage. Sans lui, un lecteur d'écran prononce le français avec sa voix par défaut (critère WCAG 3.1.1). |
+| Lien d'évitement | Sans lui, atteindre le contenu au clavier suppose de traverser toute la barre latérale, sur chaque page. |
+| `favicon.svg` | Écrite plutôt que déclarée dans le `<head>` : le framework réécrit les `<link href>` en adresses hachées, alors qu'un robot attend `/favicon.svg` à la racine. |
+| `sitemap.xml`, `robots.txt` | Absents du framework. C'est par le sitemap qu'un moteur découvre les pages qu'aucun lien externe ne pointe encore. |
+
+Le script est **idempotent** (relancé sur un `dist/` déjà traité, il ne double rien) et
+prend un répertoire en argument, ce qui permet aux tests de le faire tourner sur un
+`dist/` jetable.
+
+### La vignette de partage
+
+`assets/og-image.png` (1200×630) est **committée**, pas produite au build : Cloudflare ne
+construit que du Node et la fabriquer demande un navigateur. Elle est régénérée à la
+demande, quand l'identité change :
+
+```bash
+npm --prefix web/observable install --no-save playwright
+npm --prefix web/observable run og-image
+```
+
+Le script relit `theme.json` et `site.config.js`, donc la vignette suit la charte au lieu
+de dériver. Les polices ne sont pas embarquées : le rendu dépend de la sans-serif
+installée sur la machine — sans conséquence puisque le PNG est versionné, mais c'est la
+raison pour laquelle on ne la régénère pas à chaque build. `HM_CHROMIUM=/chemin/vers/chrome`
+permet de viser un navigateur déjà présent plutôt que d'en télécharger un.
+
+### Ce que les tests tiennent
+
+`tests/test_web_seo.py` fait tourner ces trois modules JavaScript par Node (aucun `npm
+install` requis, ils n'importent rien de `node_modules`) et vérifie ce qu'aucun rendu ne
+montre : chaque page déclarée a bien un fichier, les descriptions sont uniques et de
+longueur utilisable, chaque page indexable porte sa canonique et sa carte de partage, la
+404 est désindexée, les URL de partage sont absolues, le sitemap liste exactement les pages
+voulues, le post-traitement est idempotent, et la vignette est un vrai PNG aux bonnes
+dimensions. Le test injecte une adresse de test différente du repli : c'est ce qui prouve
+qu'aucune URL n'est écrite en dur.
+
 ## Périmètre du PoC / suite
 
 Les **5 premiers onglets** de l'app Streamlit sont portés, avec les mêmes sections, les
@@ -201,6 +290,11 @@ légendes cliquables) :
 - ✅ **Environnement & Financement** — confiance, taux, intentions, chômage, volumes de
   crédits, demande BLS, rénovation.
 - ✅ **Actualités & Aides** — filtres, matrice d'impact, échéancier, fiches détaillées.
+
+À ces sept pages de données s'ajoutent **deux pages rédigées**, qui n'existent pas dans
+l'app Streamlit et n'ont de sens que pour un site public : l'**accueil** (ce que le site
+répond, pourquoi s'y fier, le plan des pages) et **À propos** (méthode, sources, limites,
+qui écrit). L'accueil a pris la racine `/` ; la Synthèse est passée à `/synthese`.
 
 ### Parité des contrôles
 
@@ -249,5 +343,11 @@ légendes cliquables) :
 - ✅ **Les 7 onglets sont portés.** Prévision & Scénarios et Données & Sources ont
   rejoint le site le 2026-08-20, mais **par un autre chemin** que les cinq premiers :
   voir « Deux façons d'alimenter une page » ci-dessous.
+- ✅ **Le site est publiable.** Accueil et À propos rédigés, métadonnées de partage et
+  de référencement, sitemap, favicon, langue du document et lien d'évitement — voir
+  « Être trouvable et partageable ».
 - ⏭️ Bilingue FR/EN pour les deux nouvelles pages (les cinq premières le sont déjà via
   l'export Python).
+- ⏭️ Héberger l'API : sans instance en HTTPS, les pages Prévision et Données affichent
+  leur encart à tout visiteur (un site en HTTPS ne peut de toute façon pas appeler le
+  `http://127.0.0.1:8000` de repli).

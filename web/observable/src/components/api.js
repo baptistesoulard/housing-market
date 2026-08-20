@@ -91,15 +91,26 @@ export function apiOfflineNotice(error) {
   const div = document.createElement("div");
   div.className = "hm-api-offline";
   const base = error?.base ?? apiBase();
+  // Le message s'adresse D'ABORD à un visiteur de passage — le site est public, et cet
+  // encart est ce qu'il voit tant qu'aucune instance de l'API n'est désignée. Lui servir
+  // une commande `python -m api` en première ligne, c'est lui répondre dans une langue
+  // qui n'est pas la sienne : on lui dit donc ce qui manque, où aller en attendant, et on
+  // range le mode d'emploi du développeur dans un repli.
   div.innerHTML = `
-    <div class="hm-api-offline-title">⚙️ Cette page a besoin de l'API de calcul</div>
-    <p>Les cinq premières pages sont des exports statiques et fonctionnent seules. Celle-ci
-    interroge le moteur (${"DuckDB + les régressions"}) en direct, donc elle a besoin qu'un
-    serveur réponde.</p>
-    <p>Depuis la racine du dépôt :</p>
-    <pre><code>python -m api</code></pre>
-    <p>Puis rechargez. Pour viser une autre instance, ajoutez
-    <code>?api=https://mon-api.example</code> à l'URL (mémorisé ensuite).</p>
+    <div class="hm-api-offline-title">⚙️ Cette page a besoin d'un moteur de calcul</div>
+    <p>Les cinq premières pages du site sont des exports statiques et fonctionnent seules.
+    Celle-ci relance un calcul à chaque question posée — c'est tout son intérêt — et
+    demande donc qu'un serveur réponde. Aucun n'est joignable pour le moment.</p>
+    <p>En attendant, <a href="/synthese">la synthèse du marché</a> et les pages de détail
+    restent complètes, et <a href="/a-propos">la méthode</a> explique ce que cette page
+    calcule.</p>
+    <details>
+      <summary>Vous avez le dépôt en local&nbsp;?</summary>
+      <p>Depuis sa racine :</p>
+      <pre><code>python -m api</code></pre>
+      <p>Puis rechargez la page. Pour viser une autre instance, ajoutez
+      <code>?api=https://mon-api.example</code> à l'URL — la valeur est mémorisée.</p>
+    </details>
     <p class="hm-api-offline-detail">Tentative sur <code>${base}</code> —
     ${error?.message ?? "injoignable"}.</p>`;
   return div;

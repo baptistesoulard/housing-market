@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "description": "PoC front statique (Observable Framework) — onglet Synthèse du dashboard HousingMarket. Lit web/observable/src/data/synthese.json généré par web/export/web_export.py.",
+  "description": "Site statique HousingMarket (Observable Framework) — baromètre du marché du logement en France. Les données des cinq premières pages sont produites par web/export/web_export.py.",
   "scripts": {
     "dev": "observable preview",
-    "build": "observable build",
-    "clean": "observable clean"
+    "build": "observable build && node scripts/postbuild.mjs",
+    "clean": "observable clean",
+    "og-image": "node scripts/og-image.mjs"
   },
   "dependencies": {
     "@observablehq/framework": "^1.13.0"

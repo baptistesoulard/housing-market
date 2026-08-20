@@ -1,25 +1,52 @@
 ---
-title: Synthèse
+title: HousingMarket — Marché du logement en France
 toc: false
 ---
 
 ```js
-import {status, ui} from "./components/theme.js";
-import {filterYears} from "./components/hm.js";
-import {periodFilter} from "./components/period.js";
+import {status} from "./components/theme.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
 
-```js
-// Frise de période GLOBALE (barre latérale) — même contrôle sur tous les onglets.
-// Les cartes et les pastilles de cette page n'en dépendent pas : comme dans `app.py`,
-// elles lisent le national plein au dernier mois disponible, indépendamment du curseur.
-// Seul le graphique croisé neuf/ancien ci-dessous suit la fenêtre choisie.
-const rangeS = Generators.input(periodFilter({min: data.period.min, max: data.period.max}));
-```
+<!--
+  PAGE D'ACCUEIL — écrite, pas calculée.
+
+  Les sept autres pages construisent leur contenu dans le NAVIGATEUR à partir des JSON :
+  un robot d'indexation qui n'exécute pas de JavaScript n'y voit presque rien, et un
+  aperçu de partage (LinkedIn, Slack) n'exécute jamais de JavaScript. Le texte ci-dessous
+  est donc rendu au build, en HTML : c'est le seul contenu du site que ces robots lisent,
+  et le seul cadrage qu'ait un visiteur arrivé par un lien sans savoir ce qu'il regarde.
+
+  Corollaire à tenir : ce qui compte ici reste en markdown/HTML statique. Le bloc
+  dynamique plus bas (pastilles d'état, fraîcheur) est un APERÇU — s'il ne s'affiche pas,
+  la page dit toujours ce qu'elle a à dire.
+-->
+
+<div class="hm-hero">
+
+# Où en est le marché du logement en France ?
+
+<div class="hm-rule"></div>
+
+<p class="hm-lead">HousingMarket met en regard la construction neuve, les ventes dans
+l'ancien, les prix et les conditions de financement — puis en tire une prévision des
+transactions à 12-18 mois. Toutes les séries proviennent de sources publiques
+officielles, rafraîchies automatiquement chaque semaine.</p>
+
+<div class="hm-actions">
+  <a class="hm-btn hm-btn--primary" href="/synthese">Voir la synthèse du marché →</a>
+  <a class="hm-btn" href="/a-propos">La méthode</a>
+  <a class="hm-btn" href="https://github.com/baptistesoulard/housing-market">Le code source</a>
+</div>
+
+</div>
+
+## Le marché en ce moment
 
 ```js
-// --- Rendu des pastilles par pilier ------------------------------------------------
+// Aperçu, volontairement mince : les pastilles par pilier et la fraîcheur des sources.
+// Le détail (chiffres clés, « à retenir », graphique croisé) est sur la Synthèse — le
+// répliquer ici donnerait deux pages à maintenir pour un seul contenu.
 function chip(p) {
   const {bg, fg} = status[p.status] || status.unknown;
   return html`<span style=${{
@@ -28,175 +55,98 @@ function chip(p) {
     display: "inline-block", marginBottom: "6px",
   }}>${p.dot} ${p.label} · ${p.word}</span>`;
 }
-
-// **gras** markdown minimal → <strong> (les puces « à retenir » en contiennent).
-function bold(s) {
-  const parts = s.split(/\*\*(.+?)\*\*/g);
-  return parts.map((t, i) => (i % 2 ? html`<strong>${t}</strong>` : t));
-}
-
-function card(c) {
-  // Échelle st.metric (hm-card--metric), comme les cartes des autres pages. Ces cartes
-  // reprenaient l'échelle du markdown `**libellé**` + `### valeur` d'app.py — 16 px de
-  // libellé et 28 px de valeur : trois blocs de quatre à cette taille écrasaient le
-  // reste de la page. La pastille de statut est ramenée sous la taille du chiffre
-  // (voir .hm-card-dot) pour que ce soit le nombre qu'on lise en premier, pas le rond.
-  return html`<div class="hm-card hm-card--metric">
-    <div class="hm-card-title">${c.title}</div>
-    <div class="hm-card-value"><span class="hm-card-dot">${c.emoji}</span> ${c.value}</div>
-    ${c.sub ? html`<div class="hm-card-sub">${c.sub}</div>` : ""}
-  </div>`;
-}
 ```
-
-# ${data.title}
-
-<div class="hm-caption">${data.caption}</div>
 
 <div class="hm-chips">${data.pillars.map(chip)}</div>
 
-<div class="hm-takeaways">
-  <strong>À retenir</strong>
-  <ul>${data.takeaways.map((t) => html`<li>${bold(t)}</li>`)}</ul>
+<div class="hm-meta">Dernières données publiées — ${data.freshness.join(" · ")}.</div>
+
+<div class="hm-shortcuts">
+  <span class="lead">Le détail :</span>
+  <a class="hm-shortcut" href="/synthese">🧭 Synthèse</a>
+  <a class="hm-shortcut" href="/previsions">📡 Prévision & Scénarios</a>
 </div>
 
-<div class="hm-meta">📅 Dernières données — ${data.freshness.join(" · ")}</div>
+## Pourquoi s'y fier
 
-<details class="hm-howto">
-  <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${data.how_to_read}</div>
-</details>
-
-```js
-// --- Les trois blocs de cartes (Activité / Financement / Perspective) --------------
-for (const b of data.blocks) {
-  display(html`<h3>${b.title}</h3>`);
-  display(html`<div class="hm-grid">${b.cards.map(card)}</div>`);
-  // Renvois vers les pages de détail. Le JSON donne le chemin canonique de la barre
-  // latérale (« /neuf ») ; l'href est relatif à cette page, qui est la racine du site.
-  display(html`<div class="hm-shortcuts"><span class="lead">→ détail :</span>${
-    b.links.map((l) => html`<a class="hm-shortcut" href=".${l.path}">${l.icon} ${l.label}</a>`)}</div>`);
-}
-```
-
----
-
-### Neuf vs ancien — volumes en cumul 12 mois
-
-<div class="hm-caption">
-À gauche, les niveaux réels sur une échelle unique : le rapport de masse saute aux yeux
-(l'ancien pèse 2 à 3× le neuf). À droite, base 100 à une date de référence commune : on
-compare les dynamiques sans distorsion d'échelle.
-</div>
-
-```js
-// Métadonnées de séries (noms, couleurs). Les lignes, elles, dépendent de la frise :
-// elles sont préparées dans leur propre bloc pour que bouger le curseur ne réinitialise
-// pas l'état `visible` de la légende, défini ici.
-const meta = data.chart.series_meta;
-const colorDomain = meta.map((m) => m.name);
-const colorRange = meta.map((m) => m.color);
-const dashedKeys = new Set(meta.filter((m) => m.dash).map((m) => m.name));
-
-// État réactif : séries visibles (toutes au départ). Cliquer une entrée de légende
-// masque/affiche la série dans les DEUX panneaux (comme le clic-légende de Plotly).
-const visible = Mutable(new Set(meta.map((m) => m.name)));
-function toggleSeries(name) {
-  const s = new Set(visible.value);
-  s.has(name) ? s.delete(name) : s.add(name);
-  visible.value = s;
-}
-
-// Légende cliquable partagée (active = ensemble des séries visibles).
-function legend(active) {
-  return html`<div class="hm-legend">${meta.map((m) => {
-    const on = active.has(m.name);
-    return html`<span class="hm-legend-item ${on ? "" : "off"}" onclick=${() => toggleSeries(m.name)}>
-      <span class="hm-swatch" style=${{ background: m.color, borderBottom: m.dash ? `2px dashed ${m.color}` : "none", height: m.dash ? "0" : "3px" }}></span>${m.name}
-    </span>`;
-  })}</div>`;
-}
-
-// Dernier point de chaque série visible, pour l'étiquette de valeur en bout de courbe.
-function lastPoints(rows, field, active) {
-  return meta.filter((m) => active.has(m.name)).map((m) => {
-    const s = rows.filter((d) => d.series === m.name && d[field] != null);
-    return s[s.length - 1];
-  }).filter(Boolean);
-}
-
-// Formatage FR du survol (mois année + valeur selon le panneau).
-const fmtMonthFR = d3.timeFormatLocale({
-  dateTime: "%A %e %B %Y à %X", date: "%d/%m/%Y", time: "%H:%M:%S", periods: ["AM", "PM"],
-  days: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
-  shortDays: ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
-  months: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
-           "septembre", "octobre", "novembre", "décembre"],
-  shortMonths: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août",
-                "sept.", "oct.", "nov.", "déc."],
-}).utcFormat("%B %Y");
-function tipTitle(d, y) {
-  const val = y === "level_k" ? `${d.level_k.toLocaleString("fr-FR")} k` : d.index_100.toFixed(1);
-  return `${d.series}\n${fmtMonthFR(d.date)}\n${val}`;
-}
-
-function panel({ rows, y, ylabel, baseline, active }) {
-  const shown = (d) => d[y] != null && active.has(d.series);
-  const solid = rows.filter((d) => !dashedKeys.has(d.series) && shown(d));
-  const dashed = rows.filter((d) => dashedKeys.has(d.series) && shown(d));
-  const pts = rows.filter(shown);
-  return Plot.plot({
-    height: 380,
-    marginLeft: 52,
-    marginRight: 72,
-    x: { label: null },
-    y: { label: ylabel, grid: true, zero: baseline == null },
-    // Domaine/plage complets : chaque série garde sa couleur même si d'autres sont masquées.
-    color: { domain: colorDomain, range: colorRange, legend: false },
-    marks: [
-      baseline != null ? Plot.ruleY([baseline], { stroke: ui.rule, strokeDasharray: "2,3" }) : null,
-      Plot.lineY(solid, { x: "date", y, stroke: "series", strokeWidth: 2.5 }),
-      Plot.lineY(dashed, { x: "date", y, stroke: "series", strokeWidth: 2.5, strokeDasharray: "6,4" }),
-      Plot.text(lastPoints(rows, y, active), {
-        x: "date", y, text: (d) => (y === "level_k" ? `${Math.round(d[y])} k` : `${Math.round(d[y])}`),
-        fill: (d) => meta.find((m) => m.name === d.series).color,
-        dx: 8, textAnchor: "start", fontWeight: 700,
-      }),
-      // Survol type Plotly « closest » : point le plus proche + infobulle des valeurs.
-      Plot.dot(pts, Plot.pointer({ x: "date", y, stroke: "series", r: 4, strokeWidth: 2, fill: "white" })),
-      Plot.tip(pts, Plot.pointer({
-        x: "date", y, stroke: "series",
-        title: (d) => tipTitle(d, y),
-      })),
-    ].filter(Boolean),
-  });
-}
-```
-
-```js
-// Parse des dates, après le filtre de période : `filterYears` lit l'année sur la chaîne
-// 'YYYY-MM-DD' de l'export. Comme ailleurs, le filtre ne rogne que l'AFFICHAGE — les
-// cumuls 12 mois et la base 100 sont calculés côté Python sur l'historique complet.
-const rows = filterYears(data.chart.rows, rangeS).map((d) => ({ ...d, date: new Date(d.date) }));
-```
-
-${legend(visible)}
-<div class="hm-caption" style="margin-top:0.1rem">Cliquez une série de la légende pour la masquer ou l'afficher (les deux graphiques suivent).</div>
-
-<div class="hm-panels">
+<div class="hm-proof">
   <div>
-    <div class="hm-panel-title">Niveaux réels — échelle unique</div>
-    ${panel({ rows, y: "level_k", ylabel: "Milliers /12 m", baseline: null, active: visible })}
+    <h3>Des sources publiques, et rien d'autre</h3>
+    <p>INSEE, SDES (SIT@DEL, ECLN), IGEDD, Banque de France et BCE. Chaque série est
+    identifiée par sa référence d'origine et récupérée par un script versionné : aucun
+    chiffre n'est saisi à la main, aucune donnée n'est achetée.</p>
   </div>
   <div>
-    <div class="hm-panel-title">Base 100 = ${data.chart.base_date_label}</div>
-    ${panel({ rows, y: "index_100", ylabel: "Indice (base 100)", baseline: 100, active: visible })}
+    <h3>Un modèle qu'on peut prendre en défaut</h3>
+    <p>La prévision est estimée en deux étages, ses décalages sont cherchés sur la seule
+    fenêtre d'entraînement, et elle est jugée sur un backtest hors échantillon affiché à
+    l'écran. Le score et l'incertitude sont publiés, pas seulement la courbe.</p>
+  </div>
+  <div>
+    <h3>Tenu à jour tout seul</h3>
+    <p>Un automate rafraîchit les sources chaque semaine et ne publie que ce qui a
+    réellement changé. Le site est reconstruit dans la foulée : ce que vous lisez est
+    l'état des données au dernier passage, pas une capture d'un jour.</p>
   </div>
 </div>
 
-<div class="hm-meta">${data.chart.source}</div>
+## Les sept pages
 
-<div class="hm-meta">
-  Généré le ${new Date(data.generated_at).toLocaleString("fr-FR")} ·
-  front statique Observable Framework · données : pipeline Python existante.
+<div class="hm-pages">
+  <a class="hm-page-card" href="/synthese">
+    <span class="t">🧭 Synthèse</span>
+    <span class="d">L'état des trois piliers — neuf, ancien, financement — et les
+    chiffres clés du dernier mois publié.</span>
+  </a>
+  <a class="hm-page-card" href="/neuf">
+    <span class="t">🏗️ Marché du neuf</span>
+    <span class="d">Permis et mises en chantier, individuel contre collectif, puis la
+    commercialisation : encours, délai d'écoulement, acquéreurs, prix au m².</span>
+  </a>
+  <a class="hm-page-card" href="/ancien">
+    <span class="t">🏠 Marché de l'ancien</span>
+    <span class="d">Volumes de ventes, prix Notaires-INSEE, et ce que le pouvoir d'achat
+    immobilier des ménages devient à mensualité constante.</span>
+  </a>
+  <a class="hm-page-card" href="/macro">
+    <span class="t">🏦 Environnement & Financement</span>
+    <span class="d">Taux, Euribor, OAT, confiance des ménages, intentions d'achat,
+    chômage, production et demande de crédits habitat.</span>
+  </a>
+  <a class="hm-page-card" href="/actualites">
+    <span class="t">📰 Actualités & Aides</span>
+    <span class="d">Les dispositifs en vigueur et à venir, leur impact par pilier et leur
+    échéancier.</span>
+  </a>
+  <a class="hm-page-card" href="/previsions">
+    <span class="t">📡 Prévision & Scénarios</span>
+    <span class="d">La projection des transactions à 12-18 mois, son backtest, et un
+    panneau de scénarios à quatre leviers.</span>
+  </a>
+  <a class="hm-page-card" href="/donnees">
+    <span class="t">⚙️ Données & Sources</span>
+    <span class="d">D'où vient chaque série, à quelle date elle s'arrête, et de quoi
+    confronter vos propres ventes aux indicateurs de marché.</span>
+  </a>
+</div>
+
+## À qui ça sert
+
+Le marché du logement se lit rarement d'un seul chiffre : les permis de construire, les
+ventes dans l'ancien et le coût du crédit ne tournent ni au même rythme ni dans le même
+sens, et c'est leur décalage qui porte l'information. Ce site rassemble ces séries au même
+endroit, sur la même période, avec les mêmes conventions de calcul — puis va jusqu'au bout
+de l'exercice en publiant une prévision datée et vérifiable plutôt qu'un commentaire.
+
+Il s'adresse à qui doit anticiper une activité liée au logement — second œuvre, matériaux,
+financement, aménagement — et à qui veut simplement suivre le marché sans reconstituer
+lui-même dix séries publiques. La [méthode](/a-propos), les sources et le code sont
+ouverts : les chiffres sont là pour être contredits.
+
+<div class="hm-note">
+  <p><strong>Deux pages ont besoin d'un serveur.</strong> Prévision & Scénarios et
+  Données & Sources relancent un calcul à chaque question posée : elles interrogent une
+  petite API HTTP plutôt qu'un fichier figé. Sans instance de cette API, elles affichent
+  un encart qui explique comment en lancer une — les cinq autres pages fonctionnent en
+  toute autonomie.</p>
 </div>

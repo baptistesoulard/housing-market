@@ -2,15 +2,13 @@
 // `npm run build` produit web/observable/dist/, déployé sur Cloudflare Pages (Node-only).
 //
 // Les couleurs ET les polices viennent de web/theme.json (source unique de vérité,
-// partagée avec le Python d'export et le module src/components/theme.js). Elles sont
-// projetées ici en variables CSS --hm-* : aucune valeur hexadécimale, aucun nom de police
-// n'est écrit en dur dans ce fichier.
-import {readFileSync} from "node:fs";
-import {fileURLToPath} from "node:url";
-import {dirname, join} from "node:path";
-
-const _dir = dirname(fileURLToPath(import.meta.url));
-const T = JSON.parse(readFileSync(join(_dir, "..", "theme.json"), "utf-8"));
+// partagée avec le Python d'export et le module src/components/theme.js), lu par
+// site.config.js et réexporté ici. Elles sont projetées en variables CSS --hm-* : aucune
+// valeur hexadécimale, aucun nom de police n'est écrit en dur dans ce fichier.
+//
+// L'IDENTITÉ du site (adresse publique, descriptions de pages, navigation, logo) vit
+// dans site.config.js — ce fichier-ci ne porte que le rendu.
+import {SITE, NAV, MARK, THEME as T, pageMeta} from "./site.config.js";
 
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
@@ -31,43 +29,16 @@ const VARS = Object.entries({
   "delta-neg": T.delta.negative,
 }).map(([k, v]) => `  --hm-${k}: ${v};`).join("\n");
 
-// --- Le logo -----------------------------------------------------------------------
-// Dessiné ici plutôt que servi en fichier : les deux couleurs viennent de theme.json,
-// comme le reste du thème, et le SVG part dans le <head> avec le CSS (aucune requête).
-// Motif : le toit d'une maison au-dessus de trois barres croissantes — logement + série.
-const MARK = "data:image/svg+xml," + encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">` +
-  `<rect width="32" height="32" rx="8" fill="${T.brand.brick}"/>` +
-  `<path d="M6.5 15.2 16 7.5l9.5 7.7" fill="none" stroke="${T.brand.bg}" ` +
-  `stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` +
-  `<g fill="${T.brand.bg}">` +
-  `<rect x="9.6" y="21.6" width="4" height="3.9" rx="1.1"/>` +
-  `<rect x="14.9" y="19" width="4" height="6.5" rx="1.1"/>` +
-  `<rect x="20.2" y="16.3" width="4" height="9.2" rx="1.1"/>` +
-  `</g></svg>`);
-
-// Les pages du site, dans l'ordre de la barre latérale. L'emoji est séparé du libellé :
-// il n'est plus DANS le texte du lien mais posé en ::before dans une gouttière de largeur
-// fixe (voir le CSS de la barre latérale), sinon les libellés ne s'alignent pas — les
-// emojis n'ont pas tous la même chasse.
-const NAV = [
-  {icon: "🧭", name: "Synthèse", path: "/"},
-  {icon: "🏗️", name: "Marché du neuf", path: "/neuf"},
-  {icon: "🏠", name: "Marché de l'ancien", path: "/ancien"},
-  {icon: "🏦", name: "Environnement & Financement", path: "/macro"},
-  {icon: "📰", name: "Actualités & Aides", path: "/actualites"},
-  // Les deux pages suivantes n'ont PAS de JSON statique : elles appellent l'API HTTP
-  // (voir src/components/api.js). Sans instance désignée, elles affichent un encart qui
-  // explique comment en lancer une — le reste du site continue de fonctionner seul.
-  {icon: "📡", name: "Prévision & Scénarios", path: "/previsions"},
-  {icon: "⚙️", name: "Données & Sources", path: "/donnees"},
-];
-
-const PAGES = NAV.map(({name, path}) => ({name, path}));
+// La barre latérale ne montre pas TOUTES les pages : l'accueil en est retiré (`nav:
+// false` dans site.config.js). Il reste atteignable par le bloc de marque en haut de la
+// barre, qui pointe déjà sur « / » — l'y répéter en huitième onglet ferait deux entrées
+// pour une seule page.
+const PAGES = NAV.filter((p) => p.nav !== false).map(({name, path}) => ({name, path}));
 
 // Une règle par onglet : l'emoji en ::before, adressé par le href que rend le framework
 // (« ./ » pour la racine, « ./neuf » ailleurs). Ces règles sont concaténées dans STYLE.
-const NAV_ICONS = NAV.map(({icon, path}) =>
+const NAV_ICONS = PAGES.map(({path}) => ({icon: NAV.find((n) => n.path === path).icon, path}))
+  .map(({icon, path}) =>
   `#observablehq-sidebar > ol:nth-of-type(2) a[href="${path === "/" ? "./" : "." + path}"]::before` +
   ` { content: "${icon}"; }
 `).join("");
@@ -198,6 +169,8 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-api-offline pre { margin: 0.4rem 0; padding: 0.5rem 0.7rem; border-radius: 4px;
   background: var(--hm-bg); overflow-x: auto; }
 .hm-api-offline-detail { color: var(--theme-foreground-muted); font-size: 0.78rem; }
+.hm-api-offline details { margin: 0.5rem 0 0.2rem; font-size: 0.875rem; }
+.hm-api-offline summary { cursor: pointer; }
 .hm-privacy { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-green);
   border-radius: 6px; padding: 0.75rem 1.1rem; margin: 1rem 0; font-size: 0.875rem;
   background: var(--hm-surface); }
@@ -230,7 +203,7 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 /* L'accroche : posée sur le <li> et non dans le lien, pour rester hors de la zone
    cliquable et hors du nom accessible de celui-ci. */
 #observablehq-sidebar > ol:first-child > li::after {
-  content: "Marché du logement en France";
+  content: "${SITE.tagline}";
   display: block; padding: 0.1rem 1rem 0 calc(1.5rem + 26px + 0.55rem);
   font-size: 0.72rem; font-weight: 500; line-height: 1.25; color: var(--hm-subtle); }
 #observablehq-sidebar > ol:nth-of-type(2) .observablehq-link a { gap: 0; }
@@ -242,14 +215,185 @@ ${NAV_ICONS}
 #observablehq-sidebar > ol:nth-of-type(2) > li.observablehq-link-active::before { background: var(--hm-brick); }
 #observablehq-sidebar > ol:nth-of-type(2) > li.observablehq-link-active > a { color: var(--hm-ink); font-weight: 600; }
 
+/* --- Page d'accueil ----------------------------------------------------------------
+   Cette page a un rôle que les sept autres n'ont pas : elle s'adresse à quelqu'un qui
+   arrive d'un lien LinkedIn et ne sait pas encore ce qu'il regarde. Elle est donc
+   RÉDIGÉE, en HTML rendu au build — les autres pages construisent leur contenu dans le
+   navigateur à partir des JSON, ce qu'un robot d'indexation qui n'exécute pas de
+   JavaScript ne voit pas. C'est ici que vit le texte indexable du site. */
+.hm-hero { margin: 0 0 2.4rem; }
+.hm-hero h1 { font-size: 2.6rem; line-height: 1.15; border-bottom: none; padding-bottom: 0;
+  margin-bottom: 0.6rem; letter-spacing: -0.5px; }
+/* Le chapô sert aussi hors du bandeau (page À propos), et markdown y insère un <p> :
+   les deux sélecteurs sont donc nécessaires pour que la taille ne retombe pas. */
+.hm-lead, .hm-lead p { font-size: 1.18rem; line-height: 1.55; color: var(--hm-ink); }
+.hm-lead { margin: 0 0 1.4rem; }
+.hm-rule { width: 88px; height: 4px; border-radius: 2px; background: var(--hm-brick); margin: 0 0 1.3rem; }
+.hm-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 0 0 0.4rem; }
+.hm-btn { display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
+  padding: 0.5rem 1.1rem; border-radius: 9999px; font-weight: 600; font-size: 0.95rem;
+  border: 1px solid var(--hm-border); background: var(--hm-surface); color: var(--hm-ink); }
+.hm-btn--primary, .hm-btn--primary:visited { background: var(--hm-brick); border-color: var(--hm-brick);
+  color: var(--hm-bg); }
+.hm-btn:hover, .hm-btn:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick); background: var(--hm-bg); }
+.hm-btn--primary:hover, .hm-btn--primary:focus-visible { background: var(--hm-ink); border-color: var(--hm-ink);
+  color: var(--hm-bg); }
+/* Le sommaire des pages : de vrais liens décrits, pas une liste de titres. Ils donnent
+   au visiteur le plan du site et aux moteurs le maillage interne qui manquait. */
+.hm-pages { display: grid; gap: 0.9rem; margin: 1rem 0 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.hm-page-card { display: block; text-decoration: none; color: var(--hm-ink);
+  border: 1px solid var(--hm-border); border-radius: 10px; padding: 0.85rem 1rem 0.95rem;
+  background: var(--hm-surface); }
+.hm-page-card:hover, .hm-page-card:focus-visible { border-color: var(--hm-brick); background: var(--hm-bg); }
+.hm-page-card .t { font-weight: 600; display: flex; align-items: baseline; gap: 0.45rem; }
+.hm-page-card:hover .t, .hm-page-card:focus-visible .t { color: var(--hm-brick); }
+.hm-page-card .d { font-size: 0.875rem; line-height: 1.5; margin-top: 0.3rem; color: var(--hm-muted); }
+/* Les trois arguments de crédibilité de l'accueil. Trois colonnes courtes plutôt qu'un
+   paragraphe : c'est ce qu'un visiteur de passage lit réellement. */
+.hm-proof { display: grid; gap: 1.2rem 1.6rem; margin: 1rem 0 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.hm-proof h3 { margin: 0 0 0.35rem; font-size: 1.02rem; border-bottom: none; padding-bottom: 0; }
+.hm-proof p { margin: 0; font-size: 0.92rem; line-height: 1.55; color: var(--hm-muted); }
+.hm-note { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-blue);
+  border-radius: 6px; padding: 0.75rem 1.1rem; margin: 1.2rem 0; font-size: 0.9rem;
+  background: var(--hm-surface); }
+.hm-note p { margin: 0.3rem 0; }
+/* Tableau des sources (page À propos) : lisible sans être un tableau de données. */
+.hm-sources { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.6rem 0 1rem; }
+.hm-sources th, .hm-sources td { text-align: left; padding: 0.45rem 0.7rem 0.45rem 0;
+  border-bottom: 1px solid var(--hm-border-light); vertical-align: top; }
+.hm-sources th { font-weight: 600; }
+
+/* --- Pied de page ------------------------------------------------------------------
+   Le pied par défaut d'Observable (« Built with Observable on <date> ») ne disait rien
+   d'utile et avait été coupé. Un site public en a pourtant besoin : c'est là que se
+   rangent la provenance des données, le code source et le lien « À propos » — les trois
+   choses qu'un visiteur cherche avant de citer un graphique. */
+#observablehq-footer { max-width: var(--hm-measure); margin-top: 3rem; padding-top: 1.1rem;
+  border-top: 1px solid var(--hm-border); font-size: 0.85rem; color: var(--hm-muted); }
+#observablehq-footer nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; margin-bottom: 0.4rem; }
+#observablehq-footer p { margin: 0.3rem 0; max-width: none; }
+
+/* --- Accessibilité ------------------------------------------------------------------
+   La légende cliquable était un <span onclick>. Elle se voyait comme un contrôle, se
+   comportait comme un contrôle, mais n'était atteignable ni au clavier ni au lecteur
+   d'écran : pas de rôle, pas d'ordre de tabulation, pas d'état annoncé. C'est un
+   <button aria-pressed> depuis (voir components/hm.js) ; ces règles lui retirent
+   l'apparence par défaut d'un bouton pour que le rendu, lui, ne change pas. */
+button.hm-legend-item { font: inherit; color: inherit; background: none; border: none;
+  padding: 0; margin: 0; text-align: left; }
+.hm-legend-item:focus-visible, .hm-page-card:focus-visible, .hm-btn:focus-visible,
+.hm-shortcut:focus-visible, .hm-skip:focus { outline: 2px solid var(--hm-brick); outline-offset: 2px; }
+/* Lien d'évitement, injecté au build (scripts/postbuild.mjs) : sans lui, atteindre le
+   contenu au clavier suppose de traverser toute la barre latérale, sur chaque page. */
+.hm-skip { position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--hm-brick); color: var(--hm-bg); padding: 0.55rem 1rem;
+  border-radius: 0 0 6px 0; text-decoration: none; font-weight: 600; }
+.hm-skip:focus { left: 0; }
 </style>`;
 
 
+// --- Les métadonnées de <head> -------------------------------------------------------
+// Observable Framework écrit lui-même <title> ; tout le reste de ce qu'un moteur de
+// recherche ou un aperçu de partage lit doit être fourni ici. Trois familles :
+//
+//   description  ce que Google affiche sous le titre ;
+//   og:* / twitter:*  la CARTE de partage. LinkedIn, Slack et WhatsApp récupèrent la page
+//                depuis leurs serveurs et n'exécutent PAS de JavaScript : sans ces
+//                balises, un lien partagé s'affiche en URL nue, sans titre ni vignette.
+//                Leurs URL doivent être ABSOLUES (d'où SITE.url) ;
+//   canonical    une seule adresse de référence par page, pour que « /synthese » et
+//                « /synthese.html » ne se comptent pas comme deux pages concurrentes.
+//
+// `head` est ici une FONCTION : le framework l'appelle par page en lui passant son
+// chemin, ce qui est la seule façon de donner à chacune sa propre description. Le CSS,
+// lui, est identique partout et suit derrière.
+const esc = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+  .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const tag = (attr, name, content) => `<meta ${attr}="${esc(name)}" content="${esc(content)}">`;
+
+function META({path}) {
+  const page = pageMeta(path);
+  const title = page.path === "/" ? SITE.fullName : `${page.title} | ${SITE.name}`;
+  const image = SITE.url + SITE.ogImage.path;
+  const out = [tag("name", "description", page.description)];
+
+  if (!page.indexable) {
+    // La page 404 répond pour n'importe quelle URL fausse : l'indexer reviendrait à
+    // publier autant de pages vides que d'adresses erronées.
+    out.push(tag("name", "robots", "noindex, follow"));
+    return "\n" + out.join("\n") + "\n";
+  }
+
+  out.push(`<link rel="canonical" href="${esc(page.url)}">`);
+  out.push(tag("name", "author", SITE.author));
+  out.push(
+    // « website » partout : « article » annoncerait un contenu daté et signé, avec des
+    // balises article:* que ces pages n'ont pas — ce sont des tableaux de bord tenus à
+    // jour, pas des publications.
+    tag("property", "og:type", "website"),
+    tag("property", "og:site_name", SITE.name),
+    tag("property", "og:locale", SITE.locale),
+    tag("property", "og:title", title),
+    tag("property", "og:description", page.description),
+    tag("property", "og:url", page.url),
+    tag("property", "og:image", image),
+    tag("property", "og:image:width", SITE.ogImage.width),
+    tag("property", "og:image:height", SITE.ogImage.height),
+    tag("property", "og:image:alt", SITE.ogImage.alt),
+    // « summary_large_image » demande la grande vignette plutôt que la miniature carrée.
+    // La famille twitter:* est lue au-delà de X (Slack, Discord, Teams s'en servent en
+    // repli quand une balise og: leur manque).
+    tag("name", "twitter:card", "summary_large_image"),
+    tag("name", "twitter:title", title),
+    tag("name", "twitter:description", page.description),
+    tag("name", "twitter:image", image),
+  );
+
+  if (page.path === "/") {
+    // Données structurées, sur l'accueil seulement : elles décrivent le SITE, pas la
+    // page. Les répéter partout n'ajouterait rien et multiplierait les occasions de
+    // divergence.
+    out.push(`<script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.fullName,
+      alternateName: SITE.name,
+      url: SITE.url + "/",
+      inLanguage: SITE.lang,
+      description: SITE.description,
+      author: {"@type": "Person", name: SITE.author},
+      license: "https://www.etalab.gouv.fr/licence-ouverte-open-licence/",
+    })}</script>`);
+  }
+  return "\n" + out.join("\n") + "\n";
+}
+
+// --- Pied de page --------------------------------------------------------------------
+// Rendu au build sur toutes les pages (donc indexable, contrairement à ce que les pages
+// construisent en JavaScript). Les liens relatifs sont réécrits par le framework.
+const FOOTER = `<nav>
+  <a href="/a-propos">À propos & méthode</a>
+  <a href="/donnees">Sources & fraîcheur</a>
+  <a href="${SITE.repo}">Code source</a>
+</nav>
+<p>Données publiques : INSEE, SDES (SIT@DEL, ECLN), IGEDD, Banque de France, BCE —
+réutilisées sous Licence ouverte / Etalab. ${esc(SITE.name)} est un travail
+d'analyse indépendant, sans lien avec ces organismes.</p>
+<p>Les chiffres publiés ici sont des estimations et des projections : ils ne constituent
+pas un conseil en investissement.</p>`;
+
 export default {
-  title: "HousingMarket",
+  // `title` complète le <title> de CHAQUE page (« Synthèse | HousingMarket — Marché du
+  // logement en France ») : c'est la seule ligne que voit quelqu'un qui découvre le site
+  // dans une page de résultats, d'où le titre qualifié plutôt que le nom seul. `home`
+  // reste le nom court, parce que c'est lui qui s'affiche dans la barre latérale.
+  title: SITE.fullName,
+  home: SITE.name,
   root: "src",
   theme: ["air", "wide"],
-  head: STYLE,
+  head: (page) => META(page) + STYLE,
   // Remplace le Source Serif 4 chargé par défaut avec le thème `air` : cette police
   // n'était jamais rendue (--serif est réécrit sur la pile de theme.json), le site la
   // téléchargeait pour rien. Source Sans 3 est, elle, la police du corps de texte.
@@ -259,6 +403,5 @@ export default {
   pages: PAGES,
   toc: false,
   pager: false,
-  // Pas de pied de page : le footer par défaut d'Observable ne dirait rien d'utile.
-  footer: null,
+  footer: FOOTER,
 };

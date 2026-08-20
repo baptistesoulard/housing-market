@@ -1,10 +1,10 @@
 """Les renvois de la page Synthèse pointent vers des pages qui existent.
 
-Ces liens sont construits dans le NAVIGATEUR (`index.md` lit `blocks[].links` de
+Ces liens sont construits dans le NAVIGATEUR (`synthese.md` lit `blocks[].links` de
 synthese.json et fabrique l'href), donc la validation de liens d'Observable Framework,
 qui ne regarde que le Markdown, ne les voit pas. Renommer un chemin dans
-`observablehq.config.js` sans toucher `web_export.py` ne casserait donc rien au build :
-le site se construirait sans avertissement, et le clic donnerait un 404 en production.
+`site.config.js` sans toucher `web_export.py` ne casserait donc rien au build : le site se
+construirait sans avertissement, et le clic donnerait un 404 en production.
 
 C'est ce trou-là que ferme ce test — il compare les chemins des deux côtés.
 """
@@ -13,14 +13,15 @@ import pathlib
 import re
 
 WEB = pathlib.Path(__file__).resolve().parent.parent / "web" / "observable"
-CONFIG = WEB / "observablehq.config.js"
+# La navigation vit dans site.config.js — observablehq.config.js ne porte que le rendu.
+CONFIG = WEB / "site.config.js"
 SYNTHESE = WEB / "src" / "data" / "synthese.json"
 
 
 def _declared_paths():
     """Les chemins de la barre latérale, lus dans le tableau NAV de la config."""
     nav = re.search(r"const NAV = \[(.*?)\n\];", CONFIG.read_text(encoding="utf-8"), re.S)
-    assert nav, "tableau NAV introuvable dans observablehq.config.js"
+    assert nav, "tableau NAV introuvable dans site.config.js"
     return set(re.findall(r'path:\s*"([^"]+)"', nav.group(1)))
 
 

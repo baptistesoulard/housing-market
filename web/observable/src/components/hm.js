@@ -58,8 +58,13 @@ export function legend(meta, active, onToggle) {
     const sw = m.dash
       ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
       : {background: m.color};
-    return html`<span class="hm-legend-item ${on ? "" : "off"}" onclick=${() => onToggle(m.name)}>
-      <span class="hm-swatch" style=${sw}></span>${m.name}</span>`;
+    // <button aria-pressed>, pas <span onclick> : la légende EST un interrupteur, elle
+    // doit donc être atteignable au clavier et annoncer son état. Le barré et l'opacité
+    // ne suffisent pas — un lecteur d'écran ne lit pas du CSS. L'apparence de bouton est
+    // neutralisée dans le CSS du thème (button.hm-legend-item).
+    return html`<button type="button" class="hm-legend-item ${on ? "" : "off"}"
+      aria-pressed=${on ? "true" : "false"} onclick=${() => onToggle(m.name)}>
+      <span class="hm-swatch" style=${sw}></span>${m.name}</button>`;
   })}</div>`;
 }
 
