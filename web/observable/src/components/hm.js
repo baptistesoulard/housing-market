@@ -71,7 +71,8 @@ export function legend(meta, active, onToggle) {
 // --- Graphique multi-séries générique (lignes) -------------------------------------
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
-                           baseline = null, lastLabels = true, tipUnit = "", yPct = false}) {
+                           baseline = null, lastLabels = true, tipUnit = "", yPct = false,
+                           width = undefined}) {
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const shown = active ? parsed.filter((d) => active.has(d.series)) : parsed;
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
@@ -81,6 +82,11 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
     const s = shown.filter((d) => d.series === m.name); return s[s.length - 1];
   }).filter(Boolean);
   return Plot.plot({
+    // `width` est facultatif : sans lui, Plot retient ses 640 px par défaut, ce que font
+    // les appelants placés dans une grille (.hm-panels), déjà contrainte par ses colonnes.
+    // Un graphique seul sur toute la colonne, lui, doit recevoir la largeur réactive du
+    // framework, sinon il flotte à 640 px dans un conteneur qui en fait 900.
+    ...(width ? {width} : {}),
     height, marginLeft: 54, marginRight: 74,
     x: {label: null}, y: {label: yLabel, grid: true, zero: baseline == null && !yPct, percent: false},
     color: {domain: colorDomain, range: colorRange},

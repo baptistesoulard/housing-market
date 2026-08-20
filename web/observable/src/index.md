@@ -5,6 +5,7 @@ toc: false
 
 ```js
 import {status} from "./components/theme.js";
+import {multiLine, nf0, filterYears} from "./components/hm.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
 
@@ -22,31 +23,73 @@ const data = await FileAttachment("./data/synthese.json").json();
   la page dit toujours ce qu'elle a à dire.
 -->
 
-<div class="hm-hero">
+<div class="hm-hero hm-hero--band">
+
+<p class="hm-eyebrow">Sources publiques officielles · rafraîchies chaque semaine</p>
 
 # Où en est le marché du logement en France ?
 
-<div class="hm-rule"></div>
-
 <p class="hm-lead">HousingMarket met en regard la construction neuve, les ventes dans
 l'ancien, les prix et les conditions de financement — puis en tire une prévision des
-transactions à 12-18 mois. Toutes les séries proviennent de sources publiques
-officielles, rafraîchies automatiquement chaque semaine.</p>
+transactions à 12-18 mois. Chacune est archivée le jour de sa publication, puis
+confrontée au réel.</p>
 
 <div class="hm-actions">
-  <a class="hm-btn hm-btn--primary" href="/synthese">Voir la synthèse du marché →</a>
-  <a class="hm-btn" href="/a-propos">La méthode</a>
-  <a class="hm-btn" href="https://github.com/baptistesoulard/housing-market">Le code source</a>
+  <a class="hm-btn hm-btn--onband-primary" href="/synthese">Voir la synthèse du marché →</a>
+  <a class="hm-btn hm-btn--onband" href="/previsions-passees">Le modèle face au réel</a>
+  <a class="hm-btn hm-btn--onband" href="/a-propos">La méthode</a>
 </div>
+
+<!--
+  BANDE DE CHIFFRES — volontairement STATIQUE, comme le reste du texte de cette page.
+
+  Ces quatre nombres sont l'équivalent honnête des « logos clients » d'un site
+  commercial : ils doivent rassurer en deux secondes un visiteur qui ne connaît pas le
+  site, et être lus par les robots d'aperçu de partage, qui n'exécutent pas de
+  JavaScript. Les calculer dans le navigateur les rendrait invisibles là où ils comptent.
+
+  Contrepartie assumée : ils ne se mettent pas à jour tout seuls. Ils ont donc été
+  choisis parmi les grandeurs LENTES (profondeur d'historique, nombre de producteurs,
+  cadence de rafraîchissement) — et le seul qui bouge, l'erreur moyenne à 6 mois, est
+  verrouillé par tests/test_web_links.py, qui le compare au KPI d'archive.json et
+  échoue s'il dérive. Ne pas modifier la valeur ici sans relancer ce test.
+
+  L'erreur naïve est citée à côté de l'erreur du modèle, et ce n'est pas une coquetterie :
+  publier le seul chiffre du modèle laisserait croire qu'il bat la référence à tous les
+  horizons, alors qu'il lui est inférieur en deçà de 4 mois (voir /previsions-passees).
+-->
+<ul class="hm-stats">
+  <li>
+    <span class="n">26 ans</span>
+    <span class="d">d'historique continu, de décembre 2000 au dernier mois publié</span>
+  </li>
+  <li>
+    <span class="n">5 institutions</span>
+    <span class="d">INSEE, SDES, IGEDD, Banque de France, BCE — aucune donnée achetée</span>
+  </li>
+  <li>
+    <span class="n">4,1 %</span>
+    <span class="d">d'erreur moyenne à 6 mois — une prévision naïve se trompe de 7,2 %</span>
+  </li>
+  <li>
+    <span class="n">Chaque lundi</span>
+    <span class="d">les sources sont récupérées et le site reconstruit, sans intervention</span>
+  </li>
+</ul>
 
 </div>
 
 ## Le marché en ce moment
 
+Trois courbes suffisent à poser le décor : les permis de construire, les mises en chantier
+et les ventes de logements anciens ne tournent ni au même rythme ni toujours dans le même
+sens, et c'est leur écart qui porte l'information.
+
 ```js
-// Aperçu, volontairement mince : les pastilles par pilier et la fraîcheur des sources.
-// Le détail (chiffres clés, « à retenir », graphique croisé) est sur la Synthèse — le
-// répliquer ici donnerait deux pages à maintenir pour un seul contenu.
+// Aperçu, volontairement mince : les pastilles par pilier, une courbe d'accroche et la
+// fraîcheur des sources. Le détail (chiffres clés, « à retenir », niveaux réels, filtre
+// de période) est sur la Synthèse — le répliquer ici donnerait deux pages à maintenir
+// pour un seul contenu.
 function chip(p) {
   const {bg, fg} = status[p.status] || status.unknown;
   return html`<span style=${{
@@ -58,6 +101,51 @@ function chip(p) {
 ```
 
 <div class="hm-chips">${data.pillars.map(chip)}</div>
+
+```js
+// --- Courbe d'accroche ---------------------------------------------------------------
+// Un site de données dont la page d'accueil ne montre aucune donnée demande au visiteur
+// de cliquer sur la foi d'un texte. C'est la même courbe croisée que la Synthèse, en
+// base 100 : réduite aux douze dernières années (le récent est ce qui décide de rester),
+// sans filtre de période ni bascule de niveaux — ces contrôles appartiennent à la
+// Synthèse, les dupliquer ici ferait deux pages à tenir.
+//
+// La base 100 et les cumuls 12 mois sont calculés côté Python sur l'historique COMPLET :
+// rogner l'affichage ne rogne aucun calcul.
+const accrocheRows = filterYears(
+  data.chart.rows,
+  [Math.max(data.period.min, data.period.max - 12), data.period.max],
+).map((d) => ({date: d.date, series: d.series, value: d.index_100}))
+ .filter((d) => d.value != null);
+
+// Légende NON interactive : sur cette page il n'y a rien à masquer. Des pastilles qui
+// changent d'apparence au survol promettraient un contrôle qui n'existe pas (voir
+// .hm-legend--static dans le thème).
+const accrocheLegend = html`<div class="hm-legend hm-legend--static">${
+  data.chart.series_meta.map((m) => html`<span class="hm-legend-item">
+    <span class="hm-swatch" style=${{background: m.color}}></span>${m.name}</span>`)
+}</div>`;
+```
+
+<div class="hm-accroche">
+  <div class="hm-panel-title">Activité du logement — base 100 en ${data.chart.base_date_label}</div>
+  ${accrocheLegend}
+  ${multiLine({
+    rows: accrocheRows,
+    meta: data.chart.series_meta,
+    yLabel: "Indice (base 100)",
+    // `width` est la largeur réactive fournie par le framework : le graphique occupe
+    // toute la colonne et suit le redimensionnement de la fenêtre. Sans elle, Plot s'en
+    // tiendrait à ses 640 px par défaut, flottants dans un panneau de 900.
+    width: Math.max(320, width - 40),
+    height: 300,
+    baseline: 100,
+    valueFmt: (v) => nf0.format(v),
+  })}
+</div>
+
+<div class="hm-meta">${data.chart.source} · <a href="/synthese">niveaux réels, historique
+complet et chiffres du dernier mois sur la Synthèse</a>.</div>
 
 <div class="hm-meta">Dernières données publiées — ${data.freshness.join(" · ")}.</div>
 

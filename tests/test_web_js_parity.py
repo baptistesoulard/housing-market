@@ -48,7 +48,10 @@ process.stdout.write(JSON.stringify({{
         p = os.path.join(d, "probe.mjs")
         with open(p, "w", encoding="utf-8") as f:
             f.write(script)
-        out = subprocess.run([NODE, p], capture_output=True, text=True, timeout=120)
+        # encoding="utf-8" : voir la note de tests/test_web_seo.py — sans lui, la sortie
+        # de Node est decodee en cp1252 sous Windows et stdout revient a None.
+        out = subprocess.run([NODE, p], capture_output=True, text=True,
+                             encoding="utf-8", timeout=120)
     assert out.returncode == 0, out.stderr
     return json.loads(out.stdout)
 

@@ -256,6 +256,30 @@ du site que ces robots lisent. Le bloc dynamique de l'accueil (pastilles, fraîc
 aperçu : s'il ne s'affiche pas, la page doit encore dire ce qu'elle a à dire. Déplacer son
 propos dans un bloc ```js le rendrait invisible là où il compte.
 
+**La bande de chiffres de l'accueil est écrite en dur, et c'est le corollaire du point
+précédent.** Les quatre nombres du bandeau (`<ul class="hm-stats">` dans `index.md`) sont
+l'équivalent honnête des « logos clients » d'un site commercial : ils doivent rassurer en
+deux secondes, donc être lus par les robots de partage, donc rester statiques. Trois sont
+des constantes de fait ; le quatrième — l'erreur moyenne à 6 mois — bouge à chaque
+publication et est **verrouillé par `tests/test_web_links.py`**, qui le compare au KPI
+d'`archive.json` et échoue s'il dérive. Le même test exige que l'erreur naïve soit citée à
+côté : publier le chiffre du modèle seul laisserait croire qu'il bat la référence à tous
+les horizons, ce qu'il ne fait pas en deçà de 4 mois.
+
+**Le bandeau ne déborde PAS de la colonne, volontairement.** Un vrai bord-à-bord
+supposerait des marges négatives calculées sur les marges « auto » de
+`#observablehq-main`, qui varient avec la largeur de fenêtre et avec la barre latérale :
+le premier écran étroit ferait glisser la page latéralement. Le fond plein suffit à
+produire la rupture. Ses couleurs sont DÉRIVÉES des jetons (`color-mix` sur `--hm-ink` et
+`--hm-brick`) — aucune valeur hexadécimale n'entre dans `observablehq.config.js`. Le
+bouton principal du bandeau est BLANC et non brick : blanc sur brick plafonne à 3,9:1,
+sous le seuil de 4,5:1.
+
+**Le CSS du thème vit dans un littéral gabarit JS.** Un accent grave dans un commentaire
+CSS referme la chaîne et fait échouer le build sur une erreur de syntaxe sans rapport
+apparent (`Unexpected token ':'`, pointant une ligne de prose). Ne jamais citer un
+sélecteur entre accents graves dans ce fichier.
+
 **Aucune URL d'hébergement en dur.** Les balises Open Graph et l'URL canonique exigent des
 adresses ABSOLUES ; elles viennent de `HM_SITE_URL` (variable d'environnement Cloudflare
 Pages), avec un repli `*.pages.dev` que le build signale en clair. Un test injecte une
@@ -486,10 +510,25 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 149 collectés ; 1 skip légitime si company_sales
-                                    # est vide. Les tests d'API se skippent sans Flask,
-                                    # ceux de parité JS et de référencement sans Node.
+python -m pytest tests/ -q          # 168 passés, 1 skip légitime si company_sales est
+                                    # vide. Les tests d'API se skippent sans Flask, ceux
+                                    # de parité JS et de référencement sans Node.
 ```
+
+**Piège Windows sur les tests qui appellent Node.** `subprocess.run(text=True)` décode la
+sortie avec la page de codes ANSI du système (cp1252), pas en UTF-8 : le thread lecteur
+lève sur le premier caractère hors table, `stdout` revient à `None`, et le test échoue sur
+un `TypeError` de `json.loads` alors que Node a rendu 0. Les neuf tests de
+`test_web_seo.py` erraient ainsi en silence. Toujours passer `encoding="utf-8"`.
+
+**Le panneau navigateur intégré ne rend RIEN si l'onglet n'est pas affiché.**
+`document.hidden` vaut alors `true`, `requestAnimationFrame` ne se déclenche jamais, et le
+runtime Observable ne calcule aucune cellule : toutes les pages restent en indicateurs de
+chargement, y compris celles qu'on n'a pas touchées. Ce n'est pas un bug de page. Pour
+vérifier une cellule dans ces conditions, importer le module directement
+(`await import("/_import/components/hm.js")`) et l'appeler à la main. **C'est une piste
+sérieuse pour l'intermittence des pages départementales** (voir plus haut) — non
+démontrée, l'observation d'origine ayant été faite sur le site déployé.
 
 **2. Rapport PDF, comparaison d'octets** — la plus forte : couvre les graphiques, les KPI
 et le commentaire d'un coup. Générer le PDF avec l'ancienne version de `report.py`

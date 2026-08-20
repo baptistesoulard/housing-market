@@ -250,6 +250,91 @@ ${NAV_ICONS}
 .hm-hero { margin: 0 0 2.4rem; }
 .hm-hero h1 { font-size: 2.6rem; line-height: 1.15; border-bottom: none; padding-bottom: 0;
   margin-bottom: 0.6rem; letter-spacing: -0.5px; }
+/* --- Le bandeau ---------------------------------------------------------------------
+   Les huit pages de données se ressemblent par construction : même colonne, même filet
+   sous le titre. L'accueil doit se distinguer AVANT d'être lue, pour quelqu'un qui
+   arrive d'un lien et ne sait pas encore où il est — d'où un pavé plein, à contraste
+   inversé, qui casse la colonne par la couleur.
+
+   Il ne DÉBORDE PAS de la colonne, volontairement. Un vrai bord-à-bord supposerait des
+   marges négatives calculées sur les marges « auto » de #observablehq-main, qui varient
+   avec la largeur de la fenêtre et avec la barre latérale : le premier écran étroit
+   ferait glisser la page latéralement. Le fond plein suffit à produire la rupture ; le
+   dépassement n'y ajouterait rien qu'un risque.
+
+   La couleur est DÉRIVÉE des jetons du thème (color-mix sur --hm-ink et --hm-brick) :
+   aucune valeur hexadécimale n'entre ici, conformément à la règle du fichier. Le brick
+   n'est qu'une pointe dans le dégradé — theme.json le décrit comme une couleur d'accent,
+   à employer avec parcimonie ; un aplat orange plein écraserait la page. */
+.hm-hero--band { color: var(--hm-bg); border-radius: 16px; margin: 0 0 2rem;
+  padding: 2.4rem 2.2rem 0; overflow: hidden;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--hm-ink) 94%, black) 0%,
+    color-mix(in srgb, var(--hm-ink) 74%, var(--hm-brick)) 100%); }
+.hm-hero--band h1 { color: var(--hm-bg); margin-bottom: 0.7rem; }
+.hm-hero--band .hm-lead { color: var(--hm-bg); max-width: 46rem; opacity: 0.92; }
+.hm-eyebrow { text-transform: uppercase; letter-spacing: 1.1px; font-size: 0.74rem;
+  font-weight: 700; margin: 0 0 0.8rem; color: var(--hm-bg); opacity: 0.72; }
+/* Boutons sur fond sombre. Le primaire est BLANC, pas brick : blanc sur brick plafonne
+   à 3,9:1, sous le seuil de 4,5:1 qu'exige un libellé de cette taille, alors qu'encre
+   sur blanc dépasse 11:1. C'est aussi ce qui le fait ressortir — sur un fond déjà teinté
+   de brick, un bouton brick se fondrait dedans.
+
+   Ces règles sont préfixées par .hm-hero--band, et pas seulement pour se restreindre au
+   bandeau : .hm-btn est déclaré PLUS BAS dans cette même feuille, à spécificité égale
+   (une classe). Sans le préfixe, c'est lui qui gagne, à l'ordre — mesuré dans le
+   navigateur, les trois boutons ressortaient en fond gris clair et texte bleu de lien
+   visité. Le sélecteur :visited est répété pour battre a:visited, comme le fait déjà
+   .hm-btn--primary.
+
+   (Pas d'accent grave dans ce commentaire : tout ce bloc CSS vit dans un littéral
+   gabarit JS, un backtick le refermerait et le build échouerait sur une erreur de
+   syntaxe sans rapport apparent.) */
+.hm-hero--band .hm-btn--onband-primary,
+.hm-hero--band .hm-btn--onband-primary:visited { background: var(--hm-bg);
+  border-color: var(--hm-bg); color: var(--hm-ink); }
+.hm-hero--band .hm-btn--onband-primary:hover,
+.hm-hero--band .hm-btn--onband-primary:focus-visible {
+  background: var(--hm-surface); border-color: var(--hm-surface); color: var(--hm-ink); }
+.hm-hero--band .hm-btn--onband,
+.hm-hero--band .hm-btn--onband:visited { background: transparent; color: var(--hm-bg);
+  border-color: color-mix(in srgb, var(--hm-bg) 55%, transparent); }
+.hm-hero--band .hm-btn--onband:hover,
+.hm-hero--band .hm-btn--onband:focus-visible {
+  background: color-mix(in srgb, var(--hm-bg) 14%, transparent);
+  border-color: var(--hm-bg); color: var(--hm-bg); }
+.hm-hero--band .hm-btn:focus-visible { outline-color: var(--hm-bg); }
+/* La bande de chiffres, en pied de bandeau : un liseré et un voile suffisent à la
+   détacher sans introduire une seconde boîte. Marges négatives ici, mais INTERNES au
+   bandeau — elles annulent exactement son padding, il n'y a rien à déborder. */
+/* Quatre colonnes EXPLICITES, puis deux — pas de repeat(auto-fit) ici. Mesuré : dans la
+   colonne de 897 px, minmax(190px, 1fr) retombait à trois colonnes et laissait le
+   quatrième chiffre seul sur une deuxième ligne. Une bande de preuve qui se termine par
+   un orphelin a l'air cassée ; 4 puis 2 (2+2) reste toujours équilibré. */
+.hm-stats { list-style: none; display: grid; gap: 1.1rem 1.6rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 2rem -2.2rem 0; padding: 1.2rem 2.2rem 1.3rem;
+  border-top: 1px solid color-mix(in srgb, var(--hm-bg) 22%, transparent);
+  background: color-mix(in srgb, var(--hm-bg) 6%, transparent); }
+.hm-stats li { margin: 0; }
+.hm-stats .n { display: block; font-size: 1.5rem; font-weight: 700; line-height: 1.15;
+  color: var(--hm-bg); }
+.hm-stats .d { display: block; font-size: 0.83rem; line-height: 1.45; margin-top: 0.2rem;
+  color: var(--hm-bg); opacity: 0.82; }
+@media (max-width: 820px) {
+  .hm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .hm-hero--band { padding: 1.8rem 1.3rem 0; border-radius: 12px; }
+  .hm-hero--band h1 { font-size: 2rem; }
+  .hm-stats { margin: 1.5rem -1.3rem 0; padding: 1.1rem 1.3rem 1.2rem; }
+}
+/* La courbe d'accroche : cadrée comme un panneau pour qu'on la lise comme une figure et
+   non comme un fond de page. */
+.hm-accroche { border: 1px solid var(--hm-border); border-radius: 12px;
+  padding: 0.9rem 1.1rem 0.4rem; background: var(--hm-surface); margin: 0.6rem 0 0.5rem; }
+.hm-accroche .hm-panel-title { margin-top: 0; }
+.hm-accroche .hm-legend { margin-top: 0.35rem; }
 /* Le chapô sert aussi hors du bandeau (page À propos), et markdown y insère un <p> :
    les deux sélecteurs sont donc nécessaires pour que la taille ne retombe pas. */
 .hm-lead, .hm-lead p { font-size: 1.18rem; line-height: 1.55; color: var(--hm-ink); }

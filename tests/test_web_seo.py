@@ -32,12 +32,17 @@ pytestmark = pytest.mark.skipif(NODE is None, reason="Node.js absent")
 SITE_URL = "https://exemple.test"
 
 
+# `encoding="utf-8"` n'est pas décoratif : sans lui, `text=True` décode la sortie de
+# Node avec la page de codes ANSI du système (cp1252 sous Windows). Le thread lecteur de
+# subprocess lève alors sur le premier caractère hors table — un tiret cadratin suffit —,
+# `stdout` revient à None et le test échoue sur un TypeError de json.loads sans rapport
+# apparent, alors que Node a rendu 0. Node écrit toujours en UTF-8.
 def _node(script, **env):
     """Exécute un module ES et renvoie ce qu'il a écrit sur stdout, décodé en JSON."""
     with tempfile.TemporaryDirectory() as d:
         probe = pathlib.Path(d) / "probe.mjs"
         probe.write_text(script, encoding="utf-8")
-        out = subprocess.run([NODE, str(probe)], capture_output=True, text=True, timeout=120,
+        out = subprocess.run([NODE, str(probe)], capture_output=True, text=True, encoding="utf-8", timeout=120,
                              env={**os.environ, "HM_SITE_URL": SITE_URL, **env})
     assert out.returncode == 0, out.stderr
     return json.loads(out.stdout)
@@ -129,7 +134,7 @@ def test_postbuild_complete_le_html_et_ecrit_le_sitemap(heads, tmp_path):
     page.write_text('<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n</head>\n'
                     '<body><main id="observablehq-main">x</main></body>\n</html>\n', encoding="utf-8")
     out = subprocess.run([NODE, str(WEB / "scripts" / "postbuild.mjs"), str(tmp_path)],
-                         capture_output=True, text=True, timeout=120,
+                         capture_output=True, text=True, encoding="utf-8", timeout=120,
                          env={**os.environ, "HM_SITE_URL": SITE_URL})
     assert out.returncode == 0, out.stderr
 
@@ -153,7 +158,7 @@ def test_postbuild_est_idempotent(tmp_path):
                     '<body><main id="observablehq-main">x</main></body>\n</html>\n', encoding="utf-8")
     for _ in range(2):
         subprocess.run([NODE, str(WEB / "scripts" / "postbuild.mjs"), str(tmp_path)],
-                       capture_output=True, text=True, timeout=120, check=True)
+                       capture_output=True, text=True, encoding="utf-8", timeout=120, check=True)
     html = page.read_text(encoding="utf-8")
     assert html.count("hm-skip") == 1 and html.count('lang="fr"') == 1 and html.count('rel="icon"') == 1
 
