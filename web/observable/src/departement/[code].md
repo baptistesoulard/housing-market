@@ -52,7 +52,7 @@ const couvert = dep.couvert === true;
 ```js
 // Le cas « non couvert » arrête la page. Quatre départements sont concernés et ils n'ont
 // pas à recevoir des graphiques vides, qui passeraient pour une panne du site.
-if (!couvert) display(html`<div class="hm-absence">
+display(couvert ? html`` : html`<div class="hm-absence">
   <div class="hm-absence-titre">Aucune donnée de prix pour ce département</div>
   <p>${dep.absence}</p>
   <p>Les autres pages du site restent valables : elles portent sur la France entière,
@@ -62,7 +62,7 @@ if (!couvert) display(html`<div class="hm-absence">
 ```
 
 ```js
-if (couvert) display(cardGrid([
+display(!couvert ? html`` : cardGrid([
   {label: `Prix médian au m² · ${trimestre(dep.dernier.Ensemble.date)}`,
    value: euro(dep.dernier.Ensemble.prix_m2),
    delta: pct(dep.evolution.un_an) + " sur un an",
@@ -81,7 +81,7 @@ if (couvert) display(cardGrid([
 // de crédit réel, même formule que le reste du site) et le prix local. La comparaison à
 // 2015 lui donne son sens : un prix seul ne dit pas si le logement s'éloigne, « votre
 // mensualité achetait X m², elle en achète Y » le dit.
-if (couvert && dep.capacite) display(html`<div class="hm-capacite">
+display(!couvert || !dep.capacite ? html`` : html`<div class="hm-capacite">
   <div class="hm-capacite-chiffre">${nf1.format(dep.capacite.m2_aujourdhui)} m²</div>
   <div class="hm-capacite-legende">
     pour <b>${nf0.format(annuaire.mensualite_ref)} € par mois</b> sur
@@ -102,7 +102,7 @@ votre apport, de votre taux et de votre assurance.
 ## Le prix au m², trimestre par trimestre
 
 ```js
-if (couvert) display(multiLine({
+display(!couvert ? html`` : multiLine({
   rows: [
     ...dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.prix_m2[i], series: dep.nom})),
     ...annuaire.national.dates.map((d, i) => ({date: d, value: annuaire.national.prix_m2[i],
@@ -131,11 +131,11 @@ const parType = !couvert ? [] : ["maison", "appartement"]
 ```
 
 ```js
-if (parType.length) display(html`<h2>Maisons et appartements</h2>`);
+display(!parType.length ? html`` : html`<h2>Maisons et appartements</h2>`);
 ```
 
 ```js
-if (parType.length) display(multiLine({
+display(!parType.length ? html`` : multiLine({
   rows: parType,
   meta: [{name: "Maisons", color: series.green}, {name: "Appartements", color: series.brick}],
   yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v)
@@ -145,7 +145,7 @@ if (parType.length) display(multiLine({
 ## Combien de ventes ? Le marché est-il bloqué ?
 
 ```js
-if (couvert) display(multiLine({
+display(!couvert ? html`` : multiLine({
   rows: dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.ventes[i],
                                            series: "Ventes par trimestre"})),
   meta: [{name: "Ventes par trimestre", color: series.blue}],
@@ -196,7 +196,7 @@ d'accord, et le prix affiché est celui des rares transactions qui aboutissent.
 </details>
 
 ```js
-if (couvert) display(html`<div class="hm-caption">
+display(!couvert ? html`` : html`<div class="hm-caption">
   Données jusqu'à ${trimestre(dep.dernier.Ensemble.date)} · source : ${dep.source} ·
   <a href="/a-propos">méthode et limites</a></div>`);
 ```
@@ -213,6 +213,6 @@ const choix = view(Inputs.select(
 ```
 
 ```js
-if (choix !== dep.code) display(html`<a class="hm-cta" href="/departement/${choix}">
+display(choix === dep.code ? html`` : html`<a class="hm-cta" href="/departement/${choix}">
   Voir ${annuaire.departements.find((d) => d.code === choix).nom} →</a>`);
 ```
