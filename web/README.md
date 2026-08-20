@@ -124,6 +124,68 @@ reconstruit le site à chaque publication de données. L'export est gardé par l
 (`generated_at` exclu de la comparaison) : un run sans nouveauté ne produit aucun diff et
 donc aucun rebuild inutile.
 
+## Deux façons d'alimenter une page
+
+Le site mélange délibérément deux régimes. Le critère est simple : **ce que l'utilisateur
+consulte** est précalculé, **ce qu'il interroge** passe par l'API.
+
+| | Pages 1-5 (Synthèse, Neuf, Ancien, Macro, Actualités) | Pages 6-7 (Prévision, Données) |
+|---|---|---|
+| Source | JSON statique commité, produit par `web_export.py` | `fetch()` vers l'API HTTP `api/` |
+| Interaction | filtres d'affichage sur des données déjà calculées | l'utilisateur pose des questions qui **relancent un calcul** |
+| Sans serveur | fonctionnent entièrement | affichent un encart expliquant comment lancer l'API |
+| Déploiement | Cloudflare Pages suffit | Cloudflare Pages **+** une instance de l'API quelque part |
+
+Précalculer les pages 6-7 aurait été possible pour la plupart des états (la grille de
+décalages est finie), mais pas pour le panneau de scénarios : quatre curseurs continus,
+c'est un espace d'hypothèses qu'on n'énumère pas. D'où l'API.
+
+### Lancer l'API
+
+Depuis la racine du dépôt :
+
+```
+pip install flask          # seule dépendance ajoutée, optionnelle
+python -m api              # http://127.0.0.1:8000/api/health
+```
+
+Puis le front, qui vise `http://127.0.0.1:8000` par défaut :
+
+```
+npm --prefix web/observable run dev
+```
+
+Pour viser une autre instance sans rebuild, ajouter `?api=https://mon-api.example` à
+l'URL d'une des deux pages : la valeur est retenue dans le navigateur. **Aucune URL
+d'hébergement n'est écrite en dur** — c'est ce qui permet de déployer le site statique
+aujourd'hui et de décider plus tard où (et si) l'API vit en ligne.
+
+### L'architecture de l'API
+
+```
+navigateur ──fetch()──► api/routes.py ──► api/engine.py ──► queries.py / forecast.py
+```
+
+Chaque couche ne connaît que la suivante. Deux règles à ne pas casser :
+
+1. **`api/engine.py` n'importe pas Flask.** Le moteur reste exécutable et testable serveur
+   éteint. Si un calcul se met à importer Flask, la couche est au mauvais endroit.
+2. **Une route = une question métier**, pas une table. `/api/forecast/projection`, jamais
+   `/api/table/macro?filter=…` — ce dernier reviendrait à réinventer SQL par-dessus HTTP
+   et ferait migrer la logique métier dans le front.
+
+Les routes sont couvertes par `tests/test_api_contract.py` (statut, forme, **format des
+dates**, rejet des paramètres inconnus, et une course concurrente sur un vrai serveur).
+
+### Vos ventes société ne quittent pas le navigateur
+
+La page Données lit votre CSV **localement** : il n'est jamais téléversé, ni vers l'API ni
+vers Cloudflare. Les régressions qui en dépendent tournent donc en JavaScript
+(`bestLagFit` dans `src/components/api.js`). Comme la même question est répondue en Python
+par `forecast.best_tx_to_monthly`, `tests/test_web_js_parity.py` vérifie que les deux
+implémentations retiennent le même décalage et le même R² — sinon on aurait deux chiffres
+et aucun arbitre.
+
 ## Périmètre du PoC / suite
 
 Les **5 premiers onglets** de l'app Streamlit sont portés, avec les mêmes sections, les
@@ -184,9 +246,8 @@ légendes cliquables) :
 
 ### Suite
 
-- ⏭️ Reste à porter : Prévision & Scénarios, Données & Sources — même patron
-  (export Python → page). L'app Streamlit ne compte plus que **7 onglets** : « Atelier
-  exploratoire » et l'export SAP IBP ont été retirés (voir `CLAUDE.md`, section
-  « Onglets retirés »), il n'y a donc plus rien à porter de ce côté.
-- ⏭️ Bilingue FR/EN, filtres interactifs côté client (DuckDB-WASM sur les Parquet
-  existants) pour les pages exploratoires.
+- ✅ **Les 7 onglets sont portés.** Prévision & Scénarios et Données & Sources ont
+  rejoint le site le 2026-08-20, mais **par un autre chemin** que les cinq premiers :
+  voir « Deux façons d'alimenter une page » ci-dessous.
+- ⏭️ Bilingue FR/EN pour les deux nouvelles pages (les cinq premières le sont déjà via
+  l'export Python).

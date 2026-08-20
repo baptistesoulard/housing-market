@@ -25,3 +25,10 @@ reportlab>=4.0.0      # génération du rapport PDF (module report.py, bouton si
 pandera>=0.20.0       # contrats de schéma (validation des datasets avant écriture)
 pyarrow>=12.0.0       # moteur Parquet (format d'échange typé, colonnaire)
 duckdb>=1.0.0         # moteur SQL embarqué (zéro serveur) au-dessus des Parquet
+
+# --- API HTTP mince (api/) devant le moteur de calcul, pour le front Observable.
+# OPTIONNELLE : ni l'app Streamlit, ni report.py, ni web_export.py n'en dépendent — seules
+# les pages web « Prévision » et « Données » l'interrogent, et elles savent afficher un
+# encart quand elle ne répond pas. `api/engine.py` n'importe PAS Flask (le moteur reste
+# exécutable serveur éteint) ; seul `api/routes.py` le fait.
+flask>=3.0.0          # serveur HTTP + routage JSON (BSD-3) — `python -m api`

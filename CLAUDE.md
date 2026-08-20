@@ -39,8 +39,11 @@ mêmes chiffres par construction.
 **Il ne reste rien de planifié sur cet axe.** Ce qui subsiste en pandas sur le chemin
 d'exécution y reste délibérément (voir invariants).
 
-Un chantier **distinct** reste ouvert, côté front web : `web/README.md` liste les onglets
-Prévision / Atelier / Données & Export à porter vers Observable. Ce n'est pas du compute.
+Un troisième chantier, côté front web, est lui aussi **terminé** : les 7 onglets sont
+portés vers Observable. Les cinq premiers lisent un JSON statique produit par
+`web_export.py` ; les deux derniers (Prévision, Données) interrogent l'API HTTP `api/`.
+Ce n'est pas du compute — `api/` ne recalcule rien, il expose `queries.py` et
+`forecast.py` en JSON. Voir « L'API HTTP » plus bas et `web/README.md`.
 
 ## Axe stockage — plan et état
 
@@ -109,6 +112,56 @@ du dataset : il opère sur ce qu'on lui donne, il n'a pas de source à interroge
 doit annoncer `0/5 fichier(s) modifié(s)`. Un diff inattendu signale une divergence de
 calcul, pas du bruit — depuis que les agrégations sont en SQL, la sortie ne dépend plus de
 la version de pandas/numpy.
+
+## L'API HTTP (`api/`) — ce qui doit rester vrai
+
+Trois couches, chacune ne connaissant que la suivante :
+
+```
+navigateur ──fetch()──► api/routes.py ──► api/engine.py ──► queries.py / forecast.py
+```
+
+**`api/engine.py` n'importe pas Flask, et ne doit jamais l'importer.** C'est l'invariant
+central : le moteur reste exécutable et testable serveur éteint
+(`python -c "from api import engine; print(engine.rate_model()['r2'])"`). Seul
+`api/routes.py` connaît HTTP. Un calcul qui se met à importer Flask est un calcul rangé au
+mauvais endroit.
+
+**Aucune logique métier dans `routes.py`.** Une route lit des paramètres, appelle le
+moteur, sérialise. Rien d'autre.
+
+**Une route = une question métier, pas une table.** `/api/forecast/projection` est bon ;
+`/api/table/macro?filter=…` réinventerait SQL par-dessus HTTP et déplacerait la logique
+dans le front.
+
+**Le format des dates est figé à `YYYY-MM-DD`**, produit par `engine._iso` et verrouillé
+par `tests/test_api_contract.py`. Une divergence (`2025-03` d'un côté, `2025-03-01` de
+l'autre) ne lève pas : la requête réussit et la jointure renvoie zéro ligne.
+
+**Pas de `NaN` dans les réponses.** `json.dumps` en produit par défaut, ce n'est pas du
+JSON valide et `JSON.parse` lève côté navigateur — une seule valeur manquante casserait
+la page entière sans erreur serveur. `engine._num` convertit en `null` ; un test le vérifie
+sur toutes les routes.
+
+**La concurrence est déjà traitée mais reste fragile.** Un serveur HTTP sert plusieurs
+requêtes en parallèle : la règle « une requête = un curseur » de `queries.py` (voir plus
+haut) est ce qui empêche deux appels simultanés de se voler leur jeu de résultats.
+`tests/test_api_contract.py::test_concurrent_requests_do_not_swap_payloads` rejoue la
+course sur un vrai serveur.
+
+**Flask est optionnel.** Ni `app.py`, ni `report.py`, ni `web_export.py` n'en dépendent.
+Les deux pages web qui appellent l'API affichent un encart quand elle ne répond pas, donc
+le site statique reste déployable seul.
+
+**Les ventes société ne passent PAS par l'API.** Décision produit : le CSV est lu dans le
+navigateur et n'est jamais téléversé. Conséquence directe — la régression qui en dépend
+existe en double, en Python (`forecast.best_tx_to_monthly`) et en JS (`bestLagFit` dans
+`web/observable/src/components/api.js`). `tests/test_web_js_parity.py` compare les deux sur
+les mêmes données : même décalage retenu, même R². Ne pas laisser diverger.
+
+**Les pages du front n'importent jamais `npm:` directement** : elles passent par
+`src/components/hm.js`, qui réexporte `Plot`, `d3` et `csvParse`. Une seule façon de
+charger une bibliothèque.
 
 ## Onglets retirés (2026-08-20) — ne pas les restaurer par réflexe
 
@@ -187,7 +240,9 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 66 collectés ; 1 skip légitime si company_sales est vide
+python -m pytest tests/ -q          # 113 collectés ; 1 skip légitime si company_sales
+                                    # est vide. Les tests d'API se skippent sans Flask,
+                                    # ceux de parité JS sans Node.
 ```
 
 **2. Rapport PDF, comparaison d'octets** — la plus forte : couvre les graphiques, les KPI

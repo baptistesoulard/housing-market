@@ -5,6 +5,11 @@ import * as d3 from "npm:d3";
 import {html} from "npm:htl";
 import {ui} from "./theme.js";
 
+// Réexportés pour que les PAGES n'aient jamais à importer `npm:` elles-mêmes :
+// toutes les pages passent par ce module, une seule façon de charger une lib.
+export {Plot, d3};
+export const csvParse = d3.csvParse;
+
 // --- Formatage FR ------------------------------------------------------------------
 const frLocale = d3.timeFormatLocale({
   dateTime: "%A %e %B %Y à %X", date: "%d/%m/%Y", time: "%H:%M:%S", periods: ["AM", "PM"],

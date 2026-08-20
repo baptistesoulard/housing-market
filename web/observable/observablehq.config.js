@@ -134,6 +134,16 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-period-track input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
 .hm-period-track input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
 .hm-period-bounds { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--theme-foreground-muted); }
+.hm-api-offline { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
+  border-radius: 6px; padding: 0.9rem 1.1rem; margin: 1rem 0; background: var(--hm-surface); }
+.hm-api-offline-title { font-weight: 600; color: var(--hm-ink); margin-bottom: 0.4rem; }
+.hm-api-offline p { margin: 0.35rem 0; font-size: 0.875rem; }
+.hm-api-offline pre { margin: 0.4rem 0; padding: 0.5rem 0.7rem; border-radius: 4px;
+  background: var(--hm-bg); overflow-x: auto; }
+.hm-api-offline-detail { color: var(--theme-foreground-muted); font-size: 0.78rem; }
+.hm-privacy { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-green);
+  border-radius: 6px; padding: 0.75rem 1.1rem; margin: 1rem 0; font-size: 0.875rem;
+  background: var(--hm-surface); }
 .hm-period-note { font-size: 0.72rem; color: var(--theme-foreground-muted); margin-top: 0.3rem; line-height: 1.35; }
 
 </style>`;
@@ -145,6 +155,11 @@ const PAGES = [
   {name: "🏠 Marché de l'ancien", path: "/ancien"},
   {name: "🏦 Environnement & Financement", path: "/macro"},
   {name: "📰 Actualités & Aides", path: "/actualites"},
+  // Les deux pages suivantes n'ont PAS de JSON statique : elles appellent l'API HTTP
+  // (voir src/components/api.js). Sans instance désignée, elles affichent un encart qui
+  // explique comment en lancer une — le reste du site continue de fonctionner seul.
+  {name: "📡 Prévision & Scénarios", path: "/previsions"},
+  {name: "⚙️ Données & Sources", path: "/donnees"},
 ];
 
 export default {
