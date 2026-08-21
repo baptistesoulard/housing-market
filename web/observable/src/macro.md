@@ -1,6 +1,6 @@
 ---
 title: Environnement & Financement
-toc: false
+toc: true
 ---
 
 ```js
@@ -30,6 +30,10 @@ const rangeM = Generators.input(periodFilter({min: macro.period.min, max: macro.
 const visR = Mutable(new Set(macro.rates.meta.map((m) => m.name)));
 function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(name) : s.add(name); visR.value = s; }
 ```
+
+## 📉 Confiance, taux et emploi
+
+<div class="hm-caption">Les quatre indicateurs qui décrivent la capacité et l'envie d'acheter : moral des ménages, coût de l'argent, intentions déclarées et marché du travail.</div>
 
 <div class="hm-panels">
   <div>
@@ -90,27 +94,35 @@ function creditCum() {
   return multiLine({rows, meta, yLabel: "Md€", valueFmt: (v) => nf0.format(v)});
 }
 
-if (cr) {
-  display(html`<h2>Volume de crédits à l'habitat</h2>`);
-  display(html`<div class="hm-panels">
+// Un titre suivi de rien se lit comme une panne du site, alors que c'est une série
+// absente de l'export. Ces trois sections restent conditionnelles, mais le disent.
+const indisponible = (quoi) => html`<div class="hm-caption">${quoi} : série absente de cet
+  export. La page « À propos » liste les séries publiées et leur dernier point.</div>`;
+```
+
+## 💶 Volume de crédits à l'habitat
+
+```js
+display(cr ? html`<div class="hm-panels">
     ${panel("Production mensuelle de crédits à l'habitat", cr.has_split ? "crédits nouveaux vs renégociations, Md€ par mois" : "y compris renégociations, Md€ par mois", creditMonthly())}
     ${panel("Production cumulée sur 12 mois", "Md€ / an", creditCum())}
-  </div>`);
-  display(html`<div class="hm-meta">Source : BCE — statistiques MIR (achat de logement, France). Renégociations isolées (décomposition BPCE ; publiée depuis 2019).</div>`);
-}
+  </div>` : indisponible("Production de crédits à l'habitat"));
+display(cr ? html`<div class="hm-meta">Source : BCE — statistiques MIR (achat de logement, France). Renégociations isolées (décomposition BPCE ; publiée depuis 2019).</div>` : "");
+```
 
-if (bls) {
-  display(html`<h2>Demande de crédits à l'habitat (enquête BLS)</h2>`);
-  display(html`<div class="hm-panel-sub">solde d'opinion net des banques, en % — &gt;0 = demande en hausse · indicateur avancé</div>`);
-  display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %"}));
-  display(html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>`);
-}
+## 🏦 Demande de crédits à l'habitat (enquête BLS)
 
-if (reno.length) {
-  display(html`<h2>Rénovation & second œuvre (pilier complémentaire)</h2>`);
-  display(html`<div class="hm-panel-sub">solde d'opinion INSEE (enquête bâtiment) — un solde négatif = plus d'entreprises signalant une baisse d'activité</div>`);
-  display(multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
-    meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v)}));
-  display(html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>`);
-}
+```js
+display(bls ? html`<div class="hm-panel-sub">solde d'opinion net des banques, en % — &gt;0 = demande en hausse · indicateur avancé</div>` : indisponible("Demande de crédits (BLS)"));
+display(bls ? multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %"}) : "");
+display(bls ? html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>` : "");
+```
+
+## 🔨 Rénovation & second œuvre
+
+```js
+display(reno.length ? html`<div class="hm-panel-sub">solde d'opinion INSEE (enquête bâtiment) — un solde négatif = plus d'entreprises signalant une baisse d'activité</div>` : indisponible("Activité du second œuvre"));
+display(reno.length ? multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
+  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v)}) : "");
+display(reno.length ? html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>` : "");
 ```

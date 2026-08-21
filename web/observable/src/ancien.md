@@ -1,6 +1,6 @@
 ---
 title: Marché de l'ancien
-toc: false
+toc: true
 ---
 
 ```js
@@ -30,10 +30,14 @@ const rangeA = Generators.input(periodFilter({min: anc.period.min, max: anc.peri
 
 <div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de tout filtre.</div>
 
+<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#chiffres-cles">🏗️ la même vue pour le neuf</a></div>
+
 ${cardGrid([anc.kpi], kpiCard)}
 
 ## 📊 Courbes d'évolution du marché
 
+
+<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#courbes-d-evolution-du-marche">🏗️ la même vue pour le neuf</a></div>
 ```js
 const viewA = view(Inputs.radio(
   new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"], ["Données brutes mensuelles", "raw"]]),
@@ -49,6 +53,8 @@ ${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_s
 ## 📅 Comparaison Mensuelle par Année
 
 <div class="hm-caption">Comparez un ou plusieurs mois d'une année à l'autre. Par défaut, les 3 derniers mois disponibles.</div>
+
+<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#comparaison-mensuelle-par-annee">🏗️ la même vue pour le neuf</a></div>
 
 ```js
 const lmA = anc.monthly.last_month_num;

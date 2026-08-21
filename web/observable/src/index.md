@@ -219,8 +219,8 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
   </a>
   <a class="hm-page-card" href="/donnees">
     <span class="t">⚙️ Données & Sources</span>
-    <span class="d">D'où vient chaque série, à quelle date elle s'arrête, et de quoi
-    confronter vos propres ventes aux indicateurs de marché.</span>
+    <span class="d">De quoi confronter vos propres ventes aux indicateurs de marché,
+    sans que votre fichier quitte votre navigateur.</span>
   </a>
 </div>
 

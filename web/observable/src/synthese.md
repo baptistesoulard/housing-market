@@ -1,6 +1,6 @@
 ---
 title: Synthèse
-toc: false
+toc: true
 ---
 
 ```js
@@ -67,6 +67,8 @@ function card(c) {
   <div class="hm-caption">${data.how_to_read}</div>
 </details>
 
+## 📇 Les chiffres du dernier mois publié
+
 ```js
 // --- Les trois blocs de cartes (Activité / Financement / Perspective) --------------
 for (const b of data.blocks) {
@@ -81,7 +83,7 @@ for (const b of data.blocks) {
 
 ---
 
-### Neuf vs ancien — volumes en cumul 12 mois
+## 📈 Neuf vs ancien — volumes en cumul 12 mois
 
 <div class="hm-caption">
 À gauche, les niveaux réels sur une échelle unique : le rapport de masse saute aux yeux

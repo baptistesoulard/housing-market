@@ -1,6 +1,6 @@
 ---
 title: À propos
-toc: false
+toc: true
 ---
 
 <!--

@@ -343,6 +343,39 @@ régénère à la main (Playwright, hors dépendances du site). Elle vit hors de
 que les fichiers que le framework copie reçoivent un nom haché, incompatible avec l'URL
 absolue qu'annonce `og:image`.
 
+**Neuf et ancien sont des pages JUMELLES : trois sections communes, même intitulé, même
+ordre.** « 🔑 Chiffres Clés », « 📊 Courbes d'évolution du marché », « 📅 Comparaison
+Mensuelle par Année » ouvrent les deux pages ; chacune ajoute ensuite ce qui lui est propre
+(individuel/collectif et ECLN d'un côté, prix et accessibilité de l'autre). C'est ce socle
+qui permet d'apprendre la page une fois et de la relire de l'autre côté — « Dynamique
+Individuel vs Collectif » s'intercalait au milieu et a été déplacé APRÈS pour le rétablir.
+Chaque section du socle porte un renvoi vers sa jumelle (`.hm-shortcuts--twin`), et les
+deux ancres coïncident parce que les deux titres coïncident.
+
+Rien dans le build ne protège cette symétrie : renommer une section d'un seul côté casse
+l'ancre visée d'en face **sans faire échouer le build** — la validation de liens
+d'Observable Framework ne regarde pas les fragments. D'où `tests/test_web_structure.py`,
+qui vérifie le socle, son ordre, les renvois et l'existence des ancres visées, en pur
+Python (ni Node ni build requis).
+
+**Le sommaire de page (`toc`) est construit AU BUILD à partir des `<h2>` du Markdown.** Un
+titre posé par ``display(html`<h2>…`)`` n'y figure JAMAIS : c'est pourquoi les sections
+conditionnelles de `macro.md` portent un titre Markdown statique et affichent un encart
+« série absente » plutôt que rien — un titre suivi de vide se lit comme une panne. Le
+défaut reste `toc: false` dans la config, chaque page l'active dans son front-matter, et
+l'accueil s'en abstient délibérément (page d'atterrissage, dont « Les huit pages » EST déjà
+la navigation). Un test refuse qu'une page ait des sections sans sommaire, ou l'inverse.
+
+**Le sommaire ne s'affiche qu'à partir de 1320 px, et c'est un correctif, pas un réglage.**
+Le framework le montre dès 1216 px en réservant 208 px de gouttière sur `main` : mesuré à
+1250 px, la colonne de contenu tombait de 817 à 659 px et les `.hm-panels` (minmax 340 px)
+passaient de deux colonnes à une. Or ces panneaux sont **appariés pour être comparés**
+(encours vs délai d'écoulement, capacité d'emprunt vs accessibilité) — et 1280×800 comme
+1366×768 tombent en plein dans cette bande. Deux règles sont donc à défaire, pas une : le
+sommaire ET sa gouttière (`#observablehq-toc ~ #observablehq-main`), faute de quoi la
+colonne reste étroite pour rien. En dessous du seuil, ce sont les renvois entre jumelles
+qui assurent la navigation par section.
+
 **Une légende cliquable est un `<button aria-pressed>`, jamais un `<span onclick>`.** Le
 barré et l'opacité ne disent l'état qu'à ceux qui les voient ; un `span` n'est atteignable
 ni au clavier ni au lecteur d'écran. Les deux légendes du site (`components/hm.js` et
@@ -404,7 +437,7 @@ qu'une prévision est enregistrée — c'est normal, contrairement aux cinq autr
 **Une interpolation `${…}` ne fonctionne que dans le CONTENU d'un élément.** Dans un
 attribut HTML brut (`style=${…}`) elle reste affichée telle quelle, et dans un `<tbody>`
 écrit en HTML brut le marqueur du framework est éjecté hors de la table par l'analyseur.
-Légendes et tableaux se montent donc en JS (`display(html\`…\`)`). Les deux cas ont été
+Légendes et tableaux se montent donc en JS (``display(html`…`)``). Les deux cas ont été
 rencontrés en écrivant `previsions-passees.md`.
 
 ## Les pages départementales — ce qui doit rester vrai
@@ -553,7 +586,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 187 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 195 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

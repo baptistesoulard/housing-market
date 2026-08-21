@@ -1,6 +1,6 @@
 ---
 title: Prévisions passées
-toc: false
+toc: true
 ---
 
 ```js

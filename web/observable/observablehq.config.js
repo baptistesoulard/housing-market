@@ -126,6 +126,35 @@ a, a:visited { color: var(--hm-link); }
   background: var(--hm-surface); color: var(--hm-ink); text-decoration: none; }
 .hm-shortcut:hover, .hm-shortcut:focus-visible { border-color: var(--hm-brick);
   color: var(--hm-brick); background: var(--hm-bg); }
+/* Renvoi entre sections JUMELLES (neuf <-> ancien). Les deux pages partagent trois
+   sections de même nom, dans le même ordre et avec la même ancre ; ce renvoi est ce qui
+   le fait savoir à quelqu'un qui n'a ouvert qu'une des deux. Il est posé sous le chapô de
+   section, pas en bas de bloc comme ceux de la Synthèse — d'où la marge réduite : il
+   introduit ce qui suit au lieu de le clore. */
+.hm-shortcuts--twin { margin: 0.1rem 0 0.9rem; }
+/* --- Le sommaire de page ne doit RIEN coûter au contenu ----------------------------
+   Le framework l'affiche dès 1216 px quand la barre latérale est ouverte, en réservant
+   208 px de gouttière sur « main ». Mesuré à 1250 px : la colonne de contenu tombe de
+   817 px à 659 px, et les .hm-panels — dont le minmax est à 340 px — passent de deux
+   colonnes à une. Or ces panneaux sont APPARIÉS pour être comparés (encours vs délai
+   d'écoulement, capacité d'emprunt vs accessibilité) : les empiler défait leur raison
+   d'être. 1280x800 et 1366x768 tombent en plein dans cette bande.
+   On retarde donc l'apparition du sommaire jusqu'à 1320 px, largeur à partir de laquelle
+   le contenu garde ses 702 px (2 x 340 + gouttière). En dessous, la navigation par
+   section reste assurée par les renvois entre sections jumelles.
+   La règle ne vise que le cas « barre latérale ouverte » — sidebar fermée, la place ne
+   manque pas — et reprend pour cela les sélecteurs du framework, sinon la sienne
+   l'emporterait en spécificité.
+   Deux règles à défaire, pas une : le framework masque le sommaire d'un côté et réserve
+   sa gouttière de l'autre (#observablehq-toc ~ #observablehq-main). Cacher le sommaire
+   seul laisserait 208 px de vide à droite du contenu — la colonne resterait étroite pour
+   rien. */
+@media (max-width: 1319px) {
+  #observablehq-sidebar-toggle:checked ~ #observablehq-center #observablehq-toc,
+  #observablehq-sidebar-toggle:indeterminate ~ #observablehq-center #observablehq-toc { display: none; }
+  #observablehq-sidebar-toggle:checked ~ #observablehq-center #observablehq-toc ~ #observablehq-main,
+  #observablehq-sidebar-toggle:indeterminate ~ #observablehq-center #observablehq-toc ~ #observablehq-main { padding-right: 0; }
+}
 .hm-panels { display: grid; gap: 1rem 1.4rem; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
 .hm-panel-title { font-weight: 600; font-size: 0.98rem; color: var(--hm-ink); margin: 0.4rem 0 0.1rem; }
 .hm-panel-sub { color: var(--hm-ink); font-size: 0.875rem; margin-bottom: 0.2rem; }
@@ -517,7 +546,15 @@ export default {
     "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap",
   ],
   pages: PAGES,
-  toc: false,
+  // Sommaire de page, à DROITE. La barre latérale répond à « où suis-je dans le
+  // site » ; mêler les sections d'une page à cette liste de dix entrées lui ferait
+  // perdre sa lecture d'ensemble. Le défaut reste `false` — l'accueil n'en a pas —
+  // et chaque page l'active dans son front-matter.
+  //
+  // Le sommaire est construit AU BUILD, en relisant les <h2> du HTML rendu : un
+  // titre posé par `display(html`<h2>…`)` n'y figure jamais. C'est pourquoi les
+  // sections conditionnelles de macro.md portent un titre Markdown statique.
+  toc: {show: false, label: "Sur cette page"},
   pager: false,
   footer: FOOTER,
 };

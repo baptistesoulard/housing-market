@@ -1,6 +1,6 @@
 ---
 title: Actualités & Aides
-toc: false
+toc: true
 ---
 
 ```js

@@ -281,6 +281,18 @@ Le script est **idempotent** (relancé sur un `dist/` déjà traité, il ne doub
 prend un répertoire en argument, ce qui permet aux tests de le faire tourner sur un
 `dist/` jetable.
 
+### Le sommaire de page
+
+Chaque page de contenu affiche à droite la liste de ses sections (« Sur cette page »),
+construite **au build** à partir de ses titres de niveau 2 — un titre posé par
+``display(html`<h2>…`)`` n'y figure donc jamais. L'accueil s'en abstient : c'est une page
+d'atterrissage, dont la section « Les huit pages » tient déjà lieu de navigation.
+
+Il n'apparaît qu'à partir de **1320 px**, et non des 1216 px du framework : celui-ci
+réserve 208 px de gouttière, ce qui faisait tomber les panneaux appariés de deux colonnes
+à une sur un écran de portable ordinaire. Voir le commentaire dans
+`observablehq.config.js` — deux règles sont à défaire, pas une.
+
 ### La vignette de partage
 
 `assets/og-image.png` (1200×630) est **committée**, pas produite au build : Cloudflare ne
@@ -378,6 +390,12 @@ légendes cliquables) :
   collectif, ECLN (encours & mises en vente, délai d'écoulement, acquéreurs, prix au m²).
 - ✅ **Marché de l'ancien** — IGEDD, puis prix Notaires-INSEE, capacité d'emprunt et
   indice d'accessibilité, neuf vs ancien.
+
+  Ces deux pages sont **jumelles** : elles ouvrent sur les trois mêmes sections, portant le
+  même intitulé et dans le même ordre (chiffres clés, courbes d'évolution, comparaison
+  mensuelle), puis chacune ajoute ce qui lui est propre. Chaque section du socle renvoie à
+  sa jumelle d'en face. `tests/test_web_structure.py` verrouille ce parallèle — le build,
+  lui, ne valide pas les fragments d'URL et laisserait passer une ancre morte.
 - ✅ **Environnement & Financement** — confiance, taux, intentions, chômage, volumes de
   crédits, demande BLS, rénovation.
 - ✅ **Actualités & Aides** — filtres, matrice d'impact, échéancier, fiches détaillées.
