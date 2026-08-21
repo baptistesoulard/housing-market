@@ -465,23 +465,25 @@ def _yoy_kpi(kpis, mom, label, month_label):
 def build_neuf(con, frames: dict) -> dict:
     df_ecln = frames["ecln"]
 
-    # --- Série principale SIT@DEL (national, tous types) : brut + 12M + 6M (SQL) -------
-    roll = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], (12, 6))
+    # --- Série principale SIT@DEL (national, tous types) : brut + 12M + 6M + 3M (SQL) --
+    roll = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], (12, 6, 3))
     series_meta = [
         {"key": "permis", "name": "Permis de Construire", "color": COLOR_BRICK, "dash": None,
-         "raw": "Permis", "r12": "Permis_12M", "r6": "Permis_6M"},
+         "raw": "Permis", "r12": "Permis_12M", "r6": "Permis_6M", "r3": "Permis_3M"},
         {"key": "mises", "name": "Mises en Chantier", "color": COLOR_TEXT, "dash": "dash",
-         "raw": "MisesEnChantier", "r12": "MisesEnChantier_12M", "r6": "MisesEnChantier_6M"},
+         "raw": "MisesEnChantier", "r12": "MisesEnChantier_12M", "r6": "MisesEnChantier_6M",
+         "r3": "MisesEnChantier_3M"},
     ]
     main_rows = []
     for m in series_meta:
-        sub = roll[["Date", m["raw"], m["r12"], m["r6"]]].dropna(subset=[m["raw"]])
+        sub = roll[["Date", m["raw"], m["r12"], m["r6"], m["r3"]]].dropna(subset=[m["raw"]])
         for _, r in sub.iterrows():
             main_rows.append({
                 "date": r["Date"].strftime("%Y-%m-%d"), "series": m["name"], "key": m["key"],
                 "raw": round(float(r[m["raw"]]), 3),
                 "roll12": None if pd.isna(r[m["r12"]]) else round(float(r[m["r12"]]), 3),
-                "roll6": None if pd.isna(r[m["r6"]]) else round(float(r[m["r6"]]), 3)})
+                "roll6": None if pd.isna(r[m["r6"]]) else round(float(r[m["r6"]]), 3),
+                "roll3": None if pd.isna(r[m["r3"]]) else round(float(r[m["r3"]]), 3)})
 
     # --- KPIs (national plein, dernier mois) ------------------------------------------
     kpi_permis = ana.calculate_kpis(roll, "Permis")
@@ -525,14 +527,15 @@ def build_neuf(con, frames: dict) -> dict:
 
     # Séries par type en UNE requête (monthly_by_group), réindexées sur l'axe commun.
     bt = q.monthly_by_group(con, "sitadel", {codes[t]: [t] for t in sit_types},
-                            ["Permis", "MisesEnChantier"], (12, 6))
+                            ["Permis", "MisesEnChantier"], (12, 6, 3))
     by_type_series = []
     for t in sit_types:
         sub = bt[bt["Groupe"] == codes[t]].set_index("Date").reindex(roll["Date"])
         for m in series_meta:
             by_type_series.append({
                 "type": codes[t], "key": m["key"], "raw": _arr(sub[m["raw"]]),
-                "roll12": _arr(sub[m["r12"]]), "roll6": _arr(sub[m["r6"]])})
+                "roll12": _arr(sub[m["r12"]]), "roll6": _arr(sub[m["r6"]]),
+                "roll3": _arr(sub[m["r3"]])})
 
     kpis_by_type = {}
     for size in range(1, len(sit_types) + 1):
@@ -638,17 +641,18 @@ def build_neuf(con, frames: dict) -> dict:
 def build_ancien(con, frames: dict) -> dict:
     macro_cols = q.macro_data_columns(con)
 
-    roll = q.monthly(con, "ventes_ancien", ["Transactions"], (12, 6))
+    roll = q.monthly(con, "ventes_ancien", ["Transactions"], (12, 6, 3))
     kpi_tx = ana.calculate_kpis(roll, "Transactions")
     mom_tx = ana.momentum_metrics(roll, "Transactions")
     tx_month = _fmt_month_year(_last_valid_date(roll, "Transactions"))
 
     main_rows = []
-    for _, r in roll[["Date", "Transactions", "Transactions_12M", "Transactions_6M"]].dropna(subset=["Transactions"]).iterrows():
+    for _, r in roll[["Date", "Transactions", "Transactions_12M", "Transactions_6M", "Transactions_3M"]].dropna(subset=["Transactions"]).iterrows():
         main_rows.append({"date": r["Date"].strftime("%Y-%m-%d"), "series": "Transactions Ancien", "key": "tx",
                           "raw": round(float(r["Transactions"]), 3),
                           "roll12": None if pd.isna(r["Transactions_12M"]) else round(float(r["Transactions_12M"]), 3),
-                          "roll6": None if pd.isna(r["Transactions_6M"]) else round(float(r["Transactions_6M"]), 3)})
+                          "roll6": None if pd.isna(r["Transactions_6M"]) else round(float(r["Transactions_6M"]), 3),
+                          "roll3": None if pd.isna(r["Transactions_3M"]) else round(float(r["Transactions_3M"]), 3)})
 
     monthly_rows = _rows_from(roll, {"tx": "Transactions"})
     last_month_num = int(pd.Timestamp(roll["Date"].max()).month) if not roll.empty else 12

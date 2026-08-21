@@ -64,7 +64,8 @@ ${cardGrid(kpisN, kpiCard)}
 
 ```js
 const viewN = view(Inputs.radio(
-  new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"], ["Données brutes mensuelles", "raw"]]),
+  new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"],
+           ["Cumul glissant 3 mois", "roll3"], ["Données brutes mensuelles", "raw"]]),
   {value: "roll12", label: "Type de visualisation"}));
 const maN = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mois"],
   {label: "Superpositions (vue brute uniquement)"}));

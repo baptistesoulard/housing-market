@@ -118,8 +118,8 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
   });
 }
 
-// --- Graphique « marché » : bascule cumul 12m / 6m / brut (+ moyennes mobiles) -----
-// rows : {date, series, key, raw, roll12, roll6} (valeurs brutes, divisées par 1000 ici).
+// --- Graphique « marché » : bascule cumul 12m / 6m / 3m / brut (+ moyennes mobiles) -
+// rows : {date, series, key, raw, roll12, roll6, roll3} (valeurs brutes, divisées par 1000 ici).
 export function marketChart({rows, meta, view, showRaw = true, showMA12 = false, showMA6 = false,
                              active, yLabel, height = 420}) {
   const K = 1000;
@@ -128,7 +128,7 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
   const dashed = new Set(meta.filter((m) => m.dash).map((m) => m.name));
   const marks = [];
-  const tipCol = {roll12: "roll12", roll6: "roll6", raw: "raw"}[view];
+  const tipCol = {roll12: "roll12", roll6: "roll6", roll3: "roll3", raw: "raw"}[view];
   const lastLabels = [];
 
   const line = (data, col, width, dash) => {
@@ -139,8 +139,8 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
   };
 
   let tipData;
-  if (view === "roll12" || view === "roll6") {
-    const col = view === "roll12" ? "roll12" : "roll6";
+  if (view === "roll12" || view === "roll6" || view === "roll3") {
+    const col = tipCol;
     tipData = line(parsed, col, 3);
     for (const m of meta) { if (active && !active.has(m.name)) continue;
       const s = tipData.filter((r) => r.series === m.name); if (s.length) lastLabels.push(s[s.length - 1]); }
@@ -216,7 +216,7 @@ export function sumByType({dates, series}, codes, meta) {
     const parts = series.filter((s) => s.key === m.key && wanted.has(s.type));
     for (let i = 0; i < dates.length; i++) {
       const row = {date: dates[i], series: m.name, key: m.key};
-      for (const f of ["raw", "roll12", "roll6"]) {
+      for (const f of ["raw", "roll12", "roll6", "roll3"]) {
         let sum = null;
         for (const p of parts) {
           const v = p[f][i];
