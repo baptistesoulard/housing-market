@@ -330,6 +330,33 @@ adresse différente du repli et vérifie que tout suit — c'est ce qui empêche
 figer dans le code. Une adresse fausse ne casse aucune page : elle casse silencieusement
 l'aperçu au partage et le référencement.
 
+**Le formulaire de contact est le SEUL code serveur du site.**
+`web/observable/functions/api/contact.js` est une Cloudflare Pages Function, exécutée
+parce qu'elle est dans `functions/` à la racine du projet Pages — tout le reste de `dist/`
+est servi par un CDN, sans processus derrière. Ce n'est pas l'API Flask de `api/` (qui
+expose des calculs et n'est pas hébergée) : cette fonction ne calcule rien, elle valide
+quatre champs et relaie vers Resend. Ne pas fusionner les deux.
+
+**L'adresse de destination ne doit JAMAIS entrer dans le dépôt.** Il est public : une
+adresse personnelle dans un fichier versionné est moissonnée exactement comme un
+`mailto:`. Elle vient de `CONTACT_TO` (variable d'environnement Cloudflare), avec
+`RESEND_API_KEY` ; sans l'une des deux la route répond **503** et la page le dit, plutôt
+que de remercier sans rien envoyer. C'est aussi pourquoi la page porte un formulaire et
+non un lien courriel. Les trois variables sont documentées dans `web/README.md`.
+
+**Le formulaire est du HTML statique, le bloc ```js ne fait que le brancher.** Même
+raison que pour le reste de la page — les robots d'aperçu ne l'exécutent pas — mais
+surtout : si ce script échoue, le visiteur voit encore les champs et la mention
+`<noscript>` au lieu d'un trou. La route n'existe pas sous `npm run dev` (les Pages
+Functions ne tournent que chez Cloudflare ou sous `wrangler pages dev`), donc un envoi
+depuis la préversion affiche « l'envoi a échoué en route » : c'est attendu.
+
+**L'anti-spam est un pot de miel plus un délai, sans service tiers ni énigme imposée** (un
+test que l'humain doit résoudre écarte aussi des humains). Le champ caché l'est **hors
+écran**, jamais par `display:none` que les robots savent sauter ; et la page transmet la
+**durée** écoulée depuis son chargement, pas l'heure de celui-ci — confronter l'horloge du
+visiteur à celle du serveur jetterait en silence les messages de toute machine mal réglée.
+
 **`scripts/postbuild.mjs` pose ce qu'`observable build` ne pose pas** : `lang="fr"` sur un
 `<html>` que le framework écrit NU (WCAG 3.1.1, aucun réglage offert), un lien d'évitement,
 `favicon.svg`, `sitemap.xml` et `robots.txt`. Il est **idempotent** et prend son répertoire
@@ -595,7 +622,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 196 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 204 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

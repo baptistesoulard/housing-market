@@ -378,6 +378,37 @@ ${NAV_ICONS}
 .hm-btn:hover, .hm-btn:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick); background: var(--hm-bg); }
 .hm-btn--primary:hover, .hm-btn--primary:focus-visible { background: var(--hm-ink); border-color: var(--hm-ink);
   color: var(--hm-bg); }
+/* --- Le formulaire de contact (page À propos) -------------------------------------
+   Aucune bibliothèque de formulaire : quatre champs empilés, à la largeur de la colonne.
+   Trois points qui ne sont pas cosmétiques :
+   1. .hm-hp est le pot de miel. Il est caché par position absolue et non par
+      display:none ni visibility:hidden — les robots à moitié sérieux sautent ces deux
+      propriétés, alors qu'un décalage hors écran leur ressemble à un champ ordinaire.
+      aria-hidden et tabindex=-1 le retirent des lecteurs d'écran et du parcours clavier.
+   2. font: inherit sur les champs : sans lui le navigateur impose sa police système à
+      13 px, seul endroit du site qui ne serait pas en Source Sans.
+   3. La bordure passe au brick au focus ET garde un contour visible : la couleur seule
+      ne suffit pas (WCAG 1.4.1). */
+.hm-form { display: flex; flex-direction: column; gap: 1rem; margin: 1.2rem 0 0.6rem;
+  max-width: 44rem; }
+.hm-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.hm-field label { font-size: 0.9rem; font-weight: 600; color: var(--hm-ink); }
+.hm-field-note { font-weight: 400; color: var(--hm-ink); }
+.hm-form input, .hm-form select, .hm-form textarea { font: inherit; font-size: 0.95rem;
+  color: var(--hm-ink); background: var(--hm-surface); border: 1px solid var(--hm-border);
+  border-radius: 8px; padding: 0.55rem 0.7rem; width: 100%; }
+.hm-form textarea { resize: vertical; min-height: 7rem; line-height: 1.55; }
+.hm-form input:focus-visible, .hm-form select:focus-visible, .hm-form textarea:focus-visible {
+  border-color: var(--hm-brick); outline: 2px solid var(--hm-blue); outline-offset: 1px; }
+.hm-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.hm-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; }
+.hm-form button[type="submit"] { cursor: pointer; }
+.hm-form button[disabled] { opacity: 0.6; cursor: progress; }
+.hm-form-status { margin: 0; font-size: 0.9rem; color: var(--hm-ink); }
+.hm-form-status--ok { color: var(--hm-green); font-weight: 600; }
+.hm-form-status--ko { color: var(--hm-brick); font-weight: 600; }
+.hm-form-legal { font-size: 0.82rem; line-height: 1.5; color: var(--hm-ink);
+  margin: 0.2rem 0 0; }
 /* Le sommaire des pages : de vrais liens décrits, pas une liste de titres. Ils donnent
    au visiteur le plan du site et aux moteurs le maillage interne qui manquait. */
 .hm-pages { display: grid; gap: 0.9rem; margin: 1rem 0 0.6rem;

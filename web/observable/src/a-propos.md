@@ -146,14 +146,134 @@ sont publics, et c'est la seule garantie qu'il offre — tout y est vérifiable.
 
 <div class="hm-actions">
   <a class="hm-btn hm-btn--primary" href="https://github.com/baptistesoulard/housing-market">Le code sur GitHub</a>
-  <a class="hm-btn" href="https://github.com/baptistesoulard/housing-market/issues">Signaler une erreur</a>
 </div>
 
-<!--
-  À COMPLÉTER par l'auteur : un lien de contact direct (profil LinkedIn, adresse
-  courriel). Volontairement laissé vide plutôt que rempli au jugé — publier une adresse
-  personnelle sur une page publique est une décision qui appartient à son propriétaire,
-  et un lien de contact faux vaut moins que pas de lien du tout. Modèle :
+## Me contacter
 
-  <a class="hm-btn" href="https://www.linkedin.com/in/…">Me contacter sur LinkedIn</a>
+Une erreur dans un chiffre, une question sur la méthode, une source qui manque, une
+remarque sur une page : ce formulaire arrive directement dans ma boîte, et je réponds à
+l'adresse que vous indiquez.
+
+<!--
+  FORMULAIRE ÉCRIT EN HTML STATIQUE, comme le reste de la page — pas construit en JS.
+  Deux raisons, et la seconde est la vraie :
+  1. les robots d'aperçu de partage n'exécutent aucun JavaScript (voir l'en-tête) ;
+  2. surtout, un formulaire monté par JS n'existe pas tant que le runtime n'a pas tourné.
+     Le bloc ```js plus bas ne fait que BRANCHER l'envoi : si ce script échoue, le
+     visiteur voit encore les champs et la mention <noscript>, au lieu d'un trou.
+
+  Le POST part vers /api/contact, une Cloudflare Pages Function (web/observable/functions/
+  api/contact.js). C'est le SEUL bout de serveur du site ; l'adresse de destination y est
+  une variable d'environnement, jamais une valeur écrite dans le dépôt.
+
+  Champs : nom, courriel, sujet, message — et rien de plus. Un prénom et un nom séparés
+  ne serviraient à rien qu'un champ libre ne serve déjà, et chaque donnée personnelle
+  collectée est une donnée à justifier, à conserver et à pouvoir supprimer.
 -->
+
+<form class="hm-form" id="hm-contact" novalidate>
+  <div class="hm-field">
+    <label for="hm-nom">Votre nom</label>
+    <input id="hm-nom" name="nom" type="text" required maxlength="120" autocomplete="name">
+  </div>
+  <div class="hm-field">
+    <label for="hm-email">Votre adresse de courriel <span class="hm-field-note">— pour la réponse, et rien d'autre</span></label>
+    <input id="hm-email" name="email" type="email" required maxlength="200" autocomplete="email">
+  </div>
+  <div class="hm-field">
+    <label for="hm-sujet">Sujet</label>
+    <select id="hm-sujet" name="sujet">
+      <option>Signaler une erreur dans les données</option>
+      <option>Question sur la méthode</option>
+      <option>Une source qui manque</option>
+      <option>Remarque ou proposition</option>
+      <option>Autre</option>
+    </select>
+  </div>
+  <div class="hm-field">
+    <label for="hm-message">Votre message</label>
+    <textarea id="hm-message" name="message" required rows="6" maxlength="5000"></textarea>
+  </div>
+  <div class="hm-hp" aria-hidden="true">
+    <label for="hm-hp">Ne remplissez pas ce champ</label>
+    <input id="hm-hp" name="_hp" type="text" tabindex="-1" autocomplete="off">
+  </div>
+  <div class="hm-form-actions">
+    <button class="hm-btn hm-btn--primary" type="submit">Envoyer</button>
+    <p class="hm-form-status" role="status" aria-live="polite"></p>
+  </div>
+  <p class="hm-form-legal">Votre nom, votre adresse et votre message me sont transmis par
+  courriel pour que je puisse vous répondre : ils ne sont ni enregistrés dans une base, ni
+  utilisés à d'autres fins, ni transmis à qui que ce soit. Pour les faire effacer, il
+  suffit de le demander en réponse.</p>
+  <noscript><p class="hm-form-legal">Ce formulaire a besoin de JavaScript pour partir.
+  Sans lui, passez par les
+  <a href="https://github.com/baptistesoulard/housing-market/issues">signalements sur
+  GitHub</a>.</p></noscript>
+</form>
+
+```js
+// Branchement de l'envoi. La page reste utilisable si ce bloc échoue : les champs sont
+// déjà dans le document (voir le commentaire au-dessus du formulaire).
+const form = document.querySelector("#hm-contact");
+const statut = form?.querySelector(".hm-form-status");
+
+// Instant du chargement. Ce qui part vers le serveur est la DURÉE écoulée jusqu'à
+// l'envoi, jamais cet instant : la fonction refuse un envoi parti en moins de trois
+// secondes (aucun humain ne tape un message en ce temps-là, un robot si), et une durée
+// se mesure ici seule, sans confronter l'horloge du visiteur à celle du serveur.
+const charge = Date.now();
+
+// Les messages d'erreur nomment CE QUI a échoué et ce que le visiteur peut faire. Un
+// « une erreur est survenue » laisse croire que le message est peut-être parti.
+const MESSAGES = {
+  champs: "Vérifiez le nom, l'adresse de courriel et un message d'au moins dix caractères.",
+  config: "La messagerie du site n'est pas joignable pour le moment. Réessayez plus tard.",
+  envoi: "L'envoi a échoué en route. Réessayez dans quelques minutes.",
+  reseau: "Envoi impossible — vérifiez votre connexion, puis réessayez.",
+};
+
+if (form && !form.dataset.wired) {
+  form.dataset.wired = "1";
+  form.addEventListener("submit", async (evt) => {
+    evt.preventDefault();
+    const bouton = form.querySelector("button[type=submit]");
+    const champs = Object.fromEntries(new FormData(form).entries());
+
+    // Validation côté navigateur AVANT l'envoi : elle évite un aller-retour, mais elle ne
+    // remplace pas celle du serveur — le formulaire n'est pas le seul chemin vers la route.
+    if (!champs.nom?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(champs.email ?? "")
+        || (champs.message ?? "").trim().length < 10) {
+      statut.textContent = MESSAGES.champs;
+      statut.className = "hm-form-status hm-form-status--ko";
+      return;
+    }
+
+    bouton.disabled = true;
+    statut.className = "hm-form-status";
+    statut.textContent = "Envoi…";
+
+    try {
+      const rep = await fetch("/api/contact", {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify({...champs, _t: Date.now() - charge}),
+      });
+      const data = await rep.json().catch(() => ({}));
+      if (data.ok) {
+        form.reset();
+        statut.textContent = "Message envoyé — merci. Je réponds à l'adresse indiquée.";
+        statut.className = "hm-form-status hm-form-status--ok";
+      } else {
+        statut.textContent = MESSAGES[data.error] ?? MESSAGES.envoi;
+        statut.className = "hm-form-status hm-form-status--ko";
+      }
+    } catch {
+      statut.textContent = MESSAGES.reseau;
+      statut.className = "hm-form-status hm-form-status--ko";
+    } finally {
+      bouton.disabled = false;
+    }
+  });
+}
+```

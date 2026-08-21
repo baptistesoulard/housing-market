@@ -125,7 +125,7 @@ Connecter le dépôt à Cloudflare Pages avec :
 
 Et **une variable d'environnement** (Settings → Environment variables) :
 
-- `HM_SITE_URL` = l'adresse publique définitive, par exemple `https://housingmarket.pages.dev`
+- `HM_SITE_URL` = l'adresse publique définitive, aujourd'hui `https://housing-market.pages.dev`
 
 C'est elle qui écrit les URL canoniques, le sitemap et les balises Open Graph. Sans elle,
 le repli de `site.config.js` est utilisé et le build l'annonce en clair (`postbuild:
@@ -135,6 +135,53 @@ casse silencieusement l'aperçu au partage et le référencement, d'où l'averti
 Cloudflare ne construit que le front (**Node uniquement**, pas de Python). Le
 `synthese.json` est produit et commité par la pipeline Python (voir ci-dessous), donc
 chaque rafraîchissement des données déclenche automatiquement un rebuild du site.
+
+## Le formulaire de contact (`functions/api/contact.js`)
+
+La page « À propos » se termine par un formulaire — nom, courriel, sujet, message. C'est
+le **seul bout de code serveur du site** : `web/observable/functions/api/contact.js`, une
+*Cloudflare Pages Function*, que Cloudflare exécute automatiquement parce qu'elle se
+trouve dans `functions/` à la racine du projet (`web/observable`, cf. ci-dessus). Le reste
+de `dist/` est du HTML servi depuis un CDN, sans processus derrière.
+
+Ce n'est **pas** l'API Flask de `api/`, qui expose des calculs et n'est pas hébergée. Les
+deux n'ont rien à voir ; cette fonction ne calcule rien, elle valide quatre champs et
+relaie vers un service d'envoi.
+
+Trois variables d'environnement, à poser dans Settings → Environment variables :
+
+| Variable | Rôle |
+|---|---|
+| `RESEND_API_KEY` | clé API [Resend](https://resend.com) (gratuit jusqu'à 3 000 messages/mois) — à marquer **Secret** |
+| `CONTACT_TO` | l'adresse de destination — à marquer **Secret** |
+| `CONTACT_FROM` | expéditeur, optionnel. Défaut `onboarding@resend.dev`, le domaine de bac à sable de Resend, qui n'autorise l'envoi **que vers l'adresse du compte**. Pour écrire ailleurs, vérifier un domaine chez Resend. |
+
+**L'adresse de destination n'est pas dans le dépôt, et ne doit jamais y entrer.** Le dépôt
+est public : une adresse personnelle écrite dans un fichier versionné est moissonnée par
+les robots aussi sûrement que dans un `mailto:`. C'est la raison d'être de `CONTACT_TO` —
+et aussi celle du formulaire, qui n'expose aucune adresse à la lecture de la page.
+
+Sans `RESEND_API_KEY` ou `CONTACT_TO`, la route répond **503** et la page affiche « la
+messagerie du site n'est pas joignable ». C'est délibéré : un formulaire qui remercie sans
+rien envoyer est le pire des deux mondes.
+
+**L'anti-spam n'appelle aucun service tiers** et n'impose aucune énigme au visiteur (un
+test que l'humain doit résoudre écarte aussi des humains, lecteurs d'écran en tête). Deux
+gardes : un champ *pot de miel* caché hors écran — jamais par `display:none`, que les
+robots un peu sérieux savent sauter — et un délai minimal de trois secondes entre le
+chargement de la page et l'envoi. La page transmet une **durée**, pas l'heure de son
+chargement : comparer l'horloge du visiteur à celle du serveur jetterait en silence les
+messages de toute machine mal réglée. Si du spam passe malgré ça, l'étage suivant est
+Cloudflare Turnstile — même hébergeur, gratuit — à brancher avant l'envoi.
+
+**En local, la route n'existe pas.** `npm run dev` ne sert que le site ; les Pages
+Functions ne tournent que chez Cloudflare, ou sous `npx wrangler pages dev dist`. Un envoi
+depuis la préversion affiche donc « l'envoi a échoué en route » — c'est attendu, pas une
+régression. Pour vérifier la fonction sans navigateur, l'importer et l'appeler à la main :
+
+```bash
+node --input-type=module -e "import {onRequest} from './web/observable/functions/api/contact.js'; globalThis.fetch = async () => new Response('{}'); const r = await onRequest({request: new Request('https://x', {method:'POST', body: JSON.stringify({nom:'Test', email:'a@b.fr', message:'Un message assez long.', _t: 9000})}), env:{RESEND_API_KEY:'k', CONTACT_TO:'moi@example.com'}}); console.log(r.status, await r.text())"
+```
 
 ## Branchement sur le refresh hebdomadaire
 

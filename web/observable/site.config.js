@@ -49,7 +49,7 @@ export const MARK = "data:image/svg+xml," + encodeURIComponent(MARK_SVG);
 // Settings → Environment variables), sans toucher au code. Le repli ci-dessous est
 // l'adresse *.pages.dev par défaut du projet ; à remplacer par le domaine définitif le
 // jour où il y en a un.
-const DEFAULT_URL = "https://housingmarket.pages.dev";
+const DEFAULT_URL = "https://housing-market.pages.dev";
 
 const url = (process.env.HM_SITE_URL || DEFAULT_URL).replace(/\/+$/, "");
 
