@@ -4,7 +4,7 @@ toc: false
 ---
 
 ```js
-import {cardGrid, kpiCard, nf0, nf1, fmtMonthFR, Plot} from "./components/hm.js";
+import {cardGrid, kpiCard, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
@@ -109,7 +109,7 @@ display(Plot.plot({
     Plot.ruleY([0], {opacity: 0}),
     Plot.crosshairX(reel, {x: "date", y: "value", color: ui.subtle}),
     Plot.tip(reel, Plot.pointerX({
-      x: "date", y: "value",
+      x: "date", y: "value", ...TIP,
       title: (r) => `${fmtMonthFR(r.date)}\nRéalisé : ${nf0.format(r.value)} transactions`,
     })),
   ],
@@ -169,7 +169,7 @@ display(Plot.plot({
                           fill: "serie", textAnchor: "start", dx: 6, fontWeight: 600}),
     Plot.crosshairX(parHorizon, {x: "horizon", y: "valeur", color: ui.subtle}),
     Plot.tip(parHorizon, Plot.pointerX({
-      x: "horizon", y: "valeur",
+      x: "horizon", y: "valeur", ...TIP,
       title: (r) => `${r.horizon} mois\n${r.serie} : ${nf1.format(r.valeur)} % d'erreur`,
     })),
   ],

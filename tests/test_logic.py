@@ -350,3 +350,59 @@ if __name__ == "__main__":
             print(f"FAIL {fn.__name__}: {e.__class__.__name__}: {e}")
     print(f"\n{passed}/{len(fns)} passed")
     sys.exit(0 if passed == len(fns) else 1)
+
+
+# --- Base 100 (convention INSEE) -------------------------------------------------------
+
+def _serie_annuelle(annees, valeurs_par_an):
+    """Une frame mensuelle {Date, V} couvrant `annees` en entier."""
+    lignes = []
+    for an in annees:
+        for mois in range(1, 13):
+            lignes.append({"Date": pd.Timestamp(an, mois, 1), "V": valeurs_par_an[an]})
+    return pd.DataFrame(lignes)
+
+
+def test_base_100_est_la_moyenne_de_l_annee_de_reference():
+    """La base est la moyenne des DOUZE mois, pas le premier point de l'année."""
+    df = pd.DataFrame({"Date": pd.date_range("2015-01-01", periods=12, freq="MS"),
+                       "V": list(range(1, 13))})
+    assert ana.base_100(df, ["V"])["V"] == 6.5          # moyenne de 1..12
+
+
+def test_base_100_indexe_bien_a_100_sur_l_annee_de_reference():
+    """Le contrôle qui compte : la série divisée par sa base fait 100 en moyenne en 2015."""
+    df = _serie_annuelle([2015, 2016], {2015: 200.0, 2016: 260.0})
+    base = ana.base_100(df, ["V"])["V"]
+    indice = df.assign(idx=df["V"] / base * 100.0)
+    en_2015 = indice[indice["Date"].dt.year == 2015]["idx"]
+    assert abs(en_2015.mean() - 100.0) < 1e-9
+    assert abs(indice[indice["Date"].dt.year == 2016]["idx"].iloc[0] - 130.0) < 1e-9
+
+
+def test_base_100_refuse_une_annee_de_reference_incomplete():
+    """Onze mois ne font pas une moyenne annuelle : la saisonnalité du mois manquant
+    passerait dans le dénominateur de toute la série. Mieux vaut ne pas indexer."""
+    df = pd.DataFrame({"Date": pd.date_range("2015-01-01", periods=11, freq="MS"),
+                       "V": [10.0] * 11})
+    assert ana.base_100(df, ["V"])["V"] is None
+
+
+def test_base_100_refuse_une_colonne_absente_ou_vide():
+    df = pd.DataFrame({"Date": pd.date_range("2015-01-01", periods=12, freq="MS"),
+                       "V": [np.nan] * 12})
+    base = ana.base_100(df, ["V", "Inconnue"])
+    assert base["V"] is None and base["Inconnue"] is None
+
+
+def test_base_100_ne_divise_jamais_par_zero():
+    """Une moyenne nulle est une base inutilisable, pas une base valide."""
+    df = pd.DataFrame({"Date": pd.date_range("2015-01-01", periods=12, freq="MS"),
+                       "V": [0.0] * 12})
+    assert ana.base_100(df, ["V"])["V"] is None
+
+
+def test_base_100_ignore_les_autres_annees():
+    """Le slicer de période ne doit jamais pouvoir déplacer la base."""
+    df = _serie_annuelle([2014, 2015, 2016], {2014: 50.0, 2015: 100.0, 2016: 400.0})
+    assert ana.base_100(df, ["V"])["V"] == 100.0

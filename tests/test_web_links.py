@@ -107,3 +107,40 @@ def test_l_accueil_cite_aussi_la_reference_naive():
     assert naif.group(1) in legende, (
         f"l'accueil doit citer l'erreur naïve ({naif.group(1)}) à côté de celle du "
         f"modèle ; légende actuelle : « {legende} »")
+
+
+# --- La base 100 du graphique croisé --------------------------------------------------
+# Le graphique neuf/ancien est le seul du site dont le site CALCULE lui-même l'indice (les
+# indices de prix arrivent déjà en base 2015 de l'INSEE). Il a d'abord été indexé sur le
+# premier mois commun de 2022 : une base sans signification, et différente de celle de tous
+# les autres graphiques — deux courbes « base 100 » de deux pages ne se comparaient pas.
+# Ce test verrouille la convention INSEE, sur le fichier RÉELLEMENT publié.
+_TOLERANCE = 0.05          # les valeurs de l'export sont arrondies à 0,01
+
+
+def _chart():
+    return json.loads(SYNTHESE.read_text(encoding="utf-8"))["chart"]
+
+
+def test_le_graphique_croise_est_en_base_100_sur_2015():
+    """Pour chaque série, la moyenne des douze indices de 2015 doit valoir 100."""
+    rows = [r for r in _chart()["rows"] if r["index_100"] is not None]
+    assert rows, "aucun point indexé dans synthese.json"
+    par_serie = {}
+    for r in rows:
+        if r["date"].startswith("2015"):
+            par_serie.setdefault(r["series"], []).append(r["index_100"])
+    assert par_serie, "aucun point de 2015 — la base ne peut pas être vérifiée"
+    for serie, valeurs in par_serie.items():
+        assert len(valeurs) == 12, f"{serie} : {len(valeurs)} mois en 2015, 12 attendus"
+        moyenne = sum(valeurs) / 12
+        assert abs(moyenne - 100.0) < _TOLERANCE, (
+            f"{serie} : moyenne 2015 = {moyenne:.2f} au lieu de 100 — la base a dérivé, "
+            "relancer python web/export/web_export.py")
+
+
+def test_le_libelle_de_base_annonce_la_meme_annee():
+    """Le titre du panneau vient de ce champ : une base 2015 annoncée « 2022 » serait
+    pire qu'une base arbitraire assumée."""
+    label = _chart()["base_label"]
+    assert label and "2015" in label, f"libellé de base inattendu : {label!r}"

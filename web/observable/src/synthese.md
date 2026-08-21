@@ -5,7 +5,7 @@ toc: false
 
 ```js
 import {status, ui} from "./components/theme.js";
-import {filterYears} from "./components/hm.js";
+import {filterYears, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
@@ -85,8 +85,9 @@ for (const b of data.blocks) {
 
 <div class="hm-caption">
 À gauche, les niveaux réels sur une échelle unique : le rapport de masse saute aux yeux
-(l'ancien pèse 2 à 3× le neuf). À droite, base 100 à une date de référence commune : on
-compare les dynamiques sans distorsion d'échelle.
+(l'ancien pèse 2 à 3× le neuf). À droite, base 100 sur la moyenne 2015 — la base des
+indices INSEE, donc celle de tous les indices du site : on compare les dynamiques sans
+distorsion d'échelle, et le repère reste le même d'un graphique à l'autre.
 </div>
 
 ```js
@@ -169,7 +170,7 @@ function panel({ rows, y, ylabel, baseline, active }) {
       // Survol type Plotly « closest » : point le plus proche + infobulle des valeurs.
       Plot.dot(pts, Plot.pointer({ x: "date", y, stroke: "series", r: 4, strokeWidth: 2, fill: "white" })),
       Plot.tip(pts, Plot.pointer({
-        x: "date", y, stroke: "series",
+        x: "date", y, stroke: "series", ...TIP,
         title: (d) => tipTitle(d, y),
       })),
     ].filter(Boolean),
@@ -193,7 +194,7 @@ ${legend(visible)}
     ${panel({ rows, y: "level_k", ylabel: "Milliers /12 m", baseline: null, active: visible })}
   </div>
   <div>
-    <div class="hm-panel-title">Base 100 = ${data.chart.base_date_label}</div>
+    <div class="hm-panel-title">Base 100 = ${data.chart.base_label}</div>
     ${panel({ rows, y: "index_100", ylabel: "Indice (base 100)", baseline: 100, active: visible })}
   </div>
 </div>

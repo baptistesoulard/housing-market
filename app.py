@@ -912,12 +912,14 @@ with tab_synthese:
         "Lecture croisée des deux marchés que détaillent les onglets « 🏗️ Marché du neuf » "
         "et « 🏠 Marché de l'ancien », en deux angles. À gauche, les niveaux réels sur une "
         "échelle unique : le rapport de masse saute aux yeux (l'ancien pèse 2 à 3× le neuf en "
-        "volume). À droite, base 100 à la même date de référence : on compare les dynamiques "
-        "sans distorsion d'échelle.",
+        "volume). À droite, base 100 sur la moyenne 2015 — la base des indices INSEE, donc "
+        "celle de tous les indices du site : on compare les dynamiques sans distorsion "
+        "d'échelle, et le repère est le même d'un graphique à l'autre.",
         "Cross-market read detailed in the '🏗️ New-Build Market' and '🏠 Existing-Home Market' "
         "tabs, from two angles. Left, real levels on a single scale: the mass ratio is obvious "
-        "(existing sales are 2–3× new-build volumes). Right, rebased to 100 at a shared "
-        "reference date: dynamics are compared without scale distortion."))
+        "(existing sales are 2–3× new-build volumes). Right, rebased to 100 on the 2015 average "
+        "— the INSEE base, hence every index on the site: dynamics compare without scale "
+        "distortion, against the same reference throughout."))
 
     # Series to plot on both panels — same colour language throughout.
     _sy_series = [
@@ -968,27 +970,21 @@ with tab_synthese:
                     showarrow=False, xanchor="left", xshift=6, font=dict(color=_clr, size=12))
         st.plotly_chart(fig_lvl, use_container_width=True)
 
-    # --- Right panel: same series rebased to 100 at the first month where all three are
-    # available, so growth paths are compared cleanly (no arbitrary dual-axis alignment).
+    # --- Right panel: same series rebased to 100 on the 2015 annual mean — the INSEE
+    # convention already used by every other index on the site (see analysis.BASE_YEAR),
+    # so growth paths are compared cleanly and against a base that means something.
+    # web_export.build_synthese runs the SAME computation for the web front.
     with _col_idx:
         _sy_merged = pd.merge(
             _sy_roll_sit[["Date", "Permis_12M", "MisesEnChantier_12M"]],
             _sy_roll_va[["Date", "Transactions_12M"]],
             on="Date", how="outer").sort_values("Date")
         _idx_cols = ["Permis_12M", "MisesEnChantier_12M", "Transactions_12M"]
-        _base_rows = _sy_merged.dropna(subset=_idx_cols)
-        # Rebase to 2022: first month of 2022 where all three series are available
-        # (falls back to the earliest common month if 2022 is out of range).
-        _base_2022 = _base_rows[_base_rows["Date"] >= pd.Timestamp("2022-01-01")]
-        _base_rows = _base_2022 if not _base_2022.empty else _base_rows
-        _base_date = _base_rows["Date"].iloc[0] if not _base_rows.empty else None
-        st.markdown("**" + (
-            _L(f"Base 100 = {format_month_year(_base_date, 'FR')}",
-               f"Rebased to 100 = {format_month_year(_base_date, 'EN')}")
-            if _base_date is not None else _L("Base 100", "Rebased to 100")) + "**")
+        _base = ana.base_100(_sy_merged, _idx_cols)
+        st.markdown("**" + _L(f"Base 100 = {ana.BASE_LABEL}",
+                              f"Rebased to 100 = {ana.BASE_LABEL_EN}") + "**")
         fig_idx = go.Figure()
-        if _base_date is not None:
-            _base = _base_rows.iloc[0]
+        if any(_base.values()):
             fig_idx.add_hline(y=100, line_dash="dot", line_color="#B0B7C3",
                               line_width=1)
             for _col, _name, _clr, _dash in (
@@ -996,6 +992,8 @@ with tab_synthese:
                 ("MisesEnChantier_12M", T[lang_code]["mises_trace"], COLOR_TEXT, "dash"),
                 ("Transactions_12M", T[lang_code]["transactions_trace"], COLOR_GREEN, None),
             ):
+                if not _base.get(_col):
+                    continue          # 2015 incomplète : mieux vaut pas de courbe qu'une base fausse
                 _idx = _sy_merged[["Date", _col]].dropna()
                 _idx["v"] = _idx[_col] / _base[_col] * 100.0
                 fig_idx.add_trace(go.Scatter(

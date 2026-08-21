@@ -128,7 +128,7 @@ const accrocheLegend = html`<div class="hm-legend hm-legend--static">${
 ```
 
 <div class="hm-accroche">
-  <div class="hm-panel-title">Activité du logement — base 100 en ${data.chart.base_date_label}</div>
+  <div class="hm-panel-title">Activité du logement — base 100 = ${data.chart.base_label}</div>
   ${accrocheLegend}
   ${multiLine({
     rows: accrocheRows,

@@ -4,9 +4,17 @@ toc: false
 ---
 
 <!--
-  Page ÉCRITE, comme l'accueil : aucun JSON, aucun calcul. C'est la page qu'un visiteur
-  ouvre pour décider s'il peut citer un graphique d'ici — elle doit donc répondre sans
-  dépendre de rien, et rester lisible même si l'export Python n'a pas tourné.
+  Page ÉCRITE, comme l'accueil : aucun JSON lu dans le navigateur, aucun calcul à
+  l'affichage. C'est la page qu'un visiteur ouvre pour décider s'il peut citer un
+  graphique d'ici — elle doit donc répondre sans dépendre de rien, et rester lisible même
+  si l'export Python n'a pas tourné.
+
+  UNE exception, et elle va dans l'autre sens : les lignes du tableau des sources sont
+  ÉCRITES ICI par web/export/sources_table.py, entre les marqueurs « hm:sources ». Le
+  fichier reste donc du HTML statique — c'est ce que lisent les robots d'aperçu de
+  partage, qui n'exécutent aucun JavaScript — tout en portant des dates à jour. Ne pas
+  modifier ces lignes à la main : le prochain export les remplacerait. Pour changer un
+  libellé, une adresse ou une périodicité, éditer SOURCES dans sources_table.py.
 -->
 
 # À propos
@@ -63,28 +71,41 @@ Toutes les séries sont publiques et officielles. Elles sont récupérées par u
 versionné qui interroge les API d'origine, ne réécrit un fichier que si son contenu a
 réellement changé, et garde la trace de chaque récupération.
 
+Chaque intitulé renvoie à la page du producteur : c'est là que se lisent la définition
+exacte de la série, sa méthodologie et ses révisions. La dernière colonne donne le dernier
+point **publié par la source**, tel qu'il était au dernier rafraîchissement du site — pas
+la date du jour. Les rythmes de publication et les délais diffèrent d'un producteur à
+l'autre, donc ces dates ne s'alignent pas, et c'est normal.
+
+<div class="hm-sources-wrap">
 <table class="hm-sources">
   <thead>
-    <tr><th>Ce qui est mesuré</th><th>Producteur</th><th>Voie d'accès</th></tr>
+    <tr><th>Ce qui est mesuré</th><th>Producteur</th><th>Voie d'accès</th><th>Dernier point</th></tr>
   </thead>
   <tbody>
-    <tr><td>Logements autorisés et commencés (SIT@DEL)</td><td>SDES</td><td>API DiDo (data.gouv.fr)</td></tr>
-    <tr><td>Commercialisation des logements neufs (ECLN)</td><td>SDES</td><td>API DiDo (data.gouv.fr)</td></tr>
-    <tr><td>Ventes de logements anciens</td><td>IGEDD</td><td>Classeur publié</td></tr>
-    <tr><td>Prix des logements anciens et neufs</td><td>Notaires-INSEE / INSEE</td><td>API SDMX (BDM)</td></tr>
-    <tr><td>Confiance des ménages, intentions d'achat, chômage BIT</td><td>INSEE</td><td>API SDMX (BDM)</td></tr>
-    <tr><td>Activité du second œuvre (rénovation)</td><td>INSEE — enquête de conjoncture</td><td>API SDMX (BDM)</td></tr>
-    <tr><td>Taux des crédits à l'habitat, production de crédits</td><td>Banque de France / BCE</td><td>API SDMX (MIR)</td></tr>
-    <tr><td>Demande de crédits habitat (enquête BLS)</td><td>BCE / Banque de France</td><td>API SDMX (BLS)</td></tr>
-    <tr><td>Euribor 3 mois, OAT 10 ans</td><td>BCE</td><td>API SDMX</td></tr>
+    <!-- hm:sources:début — lignes régénérées par web/export/sources_table.py -->
+    <tr><td><a href="https://www.data.gouv.fr/datasets/logements-autorises-et-commences-nombre-et-surfaces-series-mensuelles-donnees-estimees-1">Logements autorisés et commencés (SIT@DEL)</a></td><td>SDES</td><td>API DiDo (data.gouv.fr)</td><td class="hm-when">juin 2026</td></tr>
+    <tr><td><a href="https://www.data.gouv.fr/datasets/donnees-nationales-sur-la-commercialisation-des-logements-neufs">Commercialisation des logements neufs (ECLN)</a></td><td>SDES</td><td>API DiDo (data.gouv.fr)</td><td class="hm-when">T1 2026</td></tr>
+    <tr><td><a href="https://www.igedd.developpement-durable.gouv.fr/prix-immobilier-evolution-a-long-terme-a1048.html">Ventes de logements anciens</a></td><td>IGEDD</td><td>Classeur publié</td><td class="hm-when">juin 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/010567059">Prix des logements anciens</a></td><td>Notaires-INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T1 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/010751595">Prix des logements neufs</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T1 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001587668">Confiance des ménages</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">juillet 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001616794">Intentions d'achat de logement</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">juillet 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001688527">Taux de chômage au sens du BIT</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T2 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001586954">Activité du second œuvre (rénovation)</a></td><td>INSEE — enquête de conjoncture</td><td>API SDMX (BDM)</td><td class="hm-when">juillet 2026</td></tr>
+    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/MIR">Taux et volume des crédits nouveaux à l'habitat</a></td><td>Banque de France / BCE</td><td>API SDMX (MIR)</td><td class="hm-when">juin 2026</td></tr>
+    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/BLS">Demande de crédits habitat (enquête BLS)</a></td><td>BCE / Banque de France</td><td>API SDMX (BLS)</td><td class="hm-when">T3 2026</td></tr>
+    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/FM">Euribor 3 mois</a></td><td>BCE</td><td>API SDMX (FM)</td><td class="hm-when">juillet 2026</td></tr>
+    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/IRS">OAT 10 ans</a></td><td>BCE</td><td>API SDMX (IRS)</td><td class="hm-when">juillet 2026</td></tr>
+    <!-- hm:sources:fin -->
   </tbody>
 </table>
+</div>
 
 Ces données sont réutilisées au titre de la
 [Licence ouverte / Etalab](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). Les
 producteurs cités ne sont ni auteurs ni relecteurs de ce site : les erreurs d'assemblage,
-d'interprétation ou de calcul n'engagent que lui. La page
-[Données & Sources](/donnees) donne la date d'arrêt de chaque série.
+d'interprétation ou de calcul n'engagent que lui.
 
 ## Comment le site est fabriqué
 

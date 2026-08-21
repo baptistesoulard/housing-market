@@ -62,6 +62,42 @@ def calculate_rolling(df, value_cols, window):
         df_rolling[f"{col}_{window}M"] = df_rolling[col].rolling(window=window, min_periods=window).sum()
     return df_rolling
 
+# --- Base 100 : la convention est celle de l'INSEE, pas la nôtre ---
+# Tous les indices publiés par le site sont ramenés à 100 sur la MOYENNE ANNUELLE 2015.
+# C'est déjà la base des séries qu'on reçoit telles quelles (indices Notaires-INSEE des
+# prix anciens, IPLN pour le neuf) et celle de la capacité d'emprunt. Y ramener aussi les
+# séries que le site indexe lui-même a un effet précis : un lecteur peut poser deux
+# graphiques côte à côte et lire l'écart entre les courbes, ce qu'une base propre à chaque
+# graphique interdit. Une base « récente » (le premier mois commun de 2022, retenu
+# initialement) donnait en plus un point de comparaison sans signification — un mois
+# quelconque du creux post-2021.
+BASE_YEAR = 2015
+BASE_LABEL = "moyenne 2015"
+BASE_LABEL_EN = "2015 average"
+
+
+def base_100(df, value_cols, year=BASE_YEAR, date_col="Date"):
+    """Le dénominateur base 100 de chaque colonne : sa moyenne sur `year`, ou None.
+
+    Renvoie {colonne: float|None}. None quand l'année de référence n'est pas COMPLÈTE :
+    une « moyenne annuelle » calculée sur trois mois n'en est pas une, elle emporterait la
+    saisonnalité de ces trois mois-là dans le dénominateur de toute la série. Mieux vaut
+    ne pas indexer une courbe que l'indexer sur une base fausse — l'appelant affiche alors
+    les niveaux, et le manque se voit.
+
+    Sur une série déjà en cumul 12 mois, la moyenne des 12 valeurs de 2015 est bien la
+    moyenne annuelle au sens INSEE. Prendre la seule valeur de décembre (= le total de
+    l'année civile) serait plus direct mais ferait dépendre toute la base d'un unique
+    point, révisions comprises."""
+    an = df[df[date_col].dt.year == year]
+    bases = {}
+    for col in value_cols:
+        serie = an[col].dropna() if col in an.columns else pd.Series(dtype="float64")
+        moyenne = float(serie.mean()) if len(serie) == 12 else None
+        bases[col] = moyenne if moyenne else None      # 0 est aussi inutilisable
+    return bases
+
+
 # --- SIT@DEL housing-type groupings (individual vs collective) ---
 # A single individual house carries far more "second-œuvre" content (fermetures,
 # menuiseries, sécurité, domotique) than a collective dwelling, so these groupings

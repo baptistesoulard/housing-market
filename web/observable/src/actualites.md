@@ -4,7 +4,7 @@ toc: false
 ---
 
 ```js
-import {kpiCard, cardGrid} from "./components/hm.js";
+import {kpiCard, cardGrid, TIP} from "./components/hm.js";
 import {series, delta, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/actualites.json").json();
@@ -84,7 +84,7 @@ function timeline(items) {
     marks: [
       Plot.ruleX([new Date(A.maj)], {stroke: ui.greyLine, strokeDasharray: "4,4"}),
       Plot.dot(rows, {x: "date", y: "dispositif", fill: "categorie", symbol: "type", r: 6, stroke: "white",
-        channels: {jalon: "jalon"}, tip: {format: {x: (d) => d.toLocaleDateString("fr-FR"), fill: false, symbol: false, y: true, jalon: true}}}),
+        channels: {jalon: "jalon"}, tip: {...TIP, format: {x: (d) => d.toLocaleDateString("fr-FR"), fill: false, symbol: false, y: true, jalon: true}}}),
     ],
   });
 }

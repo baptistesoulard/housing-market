@@ -28,6 +28,20 @@ export const MONTHS_FULL = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin
 export const nf0 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 0});
 export const nf1 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 1});
 
+// --- Vignette de survol -------------------------------------------------------------
+// Plot dessine ses vignettes en 10 px. C'est la taille d'un graphique d'exploration, où
+// la vignette n'est qu'une confirmation ; ici elle porte les SEULS chiffres exacts du
+// site — les courbes n'ont ni quadrillage fin ni étiquettes intermédiaires, donc lire une
+// valeur passe forcément par elle.
+//
+// La taille se passe en OPTION de la marque, jamais en CSS : Plot mesure le texte avec
+// cette valeur pour dimensionner le cadre. Un `font-size` posé en feuille de style
+// grossirait le texte sans agrandir la boîte, et le débordement serait rogné.
+//
+// À importer partout où une vignette est créée (`Plot.tip(..., {...TIP})`, ou
+// `tip: {...TIP}` sur une marque) : une seule valeur pour tout le site.
+export const TIP = {fontSize: 13};
+
 // --- Carte KPI (miroir st.metric) --------------------------------------------------
 // Le delta est une PASTILLE sur sa propre ligne, comme le rend st.metric. Il était
 // auparavant collé derrière la valeur, sur la même ligne : deux nombres se disputaient
@@ -98,7 +112,7 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
       lastLabels ? Plot.text(last, {x: "_x", y: "value", text: (d) => fmt(d.value),
         fill: (d) => (meta.find((m) => m.name === d.series) || {}).color, dx: 8, textAnchor: "start", fontWeight: 700}) : null,
       Plot.dot(shown, Plot.pointer({x: "_x", y: "value", stroke: "series", r: 4, fill: "white", strokeWidth: 2})),
-      Plot.tip(shown, Plot.pointer({x: "_x", y: "value", stroke: "series",
+      Plot.tip(shown, Plot.pointer({x: "_x", y: "value", stroke: "series", ...TIP,
         title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${fmt(d.value)}${tipUnit}`})),
     ].filter(Boolean),
   });
@@ -142,7 +156,7 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
   marks.push(Plot.text(lastLabels, {x: "_x", y: "v", text: (d) => `${nf0.format(d.v)}`,
     fill: (d) => (meta.find((m) => m.name === d.series) || {}).color, dx: 8, textAnchor: "start", fontWeight: 700}));
   marks.push(Plot.dot(tipData, Plot.pointer({x: "_x", y: "v", stroke: "series", r: 4, fill: "white", strokeWidth: 2})));
-  marks.push(Plot.tip(tipData, Plot.pointer({x: "_x", y: "v", stroke: "series",
+  marks.push(Plot.tip(tipData, Plot.pointer({x: "_x", y: "v", stroke: "series", ...TIP,
     title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${nf0.format(d.v)} k`})));
 
   return Plot.plot({height, marginLeft: 54, marginRight: 74,
@@ -167,7 +181,7 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd"}) {
     color: {type: "ordinal", scheme, legend: true, label: "Année"},
     marks: [
       Plot.barY(data, {fx: "monthName", x: "year", y: "value", fill: "year",
-        tip: {format: {fx: false, x: true, y: (v) => `${nf1.format(v)} k`, fill: false}}}),
+        tip: {...TIP, format: {fx: false, x: true, y: (v) => `${nf1.format(v)} k`, fill: false}}}),
       Plot.ruleY([0]),
     ],
   });

@@ -78,7 +78,7 @@ d'`analysis.py` (`aggregate_sitadel`, `aggregate_ventes_ancien`, `calculate_roll
 elles sont l'**implémentation de référence** contre laquelle `tests/test_queries_parity.py`
 compare chaque requête SQL. Les supprimer supprime le filet de sécurité de toute la
 migration. En revanche les helpers de *post*-agrégation d'`analysis.py` (`calculate_kpis`,
-`momentum_metrics`, `build_market_commentary`) sont, eux, bel et bien appelés.
+`momentum_metrics`, `build_market_commentary`, `base_100`) sont, eux, bel et bien appelés.
 
 **La couche SQL n'est plus optionnelle.** `app.py`, `web_export.py` et `report.py`
 importent `queries` au niveau module → `housing_data` → `pandera`/`pyarrow`/`duckdb`. Tout
@@ -96,6 +96,20 @@ jamais en local où il n'y a qu'une session). Tout `execute()` de `queries.py` p
 par `_cur(con)` → `con.cursor()`, connexion indépendante sur la même base en mémoire (les
 vues restent visibles, l'état de résultat non). `tests/test_queries_concurrency.py` rejoue
 la course. Ne jamais réintroduire un `con.execute(...)` direct sur le chemin Streamlit.
+
+**Base 100 = moyenne annuelle 2015, partout, sans exception.** `analysis.BASE_YEAR` et
+`analysis.base_100()` portent la convention ; `app.py` et `web_export.build_synthese`
+l'appellent tous deux pour le graphique croisé neuf/ancien, seul indice que le site calcule
+lui-même (les indices de prix arrivent déjà en base 2015 de l'INSEE, comme la capacité
+d'emprunt). Il était auparavant indexé sur *le premier mois commun de 2022* : une base sans
+signification, et surtout différente de celle de tous les autres graphiques — deux courbes
+« base 100 » de deux pages ne se comparaient pas, alors que c'est exactement ce qu'une base
+commune promet. `base_100()` **refuse une année de référence incomplète** (moins de douze
+mois) plutôt que de moyenner ce qu'elle trouve : une « moyenne annuelle » de trois mois
+emporterait leur saisonnalité dans le dénominateur de toute la série. L'appelant retombe
+alors sur les niveaux, et le manque se voit. Deux tests verrouillent l'affaire :
+`tests/test_logic.py` sur le helper, `tests/test_web_links.py` sur le JSON **réellement
+publié** (la moyenne des douze indices de 2015 doit valoir 100).
 
 **Ce qui reste en pandas y reste exprès.** Un `grep "groupby\|rolling\|resample"` sur le
 chemin d'exécution ne doit plus renvoyer que ces trois cas, et aucun n'est un oubli.
@@ -166,6 +180,15 @@ les mêmes données : même décalage retenu, même R². Ne pas laisser diverger
 **Les pages du front n'importent jamais `npm:` directement** : elles passent par
 `src/components/hm.js`, qui réexporte `Plot`, `d3` et `csvParse`. Une seule façon de
 charger une bibliothèque.
+
+**Toute vignette de survol prend `TIP` de `hm.js`** — `Plot.tip(…, {…TIP})`, ou
+`tip: {…TIP}` sur une marque. Plot dessine ses vignettes en 10 px ; sur ce site elles
+portent les SEULS chiffres exacts (pas de quadrillage fin, pas d'étiquette intermédiaire),
+donc la taille est remontée à 13 px. **En option de marque, jamais en CSS** : Plot mesure
+le texte avec cette valeur pour dimensionner le cadre, si bien qu'un `font-size` posé en
+feuille de style grossirait le texte dans une boîte restée petite, et le rognerait. Six
+pages plus `hm.js` la déclarent — un nouveau graphique qui l'oublie se voit à sa vignette
+deux fois plus petite que ses voisines.
 
 ## Onglets retirés (2026-08-20) — ne pas les restaurer par réflexe
 
@@ -265,6 +288,26 @@ publication et est **verrouillé par `tests/test_web_links.py`**, qui le compare
 d'`archive.json` et échoue s'il dérive. Le même test exige que l'erreur naïve soit citée à
 côté : publier le chiffre du modèle seul laisserait croire qu'il bat la référence à tous
 les horizons, ce qu'il ne fait pas en deçà de 4 mois.
+
+**Le tableau des sources d'À propos est ÉCRIT dans le Markdown par Python.** Même
+contrainte que la bande de chiffres, résolue dans l'autre sens. La page doit rester
+statique, mais ses treize lignes portent le dernier point publié de chaque série, qui bouge
+à chaque rafraîchissement — trop souvent pour être reporté à la main, et invisible aux
+robots s'il était rempli par un bloc ```js. `web/export/sources_table.py` déclare les
+sources (intitulé, page du producteur, voie d'accès, dataset, colonnes, périodicité) et
+réécrit les `<tr>` entre les marqueurs `hm:sources` d'`a-propos.md` ; `web_export.py`
+l'appelle en fin de `main()`, **hors du compteur « n/6 »** (ce n'est pas un JSON du front,
+et le compteur vaut par son pouvoir d'alerte). Trois conséquences : ne jamais éditer ces
+lignes à la main ; `a-propos.md` figure dans le `git add` du workflow hebdo, sans quoi la
+page de provenance figerait ses dates à la dernière publication manuelle ;
+`tests/test_web_sources.py` échoue si les dates dérivent, si un lien ne suit plus `SOURCES`
+ou si une colonne renommée fait afficher « — » — le mode de panne silencieux de ce tableau.
+
+Une ligne = **une page source et une périodicité**. C'est ce qui a fait éclater les lignes
+groupées d'origine : « confiance, intentions d'achat, chômage BIT » n'a ni un lien (trois
+pages INSEE) ni une date (les deux premières sont mensuelles, le chômage BIT trimestriel).
+Quand une ligne garde plusieurs colonnes, la date affichée est la **plus ancienne** des
+dernières observations : c'est la borne jusqu'à laquelle la ligne est vraiment complète.
 
 **Le bandeau ne déborde PAS de la colonne, volontairement.** Un vrai bord-à-bord
 supposerait des marges négatives calculées sur les marges « auto » de
@@ -510,7 +553,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 168 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 187 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

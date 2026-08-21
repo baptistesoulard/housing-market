@@ -6,7 +6,7 @@ toc: false
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
         filterYears, sumByType,
-        MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+        MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
@@ -153,7 +153,7 @@ function eclnDelai() {
       Plot.lineY(rows, {x: "_x", y: "delai_mois", stroke: series.brick, strokeWidth: 2.4}),
       Plot.ruleY([24], {stroke: "grey", strokeDasharray: "4,4"}),
       Plot.text([{x: rows.at(-1)._x, y: 24}], {x: "x", y: "y", text: () => "≈ 2 ans", dy: -8, fill: "grey"}),
-      Plot.tip(rows, Plot.pointerX({x: "_x", y: "delai_mois", title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.delai_mois)} mois`})),
+      Plot.tip(rows, Plot.pointerX({x: "_x", y: "delai_mois", ...TIP, title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.delai_mois)} mois`})),
     ]});
 }
 function eclnCat() {
@@ -162,7 +162,7 @@ function eclnCat() {
   for (const d of filterYears(e.cat_rows, rangeN)) for (const k of Object.keys(map)) rows.push({date: new Date(d.date), cat: map[k], value: d[k]});
   return Plot.plot({height: 340, marginLeft: 54, x: {label: null}, y: {label: "Réservations", grid: true},
     color: {domain: ["Particuliers", "Bailleurs sociaux", "Investisseurs institutionnels"], range: [series.brick, series.blue, series.gold], legend: true},
-    marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: true}), Plot.ruleY([0])]});
+    marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: {...TIP}}), Plot.ruleY([0])]});
 }
 function eclnPrix() {
   const rows = filterYears(e.prixm2_rows, rangeN).map((d) => ({date: d.date, series: "Prix au m²", value: d.prix}));

@@ -370,11 +370,16 @@ ${NAV_ICONS}
   border-radius: 6px; padding: 0.75rem 1.1rem; margin: 1.2rem 0; font-size: 0.9rem;
   background: var(--hm-surface); }
 .hm-note p { margin: 0.3rem 0; }
-/* Tableau des sources (page À propos) : lisible sans être un tableau de données. */
+/* Tableau des sources (page À propos) : lisible sans être un tableau de données.
+   Quatre colonnes ne tiennent plus sur un téléphone : le tableau défile DANS son
+   conteneur plutôt que de pousser la page entière de côté. La colonne de date est
+   insécable — « juin 2026 » coupé en deux lignes ne se lit plus comme une date. */
+.hm-sources-wrap { overflow-x: auto; }
 .hm-sources { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.6rem 0 1rem; }
 .hm-sources th, .hm-sources td { text-align: left; padding: 0.45rem 0.7rem 0.45rem 0;
   border-bottom: 1px solid var(--hm-border-light); vertical-align: top; }
 .hm-sources th { font-weight: 600; }
+.hm-sources td.hm-when { white-space: nowrap; color: var(--hm-muted); }
 
 /* --- Pied de page ------------------------------------------------------------------
    Le pied par défaut d'Observable (« Built with Observable on <date> ») ne disait rien

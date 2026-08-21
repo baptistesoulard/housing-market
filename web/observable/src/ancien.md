@@ -5,7 +5,7 @@ toc: false
 
 ```js
 import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears,
-        MONTHS_FULL, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+        MONTHS_FULL, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const anc = await FileAttachment("./data/ancien.json").json();
@@ -130,7 +130,7 @@ function accessChart() {
       Plot.ruleY([100], {stroke: "grey", strokeDasharray: "4,4"}),
       Plot.text([{x: rows.at(-1)._x, y: 100}], {x: "x", y: "y", text: () => "niveau 2015", dy: -8, fill: "grey"}),
       Plot.text([rows.at(-1)], {x: "_x", y: "value", text: (d) => nf0.format(d.value), dx: 8, fill: series.brick, fontWeight: 700, textAnchor: "start"}),
-      Plot.tip(rows, Plot.pointerX({x: "_x", y: "value", title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.value)}`})),
+      Plot.tip(rows, Plot.pointerX({x: "_x", y: "value", ...TIP, title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.value)}`})),
     ]});
 }
 ```

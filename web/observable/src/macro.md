@@ -4,7 +4,7 @@ toc: false
 ---
 
 ```js
-import {legend, multiLine, filterYears, nf0, nf1, fmtMonthFR} from "./components/hm.js";
+import {legend, multiLine, filterYears, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
@@ -78,7 +78,7 @@ function creditMonthly() {
   }
   return Plot.plot({height: 340, marginLeft: 48, x: {label: null}, y: {label: "Md€", grid: true},
     color: {domain: ["Crédits nouveaux (hors renégo.)", "Renégociations"], range: [series.blue, series.gold], legend: true},
-    marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "month", tip: true}), Plot.ruleY([0])]});
+    marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "month", tip: {...TIP}}), Plot.ruleY([0])]});
 }
 function creditCum() {
   const rows = [...filterYears(cr.cum, rangeM).map((d) => ({date: d.date, series: "Total (y.c. renégo.)", value: d.total}))];

@@ -29,6 +29,11 @@ import pandas as pd
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
+# Les modules voisins (theme, sources_table) sont importables d'office quand ce fichier est
+# lancé comme script ; explicite ici pour qu'il reste importable depuis ailleurs (tests).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
 
 from data_manager import DataManager          # noqa: E402
 import analysis as ana                         # noqa: E402
@@ -38,6 +43,7 @@ import queries as q
 import dvf_clean
 import departements                             # noqa: E402  (couche SQL DuckDB partagée)
 import forecast_archive as fa                   # noqa: E402  (mémoire des prévisions)
+import sources_table                            # noqa: E402  (tableau de la page À propos)
 
 # Cible BPCE 2026 (miroir des constantes d'app.py, bloc Perspective).
 BPCE_TX_ANCIEN_2026 = 890_000
@@ -396,11 +402,9 @@ def build_synthese(con, frames: dict) -> dict:
         roll_va[["Date", "Transactions_12M"]],
         on="Date", how="outer").sort_values("Date")
     idx_cols = ["Permis_12M", "MisesEnChantier_12M", "Transactions_12M"]
-    base_rows = merged.dropna(subset=idx_cols)
-    base_2022 = base_rows[base_rows["Date"] >= pd.Timestamp("2022-01-01")]
-    base_rows = base_2022 if not base_2022.empty else base_rows
-    base_date = base_rows["Date"].iloc[0] if not base_rows.empty else None
-    base = base_rows.iloc[0] if base_date is not None else None
+    # Base 100 = moyenne annuelle 2015, comme les indices de prix affichés ailleurs sur le
+    # site (voir analysis.BASE_YEAR). Le même calcul est fait à l'identique dans app.py.
+    base = ana.base_100(merged, idx_cols)
 
     series_defs = [
         ("Permis_12M", "permis", "Permis de construire", COLOR_BRICK, None),
@@ -412,7 +416,7 @@ def build_synthese(con, frames: dict) -> dict:
         sub = merged[["Date", col]].dropna()
         for _, row in sub.iterrows():
             lvl = float(row[col])
-            idx = (lvl / float(base[col]) * 100.0) if base is not None and float(base[col]) else None
+            idx = (lvl / base[col] * 100.0) if base.get(col) else None
             chart_rows.append({
                 "date": row["Date"].strftime("%Y-%m-%d"),
                 "series": name, "key": key,
@@ -420,7 +424,7 @@ def build_synthese(con, frames: dict) -> dict:
                 "index_100": round(idx, 2) if idx is not None else None})
 
     chart = {
-        "base_date_label": _fmt_month_year(base_date) if base_date is not None else None,
+        "base_label": ana.BASE_LABEL if any(base.values()) else None,
         "series_meta": [{"key": k, "name": n, "color": c, "dash": d}
                         for _c, k, n, c, d in series_defs],
         "rows": chart_rows,
@@ -1192,6 +1196,13 @@ def main():
           + (f" ({', '.join(changed)})" if changed else " — rien de neuf."))
     # Les 101 pages départementales, comptées à part (voir build_departements).
     build_departements(con)
+    # Le tableau des sources de la page « À propos », lui aussi hors du compteur ci-dessus :
+    # ce n'est pas un JSON du front mais du Markdown complété sur place, et le compteur
+    # « n/6 » vaut par sa capacité d'alerte sur une divergence de calcul (voir CLAUDE.md).
+    if sources_table.ecrire(frames):
+        print("[web_export] a-propos.md : dates du tableau des sources mises à jour")
+    else:
+        print("[web_export] a-propos.md : tableau des sources inchangé")
 
 
 if __name__ == "__main__":

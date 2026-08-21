@@ -373,7 +373,7 @@ mêmes graphiques et les mêmes options de vue (cumul 12 / 6 mois, brut, moyenne
 légendes cliquables) :
 
 - ✅ **Synthèse** — pastilles par pilier, à retenir, 3 blocs de cartes, fraîcheur,
-  graphique croisé neuf/ancien en deux panneaux (niveaux + base 100).
+  graphique croisé neuf/ancien en deux panneaux (niveaux + base 100 = moyenne 2015).
 - ✅ **Marché du neuf** — SIT@DEL (courbes, comparaison mensuelle), individuel vs
   collectif, ECLN (encours & mises en vente, délai d'écoulement, acquéreurs, prix au m²).
 - ✅ **Marché de l'ancien** — IGEDD, puis prix Notaires-INSEE, capacité d'emprunt et
