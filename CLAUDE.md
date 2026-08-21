@@ -434,6 +434,15 @@ job : on perdrait une publication de données pour une ligne d'archive.
 annoncer `0/6 fichier(s) modifié(s)` quand rien n'a bougé. `archive.json` change, lui, dès
 qu'une prévision est enregistrée — c'est normal, contrairement aux cinq autres.
 
+**Un bloc ```` ```js ```` collé sous un `<div>` n'est plus une cellule.** Sans ligne vide
+entre les deux, l'analyseur Markdown range la clôture dans le bloc HTML : le code
+s'affiche **en toutes lettres** au milieu de la page et les variables qu'il devait définir
+manquent, d'où un `RuntimeError: … is not defined` plus bas. Le build ne dit rien — le
+Markdown reste valide, il ne veut simplement plus dire la même chose, et la validation de
+liens comme le sommaire de page continuent de fonctionner. Rencontré en insérant les
+renvois entre sections jumelles ; `tests/test_web_structure.py` refuse désormais toute
+ouverture de bloc de code non précédée d'une ligne vide.
+
 **Une interpolation `${…}` ne fonctionne que dans le CONTENU d'un élément.** Dans un
 attribut HTML brut (`style=${…}`) elle reste affichée telle quelle, et dans un `<tbody>`
 écrit en HTML brut le marqueur du framework est éjecté hors de la table par l'analyseur.
@@ -586,7 +595,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 195 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 196 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

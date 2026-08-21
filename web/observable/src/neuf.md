@@ -61,6 +61,7 @@ ${cardGrid(kpisN, kpiCard)}
 
 
 <div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./ancien#courbes-d-evolution-du-marche">🏠 la même vue pour l'ancien</a></div>
+
 ```js
 const viewN = view(Inputs.radio(
   new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"], ["Données brutes mensuelles", "raw"]]),

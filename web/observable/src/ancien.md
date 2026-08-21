@@ -38,6 +38,7 @@ ${cardGrid([anc.kpi], kpiCard)}
 
 
 <div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#courbes-d-evolution-du-marche">🏗️ la même vue pour le neuf</a></div>
+
 ```js
 const viewA = view(Inputs.radio(
   new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"], ["Données brutes mensuelles", "raw"]]),

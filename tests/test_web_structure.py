@@ -126,3 +126,26 @@ def test_le_sommaire_de_page_est_actif_la_ou_il_y_a_des_sections():
         else:
             assert sections < 2, (
                 f"{fichier} : {sections} sections sans sommaire — ajouter toc: true")
+
+
+# --- Une clôture de bloc de code doit être précédée d'une ligne vide -------------------
+# Mode de panne rencontré en insérant les renvois entre jumelles : un ``` collé sous un
+# <div> est avalé par le bloc HTML au lieu d'ouvrir une cellule. Le bloc s'affiche alors
+# EN TOUT LETTRES au milieu de la page, et les variables qu'il devait définir manquent —
+# « RuntimeError: maN is not defined » plus bas. Le build ne dit rien : le Markdown est
+# valide, il ne veut simplement plus dire la même chose.
+
+def test_les_blocs_de_code_sont_precedes_d_une_ligne_vide():
+    for fichier in sorted(f for f in os.listdir(_WEB) if f.endswith(".md")):
+        lignes = _page(fichier[:-3]).split("\n")
+        dans_bloc = False
+        for i, ligne in enumerate(lignes):
+            if not ligne.startswith("```"):
+                continue
+            if not dans_bloc:                       # ouverture
+                assert i == 0 or not lignes[i - 1].strip(), (
+                    f"{fichier} ligne {i + 1} : bloc de code collé à « "
+                    f"{lignes[i - 1][:60]} » — insérer une ligne vide, sinon la cellule "
+                    "s'affiche en toutes lettres")
+            dans_bloc = not dans_bloc
+        assert not dans_bloc, f"{fichier} : bloc de code non refermé"
