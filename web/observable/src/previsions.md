@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {multiLine, cardGrid, kpiCard, nf0, nf1, fmtMonthFR, Plot} from "./components/hm.js";
+import {multiLine, cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {api, apiOfflineNotice} from "./components/api.js";
 ```
@@ -71,7 +71,8 @@ if (R) display(html`<div class="hm-panels">
       meta: [{name: "Taux observé", color: series.brick},
              {name: "Taux modélisé", color: series.blue, dash: true}],
       yLabel: "Taux (%)", height: 300,
-      valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"
+      valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %",
+      filename: "previsions-modele-taux"
     })}
   </div>
   <div>
@@ -108,7 +109,8 @@ if (T) display(multiLine({
   ],
   meta: [{name: "Observé (IGEDD)", color: series.brick},
          {name: "Prévision hors échantillon", color: series.blue, dash: true}],
-  yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v)
+  yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v),
+  filename: "previsions-backtest-transactions"
 }));
 ```
 
@@ -173,7 +175,7 @@ if (sens) display(html`<div class="hm-panels">
     </div>
   </div>
   <div>
-    ${Plot.plot({
+    ${withCsvExport(Plot.plot({
       height: 240, marginLeft: 58, marginBottom: 34,
       x: {label: "Décalage (mois)", tickFormat: "d"},
       y: {label: "R² du modèle", grid: true},
@@ -184,7 +186,7 @@ if (sens) display(html`<div class="hm-panels">
         Plot.dot(sens.curve.filter((p) => p.lag === lagN),
                  {x: "lag", y: "r2", stroke: series.brick, r: 8, strokeWidth: 2})
       ]
-    })}
+    }), sens.curve, "previsions-sensibilite-decalage-" + predictor)}
     <div class="hm-caption">Point plein = décalage retenu · cercle = votre choix.</div>
   </div>
 </div>`);
@@ -217,7 +219,8 @@ if (sens) display(multiLine({
   meta: [{name: "Transactions (cumul 12 m)", color: series.brick},
          {name: `${predictorLabels[predictor]} décalé +${lagN} m`, color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 320,
-  yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ"
+  yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ",
+  filename: "previsions-alignement-" + predictor
 }));
 ```
 
@@ -236,7 +239,7 @@ if (P) display(!P.available
 ```
 
 ```js
-if (P && P.available) display(Plot.plot({
+if (P && P.available) display(withCsvExport(Plot.plot({
   height: 360, marginLeft: 66, marginBottom: 34,
   x: {type: "utc", label: null},
   y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
@@ -251,7 +254,7 @@ if (P && P.available) display(Plot.plot({
     Plot.ruleX(P.series.filter((d) => d.assured).slice(-1),
                {x: (d) => new Date(d.date), stroke: ui.subtle, strokeDasharray: "3 3"})
   ]
-}));
+}), P.series, "previsions-projection"));
 ```
 
 <div class="hm-caption">

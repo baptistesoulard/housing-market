@@ -42,6 +42,31 @@ export const nf1 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 1});
 // `tip: {...TIP}` sur une marque) : une seule valeur pour tout le site.
 export const TIP = {fontSize: 13};
 
+// --- Export CSV au survol d'un graphique --------------------------------------------
+// Bouton discret révélé au survol (.hm-chart-card / .hm-chart-export dans
+// observablehq.config.js), qui télécharge les LIGNES ayant servi à tracer la courbe —
+// jamais une capture du SVG. Le CSV reste donc exact même là où Plot agrège ou lisse
+// l'affichage (cumuls glissants, moyennes mobiles), et reflète le filtrage déjà appliqué
+// (période, légende cliquée, segmentation) puisqu'on exporte les données APRÈS filtrage,
+// pas la série brute complète.
+const DIACRITICS = new RegExp("[" + String.fromCharCode(0x0300) + "-" + String.fromCharCode(0x036f) + "]", "g");
+function slug(s) {
+  return String(s).normalize("NFD").replace(DIACRITICS, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "graphique";
+}
+export function withCsvExport(node, rows, filename) {
+  if (!rows || !rows.length) return node;                    // rien à offrir : pas de bouton
+  const name = slug(filename) + ".csv";
+  const btn = html`<button type="button" class="hm-chart-export" title="Télécharger les données affichées (CSV)">⬇ CSV</button>`;
+  btn.addEventListener("click", () => {
+    const url = URL.createObjectURL(new Blob([d3.csvFormat(rows)], {type: "text/csv;charset=utf-8;"}));
+    const a = html`<a href=${url} download=${name}></a>`;
+    document.body.append(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+  return html`<div class="hm-chart-card">${node}${btn}</div>`;
+}
+
 // --- Carte KPI (miroir st.metric) --------------------------------------------------
 // Le delta est une PASTILLE sur sa propre ligne, comme le rend st.metric. Il était
 // auparavant collé derrière la valeur, sur la même ligne : deux nombres se disputaient
@@ -86,7 +111,7 @@ export function legend(meta, active, onToggle) {
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
                            baseline = null, lastLabels = true, tipUnit = "", yPct = false,
-                           width = undefined}) {
+                           width = undefined, filename = null}) {
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const shown = active ? parsed.filter((d) => active.has(d.series)) : parsed;
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
@@ -95,7 +120,7 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
   const last = meta.filter((m) => !active || active.has(m.name)).map((m) => {
     const s = shown.filter((d) => d.series === m.name); return s[s.length - 1];
   }).filter(Boolean);
-  return Plot.plot({
+  const plot = Plot.plot({
     // `width` est facultatif : sans lui, Plot retient ses 640 px par défaut, ce que font
     // les appelants placés dans une grille (.hm-panels), déjà contrainte par ses colonnes.
     // Un graphique seul sur toute la colonne, lui, doit recevoir la largeur réactive du
@@ -116,12 +141,13 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
         title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${fmt(d.value)}${tipUnit}`})),
     ].filter(Boolean),
   });
+  return withCsvExport(plot, shown.map(({_x, ...r}) => r), filename || meta.map((m) => m.name).join(" "));
 }
 
 // --- Graphique « marché » : bascule cumul 12m / 6m / 3m / brut (+ moyennes mobiles) -
 // rows : {date, series, key, raw, roll12, roll6, roll3} (valeurs brutes, divisées par 1000 ici).
 export function marketChart({rows, meta, view, showRaw = true, showMA12 = false, showMA6 = false,
-                             active, yLabel, height = 420}) {
+                             active, yLabel, height = 420, filename = null}) {
   const K = 1000;
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const vis = (d) => !active || active.has(d.series);
@@ -159,13 +185,15 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
   marks.push(Plot.tip(tipData, Plot.pointer({x: "_x", y: "v", stroke: "series", ...TIP,
     title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${nf0.format(d.v)} k`})));
 
-  return Plot.plot({height, marginLeft: 54, marginRight: 74,
+  const plot = Plot.plot({height, marginLeft: 54, marginRight: 74,
     x: {label: null}, y: {label: yLabel, grid: true, zero: true},
     color: {domain: colorDomain, range: colorRange}, marks});
+  const exportRows = parsed.filter(vis).map(({_x, ...r}) => r);
+  return withCsvExport(plot, exportRows, filename || meta.map((m) => m.name).join(" "));
 }
 
 // --- Comparaison mensuelle par année (barres groupées) -----------------------------
-export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd"}) {
+export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd", filename = null}) {
   const data = [];
   for (const r of rows) {
     const dt = new Date(r.date), mn = dt.getUTCMonth() + 1;
@@ -174,7 +202,7 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd"}) {
     data.push({year: String(dt.getUTCFullYear()), month: mn, monthName: MONTHS_SHORT[mn - 1], value: v / 1000});
   }
   const order = monthNums.slice().sort((a, b) => a - b).map((m) => MONTHS_SHORT[m - 1]);
-  return Plot.plot({
+  const plot = Plot.plot({
     height: 360, marginBottom: 42, marginLeft: 54,
     fx: {label: null, domain: order},
     x: {axis: null, type: "band"}, y: {label: "en milliers", grid: true},
@@ -185,6 +213,7 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd"}) {
       Plot.ruleY([0]),
     ],
   });
+  return withCsvExport(plot, data, filename || valueKey);
 }
 
 // --- Filtre de période ------------------------------------------------------------

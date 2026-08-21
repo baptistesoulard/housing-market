@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {cardGrid, kpiCard, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
@@ -82,7 +82,12 @@ const legende = [
     : {background: m.color}}></span>${m.name}</span>`)}</div>
 
 ```js
-display(Plot.plot({
+const faisceauExport = [
+  ...reel.map((r) => ({type: "realise", date: r.date, value: r.value})),
+  ...faisceaux.map((r) => ({type: "retro", vintage: r.vintage, date: r.date, value: r.value})),
+  ...encours.map((r) => ({type: "en_cours", date: r.date, lo: r.lo, hi: r.hi, predicted: r.predicted})),
+];
+display(withCsvExport(Plot.plot({
   height: 420, marginLeft: 62, marginRight: 16,
   x: {label: null},
   y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
@@ -113,7 +118,7 @@ display(Plot.plot({
       title: (r) => `${fmtMonthFR(r.date)}\nRéalisé : ${nf0.format(r.value)} transactions`,
     })),
   ],
-}));
+}), faisceauExport, "previsions-passees-faisceau"));
 ```
 
 <div class="hm-caption">Chaque trait gris est une prévision à 18 mois produite à partir des seules
@@ -149,7 +154,7 @@ display(html`<div class="hm-legend hm-legend--static">${[
 ```
 
 ```js
-display(Plot.plot({
+display(withCsvExport(Plot.plot({
   height: 360, marginLeft: 52, marginRight: 118, marginBottom: 42,
   x: {label: "Horizon de la prévision (mois)", ticks: [1, 3, 6, 9, 12, 15, 18], grid: false},
   y: {label: "Erreur moyenne (%)", grid: true, domain: [0, yMaxErr]},
@@ -173,7 +178,7 @@ display(Plot.plot({
       title: (r) => `${r.horizon} mois\n${r.serie} : ${nf1.format(r.valeur)} % d'erreur`,
     })),
   ],
-}));
+}), parHorizon, "previsions-passees-erreur-par-horizon"));
 ```
 
 ```js

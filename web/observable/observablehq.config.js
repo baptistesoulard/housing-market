@@ -171,6 +171,19 @@ a, a:visited { color: var(--hm-link); }
 .hm-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
 .hm-chart-title { font-weight: 600; margin: 1rem 0 0; }
 .hm-chart-title .sub { color: var(--hm-subtle); font-weight: 400; }
+/* --- Export CSV au survol d'un graphique -------------------------------------------
+   Le bouton reste invisible tant qu'on n'a pas amené le pointeur (ou le focus clavier)
+   sur le graphique : un site de lecture n'a pas à afficher des commandes en permanence.
+   :focus-within couvre le clavier, qui n'a pas de survol. */
+.hm-chart-card { position: relative; }
+.hm-chart-export { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 2;
+  display: inline-flex; align-items: center; gap: 0.3rem; font: inherit; font-size: 0.78rem;
+  font-weight: 600; line-height: 1; padding: 0.32rem 0.6rem; border-radius: 6px;
+  border: 1px solid var(--hm-border); background: var(--hm-bg); color: var(--hm-ink);
+  cursor: pointer; opacity: 0; transition: opacity 0.15s ease; }
+.hm-chart-card:hover .hm-chart-export,
+.hm-chart-card:focus-within .hm-chart-export { opacity: 1; }
+.hm-chart-export:hover, .hm-chart-export:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick); }
 details.hm-howto { margin: 0.2rem 0 0.8rem; }
 details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 

@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {status, ui} from "./components/theme.js";
-import {filterYears, TIP} from "./components/hm.js";
+import {filterYears, withCsvExport, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
@@ -152,7 +152,7 @@ function panel({ rows, y, ylabel, baseline, active }) {
   const solid = rows.filter((d) => !dashedKeys.has(d.series) && shown(d));
   const dashed = rows.filter((d) => dashedKeys.has(d.series) && shown(d));
   const pts = rows.filter(shown);
-  return Plot.plot({
+  const plot = Plot.plot({
     height: 380,
     marginLeft: 52,
     marginRight: 72,
@@ -177,6 +177,7 @@ function panel({ rows, y, ylabel, baseline, active }) {
       })),
     ].filter(Boolean),
   });
+  return withCsvExport(plot, pts, "synthese-neuf-vs-ancien-" + y);
 }
 ```
 

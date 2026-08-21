@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {legend, multiLine, filterYears, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
+import {legend, multiLine, filterYears, withCsvExport, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
@@ -39,13 +39,13 @@ function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(n
   <div>
     <div class="hm-panel-title">Indice de Confiance des Ménages (INSEE)</div>
     <div class="hm-panel-sub">CVS, base 100 = moyenne de longue période</div>
-    ${multiLine({rows: filterYears(macro.confidence, rangeM).map((d) => ({...d, series: "Indice de Confiance"})), meta: [{name: "Indice de Confiance", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v)})}
+    ${multiLine({rows: filterYears(macro.confidence, rangeM).map((d) => ({...d, series: "Indice de Confiance"})), meta: [{name: "Indice de Confiance", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v), filename: "macro-confiance-menages"})}
   </div>
   <div>
     <div class="hm-panel-title">Taux d'intérêt et conditions de financement</div>
     <div class="hm-panel-sub">taux crédit habitat · Euribor 3 mois · OAT 10 ans — en %</div>
     ${legend(macro.rates.meta, visR, toggleR)}
-    ${multiLine({rows: filterYears(macro.rates.rows, rangeM), meta: macro.rates.meta, active: visR, yLabel: "Taux d'intérêt (%)", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
+    ${multiLine({rows: filterYears(macro.rates.rows, rangeM), meta: macro.rates.meta, active: visR, yLabel: "Taux d'intérêt (%)", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-taux-interet"})}
   </div>
 </div>
 
@@ -53,12 +53,12 @@ function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(n
   <div>
     <div class="hm-panel-title">Intentions d'achat de logement (1 an)</div>
     <div class="hm-panel-sub">solde CVS centré-réduit (écarts-types)</div>
-    ${multiLine({rows: filterYears(macro.intentions, rangeM).map((d) => ({...d, series: "Intentions d'achat"})), meta: [{name: "Intentions d'achat", color: series.blue}], yLabel: "Écarts-types", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v)})}
+    ${multiLine({rows: filterYears(macro.intentions, rangeM).map((d) => ({...d, series: "Intentions d'achat"})), meta: [{name: "Intentions d'achat", color: series.blue}], yLabel: "Écarts-types", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v), filename: "macro-intentions-achat"})}
   </div>
   <div>
     <div class="hm-panel-title">Taux de chômage au sens du BIT</div>
     <div class="hm-panel-sub">en % de la population active, France hors Mayotte</div>
-    ${multiLine({rows: filterYears(macro.chomage, rangeM).map((d) => ({...d, series: "Taux de chômage BIT"})), meta: [{name: "Taux de chômage BIT", color: series.brick}], yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
+    ${multiLine({rows: filterYears(macro.chomage, rangeM).map((d) => ({...d, series: "Taux de chômage BIT"})), meta: [{name: "Taux de chômage BIT", color: series.brick}], yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-chomage-bit"})}
   </div>
 </div>
 
@@ -74,15 +74,17 @@ function panel(title, sub, node) {
 function creditMonthly() {
   if (!cr.has_split)
     return multiLine({rows: filterYears(cr.cum, rangeM).map((d) => ({date: d.date, series: "Total", value: d.total})),
-      meta: [{name: "Total", color: series.blue}], yLabel: "Md€", valueFmt: (v) => nf0.format(v)});
+      meta: [{name: "Total", color: series.blue}], yLabel: "Md€", valueFmt: (v) => nf0.format(v), filename: "macro-credits-production-mensuelle"});
   const rows = [];
   for (const d of filterYears(cr.monthly, rangeM)) {
-    rows.push({date: new Date(d.date), cat: "Crédits nouveaux (hors renégo.)", value: d.pure});
-    rows.push({date: new Date(d.date), cat: "Renégociations", value: d.renego});
+    rows.push({date: d.date, cat: "Crédits nouveaux (hors renégo.)", value: d.pure});
+    rows.push({date: d.date, cat: "Renégociations", value: d.renego});
   }
-  return Plot.plot({height: 340, marginLeft: 48, x: {label: null}, y: {label: "Md€", grid: true},
+  const plotRows = rows.map((r) => ({...r, date: new Date(r.date)}));
+  const plot = Plot.plot({height: 340, marginLeft: 48, x: {label: null}, y: {label: "Md€", grid: true},
     color: {domain: ["Crédits nouveaux (hors renégo.)", "Renégociations"], range: [series.blue, series.gold], legend: true},
-    marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "month", tip: {...TIP}}), Plot.ruleY([0])]});
+    marks: [Plot.rectY(plotRows, {x: "date", y: "value", fill: "cat", interval: "month", tip: {...TIP}}), Plot.ruleY([0])]});
+  return withCsvExport(plot, rows, "macro-credits-production-mensuelle");
 }
 function creditCum() {
   const rows = [...filterYears(cr.cum, rangeM).map((d) => ({date: d.date, series: "Total (y.c. renégo.)", value: d.total}))];
@@ -91,7 +93,7 @@ function creditCum() {
     rows.push(...filterYears(cr.cum, rangeM).filter((d) => d.pure != null).map((d) => ({date: d.date, series: "Hors renégociations", value: d.pure})));
     meta.push({name: "Hors renégociations", color: series.brick, dash: true});
   }
-  return multiLine({rows, meta, yLabel: "Md€", valueFmt: (v) => nf0.format(v)});
+  return multiLine({rows, meta, yLabel: "Md€", valueFmt: (v) => nf0.format(v), filename: "macro-credits-production-cumulee"});
 }
 
 // Un titre suivi de rien se lit comme une panne du site, alors que c'est une série
@@ -114,7 +116,7 @@ if (cr) display(html`<div class="hm-meta">Source : BCE — statistiques MIR (ach
 
 ```js
 display(bls ? html`<div class="hm-panel-sub">solde d'opinion net des banques, en % — &gt;0 = demande en hausse · indicateur avancé</div>` : indisponible("Demande de crédits (BLS)"));
-if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %"}));
+if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %", filename: "macro-demande-credits-bls"}));
 if (bls) display(html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>`);
 ```
 
@@ -123,6 +125,6 @@ if (bls) display(html`<div class="hm-meta">Source : BCE / Banque de France — B
 ```js
 display(reno.length ? html`<div class="hm-panel-sub">solde d'opinion INSEE (enquête bâtiment) — un solde négatif = plus d'entreprises signalant une baisse d'activité</div>` : indisponible("Activité du second œuvre"));
 if (reno.length) display(multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
-  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v)}));
+  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v), filename: "macro-renovation-second-oeuvre"}));
 if (reno.length) display(html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>`);
 ```

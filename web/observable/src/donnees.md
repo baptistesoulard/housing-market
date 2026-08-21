@@ -209,7 +209,8 @@ if (bestDriver) display(multiLine({
          {name: `${bestDriver.name} décalé +${bestDriver.fit.lag} m`,
           color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 340,
-  yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ"
+  yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ",
+  filename: "donnees-alignement-ventes"
 }));
 ```
 

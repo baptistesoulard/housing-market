@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
-        filterYears, sumByType,
+        filterYears, sumByType, withCsvExport,
         MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
@@ -81,7 +81,7 @@ function toggleN(name) { const s = new Set(visN.value); s.has(name) ? s.delete(n
 
 ${legend(neuf.main_series.meta, visN, toggleN)}
 
-${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements"})}
+${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements", filename: "marche-neuf"})}
 
 <div class="hm-meta">${neuf.main_series.source} · dernier point : ${neuf.main_series.last_month} · segmentation : ${segLabelN} · période affichée : ${Math.min(...rangeN)}–${Math.max(...rangeN)}</div>
 
@@ -103,7 +103,7 @@ const monthsN = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsN, label: "Mo
 ```js
 const monthNumsN = monthsN.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
 display(monthNumsN.length
-  ? monthlyByYear({rows: filterYears(neuf.monthly.rows, rangeN), valueKey: mMetricN, monthNums: monthNumsN})
+  ? monthlyByYear({rows: filterYears(neuf.monthly.rows, rangeN), valueKey: mMetricN, monthNums: monthNumsN, filename: "neuf-comparaison-mensuelle-" + mMetricN})
   : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
 ```
 
@@ -128,7 +128,7 @@ ${cardGrid(ivBlock.kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: 
 
 <div class="hm-panel-title">${ivMetric === "Permis" ? "Permis de Construire" : "Mises en Chantier"} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
 
-${multiLine({rows: filterYears(ivBlock.lines, rangeN), meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k"})}
+${multiLine({rows: filterYears(ivBlock.lines, rangeN), meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", filename: "neuf-individuel-vs-collectif-" + ivMetric})}
 
 ```js
 // ============================ Section ECLN ============================
@@ -151,11 +151,11 @@ function eclnStock() {
     ...filterYears(e.stock_rows, rangeN).map((d) => ({date: d.date, series: "Mises en vente", value: d.mises_en_vente})),
   ];
   return multiLine({rows, meta: [{name: "Encours à la vente", color: series.violet}, {name: "Mises en vente", color: series.blue}],
-    yLabel: "Nombre de logements", valueFmt: (v) => nf0.format(v)});
+    yLabel: "Nombre de logements", valueFmt: (v) => nf0.format(v), filename: "neuf-ecln-encours-mises-en-vente"});
 }
 function eclnDelai() {
   const rows = filterYears(e.delai_rows, rangeN).map((d) => ({...d, _x: new Date(d.date)}));
-  return Plot.plot({height: 340, marginLeft: 48, marginRight: 60, y: {label: "Mois", grid: true, zero: true}, x: {label: null},
+  const plot = Plot.plot({height: 340, marginLeft: 48, marginRight: 60, y: {label: "Mois", grid: true, zero: true}, x: {label: null},
     marks: [
       Plot.areaY(rows, {x: "_x", y: "delai_mois", fill: series.brick, fillOpacity: 0.12}),
       Plot.lineY(rows, {x: "_x", y: "delai_mois", stroke: series.brick, strokeWidth: 2.4}),
@@ -163,18 +163,21 @@ function eclnDelai() {
       Plot.text([{x: rows.at(-1)._x, y: 24}], {x: "x", y: "y", text: () => "≈ 2 ans", dy: -8, fill: "grey"}),
       Plot.tip(rows, Plot.pointerX({x: "_x", y: "delai_mois", ...TIP, title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.delai_mois)} mois`})),
     ]});
+  return withCsvExport(plot, rows.map(({_x, ...r}) => r), "neuf-ecln-delai-ecoulement");
 }
 function eclnCat() {
   const rows = [];
   const map = {particuliers: "Particuliers", sociaux: "Bailleurs sociaux", institutionnels: "Investisseurs institutionnels"};
-  for (const d of filterYears(e.cat_rows, rangeN)) for (const k of Object.keys(map)) rows.push({date: new Date(d.date), cat: map[k], value: d[k]});
-  return Plot.plot({height: 340, marginLeft: 54, x: {label: null}, y: {label: "Réservations", grid: true},
+  for (const d of filterYears(e.cat_rows, rangeN)) for (const k of Object.keys(map)) rows.push({date: d.date, cat: map[k], value: d[k]});
+  const plotRows = rows.map((r) => ({...r, date: new Date(r.date)}));
+  const plot = Plot.plot({height: 340, marginLeft: 54, x: {label: null}, y: {label: "Réservations", grid: true},
     color: {domain: ["Particuliers", "Bailleurs sociaux", "Investisseurs institutionnels"], range: [series.brick, series.blue, series.gold], legend: true},
-    marks: [Plot.rectY(rows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: {...TIP}}), Plot.ruleY([0])]});
+    marks: [Plot.rectY(plotRows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: {...TIP}}), Plot.ruleY([0])]});
+  return withCsvExport(plot, rows, "neuf-ecln-reservations-par-categorie");
 }
 function eclnPrix() {
   const rows = filterYears(e.prixm2_rows, rangeN).map((d) => ({date: d.date, series: "Prix au m²", value: d.prix}));
-  return multiLine({rows, meta: [{name: "Prix au m²", color: series.green}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²"});
+  return multiLine({rows, meta: [{name: "Prix au m²", color: series.green}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²", filename: "neuf-ecln-prix-m2"});
 }
 ```
 

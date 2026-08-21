@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, TIP} from "./components/hm.js";
+import {kpiCard, cardGrid, withCsvExport, TIP} from "./components/hm.js";
 import {series, delta, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/actualites.json").json();
@@ -75,7 +75,7 @@ function timeline(items) {
   if (!rows.length) return html`<div class="hm-caption">Aucun jalon à afficher.</div>`;
   const order = [...new Set(items.map((it) => it.court))];
   const symMap = {effet: "circle", jalon: "diamond", echeance: "times"};
-  return Plot.plot({
+  const plot = Plot.plot({
     height: Math.max(240, 54 + 30 * order.length), marginLeft: 170, marginTop: 30,
     x: {label: null}, y: {domain: order, label: null},
     color: {domain: ["FR", "EU"], range: [series.brick, series.blue], legend: true, label: "Périmètre"},
@@ -87,6 +87,7 @@ function timeline(items) {
         channels: {jalon: "jalon"}, tip: {...TIP, format: {x: (d) => d.toLocaleDateString("fr-FR"), fill: false, symbol: false, y: true, jalon: true}}}),
     ],
   });
+  return withCsvExport(plot, rows, "actualites-echeancier");
 }
 display(timeline(items));
 ```

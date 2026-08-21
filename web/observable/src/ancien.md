@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears,
+import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears, withCsvExport,
         MONTHS_FULL, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
@@ -48,7 +48,7 @@ const maA = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mo
   {label: "Superpositions (vue brute uniquement)"}));
 ```
 
-${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de transactions"})}
+${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de transactions", filename: "marche-ancien"})}
 
 <div class="hm-meta">${anc.main_series.source} · dernier point : ${anc.main_series.last_month}</div>
 
@@ -67,7 +67,7 @@ const monthsA = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsA, label: "Mo
 ```js
 const monthNumsA = monthsA.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
 display(monthNumsA.length
-  ? monthlyByYear({rows: filterYears(anc.monthly.rows, rangeA), valueKey: "tx", monthNums: monthNumsA, scheme: "Greens"})
+  ? monthlyByYear({rows: filterYears(anc.monthly.rows, rangeA), valueKey: "tx", monthNums: monthNumsA, scheme: "Greens", filename: "ancien-comparaison-mensuelle"})
   : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
 ```
 
@@ -106,12 +106,12 @@ function accessRows() { return filterYears(px.capacity[term], rangeA).map((d) =>
   <div>
     <div class="hm-panel-title">Prix des logements anciens</div>
     <div class="hm-panel-sub">indices Notaires-INSEE, base 100 = 2015</div>
-    ${px.available ? multiLine({rows: filterYears(px.price_levels, rangeA), meta: px.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)}) : ""}
+    ${px.available ? multiLine({rows: filterYears(px.price_levels, rangeA), meta: px.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v), filename: "ancien-prix-indices"}) : ""}
   </div>
   <div>
     <div class="hm-panel-title">Évolution annuelle des prix</div>
     <div class="hm-panel-sub">glissement sur 1 an, %</div>
-    ${px.available ? multiLine({rows: filterYears(px.price_yoy, rangeA), meta: px.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"}) : ""}
+    ${px.available ? multiLine({rows: filterYears(px.price_yoy, rangeA), meta: px.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "ancien-prix-evolution-annuelle"}) : ""}
   </div>
 </div>
 
@@ -119,7 +119,7 @@ function accessRows() { return filterYears(px.capacity[term], rangeA).map((d) =>
   <div>
     <div class="hm-panel-title">Capacité d'emprunt vs prix</div>
     <div class="hm-panel-sub">base 100 = 2015 · mensualité constante, ${term} ans</div>
-    ${px.available ? multiLine({rows: capacityRows(), meta: [{name: "Capacité d'emprunt", color: series.green}, {name: "Prix (Ensemble)", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v)}) : ""}
+    ${px.available ? multiLine({rows: capacityRows(), meta: [{name: "Capacité d'emprunt", color: series.green}, {name: "Prix (Ensemble)", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v), filename: "ancien-capacite-emprunt-vs-prix"}) : ""}
   </div>
   <div>
     <div class="hm-panel-title">Indice d'accessibilité</div>
@@ -131,7 +131,7 @@ function accessRows() { return filterYears(px.capacity[term], rangeA).map((d) =>
 ```js
 function accessChart() {
   const rows = accessRows().map((d) => ({...d, _x: new Date(d.date)}));
-  return Plot.plot({height: 360, marginLeft: 54, marginRight: 60, x: {label: null}, y: {label: "Indice (base 100)", grid: true},
+  const plot = Plot.plot({height: 360, marginLeft: 54, marginRight: 60, x: {label: null}, y: {label: "Indice (base 100)", grid: true},
     marks: [
       Plot.areaY(rows, {x: "_x", y: "value", fill: series.brick, fillOpacity: 0.1}),
       Plot.lineY(rows, {x: "_x", y: "value", stroke: series.brick, strokeWidth: 2.2}),
@@ -140,6 +140,7 @@ function accessChart() {
       Plot.text([rows.at(-1)], {x: "_x", y: "value", text: (d) => nf0.format(d.value), dx: 8, fill: series.brick, fontWeight: 700, textAnchor: "start"}),
       Plot.tip(rows, Plot.pointerX({x: "_x", y: "value", ...TIP, title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.value)}`})),
     ]});
+  return withCsvExport(plot, rows.map(({_x, ...r}) => r), "ancien-indice-accessibilite");
 }
 ```
 
@@ -152,12 +153,12 @@ if (px.available && px.new_vs_old.available) {
     <div>
       <div class="hm-panel-title">Indices de prix</div>
       <div class="hm-panel-sub">neuf & ancien, base 100 = 2015</div>
-      ${multiLine({rows: filterYears(nvo.levels, rangeA), meta: nvo.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v)})}
+      ${multiLine({rows: filterYears(nvo.levels, rangeA), meta: nvo.series_meta, yLabel: "Indice (base 100)", valueFmt: (v) => nf0.format(v), filename: "ancien-prix-neuf-vs-ancien-indices"})}
     </div>
     <div>
       <div class="hm-panel-title">Croissance en glissement annuel</div>
       <div class="hm-panel-sub">neuf & ancien, %</div>
-      ${multiLine({rows: filterYears(nvo.yoy, rangeA), meta: nvo.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %"})}
+      ${multiLine({rows: filterYears(nvo.yoy, rangeA), meta: nvo.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "ancien-prix-neuf-vs-ancien-evolution-annuelle"})}
     </div>
   </div>`);
 }
