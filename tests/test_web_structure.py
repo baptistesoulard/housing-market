@@ -149,3 +149,39 @@ def test_les_blocs_de_code_sont_precedes_d_une_ligne_vide():
                     "s'affiche en toutes lettres")
             dans_bloc = not dans_bloc
         assert not dans_bloc, f"{fichier} : bloc de code non refermé"
+
+
+# --- Une branche « rien à afficher » ne passe pas par display() ------------------------
+# Mode de panne observé sur la page « Données & Sources » du site déployé : trois « null »
+# rouges au milieu de la page, sous l'encart d'API injoignable.
+#
+# La cause tient en une ligne : html`` (gabarit vide) ne rend pas un nœud vide, il rend
+# null — htl renvoie null quand le fragment construit n'a pas d'enfant. Or display() ne
+# distingue pas « rien » de « la valeur null » : tout ce qui n'est pas un nœud DOM part à
+# l'inspecteur, qui affiche fidèlement null. Idem pour la chaîne vide, rendue "" en rouge.
+#
+# Le build ne dit rien, les tests de liens non plus, et le défaut ne se voit que dans
+# l'état où la donnée manque — API éteinte, aucun fichier importé — c'est-à-dire
+# précisément l'état d'un visiteur du site public.
+#
+# La forme correcte est une garde : « if (x) display(…) », qui n'appelle pas display du
+# tout quand il n'y a rien à montrer.
+
+def test_display_ne_recoit_jamais_de_valeur_vide():
+    motif = re.compile(r'[?:]\s*(html``|"")(\s|,|\)|$)')
+    for fichier in sorted(f for f in os.listdir(_WEB) if f.endswith(".md")):
+        lignes = _page(fichier[:-3]).split("\n")
+        i = 0
+        while i < len(lignes):
+            if not lignes[i].startswith("display("):
+                i += 1
+                continue
+            bloc = [lignes[i]]
+            while not bloc[-1].rstrip().endswith(");") and i + len(bloc) < len(lignes):
+                bloc.append(lignes[i + len(bloc)])
+            texte = "\n".join(bloc)
+            assert not motif.search(texte), (
+                f"{fichier} ligne {i + 1} : display() reçoit une valeur vide "
+                "(html`` vaut null, \"\" n'est pas un nœud) — la page affichera « null » "
+                "en rouge. Écrire « if (condition) display(…) » à la place.")
+            i += len(bloc)

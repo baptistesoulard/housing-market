@@ -107,22 +107,22 @@ display(cr ? html`<div class="hm-panels">
     ${panel("Production mensuelle de crédits à l'habitat", cr.has_split ? "crédits nouveaux vs renégociations, Md€ par mois" : "y compris renégociations, Md€ par mois", creditMonthly())}
     ${panel("Production cumulée sur 12 mois", "Md€ / an", creditCum())}
   </div>` : indisponible("Production de crédits à l'habitat"));
-display(cr ? html`<div class="hm-meta">Source : BCE — statistiques MIR (achat de logement, France). Renégociations isolées (décomposition BPCE ; publiée depuis 2019).</div>` : "");
+if (cr) display(html`<div class="hm-meta">Source : BCE — statistiques MIR (achat de logement, France). Renégociations isolées (décomposition BPCE ; publiée depuis 2019).</div>`);
 ```
 
 ## 🏦 Demande de crédits à l'habitat (enquête BLS)
 
 ```js
 display(bls ? html`<div class="hm-panel-sub">solde d'opinion net des banques, en % — &gt;0 = demande en hausse · indicateur avancé</div>` : indisponible("Demande de crédits (BLS)"));
-display(bls ? multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %"}) : "");
-display(bls ? html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>` : "");
+if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %"}));
+if (bls) display(html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>`);
 ```
 
 ## 🔨 Rénovation & second œuvre
 
 ```js
 display(reno.length ? html`<div class="hm-panel-sub">solde d'opinion INSEE (enquête bâtiment) — un solde négatif = plus d'entreprises signalant une baisse d'activité</div>` : indisponible("Activité du second œuvre"));
-display(reno.length ? multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
-  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v)}) : "");
-display(reno.length ? html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>` : "");
+if (reno.length) display(multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
+  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v)}));
+if (reno.length) display(html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>`);
 ```

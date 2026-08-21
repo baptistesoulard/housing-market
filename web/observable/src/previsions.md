@@ -61,7 +61,7 @@ if (boot.ok) display(html`<hr>`);
 ## 1. Modèle de taux de crédit (OAT 10 ans + Euribor 3 mois)
 
 ```js
-display(!R ? html`` : html`<div class="hm-panels">
+if (R) display(html`<div class="hm-panels">
   <div>
     ${multiLine({
       rows: [
@@ -91,7 +91,7 @@ display(!R ? html`` : html`<div class="hm-panels">
 ## 2. Nowcast des transactions & backtest hors échantillon
 
 ```js
-display(!T ? html`` : cardGrid([
+if (T) display(cardGrid([
   {label: "R² (in-sample)", value: pct(T.r2)},
   {label: "Erreur hors échantillon (MAPE)", value: nf1.format(T.backtest.mape) + " %"},
   {label: "Décalages (taux / intentions / chômage)",
@@ -100,7 +100,7 @@ display(!T ? html`` : cardGrid([
 ```
 
 ```js
-display(!T ? html`` : multiLine({
+if (T) display(multiLine({
   rows: [
     ...T.series.map((d) => ({date: d.date, value: d.observed, series: "Observé (IGEDD)"})),
     ...T.backtest.series.map((d) => ({date: d.date, value: d.predicted,
@@ -155,7 +155,7 @@ const dTxt = (dR2 >= 0 ? "+" : "−") + Math.abs(dR2).toFixed(3).replace(".", ",
 ```
 
 ```js
-display(!sens ? html`` : html`<div class="hm-panels">
+if (sens) display(html`<div class="hm-panels">
   <div>
     ${kpiCard({label: "R² au décalage choisi",
                value: atLag.r2.toFixed(3).replace(".", ","),
@@ -204,7 +204,7 @@ function zscore(rows) {
 ```
 
 ```js
-display(!sens ? html`` : multiLine({
+if (sens) display(multiLine({
   rows: [
     ...zscore(sens.transactions_series).map((d) => ({...d, series: "Transactions (cumul 12 m)"})),
     ...zscore(sens.predictor_series).map((d) => {
@@ -224,7 +224,7 @@ display(!sens ? html`` : multiLine({
 ## 2 bis. Projection à horizon (décalages déjà observés)
 
 ```js
-display(!P ? html`` : !P.available
+if (P) display(!P.available
   ? html`<div class="hm-caption">Les décalages estimés ne permettent pas de projection
          au-delà du dernier point.</div>`
   : cardGrid([
@@ -236,7 +236,7 @@ display(!P ? html`` : !P.available
 ```
 
 ```js
-display(!P || !P.available ? html`` : Plot.plot({
+if (P && P.available) display(Plot.plot({
   height: 360, marginLeft: 66, marginBottom: 34,
   x: {type: "utc", label: null},
   y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
@@ -293,7 +293,7 @@ const sc = base
 ```
 
 ```js
-display(!sc ? html`` : cardGrid([
+if (sc) display(cardGrid([
   {label: "Taux de crédit implicite", value: nf1.format(sc.rate) + " %",
    delta: (sc.rate_change >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.rate_change)) + " pt"},
   {label: "Ventes projetées (12 mois)", value: nf0.format(sc.transactions),
@@ -304,7 +304,7 @@ display(!sc ? html`` : cardGrid([
 ```
 
 ```js
-display(!sc ? html`` : Plot.plot({
+if (sc) display(Plot.plot({
   height: 230, marginLeft: 72, marginBottom: 30,
   x: {label: null}, y: {label: "Ventes 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
   marks: [
@@ -324,7 +324,7 @@ const bench = boot.ok ? await api.revenueBenchmarks() : {companies: []};
 ```
 
 ```js
-display(!sc || !bench.companies.length ? html`` : cardGrid(
+if (sc && bench.companies.length) display(cardGrid(
   bench.companies.map((c) => {
     if (!c.fit) return {label: c.company, value: "—", subs: ["trop peu de points"]};
     const dCa = c.fit.beta_per_transaction * sc.transactions_change;

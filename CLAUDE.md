@@ -476,6 +476,17 @@ attribut HTML brut (`style=${…}`) elle reste affichée telle quelle, et dans u
 Légendes et tableaux se montent donc en JS (``display(html`…`)``). Les deux cas ont été
 rencontrés en écrivant `previsions-passees.md`.
 
+**Une branche « rien à afficher » ne passe pas par `display()`.** Le gabarit vide
+`` html`` `` ne rend pas un nœud vide : htl renvoie **`null`** quand le fragment n'a aucun
+enfant, et `display()` envoie à l'inspecteur tout ce qui n'est pas un nœud DOM — la page
+affiche donc `null` en rouge, tout comme elle afficherait `""` pour une chaîne vide. Écrire
+`if (condition) display(…)`. Rencontré sur « Données & Sources » : trois `null` sous
+l'encart d'API injoignable, plus huit latents sur « Prévision » et cinq sur
+« Environnement ». Le build ne dit rien, et le défaut ne se voit QUE dans l'état où la
+donnée manque — API éteinte, aucun fichier importé — c'est-à-dire l'état normal d'un
+visiteur du site public. `tests/test_web_structure.py` refuse désormais tout `display()`
+dont une branche vaut `` html`` `` ou `""`.
+
 ## Les pages départementales — ce qui doit rester vrai
 
 > **⚠️ ÉTAT AU 2026-08-21 : le socle de données est en production, les PAGES ne le sont

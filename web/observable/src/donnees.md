@@ -130,7 +130,7 @@ const market = await (async () => {
 ```
 
 ```js
-display(market.ok ? html`` : apiOfflineNotice(market.error));
+if (!market.ok) display(apiOfflineNotice(market.error));
 ```
 
 ```js
@@ -199,7 +199,7 @@ const bestDriver = (fitTx && fitPm)
 ```
 
 ```js
-display(!bestDriver ? html`` : multiLine({
+if (bestDriver) display(multiLine({
   rows: [
     ...zscore(mySales).map((d) => ({...d, series: "Vos ventes"})),
     ...zscore(shiftMonths(bestDriver.rows, bestDriver.fit.lag))
@@ -214,7 +214,7 @@ display(!bestDriver ? html`` : multiLine({
 ```
 
 ```js
-display(!bestDriver ? html`` : html`<div class="hm-caption">
+if (bestDriver) display(html`<div class="hm-caption">
   La partie du driver qui dépasse à droite de vos dernières ventes correspond à une
   activité <b>déjà engagée en amont</b> : ces permis sont déposés, ou ces transactions
   réalisées, mais les ventes correspondantes ne le sont pas encore.
@@ -225,7 +225,7 @@ display(!bestDriver ? html`` : html`<div class="hm-caption">
 ```
 
 ```js
-display(!mySales ? html`` : html`<div style="margin-top:1.2rem">
+if (mySales) display(html`<div style="margin-top:1.2rem">
   ${Inputs.button("🗑️ Oublier mes ventes (efface le stockage local)", {reduce: () => {
     try { localStorage.removeItem("hmCompanySales"); } catch { /* privé */ }
     location.reload();
