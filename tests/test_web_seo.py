@@ -170,10 +170,22 @@ def test_les_profils_de_l_auteur_sont_des_url_canoniques(heads):
 def test_la_page_auteur_lie_les_memes_profils_qu_elle_declare(heads):
     """Le balisage déclare la correspondance entre profils, les liens visibles la
     corroborent — les deux doivent dire la même chose. Un profil ajouté d'un seul côté
-    laisse l'appariement à moitié fait, sans que rien ne le signale."""
+    laisse l'appariement à moitié fait, sans que rien ne le signale.
+
+    `rel="me"` est le pendant HTML de `sameAs` : le JSON-LD s'adresse aux moteurs, cet
+    attribut est dans le document lui-même et d'autres consommateurs s'en servent. Les
+    deux listes doivent coïncider.
+    """
     page = (WEB / "src" / (heads["author"]["page"].lstrip("/") + ".md")).read_text(encoding="utf-8")
     for url in heads["author"]["sameAs"]:
         assert url in page, f"{url} est déclaré en sameAs mais n'est lié nulle part dans la page"
+        assert re.search(rf'rel="me"\s+href="{re.escape(url)}"', page), (
+            f"{url} est lié sans rel=\"me\" : la page ne le déclare pas comme un profil de l'auteur")
+
+    # ...et l'inverse : un rel="me" vers une adresse absente du sameAs laisse l'autre
+    # moitié de l'appariement muette.
+    for url in re.findall(r'rel="me"\s+href="([^"]+)"', page):
+        assert url in heads["author"]["sameAs"], f"{url} est déclaré rel=\"me\" mais absent de sameAs"
 
 
 def test_aucune_adresse_electronique_dans_l_identite_publique(heads):

@@ -149,10 +149,15 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
   en découlent, aucune n'étant cosmétique :
 
   1. L'ancre `#auteur` est l'IDENTIFIANT de cette entité — c'est le `@id` que le JSON-LD
-     de l'accueil référence. Elle est posée en dur, avant le titre, plutôt que laissée à
-     la fabrique d'ancres du framework : celle-ci dérive l'ancre du LIBELLÉ, si bien que
-     reformuler le titre changerait silencieusement l'identifiant, et l'accueil pointerait
-     alors vers une entité qui n'existe plus.
+     de l'accueil référence. Elle est posée en dur plutôt que laissée à la fabrique
+     d'ancres du framework : celle-ci dérive l'ancre du LIBELLÉ, si bien que reformuler le
+     titre changerait silencieusement l'identifiant, et l'accueil pointerait alors vers une
+     entité qui n'existe plus. Le titre garde par ailleurs son ancre auto-générée ; les
+     deux coexistent.
+
+     Le `<span>` est DANS le titre, et non sur la ligne d'avant : seul, il formerait un
+     paragraphe à lui tout seul, dont la marge se verrait au-dessus du titre. Vide, il
+     ne change ni le libellé du sommaire ni l'ancre auto-générée.
   2. Le nom figure dans le TITRE de section, pas seulement dans la prose. « Baptiste
      Soulard » est porté par plusieurs personnes ; un nom cité au fil d'une phrase, en bas
      d'une page dont le sujet est la méthodologie, ne suffit pas à dire que la page parle
@@ -162,9 +167,7 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
      Ajouter un profil ici sans l'ajouter à AUTHOR — ou l'inverse — casse l'appariement.
 -->
 
-<span id="auteur"></span>
-
-## Qui écrit : Baptiste Soulard
+## <span id="auteur"></span>Qui écrit : Baptiste Soulard
 
 Ce site est un travail personnel de Baptiste Soulard. Il en écrit le code, choisit les
 sources, arbitre les méthodes de calcul et assume les chiffres publiés : il n'y a ni
@@ -180,14 +183,24 @@ Le parti pris tient en une phrase : **tout est vérifiable, et c'est la seule ga
 offerte.** Les données viennent d'institutions publiques et sont citées une par une avec
 leur date de dernière mise à jour ; le code qui les transforme est ouvert ; et chaque
 prévision est archivée le jour de sa publication, puis confrontée au réalisé — y compris
-quand elle a eu tort. C'est ce qui distingue ce baromètre d'un commentaire de conjoncture,
-et c'est aussi ce qui permet de le contredire.
+quand elle a eu tort. Une erreur signalée est corrigée et datée, et c'est aussi à cela que
+sert le formulaire au bas de cette page.
 
+<!--
+  `rel="me"` est le pendant HTML du `sameAs` du JSON-LD : la convention par laquelle une
+  page déclare « ces profils sont moi ». Le balisage structuré l'annonce dans un langage
+  que seuls les moteurs lisent ; `rel="me"` le dit dans le HTML lui-même, et il est repris
+  par d'autres consommateurs (Mastodon le vérifie pour valider un lien de profil). Les
+  deux doivent lister les mêmes adresses que AUTHOR.sameAs — un test le vérifie.
+
+  Le premier lien n'en porte PAS : il mène au dépôt de ce site, qui est un projet, pas
+  une identité. Le confondre avec un profil rattacherait l'entité à un dépôt.
+-->
 <div class="hm-actions">
   <a class="hm-btn hm-btn--primary" href="https://github.com/baptistesoulard/housing-market">Le code de ce site</a>
-  <a class="hm-btn" href="https://github.com/baptistesoulard">GitHub</a>
-  <a class="hm-btn" href="https://soulard-baptiste-bs.medium.com/">Medium</a>
-  <a class="hm-btn" href="https://www.linkedin.com/in/baptistesoulard1994">LinkedIn</a>
+  <a class="hm-btn" rel="me" href="https://github.com/baptistesoulard">Son GitHub</a>
+  <a class="hm-btn" rel="me" href="https://soulard-baptiste-bs.medium.com/">Ses articles sur Medium</a>
+  <a class="hm-btn" rel="me" href="https://www.linkedin.com/in/baptistesoulard1994">Son LinkedIn</a>
 </div>
 
 ## Me contacter
