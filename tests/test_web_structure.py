@@ -185,3 +185,56 @@ def test_display_ne_recoit_jamais_de_valeur_vide():
                 "(html`` vaut null, \"\" n'est pas un nœud) — la page affichera « null » "
                 "en rouge. Écrire « if (condition) display(…) » à la place.")
             i += len(bloc)
+
+
+# --- Le chapeau indexable des pages de données ------------------------------------------
+# Les huit pages de données construisent leur contenu dans le NAVIGATEUR à partir des JSON.
+# Un robot d'indexation, comme tout aperçu de partage, n'en voit rien. Leur titre et leur
+# chapeau sont donc le seul texte qu'ils lisent — et ils étaient interpolés, `# ${x.title}`,
+# ce qui livrait un titre VIDE dans le HTML : la page la plus importante du site pour un
+# moteur était une page sans titre.
+#
+# Ce test empêche la rechute. Il travaille sur la SOURCE Markdown, en pur Python : une
+# interpolation se reconnaît à l'œil nu, et le vérifier ici évite d'exiger un build.
+
+PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "macro", "actualites",
+                    "previsions", "previsions-passees", "donnees"]
+
+
+def _chapeau(nom):
+    """Le texte statique entre le titre de niveau 1 et la première section."""
+    corps = _page(nom)
+    debut = re.search(r"^# .+$", corps, re.M)
+    assert debut, f"{nom} n'a pas de titre de niveau 1"
+    suite = corps[debut.end():]
+    fin = re.search(r"^## ", suite, re.M)
+    tete = suite[:fin.start()] if fin else suite
+    # On retire tout ce qu'un robot ne lit PAS : commentaires, blocs de code, balises —
+    # et les interpolations `${…}`, qui ne sont remplies qu'une fois le JS exécuté. Ce
+    # qui reste est exactement le texte présent dans le HTML livré.
+    tete = re.sub(r"<!--.*?-->", " ", tete, flags=re.S)
+    tete = re.sub(r"^```.*?^```", " ", tete, flags=re.S | re.M)
+    tete = re.sub(r"\$\{[^}]*\}", " ", tete)
+    tete = re.sub(r"<[^>]+>", " ", tete)
+    return re.sub(r"\s+", " ", tete).strip()
+
+
+@pytest.mark.parametrize("nom", PAGES_DE_DONNEES)
+def test_le_titre_de_page_est_statique(nom):
+    """`# ${x.title}` produit `<h1></h1>` : le titre n'existe que pour qui exécute le JS."""
+    titre = re.search(r"^# (.+)$", _page(nom), re.M)
+    assert titre, f"{nom} n'a pas de titre de niveau 1"
+    assert "${" not in titre.group(1), (
+        f"{nom} : titre interpolé — le HTML livré porterait un <h1> vide")
+
+
+@pytest.mark.parametrize("nom", PAGES_DE_DONNEES)
+def test_chaque_page_de_donnees_a_un_chapeau_statique(nom):
+    """Sans lui, la page n'offre à un moteur qu'une poignée de titres de sections.
+
+    Le seuil est bas volontairement : il attrape la page qui n'a RIEN, pas celle qui est
+    brève. Ce qui compte est qu'un texte existe et soit rendu au build."""
+    chapeau = _chapeau(nom)
+    assert len(chapeau.split()) >= 40, (
+        f"{nom} : {len(chapeau.split())} mots de chapeau statique — la page est muette "
+        "pour un robot d'indexation")

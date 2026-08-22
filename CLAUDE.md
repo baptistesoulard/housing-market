@@ -279,6 +279,34 @@ du site que ces robots lisent. Le bloc dynamique de l'accueil (pastilles, fraîc
 aperçu : s'il ne s'affiche pas, la page doit encore dire ce qu'elle a à dire. Déplacer son
 propos dans un bloc ```js le rendrait invisible là où il compte.
 
+**Le chapeau des pages de données est STATIQUE — titre compris.** Les huit pages de
+données montent leur contenu dans le navigateur à partir des JSON ; le titre valait
+`# ${neuf.title}`, ce qui livrait littéralement `<h1></h1>` dans le HTML construit. Toutes
+les pages du site sauf l'accueil et À propos étaient donc, pour un moteur de recherche ou
+un aperçu de partage, des pages **sans titre** — et l'accroche située juste dessous,
+`<div class="hm-caption">${neuf.caption}</div>`, était vide pour les mêmes raisons. Chaque
+page porte désormais un titre écrit en clair, suivi de deux paragraphes rendus au build,
+avant la première section.
+
+Trois conséquences à tenir :
+
+- **Le chapeau doit rester PÉRENNE : aucun chiffre.** Rien ne le régénère — ni
+  `web_export.py`, ni le workflow hebdo. Un nombre écrit là se figerait au jour où il a
+  été tapé, et vieillirait en silence sur la seule partie de la page que les robots
+  lisent. C'est l'inverse du tableau des sources d'À propos, qui porte des dates
+  précisément parce qu'une chaîne Python les y réécrit.
+- **Les champs `title` et `caption` des JSON du front ne sont plus lus par le site.** Ils
+  restent produits par `web_export.py` : les retirer ferait diffuser un diff sur les six
+  fichiers, alors que le compteur « n/6 fichier(s) modifié(s) » ne vaut que par son
+  pouvoir d'alerte. À nettoyer dans une passe qui régénère les JSON délibérément, pas au
+  détour d'une édition de texte. `how_to_read` reste, lui, bel et bien consommé — il
+  remplit le repli « Comment lire cette page », qui reste dynamique.
+- **Ne jamais reconvertir un titre ou un chapeau en interpolation.**
+  `tests/test_web_structure.py` refuse un `# ${…}` et exige au moins quarante mots de
+  texte réellement statique avant la première section (les `${…}` sont retirés du compte,
+  puisqu'ils sont vides dans le HTML livré). Le seuil est bas exprès : il attrape la page
+  muette, pas la page brève.
+
 **La bande de chiffres de l'accueil est écrite en dur, et c'est le corollaire du point
 précédent.** Les quatre nombres du bandeau (`<ul class="hm-stats">` dans `index.md`) sont
 l'équivalent honnête des « logos clients » d'un site commercial : ils doivent rassurer en

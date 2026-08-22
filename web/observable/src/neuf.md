@@ -12,9 +12,29 @@ import {series} from "./components/theme.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
 ```
 
-# ${neuf.title}
+<!--
+  TITRE ET CHAPEAU STATIQUES — rendus au build, pas construits dans le navigateur.
+  Tout le reste de la page est monté en JS à partir du JSON : un robot d'indexation, comme
+  tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
+  que lisent Google et LinkedIn. Le titre valait auparavant `${neuf.title}`, c'est-à-dire un titre
+  VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
+  Voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
 
-<div class="hm-caption">${neuf.caption}</div>
+# 🏗️ Marché du neuf — de l'autorisation à la vente
+
+Le logement neuf se lit comme un tunnel : un permis de construire autorisé devient une mise
+en chantier six à douze mois plus tard, puis un logement livré et mis en vente. Cette page
+suit ce parcours d'un bout à l'autre, à l'échelle nationale — les permis et les mises en
+chantier publiés par le SDES (SIT@DEL), la répartition entre maisons individuelles et
+logements collectifs, puis la commercialisation des logements neufs (ECLN) : encours à la
+vente, délai d'écoulement, réservations et prix au m².
+
+Les permis sont l'indicateur le plus précoce du cycle de la construction : ils bougent avant
+les chantiers, qui bougent avant les livraisons. Un retournement du marché du neuf se lit
+donc ici avant de se voir ailleurs, et c'est ce qui en fait un signal avancé de l'activité
+du bâtiment.
+
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>

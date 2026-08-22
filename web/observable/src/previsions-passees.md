@@ -33,9 +33,26 @@ const reel = A.realized.map((r) => ({date: d(r.date), value: r.value}));
 const encours = (A.current?.points ?? []).map((p) => ({...p, date: d(p.date)}));
 ```
 
-# ${A.title}
+<!--
+  TITRE ET CHAPEAU STATIQUES — rendus au build, pas construits dans le navigateur.
+  Tout le reste de la page est monté en JS à partir du JSON : un robot d'indexation, comme
+  tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
+  que lisent Google et LinkedIn. Le titre valait auparavant `${A.title}`, c'est-à-dire un titre
+  VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
+  Voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
 
-<div class="hm-caption">${A.caption}</div>
+# 🎯 Prévisions passées — ce que nous annoncions
+
+Une prévision qui n'est jamais vérifiée n'est qu'une opinion. Chaque prévision de
+transactions publiée par ce site est enregistrée le jour de sa publication, avant que la
+suite ne soit connue, puis confrontée aux chiffres réellement observés — y compris quand
+elle a eu tort.
+
+Cette page publie l'erreur du modèle horizon par horizon et la compare à une référence
+naïve, qui se contente de prolonger le dernier niveau observé. Le modèle ne bat pas cette
+référence à tous les horizons, et c'est précisément ce que cette page sert à montrer.
+
 
 <div class="hm-takeaways">
   <strong>Ce que dit cette page</strong>

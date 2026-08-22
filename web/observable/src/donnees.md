@@ -11,6 +11,18 @@ import {api, apiOfflineNotice, bestLagFit, shiftMonths} from "./components/api.j
 
 # ⚙️ Données & Sources
 
+<!--
+  CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
+
+Toutes les séries utilisées sur ce site sont publiques et officielles, citées avec leur
+producteur, leur voie d'accès et la date de leur dernière publication. Cette page en donne
+l'état de fraîcheur, série par série.
+
+Elle permet aussi de charger un fichier de ventes mensuelles pour le confronter aux
+indicateurs amont du marché du logement. Ce fichier est lu dans le navigateur : il n'est
+envoyé ni à l'hébergeur ni à aucun service, et rien n'en est conservé.
+
 <div class="hm-caption">
 Les jeux de données de marché (SIT@DEL, IGEDD, macro, ECLN…) sont rafraîchis hors
 application, par <code>python fetch_new_sources.py</code> et le workflow hebdomadaire.

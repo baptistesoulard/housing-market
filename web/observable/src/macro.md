@@ -10,9 +10,27 @@ import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
 ```
 
-# ${macro.title}
+<!--
+  TITRE ET CHAPEAU STATIQUES — rendus au build, pas construits dans le navigateur.
+  Tout le reste de la page est monté en JS à partir du JSON : un robot d'indexation, comme
+  tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
+  que lisent Google et LinkedIn. Le titre valait auparavant `${macro.title}`, c'est-à-dire un titre
+  VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
+  Voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
 
-<div class="hm-caption">${macro.caption}</div>
+# 🏦 Contexte Macroéconomique et Financement
+
+Le marché du logement ne se comprend pas sans ce qui le finance et ce qui décide les
+ménages. Cette page rassemble les indicateurs qui expliquent le marché plus qu'ils ne le
+décrivent, et qui pour la plupart le précèdent : taux du crédit immobilier, Euribor 3 mois
+et OAT 10 ans, confiance des ménages, intentions d'achat de logement, chômage au sens du
+BIT, production de crédits à l'habitat et demande de crédits mesurée par l'enquête BLS.
+
+Les soldes d'opinion — confiance, intentions d'achat, demande de crédits — se lisent en
+écart à leur repère et non en niveau absolu : c'est leur mouvement qui informe, pas leur
+valeur. Ce sont ces séries qui alimentent la prévision de transactions publiée sur ce site.
+
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>

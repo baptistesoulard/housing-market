@@ -35,6 +35,22 @@ const pct = (v) => nf1.format(v * 100) + " %";
 
 # 📡 Prévision des transactions & scénarios
 
+<!--
+  CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Le chapeau des pages de données ».
+  Cette page-ci est un cas limite : sans instance de l'API, un visiteur ne voit QUE ce
+  texte. Raison de plus pour qu'il dise ce que la page fait.
+-->
+
+Prévoir des transactions immobilières revient à prévoir une demande, et ce site le fait
+avec les méthodes de la planification, en deux étages. Le premier explique le taux du
+crédit immobilier par les taux de marché ; le second explique les ventes de logements
+anciens par ce taux de crédit, les intentions d'achat des ménages et le chômage, chacun
+pris avec son propre décalage.
+
+La projection est publiée avec son backtest hors échantillon et sa bande d'incertitude, et
+les scénarios permettent d'en manipuler les leviers. Les prévisions déjà publiées, elles,
+sont archivées et confrontées au réalisé sur leur propre page.
+
 <div class="hm-caption">
 Modèle chiffré « indicateurs avancés → transactions », calibré sur les séries réelles.
 Deux étages : (1) le taux de crédit est modélisé à partir de l'OAT 10 ans et de l'Euribor

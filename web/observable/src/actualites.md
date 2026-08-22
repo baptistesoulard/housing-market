@@ -18,9 +18,27 @@ const periodeActus = periodFilter({min: A.period.min, max: A.period.max,
                                    note: "Sans effet sur cet onglet."});
 ```
 
-# ${A.title}
+<!--
+  TITRE ET CHAPEAU STATIQUES — rendus au build, pas construits dans le navigateur.
+  Tout le reste de la page est monté en JS à partir du JSON : un robot d'indexation, comme
+  tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
+  que lisent Google et LinkedIn. Le titre valait auparavant `${A.title}`, c'est-à-dire un titre
+  VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
+  Voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
 
-<div class="hm-caption">${A.caption}</div>
+# 📰 Actualités — aides & plans de relance logement
+
+Les dispositifs publics pèsent sur le marché immobilier autant que les taux : MaPrimeRénov',
+le prêt à taux zéro, le diagnostic de performance énergétique ou les certificats d'économies
+d'énergie déplacent la demande, parfois d'un trimestre à l'autre. Cette page tient la veille
+des mesures françaises et européennes en cours, avec pour chacune son statut, son échéancier
+et ses montants.
+
+Contrairement au reste du site, elle est une grille de lecture qualitative et non une sortie
+de modèle : l'effet attendu de chaque mesure sur le neuf, l'ancien et la rénovation est une
+appréciation d'auteur, révisable, et signalée comme telle.
+
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>

@@ -11,9 +11,27 @@ import {series} from "./components/theme.js";
 const anc = await FileAttachment("./data/ancien.json").json();
 ```
 
-# ${anc.title}
+<!--
+  TITRE ET CHAPEAU STATIQUES — rendus au build, pas construits dans le navigateur.
+  Tout le reste de la page est monté en JS à partir du JSON : un robot d'indexation, comme
+  tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
+  que lisent Google et LinkedIn. Le titre valait auparavant `${anc.title}`, c'est-à-dire un titre
+  VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
+  Voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
 
-<div class="hm-caption">${anc.caption}</div>
+# 🏠 Marché de l'ancien — transactions, prix & accessibilité
+
+L'essentiel des transactions immobilières en France porte sur des logements anciens. Cette
+page en suit le volume, mesuré par l'IGEDD en cumul sur douze mois glissants, puis les prix
+publiés par les Notaires et l'INSEE, et enfin l'accessibilité : combien de mètres carrés un
+ménage peut acheter à mensualité constante.
+
+Cette dernière lecture est celle qui décrit le mieux le pouvoir d'achat immobilier, parce
+qu'elle réunit les deux forces qui s'opposent — le prix au m² et le taux du crédit. Un prix
+stable dans un marché où les taux montent est en réalité une perte d'accessibilité, et c'est
+exactement ce qu'un indice de prix seul ne montre pas.
+
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>

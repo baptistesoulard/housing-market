@@ -49,9 +49,26 @@ function card(c) {
 }
 ```
 
-# ${data.title}
+<!--
+  TITRE ET CHAPEAU STATIQUES — rendus au build, pas construits dans le navigateur.
+  Tout le reste de la page est monté en JS à partir du JSON : un robot d'indexation, comme
+  tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
+  que lisent Google et LinkedIn. Le titre valait auparavant `${data.title}`, c'est-à-dire un titre
+  VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
+  Voir CLAUDE.md, « Le chapeau des pages de données ».
+-->
 
-<div class="hm-caption">${data.caption}</div>
+# 🧭 Synthèse — vue d'ensemble du marché
+
+Cette page rassemble en une vue l'essentiel du marché immobilier français : où en sont la
+construction neuve, les ventes de logements anciens, les prix et les conditions de crédit.
+Chaque pilier est résumé par une pastille de tendance — les trois derniers mois comparés à
+la même période un an plus tôt — puis détaillé sur sa propre page.
+
+Les chiffres sont nationaux et proviennent d'organismes publics. Les dates de dernière
+publication diffèrent d'une série à l'autre : chaque producteur a son propre calendrier et
+son propre délai.
+
 
 <div class="hm-chips">${data.pillars.map(chip)}</div>
 
