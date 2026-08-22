@@ -86,14 +86,24 @@ export const AUTHOR = {
   description:
     "Auteur de HousingMarket, un baromètre indépendant du marché du logement en France " +
     "construit sur des données publiques, en accès libre et au code ouvert.",
-  // Les sujets que le site démontre, pas une liste de compétences déclarées : chacun est
-  // adossé à des pages publiées.
+  // Les sujets que le site DÉMONTRE, pas une liste de compétences déclarées : chacun est
+  // adossé à des pages publiées. Le logement passe en premier — l'ordre n'a rien
+  // d'obligatoire, mais une liste dont les trois premiers termes divergent dit mal de
+  // quoi son sujet est l'expert.
+  //
+  // Pas de `jobTitle`. « Supply chain and tech enthusiast » est une description de soi,
+  // pas un intitulé de poste : le champ attend un rôle (« Analyste de données »,
+  // « Planificateur »), et le renseigner de travers vaut moins que de le laisser vide.
+  // Ce trait est dit dans la PROSE de la page, où il explique quelque chose au lieu de
+  // remplir une case — voir la section « Qui écrit » d'a-propos.md.
   knowsAbout: [
     "Marché immobilier français",
     "Marché du logement",
-    "Analyse de données",
+    "Prévision de la demande",
     "Prévision de séries temporelles",
+    "Analyse de données",
     "Données publiques ouvertes",
+    "Supply chain",
   ],
   // Les profils à recouper. L'ordre n'a pas d'importance pour un moteur ; il suit ici
   // celui du site (code, écrits, professionnel).

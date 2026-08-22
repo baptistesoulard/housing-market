@@ -170,6 +170,12 @@ Ce site est un travail personnel de Baptiste Soulard. Il en écrit le code, choi
 sources, arbitre les méthodes de calcul et assume les chiffres publiés : il n'y a ni
 rédaction, ni comité, ni commanditaire derrière ces pages.
 
+Passionné de **supply chain et de tech**, il applique ici des méthodes venues de la
+planification industrielle : prévoir une demande, mesurer l'écart de la prévision
+précédente, recommencer. Le marché du logement s'y prête mieux qu'il n'y paraît — c'est
+une chaîne longue, où les permis déposés cette année sont les chantiers de la suivante et
+les livraisons d'après, et où chaque maillon se mesure.
+
 Le parti pris tient en une phrase : **tout est vérifiable, et c'est la seule garantie
 offerte.** Les données viennent d'institutions publiques et sont citées une par une avec
 leur date de dernière mise à jour ; le code qui les transforme est ouvert ; et chaque
