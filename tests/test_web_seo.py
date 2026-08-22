@@ -14,6 +14,7 @@ n'est nécessaire, ces modules n'important rien de `node_modules`.
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import tempfile
@@ -52,13 +53,13 @@ def _node(script, **env):
 def heads():
     """Le <head> rendu par la config, page par page, plus l'identité du site."""
     return _node(f"""
-import {{SITE, NAV, INDEXABLE, pageMeta}} from {json.dumps(SITE_CONFIG.as_uri())};
+import {{SITE, NAV, INDEXABLE, AUTHOR, pageMeta}} from {json.dumps(SITE_CONFIG.as_uri())};
 import config from {json.dumps(OHQ_CONFIG.as_uri())};
 // Le framework appelle head() par page en lui passant son chemin INTERNE : « /index »
 // pour l'accueil, « /404 » pour la page d'erreur.
 const paths = [...NAV.map((p) => (p.path === "/" ? "/index" : p.path)), "/404"];
 process.stdout.write(JSON.stringify({{
-  site: SITE, nav: NAV, indexable: INDEXABLE,
+  site: SITE, nav: NAV, indexable: INDEXABLE, author: AUTHOR,
   title: config.title, pages: config.pages,
   meta: Object.fromEntries(paths.map((p) => [p, pageMeta(p)])),
   head: Object.fromEntries(paths.map((p) => [p, config.head({{path: p, title: null, data: {{}}}})])),
@@ -125,6 +126,67 @@ def test_l_accueil_n_est_pas_un_onglet(heads):
     ferait deux entrées de navigation pour une seule page."""
     assert "/" not in [p["path"] for p in heads["pages"]]
     assert "/" in heads["indexable"], "l'accueil doit rester dans le sitemap"
+
+
+def _ld(head):
+    """Les blocs JSON-LD d'un <head>, décodés."""
+    out = []
+    for morceau in head.split('<script type="application/ld+json">')[1:]:
+        out.append(json.loads(morceau.split("</script>")[0]))
+    return out
+
+
+def test_l_auteur_est_une_entite_reliee_et_non_un_nom_recopie(heads):
+    """Le nœud Person doit exister sur « À propos », et l'accueil doit le RÉFÉRENCER.
+
+    Avant, l'accueil portait `author: {"@type": "Person", name: "Baptiste Soulard"}` — un
+    nom nu, que rien ne reliait à un profil. Le nom est porté par plusieurs personnes :
+    sans identifiant partagé entre les deux pages, un moteur ne voit pas un auteur mais
+    deux mentions homonymes de plus.
+    """
+    auteur = heads["author"]
+    attendu = SITE_URL + auteur["page"] + "#" + auteur["anchor"]
+
+    (site,) = [n for n in _ld(heads["head"]["/index"]) if n["@type"] == "WebSite"]
+    assert site["author"] == {"@id": attendu}, "l'accueil doit référencer l'auteur, pas le recopier"
+
+    (profil,) = [n for n in _ld(heads["head"][auteur["page"]]) if n["@type"] == "ProfilePage"]
+    personne = profil["mainEntity"]
+    assert personne["@id"] == attendu, "l'identifiant défini ici doit être celui que l'accueil vise"
+    assert personne["name"] == heads["site"]["author"]
+    assert personne["sameAs"] == auteur["sameAs"]
+
+
+def test_les_profils_de_l_auteur_sont_des_url_canoniques(heads):
+    """Un lien de profil copié depuis une application mobile arrive avec ses paramètres de
+    suivi (`?utm_source=share_via&…`). Ils identifient le PARTAGE, pas le profil : déclarés
+    en `sameAs`, ils désignent une adresse qui ne se recoupe avec aucune autre."""
+    for url in heads["author"]["sameAs"]:
+        assert url.startswith("https://"), url
+        assert "?" not in url and "utm_" not in url, f"paramètre de suivi dans {url}"
+    assert len(set(heads["author"]["sameAs"])) == len(heads["author"]["sameAs"])
+
+
+def test_la_page_auteur_lie_les_memes_profils_qu_elle_declare(heads):
+    """Le balisage déclare la correspondance entre profils, les liens visibles la
+    corroborent — les deux doivent dire la même chose. Un profil ajouté d'un seul côté
+    laisse l'appariement à moitié fait, sans que rien ne le signale."""
+    page = (WEB / "src" / (heads["author"]["page"].lstrip("/") + ".md")).read_text(encoding="utf-8")
+    for url in heads["author"]["sameAs"]:
+        assert url in page, f"{url} est déclaré en sameAs mais n'est lié nulle part dans la page"
+
+
+def test_aucune_adresse_electronique_dans_l_identite_publique(heads):
+    """Le dépôt est public : une adresse écrite dans un fichier versionné est moissonnée
+    aussi sûrement que dans un `mailto:`. Le contact passe par le formulaire, dont la
+    destination est une variable d'environnement (voir web/README.md)."""
+    # Les deux motifs cherchent une ADRESSE, pas le mot « mailto » : les commentaires de
+    # ces fichiers expliquent justement pourquoi il n'y en a pas, et se citer soi-même ne
+    # doit pas déclencher l'alerte.
+    for fichier in (SITE_CONFIG, WEB / "src" / (heads["author"]["page"].lstrip("/") + ".md")):
+        texte = fichier.read_text(encoding="utf-8")
+        assert not re.search(r"mailto:\S*@", texte), f"{fichier.name} expose une adresse en clair"
+        assert not re.search(r"[\w.+-]+@[\w-]+\.[\w.]{2,}", texte), f"{fichier.name} contient une adresse"
 
 
 def test_postbuild_complete_le_html_et_ecrit_le_sitemap(heads, tmp_path):

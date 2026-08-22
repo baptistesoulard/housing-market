@@ -8,7 +8,7 @@
 //
 // L'IDENTITÉ du site (adresse publique, descriptions de pages, navigation, logo) vit
 // dans site.config.js — ce fichier-ci ne porte que le rendu.
-import {SITE, NAV, MARK, THEME as T, pageMeta} from "./site.config.js";
+import {SITE, NAV, MARK, THEME as T, AUTHOR, pageMeta} from "./site.config.js";
 
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
@@ -540,21 +540,56 @@ function META({path}) {
     tag("name", "twitter:image", image),
   );
 
+  // --- Données structurées ------------------------------------------------------------
+  // DEUX pages en portent, et une seule chacune : l'accueil décrit le SITE, « À propos »
+  // décrit son AUTEUR. Les répéter partout n'ajouterait rien et multiplierait les
+  // occasions de divergence — mais les mettre au même endroit serait pire : un nœud
+  // Person n'a de poids que sur la page dont il est le sujet, et le sujet de l'accueil
+  // est le marché du logement.
+  //
+  // Les deux nœuds sont RELIÉS par `@id`, et c'est ce qui fait le travail. L'accueil ne
+  // recopie pas l'auteur, elle le RÉFÉRENCE par son identifiant ; « À propos » définit
+  // cet identifiant. Un moteur voit donc un seul auteur déclaré à un seul endroit, et
+  // sait quelle page lire pour le connaître. Recopier le nom des deux côtés en aurait
+  // fait deux entités homonymes de plus — exactement le problème qu'on cherche à régler.
+  const AUTHOR_ID = SITE.url + AUTHOR.page + "#" + AUTHOR.anchor;
+  const ld = (data) =>
+    out.push(`<script type="application/ld+json">${JSON.stringify(
+      {"@context": "https://schema.org", ...data})}</script>`);
+
   if (page.path === "/") {
-    // Données structurées, sur l'accueil seulement : elles décrivent le SITE, pas la
-    // page. Les répéter partout n'ajouterait rien et multiplierait les occasions de
-    // divergence.
-    out.push(`<script type="application/ld+json">${JSON.stringify({
-      "@context": "https://schema.org",
+    ld({
       "@type": "WebSite",
       name: SITE.fullName,
       alternateName: SITE.name,
       url: SITE.url + "/",
       inLanguage: SITE.lang,
       description: SITE.description,
-      author: {"@type": "Person", name: SITE.author},
+      author: {"@id": AUTHOR_ID},
       license: "https://www.etalab.gouv.fr/licence-ouverte-open-licence/",
-    })}</script>`);
+    });
+  }
+
+  if (page.path === AUTHOR.page) {
+    // `mainEntity` dit que cette page a pour SUJET la personne — sans quoi elle n'est
+    // qu'une page qui la mentionne, ce qu'était la situation d'avant. Le type reste
+    // `ProfilePage` bien qu'À propos parle aussi de méthode et de sources : c'est la
+    // seule page du site qui présente l'auteur, et Google n'offre pas de demi-mesure.
+    ld({
+      "@type": "ProfilePage",
+      url: page.url,
+      inLanguage: SITE.lang,
+      mainEntity: {
+        "@type": "Person",
+        "@id": AUTHOR_ID,
+        name: AUTHOR.name,
+        url: page.url,
+        description: AUTHOR.description,
+        knowsAbout: AUTHOR.knowsAbout,
+        // Le recoupement des homonymes (voir site.config.js).
+        sameAs: AUTHOR.sameAs,
+      },
+    });
   }
   return "\n" + out.join("\n") + "\n";
 }

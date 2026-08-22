@@ -139,13 +139,49 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
   page Données permet de charger est lu localement : il n'est envoyé ni à l'API, ni à
   l'hébergeur, et rien n'en est conservé.
 
-## Qui écrit
+<!--
+  SECTION AUTEUR — la seule du site qui parle d'une personne, et c'est délibéré : le sujet
+  du site est le marché du logement, pas celui qui l'observe. Il n'y a donc pas de page
+  dédiée, et il ne doit pas y en avoir.
 
-Ce site est un travail personnel de Baptiste Soulard : le code, les données et la méthode
-sont publics, et c'est la seule garantie qu'il offre — tout y est vérifiable.
+  Cette section porte malgré tout l'entité `Person` du JSON-LD (voir AUTHOR dans
+  site.config.js, et le nœud ProfilePage dans observablehq.config.js). Trois contraintes
+  en découlent, aucune n'étant cosmétique :
+
+  1. L'ancre `#auteur` est l'IDENTIFIANT de cette entité — c'est le `@id` que le JSON-LD
+     de l'accueil référence. Elle est posée en dur, avant le titre, plutôt que laissée à
+     la fabrique d'ancres du framework : celle-ci dérive l'ancre du LIBELLÉ, si bien que
+     reformuler le titre changerait silencieusement l'identifiant, et l'accueil pointerait
+     alors vers une entité qui n'existe plus.
+  2. Le nom figure dans le TITRE de section, pas seulement dans la prose. « Baptiste
+     Soulard » est porté par plusieurs personnes ; un nom cité au fil d'une phrase, en bas
+     d'une page dont le sujet est la méthodologie, ne suffit pas à dire que la page parle
+     de lui.
+  3. Les trois liens sortants sont les mêmes que le `sameAs` du JSON-LD, et ce n'est pas
+     une redondance : le balisage déclare la correspondance, les liens la corroborent.
+     Ajouter un profil ici sans l'ajouter à AUTHOR — ou l'inverse — casse l'appariement.
+-->
+
+<span id="auteur"></span>
+
+## Qui écrit : Baptiste Soulard
+
+Ce site est un travail personnel de Baptiste Soulard. Il en écrit le code, choisit les
+sources, arbitre les méthodes de calcul et assume les chiffres publiés : il n'y a ni
+rédaction, ni comité, ni commanditaire derrière ces pages.
+
+Le parti pris tient en une phrase : **tout est vérifiable, et c'est la seule garantie
+offerte.** Les données viennent d'institutions publiques et sont citées une par une avec
+leur date de dernière mise à jour ; le code qui les transforme est ouvert ; et chaque
+prévision est archivée le jour de sa publication, puis confrontée au réalisé — y compris
+quand elle a eu tort. C'est ce qui distingue ce baromètre d'un commentaire de conjoncture,
+et c'est aussi ce qui permet de le contredire.
 
 <div class="hm-actions">
-  <a class="hm-btn hm-btn--primary" href="https://github.com/baptistesoulard/housing-market">Le code sur GitHub</a>
+  <a class="hm-btn hm-btn--primary" href="https://github.com/baptistesoulard/housing-market">Le code de ce site</a>
+  <a class="hm-btn" href="https://github.com/baptistesoulard">GitHub</a>
+  <a class="hm-btn" href="https://soulard-baptiste-bs.medium.com/">Medium</a>
+  <a class="hm-btn" href="https://www.linkedin.com/in/baptistesoulard1994">LinkedIn</a>
 </div>
 
 ## Me contacter

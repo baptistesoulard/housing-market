@@ -53,6 +53,57 @@ const DEFAULT_URL = "https://housing-market.pages.dev";
 
 const url = (process.env.HM_SITE_URL || DEFAULT_URL).replace(/\/+$/, "");
 
+// --- L'auteur ------------------------------------------------------------------------
+// Déclaré comme une ENTITÉ, pas comme une chaîne de caractères, et c'est tout l'enjeu.
+// Le JSON-LD de l'accueil portait `author: {"@type": "Person", name: "Baptiste Soulard"}` :
+// un nom nu, que rien ne relie à quoi que ce soit. Or « Baptiste Soulard » est porté par
+// plusieurs personnes — un arbitre de la FFF, un traileur classé à l'UTMB, un dirigeant
+// de société — et aucune ne domine les résultats de recherche. Sans `sameAs`, un moteur
+// n'a aucun moyen de savoir laquelle publie ce site, ni que l'auteur du dépôt GitHub est
+// la même personne : il voit trois homonymes et n'en recoupe aucun.
+//
+// `sameAs` est précisément le mécanisme prévu pour ça : il déclare « ces profils sont la
+// même personne que moi ». C'est ce qui permet à un moteur de fusionner des profils épars
+// en UNE entité, et de rattacher ce site à elle.
+//
+// Les adresses sont NETTOYÉES de leurs paramètres de suivi — le lien LinkedIn partagé
+// depuis l'application arrive avec `?utm_source=share_via&utm_content=profile&…`, qui
+// identifie le PARTAGE et non le profil. Une URL déclarée canonique doit être stable et
+// n'exister qu'en un exemplaire, sinon elle se recoupe avec elle-même.
+//
+// Ce qui n'y figure PAS est aussi délibéré : aucune adresse électronique. Le dépôt est
+// public, et une adresse dans un fichier versionné est moissonnée exactement comme un
+// `mailto:` — c'est la raison d'être du formulaire de contact et de `CONTACT_TO` (voir
+// web/README.md). Le contact passe par le formulaire, jamais par une balise.
+export const AUTHOR = {
+  name: "Baptiste Soulard",
+  // La page qui parle de lui. Il n'y a PAS de page dédiée — choix assumé : le site parle
+  // du marché du logement, pas de son auteur. La section « Qui écrit » d'À propos porte
+  // donc l'entité, et cette ancre est son identifiant stable.
+  page: "/a-propos",
+  anchor: "auteur",
+  // Une phrase, à la troisième personne : c'est ce qu'un moteur peut afficher sous le nom.
+  description:
+    "Auteur de HousingMarket, un baromètre indépendant du marché du logement en France " +
+    "construit sur des données publiques, en accès libre et au code ouvert.",
+  // Les sujets que le site démontre, pas une liste de compétences déclarées : chacun est
+  // adossé à des pages publiées.
+  knowsAbout: [
+    "Marché immobilier français",
+    "Marché du logement",
+    "Analyse de données",
+    "Prévision de séries temporelles",
+    "Données publiques ouvertes",
+  ],
+  // Les profils à recouper. L'ordre n'a pas d'importance pour un moteur ; il suit ici
+  // celui du site (code, écrits, professionnel).
+  sameAs: [
+    "https://github.com/baptistesoulard",
+    "https://soulard-baptiste-bs.medium.com/",
+    "https://www.linkedin.com/in/baptistesoulard1994",
+  ],
+};
+
 export const SITE = {
   url,
   name: "HousingMarket",
@@ -70,7 +121,8 @@ export const SITE = {
     "l'ancien, prix, financement et prévision des transactions. Données publiques.",
   locale: "fr_FR",
   lang: "fr",
-  author: "Baptiste Soulard",
+  // Le nom vient de AUTHOR : deux copies d'un nom propre finissent par diverger.
+  author: AUTHOR.name,
   repo: "https://github.com/baptistesoulard/housing-market",
   // Vignette de partage. 1200×630 est le format que LinkedIn, X et Slack recadrent le
   // moins ; le fichier est COMMITÉ (voir scripts/og-image.mjs pour le régénérer).
@@ -88,6 +140,10 @@ export const SITE = {
 //               à la page : deux pages qui partagent leur description se cannibalisent
 //               dans les résultats de recherche.
 //   nav: false  page servie et indexée, mais absente de la barre latérale.
+//   seoTitle    <title> et og:title, quand le libellé de navigation ne suffit pas. « À
+//               propos » est parfait dans une barre latérale, où le contexte est donné
+//               par tout ce qui l'entoure, et muet dans une page de résultats, où il
+//               n'est entouré de rien. Le libellé reste court, le titre porte le nom.
 export const NAV = [
   {icon: "🏡", name: "Accueil", path: "/", nav: false,
    description: SITE.description},
@@ -119,8 +175,9 @@ export const NAV = [
    description: "Sources, fraîcheur des séries et méthode de calcul, avec import local " +
      "d'un fichier de ventes pour le confronter aux indicateurs de marché."},
   {icon: "ℹ️", name: "À propos", path: "/a-propos",
-   description: "Qui publie ce baromètre, avec quelles données, quelle méthode et " +
-     "quelles limites — sources publiques, code ouvert, calculs reproductibles."},
+   seoTitle: "À propos — Baptiste Soulard",
+   description: "Baptiste Soulard publie ce baromètre du marché du logement : " +
+     "sources publiques, méthode, limites et calculs reproductibles."},
 ];
 
 /** Les pages indexables, dans l'ordre du sitemap. */
@@ -141,7 +198,9 @@ export function pageMeta(path) {
     // La 404 ne doit pas être indexée : elle répond pour n'importe quelle URL fausse,
     // et une adresse canonique n'aurait aucun sens.
     indexable: Boolean(entry),
-    title: entry ? entry.name : null,
+    // Le libellé de navigation par défaut ; `seoTitle` prend le dessus quand la page
+    // en déclare un (voir l'en-tête de NAV).
+    title: entry ? (entry.seoTitle || entry.name) : null,
     description: entry ? entry.description : SITE.description,
     url: SITE.url + (clean === "/" ? "/" : clean),
   };
