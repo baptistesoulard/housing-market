@@ -8,7 +8,7 @@
 //
 // L'IDENTITÉ du site (adresse publique, descriptions de pages, navigation, logo) vit
 // dans site.config.js — ce fichier-ci ne porte que le rendu.
-import {SITE, NAV, MARK, THEME as T, AUTHOR, pageMeta} from "./site.config.js";
+import {SITE, NAV, MARK, THEME as T, AUTHOR, pageMeta, DEP_PATHS} from "./site.config.js";
 
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
@@ -681,6 +681,20 @@ export default {
     "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap",
   ],
   pages: PAGES,
+  // Les 101 pages départementales, générées par src/departement/[code].md.
+  // La liste vient des données (site.config.js), pas d'une énumération à la main.
+  //
+  // Note pour une reprise future : un data loader paramétré (src/departement/
+  // [code].json.js avec FileAttachment("./[code].json") côté page) a été essayé ET
+  // VÉRIFIÉ NE PAS MARCHER pour ce cas précis. Le build produit bien 101 fichiers
+  // distincts, mais chaque page enregistre côté client la même référence LITTÉRALE
+  // "./[code].json" (le framework ne substitue pas les paramètres de route avant
+  // d'analyser les FileAttachment) — donc les 101 pages reçoivent au runtime le même
+  // fichier générique vide, jamais leurs propres données. Vérifié en inspectant
+  // dist/departement/75.html : son registerFile("./[code].json", ...) pointe vers un
+  // fichier de 2 octets ("{}"), pas vers le Paris à 9 730 €/m². D'où le fetch() vers
+  // l'adresse stable ci-dessous (voir scripts/postbuild.mjs) dans la page elle-même.
+  dynamicPaths: DEP_PATHS,
   // Sommaire de page, à DROITE. La barre latérale répond à « où suis-je dans le
   // site » ; mêler les sections d'une page à cette liste de dix entrées lui ferait
   // perdre sa lecture d'ensemble. Le défaut reste `false` — l'accueil n'en a pas —

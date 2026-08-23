@@ -373,14 +373,16 @@ qu'aucune URL n'est écrite en dur.
 
 ## Les pages départementales
 
-> **⚠️ Retirées du site le 2026-08-21.** Le socle de données reste en place et
-> `web_export.py` produit toujours les 101 JSON, mais la route `src/departement/[code].md`
-> n'est plus construite : elle s'affichait **par intermittence** (même code, même URL,
-> rendu correct puis page vide sans changement). Voir `CLAUDE.md`, section « Les pages
-> départementales », pour ce qui a été éliminé et la piste de reprise (data loader
-> paramétré plutôt que `fetch`).
->
-> La suite de cette section décrit le fonctionnement visé et reste valable pour la reprise.
+> **Remises en ligne le 2026-08-23**, après un retrait du 2026-08-21 pour intermittence
+> observée sur le site déployé. La piste de reprise alors documentée (un data loader
+> paramétré, pour charger par `FileAttachment` plutôt que par `fetch`) a été essayée et
+> s'est révélée ne pas fonctionner : chaque page enregistrait côté client la même
+> référence littérale, jamais résolue au département réel — vérifié dans le HTML
+> construit. Le mécanisme retenu charge donc par `fetch()`, vers l'adresse stable copiée
+> au build, avec la structure de cellules vue s'exécuter correctement en production
+> avant le retrait. Voir `CLAUDE.md`, section « Les pages départementales », pour le
+> détail des preuves et l'inconnue qui subsiste (l'intermittence d'origine n'a jamais
+> été formellement expliquée, seulement débattue par élimination).
 
 101 pages produites par une seule route paramétrée, `src/departement/[code].md`. Le site
 passe de 10 à 111 pages, toutes dans le sitemap, chacune avec son titre et sa description.
@@ -423,7 +425,10 @@ se construit et `dist/_file/data/departements/` reste vide.
 
 `scripts/postbuild.mjs` copie donc les données à une adresse stable
 (`/data/departements/<code>.json`) et la page les lit par `fetch()`. Il y réécrit aussi le
-`<title>` de chaque page, que le framework tire du front-matter — unique pour les 101.
+`<title>` et le `<h1>` de chaque page, que le framework tire du front-matter et du
+markdown — uniques pour les 101 (le `<h1>` markdown reste volontairement générique et
+statique, pour ne pas reproduire le défaut du « chapeau statique » ailleurs sur le site :
+un titre interpolé ne rendrait qu'un `<h1>` vide tant que le JS n'a pas tourné).
 
 **Conséquence** : en `npm run dev`, une page départementale s'affiche sans ses chiffres,
 puisque la copie n'a lieu qu'au build. Vérifier sur `dist/`.

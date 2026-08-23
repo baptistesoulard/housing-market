@@ -517,32 +517,55 @@ dont une branche vaut `` html`` `` ou `""`.
 
 ## Les pages départementales — ce qui doit rester vrai
 
-> **⚠️ ÉTAT AU 2026-08-21 : le socle de données est en production, les PAGES ne le sont
-> pas.** La route `src/departement/[code].md` a été retirée du site après vérification en
-> navigateur : elle s'affiche **par intermittence**. Le même code déployé, à la même URL,
-> a rendu correctement (cartes, courbes, chiffres justes) puis, vingt-cinq minutes plus
-> tard sans aucun changement, n'a plus affiché que des indicateurs de chargement. Une page
-> publique blanche une fois sur deux ne peut pas rester en ligne.
+> **⚠️ ÉTAT AU 2026-08-23 : les pages sont REVENUES en ligne, sur un mécanisme de
+> chargement différent — la piste documentée ci-dessous jusqu'au 2026-08-21 a été
+> essayée et s'est révélée **fausse**.
 >
-> **Ce qui a été éliminé** (variantes déployées, vérifiées en onglet neuf) : ni le
-> sous-dossier, ni la route paramétrée, ni le `fetch`, ni `cardGrid`, ni `multiLine` —
-> chaque brique fonctionne isolément, et le graphique a affiché la vraie courbe
-> parisienne. Ce qui reste suspect, c'est l'ordonnancement des cellules quand une page
-> mêle un bloc d'`import` et un `await` de haut niveau : deux cellules `await fetch`
-> séparées bloquaient systématiquement ; les fusionner en un `Promise.all` a débloqué la
-> page — puis l'intermittence est réapparue. Le caractère non déterministe est le fait
-> nouveau, et il invalide toute bissection menée en une seule passe : un essai « qui
-> passe » ne prouve rien s'il n'est pas répété.
+> Le retrait du 2026-08-21 avait laissé une piste de reprise : un *data loader
+> paramétré* (`src/departement/[code].json.js`) avec `FileAttachment("./[code].json")`
+> côté page, présenté comme « la première chose à essayer » pour supprimer le `fetch`
+> soupçonné de l'intermittence observée en production. Essayé, et écarté sur preuve —
+> pas sur préférence : le build produit bien 101 fichiers distincts, mais **chaque page
+> enregistre côté client la même référence LITTÉRALE `[code].json`**, jamais résolue au
+> code réel. `findFiles` (l'analyseur de `FileAttachment` dans le framework) ne reçoit
+> `params` à aucun moment — vérifié dans son code source. Constaté dans le HTML construit
+> de chaque département : `registerFile("./[code].json", {…"path":
+> "../_file/departement/[code].xxxxxxxx.json", "size":2…})` — 2 octets, un `{}` vide,
+> le même pour les 101 pages. Sans ce contrôle, les 101 pages seraient reparties en ligne
+> avec des données vides partout, une régression pire que l'intermittence.
 >
-> **Piste pour la reprise** : ne pas charger les données par `fetch` du tout. Un *data
-> loader paramétré* (`src/departement/[code].json.js`) est le mécanisme prévu par le
-> framework pour les routes paramétrées ; il supprime le `await` de la page, donc la
-> configuration qui coince. C'est la première chose à essayer.
+> **Ce qui remplace le data loader** : `fetch()` vers l'adresse stable que
+> `scripts/postbuild.mjs` copie au build (`/data/departements/<code>.json` — le mécanisme
+> déjà en place avant le retrait), mais avec la structure de cellules que la dernière
+> investigation avait vue s'exécuter correctement en production : un bloc d'imports
+> seul, un bloc par `await`. Le paramètre de route n'est PAS lu depuis
+> `observable.params.code` au runtime comme avant — le framework substitue en fait la
+> valeur au BUILD, dans le corps transpilé de la cellule (vérifié dans le HTML construit
+> de deux départements différents : `` fetch(`/data/departements/${"75"}.json`) ``,
+> `` fetch(`/data/departements/${"57"}.json`) `` — la valeur est un littéral, pas une
+> référence). L'annuaire partagé (non paramétré, `departements.json`), lui, passe par
+> `FileAttachment` sans problème — c'est le même mécanisme que les huit autres pages du
+> site, et rien dans son fonctionnement ne dépend d'un paramètre de route.
 >
-> Tout ce qui suit décrit le socle de données, qui lui **est en production et testé**.
-> Le front (route, `dynamicPaths`, copie par `postbuild`, sélecteur de l'accueil, entrées
-> de sitemap) a été retiré ; `web_export.py` continue de produire les 101 JSON, qui
-> attendent. Les remettre en ligne = restaurer ces cinq points.
+> **Ce qui reste une inconnue honnête** : l'intermittence originale a été observée sur le
+> site **déployé** (Cloudflare Pages), jamais reproduite en local, et l'investigation
+> d'origine ne l'a jamais formellement expliquée — seulement débattue par élimination.
+> Ce correctif change la SOURCE des données (adresse stable + structure de cellules
+> vérifiée) mais pas la mécanique `fetch()` elle-même ; si la cause réelle était ailleurs
+> (edge Cloudflare, cache, bootstrap du runtime client), elle pourrait resurgir. À
+> surveiller après une période en production — un test « ça marche une fois » ne suffit
+> pas à trancher, exactement le piège que l'investigation d'origine avait déjà signalé.
+>
+> Vérifié avant remise en ligne : build propre à 111 pages (236 liens validés), 101
+> fichiers copiés vers l'adresse stable, 101 titres/`<h1>` personnalisés, aucune page
+> `noindex` (un défaut latent de la toute première version, jamais vu avant faute
+> d'avoir cherché), 225 tests Python verts, `web_export.py` toujours à `0/6` + `0/102`.
+> La vérification visuelle en navigateur intégré n'a pas pu confirmer le rendu final des
+> cartes/graphiques : l'onglet du panneau de prévisualisation ne composite aucune frame
+> tant qu'il n'est pas affiché (voir plus bas, section « Vérifier la parité ») — y
+> compris sur des pages déjà stables comme `neuf.md`, donc ce n'est pas spécifique à
+> cette page. La preuve retenue est le HTML construit lui-même : titres, adresses de
+> données et valeurs substituées, inspectés directement.
 
 101 pages générées par UNE route paramétrée (`web/observable/src/departement/[code].md`),
 qui font passer le site de 10 à 111 pages. Elles s'adressent à un particulier et répondent
