@@ -475,6 +475,30 @@ modèle non calibrable à la dernière publication hebdomadaire (macro incomplè
 serveur injoignable. `python -m api` reste utile pour explorer les mêmes routes en
 local, mais plus aucune page n'en a besoin pour s'afficher.
 
+**« À qui ça sert » met le particulier AVANT le professionnel, depuis le 2026-08-23.**
+L'ordre inverse — « il s'adresse à qui doit anticiper une activité liée au logement »
+en premier, « et à qui veut simplement suivre le marché » en second — était un cadrage
+B2B pour un site dont la bande de chiffres, la courbe d'accroche et depuis le retour des
+pages départementales le sélecteur « Et chez vous ? » parlent tous à un particulier.
+Le paragraphe professionnel n'a pas été supprimé, seulement rétrogradé en second. Le
+même changement a retiré l'encart « Deux pages ont besoin d'un serveur » : il décrivait
+une limite que le passage de Prévision/Données au statique (voir « L'API HTTP ») a fait
+disparaître — le laisser aurait été une régression documentaire, pas juste une
+imprécision.
+
+**Un sigle porte un `<abbr title>` sur sa PREMIÈRE occurrence par page, jamais toutes.**
+`SIT@DEL`, `ECLN`, `IGEDD`, `DVF`, `OAT`, `Euribor`, `BLS`, `BIT`, `backtest` sont ainsi
+annotés dans le chapeau statique de chaque page où ils apparaissent en premier — un
+soulignement pointillé (`abbr[title]` dans `observablehq.config.js`), pas un composant
+JS : les chapeaux sont du texte statique (voir plus bas), et `<abbr>` est du HTML brut,
+valide directement dans le markdown. Annoter CHAQUE occurrence aurait criblé le texte de
+pointillés pour un gain marginal — la définition complète, plus longue, vit dans le
+repli « Le vocabulaire » d'À propos, entre « D'où viennent les données » et « Comment le
+site est fabriqué ». Un terme qui apparaît seulement dans du contenu JS-rendu (les
+libellés de cartes KPI, par exemple `R²`) n'est PAS annoté : le composant `dfn()`
+envisagé au départ a été abandonné une fois vérifié que la quasi-totalité du jargon vit
+dans des chapeaux statiques, où un `<abbr>` brut suffit sans dépendance JS.
+
 ## L'archive des prévisions — ce qui ne doit jamais bouger
 
 Choix produit du 2026-08-20 : le projet vise un **média d'analyse à audience large** plutôt

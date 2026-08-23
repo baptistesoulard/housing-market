@@ -26,8 +26,8 @@ const neuf = await FileAttachment("./data/neuf.json").json();
 Le logement neuf se lit comme un tunnel : un permis de construire autorisé devient une mise
 en chantier six à douze mois plus tard, puis un logement livré et mis en vente. Cette page
 suit ce parcours d'un bout à l'autre, à l'échelle nationale — les permis et les mises en
-chantier publiés par le SDES (SIT@DEL), la répartition entre maisons individuelles et
-logements collectifs, puis la commercialisation des logements neufs (ECLN) : encours à la
+chantier publiés par le SDES (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier — voir « Le vocabulaire » sur la page À propos">SIT@DEL</abbr>), la répartition entre maisons individuelles et
+logements collectifs, puis la commercialisation des logements neufs (<abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>) : encours à la
 vente, délai d'écoulement, réservations et prix au m².
 
 Les permis sont l'indicateur le plus précoce du cycle de la construction : ils bougent avant

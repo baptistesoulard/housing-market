@@ -198,7 +198,7 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
 <div class="hm-proof">
   <div>
     <h3>Des sources publiques, et rien d'autre</h3>
-    <p>INSEE, SDES (SIT@DEL, ECLN), IGEDD, Banque de France et BCE. Chaque série est
+    <p>INSEE, SDES (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier — voir le vocabulaire sur la page À propos">SIT@DEL</abbr>, <abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>), <abbr title="Inspection Générale de l'Environnement et du Développement Durable, suivi mensuel des ventes de logements anciens">IGEDD</abbr>, Banque de France et BCE. Chaque série est
     identifiée par sa référence d'origine et récupérée par un script versionné : aucun
     chiffre n'est saisi à la main, aucune donnée n'est achetée.</p>
   </div>
@@ -264,21 +264,15 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
 
 ## À qui ça sert
 
-Le marché du logement se lit rarement d'un seul chiffre : les permis de construire, les
-ventes dans l'ancien et le coût du crédit ne tournent ni au même rythme ni dans le même
-sens, et c'est leur décalage qui porte l'information. Ce site rassemble ces séries au même
-endroit, sur la même période, avec les mêmes conventions de calcul — puis va jusqu'au bout
-de l'exercice en publiant une prévision datée et vérifiable plutôt qu'un commentaire.
+D'abord à qui se demande simplement où en est le marché — combien se vend-il de logements,
+les prix montent-ils encore, le crédit redevient-il accessible — sans avoir à reconstituer
+lui-même dix séries publiques éparpillées entre l'INSEE, le SDES et la Banque de France.
+« [Et chez vous ?](#et-chez-vous) », plus haut, répond à la question la plus concrète :
+combien de m² votre mensualité achète-t-elle dans votre département, aujourd'hui contre
+2015.
 
-Il s'adresse à qui doit anticiper une activité liée au logement — second œuvre, matériaux,
-financement, aménagement — et à qui veut simplement suivre le marché sans reconstituer
-lui-même dix séries publiques. La [méthode](/a-propos), les sources et le code sont
-ouverts : les chiffres sont là pour être contredits.
-
-<div class="hm-note">
-  <p><strong>Deux pages ont besoin d'un serveur.</strong> Prévision & Scénarios et
-  Données & Sources relancent un calcul à chaque question posée : elles interrogent une
-  petite API HTTP plutôt qu'un fichier figé. Sans instance de cette API, elles affichent
-  un encart qui explique comment en lancer une — les cinq autres pages fonctionnent en
-  toute autonomie.</p>
-</div>
+Le même assemblage sert aussi à qui doit anticiper une activité liée au logement — second
+œuvre, matériaux, financement, aménagement — et va jusqu'au bout de l'exercice en publiant
+une prévision datée et vérifiable plutôt qu'un commentaire de conjoncture. La
+[méthode](/a-propos), les sources et le code sont ouverts : les chiffres sont là pour être
+contredits.

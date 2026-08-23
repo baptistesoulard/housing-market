@@ -44,9 +44,9 @@ sont archivées et confrontées au réalisé sur leur propre page.
 
 <div class="hm-caption">
 Modèle chiffré « indicateurs avancés → transactions », calibré sur les séries réelles.
-Deux étages : (1) le taux de crédit est modélisé à partir de l'OAT 10 ans et de l'Euribor
+Deux étages : (1) le taux de crédit est modélisé à partir de l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans et de l'<abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr>
 3 mois ; (2) les ventes de logements anciens (cumul 12 mois) sont expliquées par le taux
-de crédit, les intentions d'achat et le chômage, chacun décalé. Un backtest hors
+de crédit, les intentions d'achat et le chômage, chacun décalé. Un <abbr title="Test du modèle sur des données qu'il n'a pas vues à l'entraînement">backtest</abbr> hors
 échantillon mesure la valeur prédictive.
 </div>
 

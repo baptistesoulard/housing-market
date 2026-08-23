@@ -23,9 +23,9 @@ const macro = await FileAttachment("./data/macro.json").json();
 
 Le marché du logement ne se comprend pas sans ce qui le finance et ce qui décide les
 ménages. Cette page rassemble les indicateurs qui expliquent le marché plus qu'ils ne le
-décrivent, et qui pour la plupart le précèdent : taux du crédit immobilier, Euribor 3 mois
-et OAT 10 ans, confiance des ménages, intentions d'achat de logement, chômage au sens du
-BIT, production de crédits à l'habitat et demande de crédits mesurée par l'enquête BLS.
+décrivent, et qui pour la plupart le précèdent : taux du crédit immobilier, <abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr> 3 mois
+et <abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans, confiance des ménages, intentions d'achat de logement, chômage au sens du
+<abbr title="Bureau International du Travail, dont la définition standardisée permet de comparer le chômage entre pays">BIT</abbr>, production de crédits à l'habitat et demande de crédits mesurée par l'enquête <abbr title="Bank Lending Survey : enquête trimestrielle de la BCE sur les conditions de crédit bancaire">BLS</abbr>.
 
 Les soldes d'opinion — confiance, intentions d'achat, demande de crédits — se lisent en
 écart à leur repère et non en niveau absolu : c'est leur mouvement qui informe, pas leur

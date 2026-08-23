@@ -23,7 +23,7 @@ const anc = await FileAttachment("./data/ancien.json").json();
 # 🏠 Marché de l'ancien — transactions, prix & accessibilité
 
 L'essentiel des transactions immobilières en France porte sur des logements anciens. Cette
-page en suit le volume, mesuré par l'IGEDD en cumul sur douze mois glissants, puis les prix
+page en suit le volume, mesuré par l'<abbr title="Inspection Générale de l'Environnement et du Développement Durable, qui publie le suivi mensuel des ventes de logements anciens">IGEDD</abbr> en cumul sur douze mois glissants, puis les prix
 publiés par les Notaires et l'INSEE, et enfin l'accessibilité : combien de mètres carrés un
 ménage peut acheter à mensualité constante.
 

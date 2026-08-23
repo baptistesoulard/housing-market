@@ -33,7 +33,7 @@ indicateurs amont du marché du logement. Ce fichier est lu dans le navigateur :
 envoyé ni à l'hébergeur ni à aucun service, et rien n'en est conservé.
 
 <div class="hm-caption">
-Les jeux de données de marché (SIT@DEL, IGEDD, macro, ECLN…) sont rafraîchis hors
+Les jeux de données de marché (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier">SIT@DEL</abbr>, <abbr title="Inspection Générale de l'Environnement et du Développement Durable, suivi mensuel des ventes de logements anciens">IGEDD</abbr>, macro, <abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>…) sont rafraîchis hors
 application, par <code>python fetch_new_sources.py</code> et le workflow hebdomadaire.
 Cette page ne sert qu'à une chose : croiser <b>vos</b> ventes mensuelles avec les drivers
 amont du marché.

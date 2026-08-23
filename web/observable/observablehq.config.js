@@ -116,6 +116,12 @@ a[href]:not([class]), a[href]:visited:not([class]) { color: var(--hm-link); }
    de page : la barre latérale et le sommaire ont leurs propres liens sans classe
    (ancres de titres) que le thème Observable stylise déjà à sa façon. */
 #observablehq-main a:not([class]) { text-decoration: underline; text-underline-offset: 2px; }
+/* Glossaire au fil du texte : un sigle (SIT@DEL, OAT…) porte un <abbr title> sur sa
+   première occurrence par page — soulignement pointillé au survol/focus, infobulle
+   native du navigateur. Pas de JS : ce sont des chapeaux statiques (voir CLAUDE.md,
+   « chapeau statique »), le glossaire complet vit dans le repli d'À propos. */
+abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm-subtle);
+  text-underline-offset: 2px; cursor: help; }
 .hm-caption { color: var(--hm-ink); font-size: 0.875rem; margin: 0.2rem 0 1rem; }
 .hm-chips { margin: 0.4rem 0 1.2rem; }
 .hm-takeaways { background: color-mix(in srgb, var(--hm-blue) 12%, transparent); border-left: 4px solid var(--hm-blue);

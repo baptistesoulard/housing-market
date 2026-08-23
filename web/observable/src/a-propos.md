@@ -108,6 +108,57 @@ Ces données sont réutilisées au titre de la
 producteurs cités ne sont ni auteurs ni relecteurs de ce site : les erreurs d'assemblage,
 d'interprétation ou de calcul n'engagent que lui.
 
+## Le vocabulaire
+
+<details class="hm-howto">
+  <summary>Les sigles du site, en clair</summary>
+  <div class="hm-caption">
+
+**SIT@DEL** — le fichier du SDES qui recense les permis de construire et les mises en
+chantier. Source des courbes de la page Marché du neuf.
+
+**ECLN** — l'Enquête sur la Commercialisation des Logements Neufs, trimestrielle : ce que
+les promoteurs réservent, mettent en vente et vendent, avec leur prix.
+
+**IGEDD** — l'Inspection Générale de l'Environnement et du Développement Durable, qui
+publie le suivi mensuel des ventes de logements anciens en France.
+
+**DVF** — les Demandes de Valeurs Foncières, fichier de la DGFiP qui recense les ventes
+immobilières réellement enregistrées chez le notaire. Source des 101 pages par
+département.
+
+**OAT** — l'Obligation Assimilable du Trésor à 10 ans : le taux auquel l'État français
+emprunte, référence du coût du crédit à long terme, y compris immobilier.
+
+**Euribor** — le taux auquel les banques de la zone euro se prêtent entre elles à court
+terme (ici, à 3 mois). Avec l'OAT, il explique le taux de crédit immobilier dans le
+modèle de ce site.
+
+**BLS** — la Bank Lending Survey, une enquête trimestrielle de la BCE auprès des banques
+sur leurs conditions d'octroi de crédit et la demande qu'elles observent.
+
+**BIT** — le Bureau International du Travail, dont la définition standardisée du chômage
+permet de comparer le taux français à celui des autres pays.
+
+**CVS(-CJO)** — Corrigé des Variations Saisonnières (et des Jours Ouvrés) : un traitement
+statistique qui retire l'effet du calendrier (mois plus ou moins longs, vacances) pour
+que deux mois se comparent équitablement.
+
+**R²** — le coefficient de détermination : la part de la variation d'une série qu'un
+modèle explique, entre 0 (rien) et 1 (tout).
+
+**MAPE** — l'erreur moyenne en pourcentage entre une prévision et ce qui s'est
+réellement passé. C'est le chiffre publié sur la page Prévisions passées.
+
+**Backtest** — un test du modèle sur des données qu'il n'a pas vues à l'entraînement :
+il mesure sa valeur prédictive, pas seulement sa capacité à s'ajuster au passé.
+
+**Base 100** — une convention d'indice où une période de référence (ici la moyenne de
+l'année 2015) vaut 100 : un niveau de 110 se lit « +10 % depuis 2015 ».
+
+  </div>
+</details>
+
 ## Comment le site est fabriqué
 
 Le calcul est en Python ; l'agrégation des séries passe par une seule couche SQL (DuckDB
@@ -116,18 +167,21 @@ les mêmes chiffres par construction plutôt que par coïncidence. Chaque requê
 automatiquement à une implémentation de référence indépendante : si les deux divergent, les
 tests échouent.
 
-Les cinq premières pages sont des fichiers statiques régénérés par la chaîne Python à
-chaque publication de données ; les deux dernières interrogent une petite API HTTP, parce
-qu'elles relancent un calcul à chaque question posée. Le site lui-même est statique et
-n'a besoin d'aucun serveur pour être consulté.
+Toutes les pages du site sont des fichiers statiques régénérés par la chaîne Python à
+chaque publication de données — y compris la prévision et son panneau de scénarios, qui
+appliquent en JavaScript la même formule que le modèle Python à des coefficients déjà
+calculés. Le site n'a besoin d'aucun serveur pour être consulté.
 
 **Un automate rafraîchit les sources chaque lundi**, ne committe que les fichiers
 réellement modifiés, et déclenche la reconstruction du site dans la foulée.
 
 ## Limites à connaître
 
-- **Chiffres nationaux.** Aucune ventilation régionale ni départementale : les séries
-  retenues sont celles de la France entière.
+- **Les huit pages de données sont nationales.** Aucune ventilation régionale : les
+  séries qu'elles retiennent sont celles de la France entière. Seul le prix au m² a une
+  déclinaison départementale (DVF), sur ses [101 pages dédiées](/departement/75) — les
+  taux, le chômage et les intentions d'achat qui alimentent la prévision restent
+  nationaux, faute d'équivalent local publié.
 - **Des rythmes de publication différents.** Les permis et les ventes dans l'ancien sont
   mensuels, la commercialisation du neuf est trimestrielle, et chaque source a son propre
   délai. Une page ne s'arrête donc pas toutes séries confondues à la même date.

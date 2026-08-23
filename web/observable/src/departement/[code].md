@@ -43,7 +43,7 @@ toc: false
 
 # Prix de l'immobilier par département
 
-<div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (DVF, DGFiP)</div>
+<div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (<abbr title="Demandes de Valeurs Foncières : fichier de la DGFiP recensant les ventes immobilières réellement enregistrées">DVF</abbr>, DGFiP)</div>
 
 ```js
 import {multiLine, cardGrid, kpiCard, nf0, nf1} from "../components/hm.js";
