@@ -42,7 +42,7 @@ export const THEME = {
     "neutral": "#7A7A7A"
   },
   "ui": {
-    "link": "#1E88E5",
+    "link": "#1565C0",
     "subtle": "#6c757d",
     "muted": "#4A5568",
     "rule": "#B0B7C3",

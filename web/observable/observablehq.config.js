@@ -17,8 +17,16 @@ const VARS = Object.entries({
   surface: T.brand.surface,
   ink: T.brand.ink,
   brick: T.brand.brick,
+  // `brick` plafonne à 3,92:1 sur blanc — sous les 4,5:1 qu'exige du texte. Bon pour un
+  // fond ou une bordure (>= 3:1), pas pour ce que ces mêmes règles écrivent en `color`.
+  // Réutilise `status.down.fg`, déjà calé sur ce seuil (5,99:1) : pas de nouvelle teinte
+  // à valider, juste un second rôle pour une couleur qui a déjà la bonne luminosité.
+  "brick-text": T.status.down.fg,
   blue: T.brand.blue,
   green: T.brand.green,
+  // Assombri depuis #1E88E5 (3,68:1 sur blanc, sous les 4,5:1 requis pour du texte) : les
+  // liens ne sont soulignés qu'au survol (`a[href]:hover{text-decoration:underline}` du
+  // thème Observable), donc la couleur seule doit suffire à distinguer un lien au repos.
   link: T.ui.link,
   subtle: T.ui.subtle,
   muted: T.ui.muted,
@@ -84,7 +92,30 @@ h1 { font-size: 2.25rem; font-weight: 600; border-bottom: 2px solid var(--hm-bri
                        table, figure, figcaption, .note, .tip, .warning, .caution) { max-width: none; }
 main h2 { font-size: 1.55rem; font-weight: 600; margin-top: 2.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border); }
 main h3 { font-size: 1.3rem; font-weight: 600; color: var(--hm-ink); margin-top: 2.2rem; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--hm-border-light); }
-a, a:visited { color: var(--hm-link); }
+/* Sélecteur [href], pas juste l'élément : le thème Observable pose déjà une règle sur ce
+   même motif pour donner sa couleur de lien par défaut, à spécificité égale à un simple
+   élément seul augmenté d'un attribut. Un simple élément seul, sans l'attribut, se fait
+   donc battre en silence pour tout lien jamais cliqué. Vérifié dans le navigateur : sans
+   ce correctif, un lien non visité rendait la couleur du thème Observable, jamais
+   --hm-link — seul un lien VISITÉ, à spécificité déjà suffisante pour gagner, prenait la
+   bonne teinte. Deux bleus différents selon l'état de clic n'a jamais été voulu.
+
+   Exclu si l'élément porte une classe (boutons .hm-btn, pastilles .hm-shortcut,
+   .hm-page-card) : sans ce filtre, un de ces liens une fois VISITÉ — cas réel pour un
+   lien externe (GitHub, LinkedIn) qu'un visiteur a déjà ouvert — repasserait au bleu de
+   lien au lieu de sa couleur de composant, l'état visité l'emportant sur la spécificité
+   de ces classes. Ces composants annoncent déjà leur nature par leur forme ; ce n'est pas
+   à la couleur de lien de la leur reprendre. */
+a[href]:not([class]), a[href]:visited:not([class]) { color: var(--hm-link); }
+/* Un lien de PROSE (citation de source, renvoi interne dans un paragraphe) reste
+   soulignable en permanence : sans ça, sa seule distinction au repos est la couleur, et
+   même assombri à 4,5:1 ça ne suffit pas à qui ne perçoit pas cette teinte. Restreint aux
+   liens SANS classe pour ne toucher ni les boutons (.hm-btn), ni les pastilles
+   (.hm-shortcut, .hm-page-card) : ceux-là annoncent déjà leur nature par leur forme, et
+   remettraient un soulignement que leur propre règle retire exprès. Cantonné au contenu
+   de page : la barre latérale et le sommaire ont leurs propres liens sans classe
+   (ancres de titres) que le thème Observable stylise déjà à sa façon. */
+#observablehq-main a:not([class]) { text-decoration: underline; text-underline-offset: 2px; }
 .hm-caption { color: var(--hm-ink); font-size: 0.875rem; margin: 0.2rem 0 1rem; }
 .hm-chips { margin: 0.4rem 0 1.2rem; }
 .hm-takeaways { background: color-mix(in srgb, var(--hm-blue) 12%, transparent); border-left: 4px solid var(--hm-blue);
@@ -121,11 +152,19 @@ a, a:visited { color: var(--hm-link); }
 .hm-shortcuts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;
   font-size: 0.875rem; margin: 0.5rem 0 2rem; }
 .hm-shortcuts .lead { color: var(--hm-subtle); }
-.hm-shortcut { display: inline-flex; align-items: center; gap: 0.3rem;
+/* [href] dans le sélecteur, pas juste la classe : troisième rencontre de ce fichier avec
+   le même défaut (voir plus bas « L'onglet courant » et « Boutons sur fond sombre » pour
+   les deux précédentes). Le thème Observable pose un a[href] qui vaut UN ÉLÉMENT PLUS UN
+   ATTRIBUT — plus spécifique qu'une classe seule. Sans qualifier nos propres classes de
+   la même façon, un lien réel s'affichait dans le bleu de focus du thème au lieu de sa
+   couleur de composant, silencieusement (mesuré ici sur .hm-page-card : un lien interne
+   jamais visité rendait ce bleu-là, pas l'encre attendue). Toujours un anchor pour cette
+   classe précise, donc pas de risque à le rendre obligatoire dans le sélecteur. */
+.hm-shortcut[href] { display: inline-flex; align-items: center; gap: 0.3rem;
   padding: 0.15rem 0.65rem; border: 1px solid var(--hm-border); border-radius: 9999px;
   background: var(--hm-surface); color: var(--hm-ink); text-decoration: none; }
 .hm-shortcut:hover, .hm-shortcut:focus-visible { border-color: var(--hm-brick);
-  color: var(--hm-brick); background: var(--hm-bg); }
+  color: var(--hm-brick-text); background: var(--hm-bg); }
 /* Renvoi entre sections JUMELLES (neuf <-> ancien). Les deux pages partagent trois
    sections de même nom, dans le même ordre et avec la même ancre ; ce renvoi est ce qui
    le fait savoir à quelqu'un qui n'a ouvert qu'une des deux. Il est posé sous le chapô de
@@ -183,7 +222,7 @@ a, a:visited { color: var(--hm-link); }
   cursor: pointer; opacity: 0; transition: opacity 0.15s ease; }
 .hm-chart-card:hover .hm-chart-export,
 .hm-chart-card:focus-within .hm-chart-export { opacity: 1; }
-.hm-chart-export:hover, .hm-chart-export:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick); }
+.hm-chart-export:hover, .hm-chart-export:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick-text); }
 details.hm-howto { margin: 0.2rem 0 0.8rem; }
 details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 
@@ -194,7 +233,7 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-period-label { font-size: 0.82rem; font-weight: 600; color: var(--hm-ink); margin-bottom: 0.15rem; }
 .hm-period-values { position: relative; height: 1.05rem; }
 .hm-period-val { position: absolute; transform: translateX(-50%); white-space: nowrap;
-  font-size: 0.78rem; font-weight: 700; color: var(--hm-brick); }
+  font-size: 0.78rem; font-weight: 700; color: var(--hm-brick-text); }
 .hm-period-track { position: relative; height: 20px; }
 .hm-period-rail { position: absolute; top: 8px; left: 0; right: 0; height: 4px; border-radius: 2px; background: var(--hm-border); }
 .hm-period-fill { position: absolute; top: 8px; height: 4px; border-radius: 2px; background: var(--hm-brick); }
@@ -264,7 +303,7 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
   padding: 0.1rem 2rem 0.1rem 1.5rem;
   color: var(--hm-ink); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.2px;
   background: none; }
-#observablehq-sidebar > ol:first-child > li > a:hover { background: none; color: var(--hm-brick); }
+#observablehq-sidebar > ol:first-child > li > a:hover { background: none; color: var(--hm-brick-text); }
 #observablehq-sidebar > ol:first-child > li > a::before {
   content: ""; flex: none; width: 26px; height: 26px;
   background: url("${MARK}") center / contain no-repeat; }
@@ -308,6 +347,14 @@ ${NAV_ICONS}
    aucune valeur hexadécimale n'entre ici, conformément à la règle du fichier. Le brick
    n'est qu'une pointe dans le dégradé — theme.json le décrit comme une couleur d'accent,
    à employer avec parcimonie ; un aplat orange plein écraserait la page. */
+/* .hm-btn[href] / .hm-btn--primary[href] (couleur pour le cas <a>, voir la classe de
+   base .hm-btn plus bas — même défaut qu'à .hm-shortcut plus haut) DOIVENT précéder le
+   bloc « Boutons sur fond sombre » ci-dessous : les deux sont à spécificité égale (deux
+   classes, ou classe + attribut), et .hm-hero--band .hm-btn--onband(-primary) doit
+   rester déclaré APRÈS pour gagner sur cette égalité — sans quoi les boutons du bandeau
+   reperdraient leur blanc pour l'encre de .hm-btn[href]. */
+.hm-btn[href] { color: var(--hm-ink); }
+.hm-btn--primary[href], .hm-btn--primary[href]:visited { color: var(--hm-bg); }
 .hm-hero--band { color: var(--hm-bg); border-radius: 16px; margin: 0 0 2rem;
   padding: 2.4rem 2.2rem 0; overflow: hidden;
   background: linear-gradient(135deg,
@@ -383,12 +430,15 @@ ${NAV_ICONS}
 .hm-lead { margin: 0 0 1.4rem; }
 .hm-rule { width: 88px; height: 4px; border-radius: 2px; background: var(--hm-brick); margin: 0 0 1.3rem; }
 .hm-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 0 0 0.4rem; }
+/* .hm-btn décore aussi le bouton <button> du formulaire de contact, sans href : le
+   qualifier ici casserait ce cas. Le correctif de couleur pour le cas <a> est plus haut
+   (.hm-btn[href], avant le bandeau — voir son commentaire pour la contrainte d'ordre). */
 .hm-btn { display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
   padding: 0.5rem 1.1rem; border-radius: 9999px; font-weight: 600; font-size: 0.95rem;
   border: 1px solid var(--hm-border); background: var(--hm-surface); color: var(--hm-ink); }
 .hm-btn--primary, .hm-btn--primary:visited { background: var(--hm-brick); border-color: var(--hm-brick);
   color: var(--hm-bg); }
-.hm-btn:hover, .hm-btn:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick); background: var(--hm-bg); }
+.hm-btn:hover, .hm-btn:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick-text); background: var(--hm-bg); }
 .hm-btn--primary:hover, .hm-btn--primary:focus-visible { background: var(--hm-ink); border-color: var(--hm-ink);
   color: var(--hm-bg); }
 /* --- Le formulaire de contact (page À propos) -------------------------------------
@@ -419,19 +469,20 @@ ${NAV_ICONS}
 .hm-form button[disabled] { opacity: 0.6; cursor: progress; }
 .hm-form-status { margin: 0; font-size: 0.9rem; color: var(--hm-ink); }
 .hm-form-status--ok { color: var(--hm-green); font-weight: 600; }
-.hm-form-status--ko { color: var(--hm-brick); font-weight: 600; }
+.hm-form-status--ko { color: var(--hm-brick-text); font-weight: 600; }
 .hm-form-legal { font-size: 0.82rem; line-height: 1.5; color: var(--hm-ink);
   margin: 0.2rem 0 0; }
 /* Le sommaire des pages : de vrais liens décrits, pas une liste de titres. Ils donnent
    au visiteur le plan du site et aux moteurs le maillage interne qui manquait. */
 .hm-pages { display: grid; gap: 0.9rem; margin: 1rem 0 0.6rem;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.hm-page-card { display: block; text-decoration: none; color: var(--hm-ink);
+/* [href] : toujours un anchor, même défaut qu'à .hm-shortcut plus haut. */
+.hm-page-card[href] { display: block; text-decoration: none; color: var(--hm-ink);
   border: 1px solid var(--hm-border); border-radius: 10px; padding: 0.85rem 1rem 0.95rem;
   background: var(--hm-surface); }
 .hm-page-card:hover, .hm-page-card:focus-visible { border-color: var(--hm-brick); background: var(--hm-bg); }
 .hm-page-card .t { font-weight: 600; display: flex; align-items: baseline; gap: 0.45rem; }
-.hm-page-card:hover .t, .hm-page-card:focus-visible .t { color: var(--hm-brick); }
+.hm-page-card:hover .t, .hm-page-card:focus-visible .t { color: var(--hm-brick-text); }
 .hm-page-card .d { font-size: 0.875rem; line-height: 1.5; margin-top: 0.3rem; color: var(--hm-muted); }
 /* Les trois arguments de crédibilité de l'accueil. Trois colonnes courtes plutôt qu'un
    paragraphe : c'est ce qu'un visiteur de passage lit réellement. */
@@ -476,8 +527,13 @@ button.hm-legend-item { font: inherit; color: inherit; background: none; border:
 .hm-shortcut:focus-visible, .hm-skip:focus { outline: 2px solid var(--hm-brick); outline-offset: 2px; }
 /* Lien d'évitement, injecté au build (scripts/postbuild.mjs) : sans lui, atteindre le
    contenu au clavier suppose de traverser toute la barre latérale, sur chaque page. */
-.hm-skip { position: absolute; left: -9999px; top: 0; z-index: 100;
-  background: var(--hm-brick); color: var(--hm-bg); padding: 0.55rem 1rem;
+/* Blanc sur brick retombe dans le même défaut que brick en couleur de texte (voir VARS) :
+   le rapport est symétrique, donc un aplat brick avec du texte blanc dessus est tout
+   autant sous les 4,5:1. Ce lien n'est visible qu'au focus clavier — c'est exactement le
+   public qui doit pouvoir le lire. [href] dans le sélecteur : toujours un anchor
+   (postbuild.mjs), même défaut de spécificité qu'à .hm-shortcut plus haut. */
+.hm-skip[href] { position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--hm-brick-text); color: var(--hm-bg); padding: 0.55rem 1rem;
   border-radius: 0 0 6px 0; text-decoration: none; font-weight: 600; }
 .hm-skip:focus { left: 0; }
 </style>`;
