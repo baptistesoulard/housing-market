@@ -271,7 +271,12 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-capacite-chiffre { font-size: 2.6rem; font-weight: 700; color: var(--hm-ink);
   line-height: 1.1; }
 .hm-capacite-legende { font-size: 0.9rem; color: var(--hm-ink); }
-.hm-cta { display: inline-block; margin: 0.5rem 0 1rem; padding: 0.5rem 0.9rem;
+/* :visited répété pour battre a:visited, comme .hm-btn--primary plus bas (même raison :
+   à spécificité égale de classe, le sélecteur avec pseudo-classe l'emporte sur la
+   simple classe .hm-cta). Sans ça, un clic sur ce bouton lui faisait perdre son
+   --hm-bg pour la couleur de lien visité par défaut du navigateur — illisible sur le
+   fond brick. */
+.hm-cta, .hm-cta:visited { display: inline-block; margin: 0.5rem 0 1rem; padding: 0.5rem 0.9rem;
   border-radius: 6px; background: var(--hm-brick); color: var(--hm-bg);
   font-weight: 600; text-decoration: none; }
 .hm-cta:hover { filter: brightness(1.08); }
