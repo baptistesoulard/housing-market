@@ -44,6 +44,7 @@ import dvf_clean
 import departements                             # noqa: E402  (couche SQL DuckDB partagée)
 import forecast_archive as fa                   # noqa: E402  (mémoire des prévisions)
 import sources_table                            # noqa: E402  (tableau de la page À propos)
+from api import engine                          # noqa: E402  (moteur de prévision, sans Flask)
 
 # Cible BPCE 2026 (miroir des constantes d'app.py, bloc Perspective).
 BPCE_TX_ANCIEN_2026 = 890_000
@@ -1002,9 +1003,51 @@ def _iso_month(value) -> str:
     return pd.Timestamp(value).strftime("%Y-%m-%d")
 
 
+def build_previsions(con, frames: dict) -> dict:
+    """Page « Prévision & Scénarios » — export statique de ce que l'API HTTP calculerait.
+
+    Réutilise `api.engine` TEL QUEL plutôt que de rejouer l'ajustement des modèles ici :
+    ce module n'importe pas Flask et s'exécute déjà serveur éteint (voir son en-tête),
+    exactement l'invariant qui permet de l'appeler depuis un script d'export. Ça garantit
+    que le site statique et une instance de l'API future affichent EXACTEMENT les mêmes
+    chiffres — une seule implémentation du modèle, pas deux qui pourraient diverger.
+
+    `engine.reset()` vide l'état mis en cache (connexion, modèles ajustés) avant de
+    commencer : sans lui, un import antérieur d'`api.engine` dans le même process (pas le
+    cas ici, mais explicite) servirait un ajustement d'une exécution précédente.
+    Volontairement, ce builder ouvre SA PROPRE connexion DuckDB via `engine._load()`
+    plutôt que de réutiliser `con`/`frames` : `load_or_generate_all()` est déjà rejoué une
+    seconde fois par ce chemin, mtime-aware donc bon marché quand rien n'a changé — le
+    prix à payer pour ne pas dupliquer l'assemblage (rate/tx/projection/scénarios/lags)
+    que `api.engine` porte déjà.
+
+    Chaque courbe de sensibilité (une par prédicteur) est pré-calculée ici : le curseur
+    du front n'a donc plus de requête réseau à faire à chaque changement de prédicteur,
+    seulement une lecture dans le JSON déjà chargé — mieux que ce que l'API elle-même
+    offrait (un aller-retour par changement de prédicteur, aucun par déplacement du
+    curseur puisque la courbe entière arrivait déjà d'un coup).
+    """
+    engine.reset()
+    try:
+        payload = {
+            "available": True,
+            "health": engine.health(),
+            "rate": engine.rate_model(),
+            "transactions": engine.transactions_model(),
+            "projection": engine.projection(),
+            "lag_sensitivity": {p: engine.lag_sensitivity(p) for p in engine.LAG_GRIDS},
+            "scenario_baseline": engine.scenario_baseline(),
+            "revenue_benchmarks": engine.revenue_benchmarks(),
+        }
+    except engine.EngineUnavailable as e:
+        payload = {"available": False, "reason": str(e)}
+    engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
+    return payload
+
+
 _BUILDERS = {"synthese": build_synthese, "neuf": build_neuf, "ancien": build_ancien,
              "macro": build_macro, "actualites": build_actualites,
-             "archive": build_archive}
+             "archive": build_archive, "previsions": build_previsions}
 
 
 def _payload_without_timestamp(payload):

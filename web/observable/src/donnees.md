@@ -6,7 +6,16 @@ toc: true
 ```js
 import {multiLine, cardGrid, kpiCard, nf0, nf1, csvParse} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
-import {api, apiOfflineNotice, bestLagFit, shiftMonths} from "./components/api.js";
+import {bestLagFit, shiftMonths} from "./components/api.js";
+```
+
+```js
+// Les deux drivers amont (transactions IGEDD, permis SIT@DEL par type) viennent des
+// mêmes JSON que les pages Marché de l'ancien / Marché du neuf — pas d'un serveur à
+// joindre : le cumul 12 mois de ancien.json EST la série que l'ancienne route API
+// /market/transactions-run-rate exposait (vérifié : même valeur au dernier point).
+const ancienData = await FileAttachment("./data/ancien.json").json();
+const neufData = await FileAttachment("./data/neuf.json").json();
 ```
 
 # ⚙️ Données & Sources
@@ -33,9 +42,8 @@ amont du marché.
 <div class="hm-privacy">
 🔒 <b>Votre fichier ne quitte pas ce navigateur.</b> Il est lu localement, gardé dans le
 stockage de l'onglet, et toutes les régressions qui en dépendent sont calculées ici, en
-JavaScript. Rien n'est téléversé vers l'API ni vers Cloudflare — c'est pourquoi cette page
-fonctionne même si l'API est éteinte, à ceci près qu'elle n'aura alors aucun driver de
-marché à croiser.
+JavaScript. Rien n'est téléversé nulle part — les drivers amont (transactions, permis)
+viennent des mêmes exports statiques que le reste du site, pas d'un serveur à joindre.
 </div>
 
 ## 1. Importer vos ventes mensuelles
@@ -131,41 +139,46 @@ départager — deux méthodes différentes donneraient deux gagnants.
 </div>
 
 ```js
-const market = await (async () => {
-  try {
-    const [tx, types] = await Promise.all([api.transactionsRunRate(), api.housingTypes()]);
-    return {ok: true, tx: tx.series, types: types.types};
-  } catch (error) {
-    return {ok: false, error};
-  }
-})();
+// Cumul 12 mois des transactions IGEDD, déjà calculé côté export (queries.monthly) —
+// c'est exactement la série que l'ancienne route /market/transactions-run-rate exposait.
+const txSeries = ancienData.main_series.rows
+  .filter((r) => r.roll12 != null)
+  .map((r) => ({date: r.date, value: r.roll12}));
+const housingTypesList = neufData.by_type.types.map((t) => t.name);
+
+// Cumul 12 mois des permis (ou mises en chantier) d'UN type SIT@DEL, reconstruit depuis
+// by_type.series de neuf.json — même donnée que l'ancienne route /market/permits-run-rate,
+// juste indexée par nom plutôt que recalculée à la demande.
+function permitsSeries(typeName, metric) {
+  const t = neufData.by_type.types.find((x) => x.name === typeName);
+  const s = t && neufData.by_type.series.find(
+    (x) => x.type === t.code && x.key === (metric === "Permis" ? "permis" : "mises"));
+  if (!s) return null;
+  return neufData.by_type.dates
+    .map((date, i) => ({date, value: s.roll12[i]}))
+    .filter((r) => r.value != null);
+}
 ```
 
 ```js
-if (!market.ok) display(apiOfflineNotice(market.error));
+const market = {tx: txSeries, types: housingTypesList};
 ```
 
 ```js
-const housingType = market.ok
-  ? view(Inputs.select(market.types, {label: "Type de logement (permis)",
-                                      value: market.types.find((t) => /pure/i.test(t)) ?? market.types[0]}))
-  : null;
-const metric = market.ok
-  ? view(Inputs.select(["Permis", "MisesEnChantier"], {label: "Métrique de construction"}))
-  : null;
+const housingType = view(Inputs.select(market.types, {label: "Type de logement (permis)",
+  value: market.types.find((t) => /pure/i.test(t)) ?? market.types[0]}));
+const metric = view(Inputs.select(["Permis", "MisesEnChantier"], {label: "Métrique de construction"}));
 ```
 
 ```js
-const permits = market.ok && housingType
-  ? (await api.permitsRunRate(housingType, metric)).series
-  : null;
+const permits = housingType ? permitsSeries(housingType, metric) : null;
 ```
 
 ```js
 // Les deux ajustements tournent ICI, sur vos données qui n'ont pas bougé de la page.
 // `bestLagFit` est la transposition JS de `forecast.best_tx_to_monthly` : même grille,
 // même critère (R² maximal), donc les deux drivers sont comparés à armes égales.
-const fitTx = mySales && market.ok ? bestLagFit(market.tx, mySales) : null;
+const fitTx = mySales ? bestLagFit(market.tx, mySales) : null;
 const fitPm = mySales && permits ? bestLagFit(permits, mySales) : null;
 ```
 

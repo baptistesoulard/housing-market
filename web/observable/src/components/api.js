@@ -1,120 +1,21 @@
-// Client de l'API HTTP (couche 4 du patron : le front ne connaît que des routes JSON).
+// Ports JS de calculs Python — pas un client HTTP.
 //
-// Les cinq premières pages du site lisent un JSON statique produit au build par
-// `web/export/web_export.py`. Les pages Prévision et Données, elles, appellent l'API :
-// leurs écrans sont interactifs (curseurs de scénario, curseur de décalage) et ne se
-// réduisent pas à une photo des données.
+// Ce fichier portait un client de l'API HTTP (api/routes.py) ; les pages Prévision et
+// Données s'en sont détachées le 2026-08-23 pour lire des JSON statiques comme les
+// six autres pages du site (voir previsions.json et le commentaire de build_previsions
+// dans web/export/web_export.py) — plus de serveur à joindre pour un visiteur.
 //
-// Base de l'API, par ordre de priorité :
-//   1. `?api=https://…` dans l'URL — pratique pour pointer une instance le temps d'une démo ;
-//      la valeur est mémorisée dans localStorage.
-//   2. `localStorage.hmApiBase` — le réglage retenu.
-//   3. `http://127.0.0.1:8000` — le serveur local lancé par `python -m api`.
+// Ce qui reste ici, ce sont des calculs qui ne PEUVENT PAS être pré-exportés : ils
+// dépendent de données qui n'existent que dans le navigateur (le fichier de ventes
+// importé sur Données & Sources, jamais envoyé nulle part) ou d'hypothèses posées par
+// l'utilisateur (le panneau de scénarios de Prévision). Chacun est un PORT — même
+// calcul, même critère qu'une fonction Python nommée en commentaire — et
+// `tests/test_web_js_parity.py` verrouille l'accord des deux sur les mêmes données :
+// deux implémentations d'un même calcul divergent tôt ou tard si rien ne les compare.
 //
-// Il n'y a donc AUCUNE URL d'hébergement en dur : le site déployé sur Cloudflare Pages
-// reste un site statique qui ne sait pas où vit l'API tant qu'on ne le lui dit pas. C'est
-// ce qui permet de repousser le choix d'hébergement sans toucher au code.
-
-const DEFAULT_BASE = "http://127.0.0.1:8000";
-
-export function apiBase() {
-  if (typeof window === "undefined") return DEFAULT_BASE;
-  const fromQuery = new URLSearchParams(window.location.search).get("api");
-  if (fromQuery) {
-    try { window.localStorage.setItem("hmApiBase", fromQuery); } catch { /* mode privé */ }
-    return fromQuery.replace(/\/$/, "");
-  }
-  try {
-    const saved = window.localStorage.getItem("hmApiBase");
-    if (saved) return saved.replace(/\/$/, "");
-  } catch { /* mode privé */ }
-  return DEFAULT_BASE;
-}
-
-/** Erreur portant de quoi afficher un message utile plutôt qu'un « failed to fetch ». */
-export class ApiError extends Error {
-  constructor(message, {status = null, base = null, path = null} = {}) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.base = base;
-    this.path = path;
-  }
-}
-
-async function request(path, {method = "GET", body = null} = {}) {
-  const base = apiBase();
-  let resp;
-  try {
-    resp = await fetch(base + path, {
-      method,
-      headers: body ? {"Content-Type": "application/json"} : {},
-      body: body ? JSON.stringify(body) : null
-    });
-  } catch (cause) {
-    // fetch ne rejette que sur panne réseau / CORS : le serveur n'est pas joignable.
-    throw new ApiError("API injoignable", {base, path});
-  }
-  if (!resp.ok) {
-    let detail = `HTTP ${resp.status}`;
-    try {
-      const j = await resp.json();
-      detail = j.detail || j.error || detail;
-    } catch { /* corps non JSON */ }
-    throw new ApiError(detail, {status: resp.status, base, path});
-  }
-  return resp.json();
-}
-
-// Une fonction = une question métier, en miroir exact de `api/routes.py`.
-export const api = {
-  health: () => request("/api/health"),
-  rateModel: () => request("/api/forecast/rate-model"),
-  transactionsModel: () => request("/api/forecast/transactions-model"),
-  projection: (horizon = 18) => request(`/api/forecast/projection?horizon=${horizon}`),
-  // Les libellés de type contiennent des espaces (« Logement Collectif ») : encoder,
-  // sinon l'URL est invalide. Un test de contrat verrouille ce détail côté Python.
-  lagSensitivity: (predictor) =>
-    request(`/api/forecast/lag-sensitivity?predictor=${encodeURIComponent(predictor)}`),
-  scenario: (assumptions) =>
-    request("/api/forecast/scenario", {method: "POST", body: assumptions}),
-  revenueBenchmarks: () => request("/api/forecast/revenue-benchmarks"),
-  transactionsRunRate: () => request("/api/market/transactions-run-rate"),
-  housingTypes: () => request("/api/market/housing-types"),
-  permitsRunRate: (type, metric = "Permis") =>
-    request(`/api/market/permits-run-rate?type=${encodeURIComponent(type)}` +
-            `&metric=${encodeURIComponent(metric)}`)
-};
-
-/** Encart d'explication quand l'API ne répond pas — le cas NORMAL sur le site déployé. */
-export function apiOfflineNotice(error) {
-  const div = document.createElement("div");
-  div.className = "hm-api-offline";
-  const base = error?.base ?? apiBase();
-  // Le message s'adresse D'ABORD à un visiteur de passage — le site est public, et cet
-  // encart est ce qu'il voit tant qu'aucune instance de l'API n'est désignée. Lui servir
-  // une commande `python -m api` en première ligne, c'est lui répondre dans une langue
-  // qui n'est pas la sienne : on lui dit donc ce qui manque, où aller en attendant, et on
-  // range le mode d'emploi du développeur dans un repli.
-  div.innerHTML = `
-    <div class="hm-api-offline-title">⚙️ Cette page a besoin d'un moteur de calcul</div>
-    <p>Les cinq premières pages du site sont des exports statiques et fonctionnent seules.
-    Celle-ci relance un calcul à chaque question posée — c'est tout son intérêt — et
-    demande donc qu'un serveur réponde. Aucun n'est joignable pour le moment.</p>
-    <p>En attendant, <a href="/synthese">la synthèse du marché</a> et les pages de détail
-    restent complètes, et <a href="/a-propos">la méthode</a> explique ce que cette page
-    calcule.</p>
-    <details>
-      <summary>Vous avez le dépôt en local&nbsp;?</summary>
-      <p>Depuis sa racine :</p>
-      <pre><code>python -m api</code></pre>
-      <p>Puis rechargez la page. Pour viser une autre instance, ajoutez
-      <code>?api=https://mon-api.example</code> à l'URL — la valeur est mémorisée.</p>
-    </details>
-    <p class="hm-api-offline-detail">Tentative sur <code>${base}</code> —
-    ${error?.message ?? "injoignable"}.</p>`;
-  return div;
-}
+// Le backend Flask (api/, python -m api) reste intact et testé : ce n'est pas son
+// retrait, seulement celui de son appel depuis ces deux pages. Voir CLAUDE.md,
+// « L'API HTTP ».
 
 /** Régression linéaire simple y = a + b·x, en JS.
  *
@@ -169,4 +70,32 @@ export function bestLagFit(driverRows, salesRows, lags = 19) {
     if (fit && (!best || fit.r2 > best.r2)) best = {...fit, lag};
   }
   return best;
+}
+
+/** Effet à terme d'un jeu d'hypothèses macro sur le taux de crédit et les transactions.
+ *
+ * Port terme à terme de `forecast.scenario` : approche EN ÉCART, ancrée sur les valeurs
+ * actuelles réelles (`base`), pas sur les niveaux bruts des coefficients — le modèle de
+ * taux sur-prédit le niveau courant (voir le commentaire de `forecast.scenario`), donc
+ * seule la SENSIBILITÉ aux variations est fiable.
+ *
+ * rateCoef/txCoef : `{intercept, oat, euribor}` / `{intercept, rate, intentions,
+ * unemployment}`, tels qu'exportés dans previsions.json (rate.coefficients /
+ * transactions.coefficients). base : scenario_baseline du même export. scen :
+ * {oat, euribor, chom, intentZ} — les quatre curseurs du panneau.
+ */
+export function computeScenario(rateCoef, txCoef, base, {oat, euribor, chom, intentZ}) {
+  const intent = base.intentions_mean + intentZ * base.intentions_std;
+  const dRate = rateCoef.oat * (oat - base.oat) + rateCoef.euribor * (euribor - base.euribor);
+  const rateScen = base.rate_now + dRate;
+  const dTx = txCoef.rate * dRate
+    + txCoef.intentions * (intent - base.intentions)
+    + txCoef.unemployment * (chom - base.unemployment);
+  const tx0 = base.tx_now;
+  return {
+    baseline: base,
+    rate: rateScen, rate_change: dRate,
+    transactions: tx0 + dTx, transactions_change: dTx,
+    transactions_change_pct: tx0 ? (dTx / tx0 * 100) : null,
+  };
 }

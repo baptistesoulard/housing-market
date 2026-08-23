@@ -273,11 +273,6 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
   border-radius: 6px; padding: 0.9rem 1.1rem; margin: 1rem 0; background: var(--hm-surface); }
 .hm-api-offline-title { font-weight: 600; color: var(--hm-ink); margin-bottom: 0.4rem; }
 .hm-api-offline p { margin: 0.35rem 0; font-size: 0.875rem; }
-.hm-api-offline pre { margin: 0.4rem 0; padding: 0.5rem 0.7rem; border-radius: 4px;
-  background: var(--hm-bg); overflow-x: auto; }
-.hm-api-offline-detail { color: var(--theme-foreground-muted); font-size: 0.78rem; }
-.hm-api-offline details { margin: 0.5rem 0 0.2rem; font-size: 0.875rem; }
-.hm-api-offline summary { cursor: pointer; }
 .hm-privacy { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-green);
   border-radius: 6px; padding: 0.75rem 1.1rem; margin: 1rem 0; font-size: 0.875rem;
   background: var(--hm-surface); }

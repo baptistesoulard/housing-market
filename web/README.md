@@ -9,7 +9,7 @@ couche back-office Python**. Ce PoC couvre les **5 premiers onglets** de l'app.
 
 ```
   [ INCHANGÉ — back-office Python ]                 [ NOUVEAU — couche produit ]
-  data_manager / analysis / forecast  ──►  web_export.py  ──►  5 JSON statiques
+  data_manager / analysis / forecast  ──►  web_export.py  ──►  JSON statiques
   actualites / DataManager (Parquet→CSV)                             │
                                                                      ▼
                                               Observable Framework  ──►  dist/ (HTML/JS)
@@ -29,7 +29,7 @@ fait que **lire** ces JSON : aucun Python n'est requis au build du site.
 ```
 web/
 ├── export/
-│   ├── web_export.py            # agrégats Python → 5 JSON statiques + theme.js
+│   ├── web_export.py            # agrégats Python → JSON statiques + theme.js
 │   └── theme.py                 # charge web/theme.json, génère components/theme.js
 ├── observable/
 │   ├── site.config.js           # IDENTITÉ : adresse publique, descriptions, NAV, logo
@@ -201,52 +201,64 @@ reconstruit le site à chaque publication de données. L'export est gardé par l
 (`generated_at` exclu de la comparaison) : un run sans nouveauté ne produit aucun diff et
 donc aucun rebuild inutile.
 
-## Deux façons d'alimenter une page
+## Toutes les pages sont statiques — deux ajoutent un calcul client
 
-Le site mélange délibérément deux régimes. Le critère est simple : **ce que l'utilisateur
-consulte** est précalculé, **ce qu'il interroge** passe par l'API.
+**Jusqu'au 2026-08-23**, Prévision et Données appelaient une API HTTP (`api/`) à chaque
+question posée : le site statique ne fonctionnait pour elles qu'à condition qu'une
+instance de l'API soit joignable quelque part, ce qui n'a jamais été le cas pour un
+visiteur du site déployé. Ce n'est plus vrai : les **huit pages** lisent maintenant un
+JSON statique produit par `web_export.py`, comme les six premières l'ont toujours fait.
+Le septième export, `previsions.json`, appelle `api.engine` **au build**, pas au
+runtime — voir `build_previsions` dans `web/export/web_export.py`.
 
-| | Pages statiques (Synthèse, Neuf, Ancien, Macro, Actualités, Prévisions passées) | Pages 6-7 (Prévision, Données) |
-|---|---|---|
-| Source | JSON statique commité, produit par `web_export.py` | `fetch()` vers l'API HTTP `api/` |
-| Interaction | filtres d'affichage sur des données déjà calculées | l'utilisateur pose des questions qui **relancent un calcul** |
-| Sans serveur | fonctionnent entièrement | affichent un encart expliquant comment lancer l'API |
-| Déploiement | Cloudflare Pages suffit | Cloudflare Pages **+** une instance de l'API quelque part |
+Deux pages ajoutent par-dessus un calcul **côté client**, en JavaScript, jamais un appel
+réseau :
 
-Précalculer les pages 6-7 aurait été possible pour la plupart des états (la grille de
-décalages est finie), mais pas pour le panneau de scénarios : quatre curseurs continus,
-c'est un espace d'hypothèses qu'on n'énumère pas. D'où l'API.
+- **Données & Sources** — la régression contre le fichier de ventes importé par
+  l'utilisateur. Ce fichier ne quitte jamais le navigateur (voir plus bas) ; le calcul ne
+  peut donc pas être précalculé côté serveur, il n'existe qu'après l'import.
+- **Prévision & Scénarios** — le panneau à quatre curseurs continus. Précalculer un point
+  par position de curseur est impossible (l'espace d'hypothèses ne s'énumère pas), mais le
+  calcul lui-même est une formule fermée à huit multiplications
+  (`computeScenario` dans `src/components/api.js`, port terme à terme de
+  `forecast.scenario`) appliquée aux coefficients déjà exportés — aucune raison d'en faire
+  un aller-retour réseau. La courbe de sensibilité aux décalages, elle, EST précalculée
+  pour les trois prédicteurs : déplacer son curseur ne fait qu'une lecture.
 
-### Lancer l'API
+Les deux implémentations dupliquées (JS ↔ Python) sont verrouillées par
+`tests/test_web_js_parity.py` — voir « Vos ventes société ne quittent pas le
+navigateur » plus bas pour la première, et le même fichier pour la seconde
+(`test_scenario_matches_python`).
 
-Depuis la racine du dépôt :
+### L'API HTTP (`api/`) reste utilisable, mais n'est plus appelée par le site
+
+Le retrait porte sur l'appel réseau depuis ces deux pages, pas sur `api/` lui-même :
+`api/routes.py`, `api/engine.py` et `tests/test_api_contract.py` sont intacts et
+continuent de tourner. `python -m api` reste la façon de lancer une instance locale, pour
+qui veut explorer les mêmes routes sans passer par le front :
 
 ```
 pip install flask          # seule dépendance ajoutée, optionnelle
 python -m api              # http://127.0.0.1:8000/api/health
 ```
 
-Puis le front, qui vise `http://127.0.0.1:8000` par défaut :
-
-```
-npm --prefix web/observable run dev
-```
-
-Pour viser une autre instance sans rebuild, ajouter `?api=https://mon-api.example` à
-l'URL d'une des deux pages : la valeur est retenue dans le navigateur. **Aucune URL
-d'hébergement n'est écrite en dur** — c'est ce qui permet de déployer le site statique
-aujourd'hui et de décider plus tard où (et si) l'API vit en ligne.
-
 ### L'architecture de l'API
 
 ```
-navigateur ──fetch()──► api/routes.py ──► api/engine.py ──► queries.py / forecast.py
+web_export.py ──appel Python──► api/engine.py ──► queries.py / forecast.py
+                                       ▲
+                    (optionnel, local) │
+                         navigateur ───┘ fetch() ──► api/routes.py
 ```
 
-Chaque couche ne connaît que la suivante. Deux règles à ne pas casser :
+`api/engine.py` est la seule couche que les deux chemins partagent — c'est ce qui garantit
+que le JSON publié et une instance locale de l'API calculeraient exactement les mêmes
+chiffres. Deux règles à ne pas casser :
 
 1. **`api/engine.py` n'importe pas Flask.** Le moteur reste exécutable et testable serveur
-   éteint. Si un calcul se met à importer Flask, la couche est au mauvais endroit.
+   éteint — c'est cet invariant qui permet à `web_export.py` de l'appeler directement, en
+   important le module Python, sans passer par HTTP. Si un calcul se met à importer Flask,
+   la couche est au mauvais endroit.
 2. **Une route = une question métier**, pas une table. `/api/forecast/projection`, jamais
    `/api/table/macro?filter=…` — ce dernier reviendrait à réinventer SQL par-dessus HTTP
    et ferait migrer la logique métier dans le front.
@@ -413,8 +425,8 @@ python web/export/web_export.py      # écrit src/data/departements/*.json + l'i
 npm --prefix web/observable run build
 ```
 
-`web_export.py` compte les départements **à part** des six JSON nationaux : la ligne
-`0/6 fichier(s) modifié(s)` doit rester lisible, c'est un signal de régression.
+`web_export.py` compte les départements **à part** des sept JSON nationaux : la ligne
+`0/7 fichier(s) modifié(s)` doit rester lisible, c'est un signal de régression.
 
 ### Pourquoi ces pages ne se chargent pas comme les autres
 
@@ -508,13 +520,12 @@ qui écrit). L'accueil a pris la racine `/` ; la Synthèse est passée à `/synt
 ### Suite
 
 - ✅ **Les 7 onglets sont portés.** Prévision & Scénarios et Données & Sources ont
-  rejoint le site le 2026-08-20, mais **par un autre chemin** que les cinq premiers :
-  voir « Deux façons d'alimenter une page » ci-dessous.
+  rejoint le site le 2026-08-20 par un chemin différent des cinq premiers (l'API HTTP),
+  puis sont passées au **même chemin** que les six autres pages le 2026-08-23 — voir
+  « Toutes les pages sont statiques » ci-dessous. Aucune des huit pages de données
+  n'a plus besoin d'un serveur pour fonctionner.
 - ✅ **Le site est publiable.** Accueil et À propos rédigés, métadonnées de partage et
   de référencement, sitemap, favicon, langue du document et lien d'évitement — voir
   « Être trouvable et partageable ».
 - ⏭️ Bilingue FR/EN pour les deux nouvelles pages (les cinq premières le sont déjà via
   l'export Python).
-- ⏭️ Héberger l'API : sans instance en HTTPS, les pages Prévision et Données affichent
-  leur encart à tout visiteur (un site en HTTPS ne peut de toute façon pas appeler le
-  `http://127.0.0.1:8000` de repli).

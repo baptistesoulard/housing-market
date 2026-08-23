@@ -40,10 +40,13 @@ mêmes chiffres par construction.
 d'exécution y reste délibérément (voir invariants).
 
 Un troisième chantier, côté front web, est lui aussi **terminé** : les 7 onglets sont
-portés vers Observable. Les cinq premiers lisent un JSON statique produit par
-`web_export.py` ; les deux derniers (Prévision, Données) interrogent l'API HTTP `api/`.
-Ce n'est pas du compute — `api/` ne recalcule rien, il expose `queries.py` et
-`forecast.py` en JSON. Voir « L'API HTTP » plus bas et `web/README.md`.
+portés vers Observable, et depuis le 2026-08-23 les **7** lisent un JSON statique produit
+par `web_export.py` — Prévision et Données appelaient l'API HTTP `api/` jusque-là,
+elles lisent maintenant `previsions.json` (Prévision) ou dérivent leurs séries de
+`ancien.json`/`neuf.json` déjà publiés (Données). `api/` reste debout et testé
+(`python -m api`), mais n'est plus appelée par aucune page du site — seulement par
+`web_export.py`, en import Python direct. Voir « L'API HTTP » plus bas et
+`web/README.md`.
 
 Un quatrième, **terminé** lui aussi : faire du front un **site publiable**. Deux pages
 rédigées se sont ajoutées aux sept pages de données (accueil et À propos), avec les
@@ -127,23 +130,48 @@ cumul 12 mois par `q.monthly(..., windows=(12,))`, donc en SQL.
 du dataset : il opère sur ce qu'on lui donne, il n'a pas de source à interroger.
 
 **Ne pas régénérer les JSON du front sans vérifier.** `python web/export/web_export.py`
-doit annoncer `0/5 fichier(s) modifié(s)`. Un diff inattendu signale une divergence de
+doit annoncer `0/7 fichier(s) modifié(s)`. Un diff inattendu signale une divergence de
 calcul, pas du bruit — depuis que les agrégations sont en SQL, la sortie ne dépend plus de
 la version de pandas/numpy.
 
 ## L'API HTTP (`api/`) — ce qui doit rester vrai
 
+> **Depuis le 2026-08-23, plus aucune page du site n'appelle cette API par HTTP.**
+> Prévision & Scénarios lisait `api/routes.py` en direct depuis le navigateur ; elle lit
+> maintenant `previsions.json`, un septième export produit par `web_export.py` qui
+> appelle `api.engine` **en important le module Python**, au build, pas au runtime (voir
+> `build_previsions`). Données & Sources, qui appelait `/market/transactions-run-rate`,
+> `/market/housing-types` et `/market/permits-run-rate`, dérive maintenant les mêmes
+> séries de `ancien.json`/`neuf.json`, déjà publiés pour d'autres pages — aucun nouvel
+> export n'était nécessaire pour celles-là. Le panneau de scénarios (quatre curseurs
+> continus, un espace d'hypothèses qui ne s'énumère pas) reste un calcul CLIENT, mais en
+> JS pur (`computeScenario`, `src/components/api.js`, port de `forecast.scenario`,
+> vérifié par `tests/test_web_js_parity.py`) — plus un POST réseau pour huit
+> multiplications.
+>
+> `api/routes.py`, `api/engine.py` et `tests/test_api_contract.py` restent intacts et
+> testés : ce n'est pas un retrait de l'API, seulement de son appel HTTP depuis ces deux
+> pages. `python -m api` reste une façon légitime d'explorer les mêmes routes en local.
+> `src/components/api.js`, en revanche, a perdu tout son client HTTP (`request`,
+> `apiBase`, `ApiError`, l'objet `api`, `apiOfflineNotice`) — plus rien ne l'appelait,
+> et il ne porte plus que des ports JS de calculs Python (`ols1`, `shiftMonths`,
+> `bestLagFit`, `computeScenario`).
+
 Trois couches, chacune ne connaissant que la suivante :
 
 ```
-navigateur ──fetch()──► api/routes.py ──► api/engine.py ──► queries.py / forecast.py
+web_export.py ──appel Python──► api/engine.py ──► queries.py / forecast.py
+                                       ▲
+                    (optionnel, local) │
+                         navigateur ───┘ fetch() ──► api/routes.py
 ```
 
 **`api/engine.py` n'importe pas Flask, et ne doit jamais l'importer.** C'est l'invariant
 central : le moteur reste exécutable et testable serveur éteint
-(`python -c "from api import engine; print(engine.rate_model()['r2'])"`). Seul
-`api/routes.py` connaît HTTP. Un calcul qui se met à importer Flask est un calcul rangé au
-mauvais endroit.
+(`python -c "from api import engine; print(engine.rate_model()['r2'])"`) — c'est cet
+invariant qui permet à `web_export.py` de l'appeler directement, en import Python, sans
+passer par HTTP. Seul `api/routes.py` connaît HTTP. Un calcul qui se met à importer Flask
+est un calcul rangé au mauvais endroit.
 
 **Aucune logique métier dans `routes.py`.** Une route lit des paramètres, appelle le
 moteur, sérialise. Rien d'autre.
@@ -167,9 +195,11 @@ haut) est ce qui empêche deux appels simultanés de se voler leur jeu de résul
 `tests/test_api_contract.py::test_concurrent_requests_do_not_swap_payloads` rejoue la
 course sur un vrai serveur.
 
-**Flask est optionnel.** Ni `app.py`, ni `report.py`, ni `web_export.py` n'en dépendent.
-Les deux pages web qui appellent l'API affichent un encart quand elle ne répond pas, donc
-le site statique reste déployable seul.
+**Flask est optionnel.** Ni `app.py`, ni `report.py`, ni `web_export.py` n'en dépendent —
+ce dernier importe `api.engine`, pas `api.routes`. Le site statique n'appelle plus l'API
+du tout (voir l'encart en tête de section) ; l'encart `.hm-api-offline` qui subsiste sur
+Prévision et Données ne se déclenche plus que si le modèle n'a pas pu être calibré à la
+dernière publication (macro incomplète), pas si un serveur est injoignable.
 
 **Les ventes société ne passent PAS par l'API.** Décision produit : le CSV est lu dans le
 navigateur et n'est jamais téléversé. Conséquence directe — la régression qui en dépend
@@ -296,8 +326,8 @@ Trois conséquences à tenir :
   lisent. C'est l'inverse du tableau des sources d'À propos, qui porte des dates
   précisément parce qu'une chaîne Python les y réécrit.
 - **Les champs `title` et `caption` des JSON du front ne sont plus lus par le site.** Ils
-  restent produits par `web_export.py` : les retirer ferait diffuser un diff sur les six
-  fichiers, alors que le compteur « n/6 fichier(s) modifié(s) » ne vaut que par son
+  restent produits par `web_export.py` : les retirer ferait diffuser un diff sur les sept
+  fichiers, alors que le compteur « n/7 fichier(s) modifié(s) » ne vaut que par son
   pouvoir d'alerte. À nettoyer dans une passe qui régénère les JSON délibérément, pas au
   détour d'une édition de texte. `how_to_read` reste, lui, bel et bien consommé — il
   remplit le repli « Comment lire cette page », qui reste dynamique.
@@ -324,7 +354,7 @@ statique, mais ses treize lignes portent le dernier point publié de chaque sér
 robots s'il était rempli par un bloc ```js. `web/export/sources_table.py` déclare les
 sources (intitulé, page du producteur, voie d'accès, dataset, colonnes, périodicité) et
 réécrit les `<tr>` entre les marqueurs `hm:sources` d'`a-propos.md` ; `web_export.py`
-l'appelle en fin de `main()`, **hors du compteur « n/6 »** (ce n'est pas un JSON du front,
+l'appelle en fin de `main()`, **hors du compteur « n/7 »** (ce n'est pas un JSON du front,
 et le compteur vaut par son pouvoir d'alerte). Trois conséquences : ne jamais éditer ces
 lignes à la main ; `a-propos.md` figure dans le `git add` du workflow hebdo, sans quoi la
 page de provenance figerait ses dates à la dernière publication manuelle ;
@@ -437,13 +467,13 @@ ni au clavier ni au lecteur d'écran. Les deux légendes du site (`components/hm
 `synthese.md`) sont des boutons dont le CSS neutralise l'apparence — le rendu n'a pas
 changé.
 
-**L'encart « API injoignable » s'adresse d'abord à un visiteur, pas à un développeur.**
-Le site est public : tant qu'aucune instance n'est désignée, c'est ce que voit tout le
-monde sur Prévision et Données. Le mode d'emploi `python -m api` est rangé dans un repli,
-sous une explication en français courant et des renvois vers les pages qui fonctionnent.
-À noter : un site servi en HTTPS ne peut pas appeler le `http://127.0.0.1:8000` de repli
-(contenu mixte), donc **ces deux pages resteront en encart pour un visiteur externe tant
-que l'API n'est pas hébergée**.
+**L'encart `.hm-api-offline` a changé de sens le 2026-08-23.** Prévision et Données ne
+dépendent plus d'un serveur HTTP (voir « L'API HTTP » plus haut) : un visiteur externe
+les voit désormais fonctionner, comme les six autres pages. L'encart subsiste, mais pour
+un cas bien plus rare — `available: false` dans `previsions.json`, c'est-à-dire un
+modèle non calibrable à la dernière publication hebdomadaire (macro incomplète), pas un
+serveur injoignable. `python -m api` reste utile pour explorer les mêmes routes en
+local, mais plus aucune page n'en a besoin pour s'afficher.
 
 ## L'archive des prévisions — ce qui ne doit jamais bouger
 
@@ -485,9 +515,11 @@ Le script ouvre l'entrepôt avec `refresh=True`, donc il reconstruit lui-même C
 Parquet — il ne dépend pas de l'export pour ça. Un modèle non calibrable n'interrompt pas le
 job : on perdrait une publication de données pour une ligne d'archive.
 
-**Le front compte maintenant SIX JSON**, pas cinq : `python web/export/web_export.py` doit
-annoncer `0/6 fichier(s) modifié(s)` quand rien n'a bougé. `archive.json` change, lui, dès
-qu'une prévision est enregistrée — c'est normal, contrairement aux cinq autres.
+**Le front comptait SIX JSON à l'ajout de l'archive**, pas cinq — et en compte **sept**
+depuis le 2026-08-23 (`previsions.json`, voir « L'API HTTP ») : `python
+web/export/web_export.py` doit annoncer `0/7 fichier(s) modifié(s)` quand rien n'a bougé.
+`archive.json` change, lui, dès qu'une prévision est enregistrée — c'est normal,
+contrairement aux autres.
 
 **Un bloc ```` ```js ```` collé sous un `<div>` n'est plus une cellule.** Sans ligne vide
 entre les deux, l'analyseur Markdown range la clôture dans le bloc HTML : le code
@@ -669,9 +701,9 @@ vérifier sur `dist/`.
 - **Pas de filtre départemental sur les pages existantes.** Un particulier n'a que faire
   des permis SIT@DEL ou du solde d'opinion de l'enquête BLS.
 - **Pas d'estimation de bien à l'adresse.** Autre métier, et hors de l'angle du site.
-- **Le compteur « n/6 fichier(s) modifié(s) » reste à 6.** `build_departements` est
-  volontairement hors de `_BUILDERS` : noyer ce compteur dans un total à 107 lui ferait
-  perdre son pouvoir d'alerte, alors qu'un diff inattendu sur l'un des six signale une
+- **Le compteur « n/7 fichier(s) modifié(s) » reste à 7.** `build_departements` est
+  volontairement hors de `_BUILDERS` : noyer ce compteur dans un total à 108 lui ferait
+  perdre son pouvoir d'alerte, alors qu'un diff inattendu sur l'un des sept signale une
   divergence de calcul.
 
 ## Vérifier la parité
@@ -684,7 +716,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 204 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 230 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

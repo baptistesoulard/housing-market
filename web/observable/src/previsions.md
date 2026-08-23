@@ -6,30 +6,21 @@ toc: true
 ```js
 import {multiLine, cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
-import {api, apiOfflineNotice} from "./components/api.js";
+import {computeScenario} from "./components/api.js";
 ```
 
 ```js
-// Cette page ne lit AUCUN JSON statique : elle interroge le moteur en direct. C'est la
-// différence avec les cinq premières pages — ici l'utilisateur pose des questions
-// (« et si l'OAT montait d'un point ? »), il ne consulte pas une photo des données.
-//
-// Tout le socle est chargé en une fois, en parallèle. Les curseurs qui suivent ne
-// déclenchent qu'un POST /scenario (huit multiplications côté serveur) ou une lecture
-// dans la courbe de sensibilité déjà en mémoire — jamais un rechargement de page.
-const boot = await (async () => {
-  try {
-    const [health, rate, tx, path] = await Promise.all([
-      api.health(), api.rateModel(), api.transactionsModel(), api.projection()
-    ]);
-    return {ok: true, health, rate, tx, path};
-  } catch (error) {
-    return {ok: false, error};
-  }
-})();
-const R = boot.ok ? boot.rate : null;
-const T = boot.ok ? boot.tx : null;
-const P = boot.ok ? boot.path : null;
+// Le modèle est réajusté chaque semaine par web_export.py (via api.engine, sans Flask —
+// voir CLAUDE.md, « L'API HTTP ») et publié ici comme les cinq premières pages : plus de
+// serveur à joindre pour un visiteur. Ce qui restait interactif sans recalcul serveur l'est
+// resté : la courbe de sensibilité est pré-calculée pour les 3 prédicteurs (le curseur ne
+// fait plus qu'y lire un point), et le panneau de scénarios applique en JS la même formule
+// fermée que `forecast.scenario` (voir computeScenario, components/api.js) — huit
+// multiplications, pas de quoi justifier un aller-retour réseau.
+const data = await FileAttachment("./data/previsions.json").json();
+const R = data.available ? data.rate : null;
+const T = data.available ? data.transactions : null;
+const P = data.available ? data.projection : null;
 const pct = (v) => nf1.format(v * 100) + " %";
 ```
 
@@ -60,18 +51,23 @@ de crédit, les intentions d'achat et le chômage, chacun décalé. Un backtest 
 </div>
 
 ```js
-// Quand l'API ne répond pas, la page le dit et s'arrête là — plutôt que d'afficher des
-// graphiques vides. C'est l'état NORMAL du site déployé tant qu'aucune instance n'est
-// désignée : l'encart explique la marche à suivre.
-display(boot.ok
-  ? html`<div class="hm-caption">Données jusqu'à
-      ${fmtMonthFR(new Date(boot.health.transactions_last_month + "T00:00:00Z"))} ·
-      entraînement du backtest ≤ ${boot.health.forecast_split.slice(0, 4)}.</div>`
-  : apiOfflineNotice(boot.error));
+// `available: false` ne peut venir que d'un macro incomplet au moment de la publication
+// hebdomadaire (voir EngineUnavailable, api/engine.py) — pas d'un serveur injoignable,
+// cette page n'en appelle plus aucun. Cas rare, jamais vu en pratique ; l'encart explique
+// quand même ce qui manque plutôt que de laisser des graphiques vides.
+if (data.available) display(html`<div class="hm-caption">Données jusqu'à
+    ${fmtMonthFR(new Date(data.health.transactions_last_month + "T00:00:00Z"))} ·
+    entraînement du backtest ≤ ${data.health.forecast_split.slice(0, 4)}.</div>`);
+else display(html`<div class="hm-api-offline">
+  <div class="hm-api-offline-title">⚙️ Modèle non calibré à la dernière publication</div>
+  <p>${data.reason}</p>
+  <p>En attendant, <a href="/synthese">la synthèse du marché</a> et les pages de détail
+  restent complètes.</p>
+</div>`);
 ```
 
 ```js
-if (boot.ok) display(html`<hr>`);
+if (data.available) display(html`<hr>`);
 ```
 
 ## 1. Modèle de taux de crédit (OAT 10 ans + Euribor 3 mois)
@@ -153,7 +149,9 @@ const predictor = view(Inputs.select(Object.keys(predictorLabels), {
 ```
 
 ```js
-const sens = boot.ok ? await api.lagSensitivity(predictor) : null;
+// Les 3 courbes (une par prédicteur) sont pré-calculées côté export : changer de
+// prédicteur ne fait plus qu'une lecture dans le JSON déjà chargé, jamais de requête.
+const sens = data.available ? data.lag_sensitivity[predictor] : null;
 ```
 
 ```js
@@ -287,7 +285,7 @@ niveau actuel réel — approche en écart, robuste au biais de niveau du modèl
 </div>
 
 ```js
-const base = boot.ok ? (await api.scenario({})).baseline : null;
+const base = data.available ? data.scenario_baseline : null;
 const r1 = (v) => Math.round(v * 10) / 10;
 ```
 
@@ -303,11 +301,12 @@ const intentZ = base ? view(Inputs.range([-2.5, 2.5],
 ```
 
 ```js
-// Un POST par déplacement de curseur. La route ne fait que huit multiplications : c'est
-// le calcul le plus léger de l'API, et il reste côté serveur pour que les coefficients du
-// modèle n'aient pas à être dupliqués dans le front.
+// Huit multiplications, en JS — computeScenario reproduit forecast.scenario terme à
+// terme (voir components/api.js) sur les coefficients exportés. Pas de quoi justifier un
+// aller-retour réseau à chaque déplacement de curseur, contrairement au POST que l'API
+// exposait pour cette même route.
 const sc = base
-  ? await api.scenario({oat, euribor, unemployment: chom, intentions_z: intentZ})
+  ? computeScenario(R.coefficients, T.coefficients, base, {oat, euribor, chom, intentZ})
   : null;
 ```
 
@@ -339,7 +338,7 @@ if (sc) display(Plot.plot({
 ## → Propagation au chiffre d'affaires benchmark
 
 ```js
-const bench = boot.ok ? await api.revenueBenchmarks() : {companies: []};
+const bench = data.available ? data.revenue_benchmarks : {companies: []};
 ```
 
 ```js
