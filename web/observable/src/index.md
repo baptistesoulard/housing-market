@@ -1,5 +1,5 @@
 ---
-title: HousingMarket — Marché du logement en France
+title: Baromètre du Logement — marché immobilier français
 toc: false
 ---
 
@@ -29,9 +29,9 @@ const data = await FileAttachment("./data/synthese.json").json();
 
 # Où en est le marché du logement en France ?
 
-<p class="hm-lead">HousingMarket met en regard la construction neuve, les ventes dans
-l'ancien, les prix et les conditions de financement — puis en tire une prévision des
-transactions à 12-18 mois. Chacune est archivée le jour de sa publication, puis
+<p class="hm-lead">Le Baromètre du Logement met en regard la construction neuve, les
+ventes dans l'ancien, les prix et les conditions de financement — puis en tire une
+prévision des transactions à 12-18 mois. Chacune est archivée le jour de sa publication, puis
 confrontée au réel.</p>
 
 <div class="hm-actions">

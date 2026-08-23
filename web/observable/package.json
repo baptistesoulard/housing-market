@@ -1,9 +1,9 @@
 {
-  "name": "housingmarket-web",
+  "name": "barometre-logement-web",
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "description": "Site statique HousingMarket (Observable Framework) — baromètre du marché du logement en France. Les données des cinq premières pages sont produites par web/export/web_export.py.",
+  "description": "Site statique du Baromètre du Logement (Observable Framework) — le marché immobilier français en données. Les données des cinq premières pages sont produites par web/export/web_export.py.",
   "scripts": {
     "dev": "observable preview",
     "build": "observable build && node scripts/postbuild.mjs",

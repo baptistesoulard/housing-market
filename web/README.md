@@ -1,6 +1,7 @@
 # Front statique — PoC de migration hors Streamlit
 
 Preuve de concept : porter le dashboard HousingMarket vers un **site statique moderne**
+(publié sous la marque **Baromètre du Logement**, cf. `SITE` dans `site.config.js`)
 (Observable Framework) déployable sur Cloudflare Pages / Netlify, **sans réécrire la
 couche back-office Python**. Ce PoC couvre les **5 premiers onglets** de l'app.
 
@@ -125,7 +126,9 @@ Connecter le dépôt à Cloudflare Pages avec :
 
 Et **une variable d'environnement** (Settings → Environment variables) :
 
-- `HM_SITE_URL` = l'adresse publique définitive, aujourd'hui `https://housing-market.pages.dev`
+- `HM_SITE_URL` = l'adresse publique, aujourd'hui `https://barometre-logement.com`
+  (c'est aussi le repli codé dans `site.config.js`, donc un build sans la variable reste
+  juste ; la variable sert à construire une préversion sous une autre adresse)
 
 C'est elle qui écrit les URL canoniques, le sitemap et les balises Open Graph. Sans elle,
 le repli de `site.config.js` est utilisé et le build l'annonce en clair (`postbuild:

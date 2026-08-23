@@ -1,4 +1,4 @@
-// Configuration Observable Framework — dashboard HousingMarket (site statique).
+// Configuration Observable Framework — Baromètre du Logement (site statique).
 // `npm run build` produit web/observable/dist/, déployé sur Cloudflare Pages (Node-only).
 //
 // Les couleurs ET les polices viennent de web/theme.json (source unique de vérité,
@@ -609,7 +609,7 @@ d'analyse indépendant, sans lien avec ces organismes.</p>
 pas un conseil en investissement.</p>`;
 
 export default {
-  // `title` complète le <title> de CHAQUE page (« Synthèse | HousingMarket — Marché du
+  // `title` complète le <title> de CHAQUE page (« Synthèse | Baromètre du Logement — marché
   // logement en France ») : c'est la seule ligne que voit quelqu'un qui découvre le site
   // dans une page de résultats, d'où le titre qualifié plutôt que le nom seul. `home`
   // reste le nom court, parce que c'est lui qui s'affiche dans la barre latérale.

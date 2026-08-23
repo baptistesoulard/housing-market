@@ -93,10 +93,14 @@ console.log(
   `postbuild: ${patched}/${pages.length} page(s) complétée(s) (lang="${SITE.lang}", lien d'évitement, favicon), ` +
   `sitemap de ${INDEXABLE.length} URL, robots.txt → ${SITE.url}`
 );
-if (SITE.url.includes("pages.dev") && !process.env.HM_SITE_URL) {
+// L'avertissement guettait autrefois une adresse *.pages.dev, signe que le domaine
+// définitif n'avait pas été réglé. Le repli EST maintenant le domaine de production, donc
+// un build sans la variable est correct et n'a plus à alarmer. Ce qui reste utile à dire,
+// c'est d'OÙ vient l'adresse : une préversion construite sans HM_SITE_URL annoncerait des
+// URL de production, et c'est la seule confusion qui subsiste.
+if (!process.env.HM_SITE_URL) {
   console.warn(
-    "postbuild: ATTENTION — HM_SITE_URL n'est pas défini, l'adresse de repli de " +
-    "site.config.js a été utilisée. Les URL canoniques, le sitemap et l'aperçu de " +
-    "partage pointent donc vers " + SITE.url + "."
+    "postbuild: HM_SITE_URL n'est pas défini — le repli de site.config.js a été utilisé. " +
+    "Les URL canoniques, le sitemap et l'aperçu de partage pointent vers " + SITE.url + "."
   );
 }

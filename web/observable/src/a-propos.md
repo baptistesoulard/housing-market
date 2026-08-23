@@ -21,7 +21,8 @@ toc: true
 
 <div class="hm-lead">
 
-HousingMarket est un baromètre indépendant du marché du logement français : il rassemble
+Le Baromètre du Logement est un observatoire indépendant du marché immobilier français :
+il rassemble
 les séries publiques qui décrivent la construction neuve, les ventes dans l'ancien, les
 prix et le crédit, les met à la même échelle de temps, et en tire une prévision des
 transactions à 12-18 mois.

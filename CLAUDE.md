@@ -353,7 +353,7 @@ sélecteur entre accents graves dans ce fichier.
 
 **Aucune URL d'hébergement en dur.** Les balises Open Graph et l'URL canonique exigent des
 adresses ABSOLUES ; elles viennent de `HM_SITE_URL` (variable d'environnement Cloudflare
-Pages), avec un repli `*.pages.dev` que le build signale en clair. Un test injecte une
+Pages), avec pour repli le domaine de production lui-même. Un test injecte une
 adresse différente du repli et vérifie que tout suit — c'est ce qui empêche une URL de se
 figer dans le code. Une adresse fausse ne casse aucune page : elle casse silencieusement
 l'aperçu au partage et le référencement.

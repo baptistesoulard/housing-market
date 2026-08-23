@@ -46,10 +46,12 @@ export const MARK = "data:image/svg+xml," + encodeURIComponent(MARK_SVG);
 // l'aperçu au partage et la balise canonique.
 //
 // Elle se règle par la variable d'environnement HM_SITE_URL (Cloudflare Pages :
-// Settings → Environment variables), sans toucher au code. Le repli ci-dessous est
-// l'adresse *.pages.dev par défaut du projet ; à remplacer par le domaine définitif le
-// jour où il y en a un.
-const DEFAULT_URL = "https://housing-market.pages.dev";
+// Settings → Environment variables), sans toucher au code. Le repli ci-dessous est le
+// domaine DÉFINITIF, et non plus l'adresse *.pages.dev de préproduction : un build lancé
+// sans la variable produit donc désormais des URL justes, au lieu d'annoncer partout une
+// adresse que plus personne ne visite. La variable reste le réglage de référence — c'est
+// elle qui permet de construire une préversion sous une autre adresse sans toucher au code.
+const DEFAULT_URL = "https://barometre-logement.com";
 
 const url = (process.env.HM_SITE_URL || DEFAULT_URL).replace(/\/+$/, "");
 
@@ -84,8 +86,8 @@ export const AUTHOR = {
   anchor: "auteur",
   // Une phrase, à la troisième personne : c'est ce qu'un moteur peut afficher sous le nom.
   description:
-    "Auteur de HousingMarket, un baromètre indépendant du marché du logement en France " +
-    "construit sur des données publiques, en accès libre et au code ouvert.",
+    "Auteur du Baromètre du Logement, un observatoire indépendant du marché immobilier " +
+    "français construit sur des données publiques, en accès libre et au code ouvert.",
   // Les sujets que le site DÉMONTRE, pas une liste de compétences déclarées : chacun est
   // adossé à des pages publiées. Le logement passe en premier — l'ordre n'a rien
   // d'obligatoire, mais une liste dont les trois premiers termes divergent dit mal de
@@ -116,18 +118,24 @@ export const AUTHOR = {
 
 export const SITE = {
   url,
-  name: "HousingMarket",
-  tagline: "Marché du logement en France",
-  // Le nom qualifié : ce qui part dans <title> et dans la carte de partage. « HousingMarket »
-  // seul ne dit pas de quel marché il s'agit, ni dans quel pays — or c'est souvent la seule
-  // ligne lue avant le clic.
-  fullName: "HousingMarket — Marché du logement en France",
+  name: "Baromètre du Logement",
+  // Le sous-titre du bloc de marque, posé en CSS (observablehq.config.js). Il ne répète
+  // pas le nom : « Baromètre du Logement » suivi de « Marché du logement en France »
+  // disait deux fois la même chose. Il ajoute ce que le nom ne dit pas — d'où viennent
+  // les chiffres.
+  tagline: "Le marché immobilier en données publiques",
+  // Le nom qualifié : ce qui part dans <title> et dans la carte de partage. Le nom seul ne
+  // dit pas de quel marché il s'agit ni dans quel pays — or c'est souvent la seule ligne
+  // lue avant le clic. La qualification porte « marché immobilier », le terme que le public
+  // cherche, là où le reste du site emploie le vocabulaire des sources (« logement »).
+  // Tenu sous 60 caractères par tests/test_web_seo.py : au-delà, Google tronque le titre.
+  fullName: "Baromètre du Logement — marché immobilier français",
   // Description par défaut : celle de l'accueil, reprise par toute page qui n'en
   // déclare pas (page 404, page ajoutée sans entrée dans PAGES).
   // ~155 caractères : au-delà, Google tronque et LinkedIn coupe l'aperçu. Le propos
   // long tient dans le corps de la page d'accueil, pas dans la balise.
   description:
-    "Baromètre du marché du logement en France : construction neuve, ventes dans " +
+    "Baromètre du marché immobilier français : construction neuve, ventes dans " +
     "l'ancien, prix, financement et prévision des transactions. Données publiques.",
   locale: "fr_FR",
   lang: "fr",
@@ -137,7 +145,7 @@ export const SITE = {
   // Vignette de partage. 1200×630 est le format que LinkedIn, X et Slack recadrent le
   // moins ; le fichier est COMMITÉ (voir scripts/og-image.mjs pour le régénérer).
   ogImage: {path: "/og-image.png", width: 1200, height: 630,
-            alt: "HousingMarket — baromètre du marché du logement en France"},
+            alt: "Baromètre du Logement — le marché immobilier français en données"},
 };
 
 // Les pages du site, dans l'ordre de la barre latérale.

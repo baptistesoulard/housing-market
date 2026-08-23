@@ -105,13 +105,13 @@ export async function onRequest({request, env}) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      from: env.CONTACT_FROM || "HousingMarket <onboarding@resend.dev>",
+      from: env.CONTACT_FROM || "Baromètre du Logement <onboarding@resend.dev>",
       to: [env.CONTACT_TO],
       // reply_to porte l'adresse du visiteur : répondre depuis sa boîte suffit, sans
       // recopier une adresse à la main.
       reply_to: email,
-      subject: `[HousingMarket] ${sujet} — ${nom}`,
-      text: `${message}\n\n—\nDe : ${nom} <${email}>\nSujet : ${sujet}\nEnvoyé depuis la page À propos de HousingMarket.\n`,
+      subject: `[Baromètre du Logement] ${sujet} — ${nom}`,
+      text: `${message}\n\n—\nDe : ${nom} <${email}>\nSujet : ${sujet}\nEnvoyé depuis la page À propos du Baromètre du Logement.\n`,
     }),
   });
 

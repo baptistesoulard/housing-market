@@ -115,8 +115,9 @@ def test_la_page_404_est_desindexee(heads):
 
 
 def test_le_titre_situe_le_site(heads):
-    """« HousingMarket » seul ne dit ni de quel marché ni de quel pays il s'agit, alors
-    que c'est souvent la seule ligne lue avant le clic."""
+    """Le nom seul ne dit ni de quel marché ni de quel pays il s'agit, alors que c'est
+    souvent la seule ligne lue avant le clic. Le plafond de 60 caractères est celui
+    au-delà duquel Google tronque le titre dans ses résultats."""
     assert heads["title"] == heads["site"]["fullName"]
     assert heads["site"]["name"] in heads["title"] and len(heads["title"]) <= 60
 
