@@ -94,7 +94,7 @@ function timeline(items) {
   const order = [...new Set(items.map((it) => it.court))];
   const symMap = {effet: "circle", jalon: "diamond", echeance: "times"};
   const plot = Plot.plot({
-    height: Math.max(240, 54 + 30 * order.length), marginLeft: 170, marginTop: 30,
+    width, height: Math.max(240, 54 + 30 * order.length), marginLeft: 170, marginTop: 30,
     x: {label: null}, y: {domain: order, label: null},
     color: {domain: ["FR", "EU"], range: [series.brick, series.blue], legend: true, label: "Périmètre"},
     symbol: {domain: ["effet", "jalon", "echeance"], range: ["circle", "diamond", "times"],

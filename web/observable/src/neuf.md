@@ -101,7 +101,7 @@ function toggleN(name) { const s = new Set(visN.value); s.has(name) ? s.delete(n
 
 ${legend(neuf.main_series.meta, visN, toggleN)}
 
-${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements", filename: "marche-neuf"})}
+${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements", width, filename: "marche-neuf"})}
 
 <div class="hm-meta">${neuf.main_series.source} · dernier point : ${neuf.main_series.last_month} · segmentation : ${segLabelN} · période affichée : ${Math.min(...rangeN)}–${Math.max(...rangeN)}</div>
 
@@ -123,7 +123,7 @@ const monthsN = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsN, label: "Mo
 ```js
 const monthNumsN = monthsN.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
 display(monthNumsN.length
-  ? monthlyByYear({rows: filterYears(neuf.monthly.rows, rangeN), valueKey: mMetricN, monthNums: monthNumsN, filename: "neuf-comparaison-mensuelle-" + mMetricN})
+  ? monthlyByYear({rows: filterYears(neuf.monthly.rows, rangeN), valueKey: mMetricN, monthNums: monthNumsN, width, filename: "neuf-comparaison-mensuelle-" + mMetricN})
   : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
 ```
 
@@ -148,7 +148,7 @@ ${cardGrid(ivBlock.kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: 
 
 <div class="hm-panel-title">${ivMetric === "Permis" ? "Permis de Construire" : "Mises en Chantier"} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
 
-${multiLine({rows: filterYears(ivBlock.lines, rangeN), meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", filename: "neuf-individuel-vs-collectif-" + ivMetric})}
+${multiLine({rows: filterYears(ivBlock.lines, rangeN), meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", width, filename: "neuf-individuel-vs-collectif-" + ivMetric})}
 
 ```js
 // ============================ Section ECLN ============================

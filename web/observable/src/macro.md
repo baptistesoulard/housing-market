@@ -134,7 +134,7 @@ if (cr) display(html`<div class="hm-meta">Source : BCE — statistiques MIR (ach
 
 ```js
 display(bls ? html`<div class="hm-panel-sub">solde d'opinion net des banques, en % — &gt;0 = demande en hausse · indicateur avancé</div>` : indisponible("Demande de crédits (BLS)"));
-if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %", filename: "macro-demande-credits-bls"}));
+if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %", width, filename: "macro-demande-credits-bls"}));
 if (bls) display(html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>`);
 ```
 
@@ -143,6 +143,6 @@ if (bls) display(html`<div class="hm-meta">Source : BCE / Banque de France — B
 ```js
 display(reno.length ? html`<div class="hm-panel-sub">solde d'opinion INSEE (enquête bâtiment) — un solde négatif = plus d'entreprises signalant une baisse d'activité</div>` : indisponible("Activité du second œuvre"));
 if (reno.length) display(multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
-  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v), filename: "macro-renovation-second-oeuvre"}));
+  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v), width, filename: "macro-renovation-second-oeuvre"}));
 if (reno.length) display(html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>`);
 ```

@@ -125,7 +125,7 @@ if (T) display(multiLine({
   ],
   meta: [{name: "Observé (IGEDD)", color: series.brick},
          {name: "Prévision hors échantillon", color: series.blue, dash: true}],
-  yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v),
+  yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), width,
   filename: "previsions-backtest-transactions"
 }));
 ```
@@ -235,7 +235,7 @@ if (sens) display(multiLine({
   meta: [{name: "Transactions (cumul 12 m)", color: series.brick},
          {name: `${predictorLabels[predictor]} décalé +${lagN} m`, color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 320,
-  yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ",
+  yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
   filename: "previsions-alignement-" + predictor
 }));
 ```
@@ -256,7 +256,7 @@ if (P) display(!P.available
 
 ```js
 if (P && P.available) display(withCsvExport(Plot.plot({
-  height: 360, marginLeft: 66, marginBottom: 34,
+  width, height: 360, marginLeft: 66, marginBottom: 34,
   x: {type: "utc", label: null},
   y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
   marks: [
@@ -324,7 +324,7 @@ if (sc) display(cardGrid([
 
 ```js
 if (sc) display(Plot.plot({
-  height: 230, marginLeft: 72, marginBottom: 30,
+  width, height: 230, marginLeft: 72, marginBottom: 30,
   x: {label: null}, y: {label: "Ventes 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
   marks: [
     Plot.barY([{k: "Actuel", v: sc.baseline.tx_now}, {k: "Scénario", v: sc.transactions}],

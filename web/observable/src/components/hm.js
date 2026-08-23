@@ -147,7 +147,7 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
 // --- Graphique « marché » : bascule cumul 12m / 6m / 3m / brut (+ moyennes mobiles) -
 // rows : {date, series, key, raw, roll12, roll6, roll3} (valeurs brutes, divisées par 1000 ici).
 export function marketChart({rows, meta, view, showRaw = true, showMA12 = false, showMA6 = false,
-                             active, yLabel, height = 420, filename = null}) {
+                             active, yLabel, height = 420, width = undefined, filename = null}) {
   const K = 1000;
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const vis = (d) => !active || active.has(d.series);
@@ -185,7 +185,12 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
   marks.push(Plot.tip(tipData, Plot.pointer({x: "_x", y: "v", stroke: "series", ...TIP,
     title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${nf0.format(d.v)} k`})));
 
-  const plot = Plot.plot({height, marginLeft: 54, marginRight: 74,
+  const plot = Plot.plot({
+    // Facultatif, comme sur `multiLine` : sans lui, Plot retient ses 640 px par défaut,
+    // ce que font les appelants placés dans une grille (.hm-panels), déjà contrainte par
+    // ses colonnes.
+    ...(width ? {width} : {}),
+    height, marginLeft: 54, marginRight: 74,
     x: {label: null}, y: {label: yLabel, grid: true, zero: true},
     color: {domain: colorDomain, range: colorRange}, marks});
   const exportRows = parsed.filter(vis).map(({_x, ...r}) => r);
@@ -193,7 +198,8 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
 }
 
 // --- Comparaison mensuelle par année (barres groupées) -----------------------------
-export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd", filename = null}) {
+export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd", width = undefined,
+                               filename = null}) {
   const data = [];
   for (const r of rows) {
     const dt = new Date(r.date), mn = dt.getUTCMonth() + 1;
@@ -203,6 +209,7 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd", fil
   }
   const order = monthNums.slice().sort((a, b) => a - b).map((m) => MONTHS_SHORT[m - 1]);
   const plot = Plot.plot({
+    ...(width ? {width} : {}),
     height: 360, marginBottom: 42, marginLeft: 54,
     fx: {label: null, domain: order},
     x: {axis: null, type: "band"}, y: {label: "en milliers", grid: true},

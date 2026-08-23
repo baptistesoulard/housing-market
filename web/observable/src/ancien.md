@@ -66,7 +66,7 @@ const maA = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mo
   {label: "Superpositions (vue brute uniquement)"}));
 ```
 
-${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de transactions", filename: "marche-ancien"})}
+${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de transactions", width, filename: "marche-ancien"})}
 
 <div class="hm-meta">${anc.main_series.source} · dernier point : ${anc.main_series.last_month}</div>
 
@@ -85,7 +85,7 @@ const monthsA = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsA, label: "Mo
 ```js
 const monthNumsA = monthsA.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
 display(monthNumsA.length
-  ? monthlyByYear({rows: filterYears(anc.monthly.rows, rangeA), valueKey: "tx", monthNums: monthNumsA, scheme: "Greens", filename: "ancien-comparaison-mensuelle"})
+  ? monthlyByYear({rows: filterYears(anc.monthly.rows, rangeA), valueKey: "tx", monthNums: monthNumsA, scheme: "Greens", width, filename: "ancien-comparaison-mensuelle"})
   : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
 ```
 

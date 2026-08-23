@@ -105,7 +105,7 @@ const faisceauExport = [
   ...encours.map((r) => ({type: "en_cours", date: r.date, lo: r.lo, hi: r.hi, predicted: r.predicted})),
 ];
 display(withCsvExport(Plot.plot({
-  height: 420, marginLeft: 62, marginRight: 16,
+  width, height: 420, marginLeft: 62, marginRight: 16,
   x: {label: null},
   y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
       tickFormat: (v) => nf0.format(v / 1000) + " k"},
@@ -172,7 +172,7 @@ display(html`<div class="hm-legend hm-legend--static">${[
 
 ```js
 display(withCsvExport(Plot.plot({
-  height: 360, marginLeft: 52, marginRight: 118, marginBottom: 42,
+  width, height: 360, marginLeft: 52, marginRight: 118, marginBottom: 42,
   x: {label: "Horizon de la prévision (mois)", ticks: [1, 3, 6, 9, 12, 15, 18], grid: false},
   y: {label: "Erreur moyenne (%)", grid: true, domain: [0, yMaxErr]},
   color: {domain: ["Notre modèle", A.naive_label], range: [series.brick, series.blue]},
