@@ -525,6 +525,18 @@ ${NAV_ICONS}
   border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center;
   font-size: 0.95rem; color: var(--hm-ink); }
 .hm-formula b { font-weight: 700; }
+/* Hypotheses testees puis ecartees. Presentees en cartes et non en liste a puces : chacune
+   porte trois temps -- l'idee, le chiffre, la lecon -- et une puce les aplatirait. Le
+   chiffre est la seule ligne mise en avant, parce que c'est lui qui tranche ; il est en
+   brique et non en vert, l'issue etant un refus. La bordure gauche reprend le motif des
+   encarts .hm-note pour que la parente visuelle se voie. */
+.hm-refutations { display: grid; gap: 1rem; margin: 1.4rem 0; }
+.hm-refutation { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
+  border-radius: 6px; padding: 0.9rem 1.2rem; background: var(--hm-surface); }
+.hm-refutation h3 { margin: 0 0 0.5rem; font-size: 1.02rem; }
+.hm-refutation p { margin: 0.4rem 0; font-size: 0.92rem; }
+.hm-refutation__mesure { font-weight: 700; color: var(--hm-brick); }
+.hm-refutation .hm-caption { margin-top: 0.6rem; }
 /* Tableau des sources (page À propos) : lisible sans être un tableau de données.
    Quatre colonnes ne tiennent plus sur un téléphone : le tableau défile DANS son
    conteneur plutôt que de pousser la page entière de côté. La colonne de date est

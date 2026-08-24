@@ -533,6 +533,47 @@ transactions avec un décalage. Le choc de transactions propagé est celui du sc
 ci-dessus.
 </div>
 
+## 🧪 Ce qu'on a essayé, et qui ne marche pas
+
+Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.
+Les trois idées ci-dessous paraissaient bonnes — deux figuraient au plan de ce site, et la
+troisième a été affirmée pendant des semaines avant d'être vérifiée. Toutes les trois ont
+été mesurées, puis écartées. Les publier est le pendant naturel de la page des prévisions
+passées : là on montre où le modèle se trompe, ici ce qu'on a renoncé à lui ajouter.
+
+Le seuil pour qu'un indicateur entre dans le modèle est le même pour tous : **éviter au
+moins 5 % d'erreur sur des données qu'il n'a pas vues**, à au moins trois des quatre plages
+d'horizon. Jamais sur sa capacité à coller au passé — c'est exactement ce qui fait entrer
+des indicateurs inutiles.
+
+```js
+// Ces trois entrées sont des CONSTANTES DATÉES côté export (voir REFUTATIONS dans
+// web_export.py), pas des métriques recalculées : chaque mesure a coûté un backtest de
+// plusieurs centaines de millésimes, et ce sont des résultats sur la MÉTHODE, qui ne
+// bougent pas d'une semaine à l'autre.
+const REF = data.refutations ?? [];
+```
+
+```js
+if (REF.length) display(html`<div class="hm-refutations">
+  ${REF.map((r) => html`<article class="hm-refutation">
+    <h3>${r.titre}</h3>
+    <p class="hm-refutation__idee"><b>L'idée.</b> ${r.idee}</p>
+    <p class="hm-refutation__mesure">${r.mesure}</p>
+    <p class="hm-refutation__lecon"><b>Ce qu'on en retient.</b> ${r.lecon}</p>
+    ${r.page ? html`<p class="hm-caption"><a href=${r.page.href}>${r.page.libelle}</a></p>` : ""}
+    <p class="hm-caption">Mesuré le ${r.mesure_le}.</p>
+  </article>`)}
+</div>`);
+```
+
+<div class="hm-caption">
+Aucune de ces trois idées n'est absurde, et deux d'entre elles sont utilisées ailleurs dans
+la profession. Elles ne résistent simplement pas à l'épreuve qui compte : faire mieux, sur
+des données jamais vues, qu'une prévision qui se contente de prolonger le dernier chiffre
+connu.
+</div>
+
 <div class="hm-shortcuts" style="margin-top:1.6rem">
   <span class="lead">Et chez vous :</span>
   <a class="hm-shortcut" href="/#et-chez-vous">📍 Le prix au m² dans votre département</a>

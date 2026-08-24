@@ -716,6 +716,22 @@ Trois conséquences à tenir :
    de faire mieux — et elle coûterait ~68 PDF lus à la main (la Banque de France renvoie 403
    à tout script). Ne pas s'y lancer sans une raison nouvelle.
 
+**Les hypothèses écartées sont PUBLIÉES, dans `REFUTATIONS`.** La page de prévision porte
+une section « Ce qu'on a essayé, et qui ne marche pas » qui liste les trois idées plausibles
+mesurées puis refusées : la demande de crédit BLS, les anticipations de taux du marché, et
+les permis pour prévoir les chantiers. C'est le pendant de « Prévisions passées » — là on
+montre où le modèle se trompe, ici ce qu'on a renoncé à lui ajouter. Un site qui n'affiche
+que ce qui a marché laisse croire que tout ce qu'on essaie marche, et c'est un biais de
+sélection, pas une simplification.
+
+Les trois entrées sont des constantes **stockées et datées** dans `web_export.py`, jamais
+recalculées : chaque mesure a coûté un backtest à origine glissante de plusieurs centaines
+de millésimes, ce sont des résultats sur la MÉTHODE et ils ne bougent pas d'une semaine à
+l'autre. Deux tests de `test_web_links.py` refusent qu'une entrée perde sa date ou que la
+section disparaisse de la page. La section rappelle aussi le seuil d'entrée du modèle
+(≥ 5 % d'erreur évitée hors échantillon sur ≥ 3 blocs d'horizon), au bon endroit pour qu'il
+se comprenne : juste à côté des trois candidats qu'il a refusés.
+
 **Un permis ne précède PAS une mise en chantier — mesuré le 2026-08-24, et c'est
 contre-intuitif.** Le plan prévoyait un modèle de prévision du neuf pour le professionnel du
 bâtiment, sur une intuition que j'ai répétée sans la vérifier : « une autorisation précède
@@ -980,7 +996,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 251 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 253 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

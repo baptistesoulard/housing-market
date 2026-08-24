@@ -1169,6 +1169,71 @@ def _transformation(con) -> dict:
     }
 
 
+#: Les hypothèses plausibles TESTÉES ET ÉCARTÉES, publiées sur la page de prévision.
+#:
+#: Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.
+#: Ces trois idées avaient toutes l'air bonnes — deux d'entre elles étaient inscrites au
+#: plan et l'une des trois a été affirmée pendant des semaines avant d'être vérifiée. Les
+#: publier avec leur chiffre est le pendant naturel de la page « Prévisions passées » :
+#: là on montre où le modèle se trompe, ici on montre ce qu'on a renoncé à lui ajouter.
+#:
+#: STOCKÉES ET DATÉES, jamais recalculées : ce sont des résultats sur la MÉTHODE, pas des
+#: métriques vivantes. Chaque mesure a coûté un backtest à origine glissante de plusieurs
+#: centaines de millésimes ; les rejouer à chaque export ajouterait des dizaines de minutes
+#: au job hebdomadaire pour des chiffres qui ne bougent pas. Le protocole de chacune est
+#: dans CLAUDE.md.
+#:
+#: Le seuil d'entrée du modèle, rappelé sur la page : au moins 5 % d'erreur évitée hors
+#: échantillon sur au moins 3 des 4 blocs d'horizon.
+REFUTATIONS = [
+    {
+        "titre": "Ajouter ce que les banques disent de la demande de crédit",
+        "idee": ("Chaque trimestre, les banques déclarent à la Banque de France si la "
+                 "demande de prêts au logement monte ou baisse. Cette enquête paraît AVANT "
+                 "les chiffres de transactions : elle devrait donc les annoncer."),
+        "mesure": "+3,7 % d'erreur évitée — 1 bloc d'horizon sur 4",
+        "lecon": ("Sur les seules années 2022-2024, elle faisait gagner 14 %. Mais ces "
+                  "années-là sont le choc de taux, c'est-à-dire précisément l'épisode où la "
+                  "demande de crédit s'effondre puis rebondit le plus fort. Sur huit "
+                  "épisodes de marché, l'apport fond. Et surtout, le recalage de la "
+                  "prévision sur le dernier chiffre connu captait déjà une bonne part du "
+                  "même signal : les deux corrections se disputaient la même information."),
+        "mesure_le": "2026-08-24",
+    },
+    {
+        "titre": "Utiliser les anticipations de taux du marché",
+        "idee": ("Au-delà de leur dernière valeur connue, les indicateurs sont maintenus à "
+                 "plat dans la projection. Pour les taux, cette hypothèse a un substitut "
+                 "coté : la courbe des taux dit quel niveau le marché attend dans six mois, "
+                 "dans un an, dans deux ans. Remplacer « rien ne bouge » par « ce que le "
+                 "marché anticipe » semblait un gain acquis."),
+        "mesure": "0 bloc d'horizon sur 4 — et légèrement PIRE que le report à plat",
+        "lecon": ("Sur les mois réellement concernés, le report à plat se trompe de 7,18 % "
+                  "et les anticipations de marché de 7,20 %. C'est un résultat connu de la "
+                  "littérature sur les taux : les taux à terme prédisent mal les taux "
+                  "futurs, et une marche aléatoire est très difficile à battre. Ce qui "
+                  "ressemblait à la faiblesse la plus évidente du modèle est en réalité son "
+                  "hypothèse la plus raisonnable."),
+        "mesure_le": "2026-08-24",
+    },
+    {
+        "titre": "Prévoir les chantiers à partir des permis de construire",
+        "idee": ("Une autorisation d'urbanisme précède forcément l'ouverture du chantier. "
+                 "Les permis devraient donc donner plusieurs mois d'avance sur les mises en "
+                 "chantier — l'indicateur rêvé pour qui fournit le bâtiment."),
+        "mesure": "0 bloc d'horizon sur 4 — 25 % d'erreur en PLUS qu'une simple persistance",
+        "lecon": ("Le lien entre les deux séries est maximal à décalage NUL et faiblit "
+                  "ensuite, mois après mois : les permis ne devancent rien. Les deux "
+                  "séries sont corrigées des variations saisonnières et remontent par la "
+                  "même voie administrative, si bien que le délai de déclaration pèse plus "
+                  "que le délai de construction. Le décalage réel existe projet par projet ; "
+                  "la moyenne nationale l'efface."),
+        "page": {"href": "/neuf", "libelle": "Voir la mesure sur Marché du neuf"},
+        "mesure_le": "2026-08-24",
+    },
+]
+
+
 def _iso_month(value) -> str:
     return pd.Timestamp(value).strftime("%Y-%m-%d")
 
@@ -1214,6 +1279,7 @@ def build_previsions(con, frames: dict) -> dict:
     if payload["available"]:
         payload["verdict"] = _verdict(payload["projection"], con)
         payload["benchmark"] = _benchmark(payload["projection"])
+    payload["refutations"] = REFUTATIONS
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
     return payload
 

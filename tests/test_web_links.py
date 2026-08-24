@@ -212,3 +212,26 @@ def test_le_repere_externe_dit_sa_source_et_sa_date_de_releve():
     assert b.get("url", "").startswith("http"), "le repère externe doit porter son lien"
     assert b.get("releve_le"), "le repère externe doit porter sa date de relevé"
     assert b["lo"] < b["hi"], "fourchette du repère externe incohérente"
+
+
+# --- Les hypothèses écartées restent publiées ------------------------------------------
+# Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.
+# Ces trois refus ont chacun coûté un backtest de plusieurs centaines de millésimes ; les
+# retirer parce qu'ils « font désordre » serait exactement le contraire du propos du site,
+# qui publie déjà les horizons où son modèle perd. Chaque entrée doit porter sa date : ce
+# sont des mesures, pas des opinions, et une mesure sans date ne se vérifie pas.
+def test_les_hypotheses_ecartees_sont_publiees_avec_leur_date():
+    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
+    refs = data.get("refutations")
+    assert refs, "les hypothèses écartées ont disparu de previsions.json"
+    for r in refs:
+        for champ in ("titre", "idee", "mesure", "lecon", "mesure_le"):
+            assert r.get(champ), f"« {r.get('titre', '?')} » : champ {champ} manquant"
+        datetime.date.fromisoformat(r["mesure_le"])       # lève si la date est mal formée
+
+
+def test_la_page_de_prevision_affiche_la_section_des_hypotheses_ecartees():
+    src = PREVISIONS_MD.read_text(encoding="utf-8")
+    assert "refutations" in src, (
+        "previsions.md n'affiche plus les hypothèses écartées — publier uniquement ce qui "
+        "a marché est un biais de sélection, pas une simplification")
