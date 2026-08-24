@@ -134,7 +134,90 @@ def test_forecast_path_uses_observed_lags_and_bounds_horizon():
            + beta[2] * m["Intentions_Achat_Logement"].loc[t0 - pd.DateOffset(months=4)]
            + beta[3] * m["Taux_Chomage_BIT"].loc[t0 - pd.DateOffset(months=2)])
     assert bool(path["assured"].iloc[0]) is True
-    assert abs(path["pred"].iloc[0] - exp) < 1e-6
+    assert abs(path["pred"].iloc[0] - exp) < 1e-6      # anchor=0 par défaut : pas de recalage
+
+
+def test_forecast_path_anchor_fades_to_zero():
+    """Le recalage vaut plein au premier mois projeté, puis s'éteint linéairement.
+
+    C'est le correctif du défaut central : le modèle est une régression de NIVEAU, donc
+    sans ancrage son erreur au premier mois vaut son résidu d'estimation, là où recopier
+    le dernier chiffre connu coûte trois fois moins. Au-delà de `fade_months`, la
+    trajectoire redevient exactement celle du modèle — c'est la seule chose qu'il sait
+    faire à long terme.
+    """
+    idx = pd.date_range("2020-01-01", periods=40, freq="MS")
+    macro = pd.DataFrame({
+        "Date": idx,
+        "Credit_Logement_Taux_Interet": np.linspace(1.0, 4.0, 40),
+        "Intentions_Achat_Logement": np.linspace(-1.0, 1.0, 40),
+        "Taux_Chomage_BIT": np.linspace(8.0, 7.0, 40),
+    })
+    tx12 = pd.Series(np.linspace(800_000, 950_000, 31), index=idx[:31], name="tx12")
+    lags = {"kr": 6, "ki": 4, "kc": 2}
+    beta = np.array([500_000.0, -10_000.0, 50_000.0, -20_000.0])
+    kw = dict(sigma=5_000.0, horizon=18)
+
+    plain = fc.forecast_path(macro, tx12, lags, beta, **kw)
+    anchored = fc.forecast_path(macro, tx12, lags, beta, anchor=60_000.0,
+                                fade_months=9, **kw)
+
+    # h=1 : recalage complet ; h=10 et au-delà : éteint (poids max(0, 1-(h-1)/9)).
+    assert abs((anchored["pred"].iloc[0] - plain["pred"].iloc[0]) - 60_000.0) < 1e-6
+    assert abs(anchored["pred"].iloc[9] - plain["pred"].iloc[9]) < 1e-6
+    assert abs(anchored["pred"].iloc[17] - plain["pred"].iloc[17]) < 1e-6
+    # décroissance monotone du poids sur l'intervalle d'extinction
+    ecarts = (anchored["pred"] - plain["pred"]).iloc[:10].tolist()
+    assert all(a >= b - 1e-9 for a, b in zip(ecarts, ecarts[1:]))
+    # fade_months=0 désactive le recalage sans toucher au reste
+    off = fc.forecast_path(macro, tx12, lags, beta, anchor=60_000.0, fade_months=0, **kw)
+    assert abs(off["pred"].iloc[0] - plain["pred"].iloc[0]) < 1e-6
+
+
+def test_anchor_of_measures_the_last_observed_residual():
+    """`anchor_of` = observé − ajusté sur le DERNIER mois observé, 0 si non alignable."""
+    idx = pd.date_range("2021-01-01", periods=6, freq="MS")
+    tx12 = pd.Series([900_000.0] * 6, index=idx, name="tx12")
+    model = {"frame": pd.DataFrame({"Date": idx, "obs": tx12.values,
+                                    "fit": np.full(6, 870_000.0)})}
+    assert abs(fc.anchor_of(model, tx12) - 30_000.0) < 1e-6
+    # Le frame s'arrête AVANT le dernier mois observé — cas normal, pas dégradé : le
+    # chômage est trimestriel et n'est plus extrapolé, donc le frame accuse jusqu'à deux
+    # mois de retard sur les transactions. L'ancrage doit fonctionner quand même.
+    court = {"frame": model["frame"].iloc[:4]}          # s'arrête 2 mois avant
+    assert abs(fc.anchor_of(court, tx12) - 30_000.0) < 1e-6
+    # Au-delà de la tolérance, l'écart ne décrit plus le présent : pas de recalage.
+    vieux = {"frame": model["frame"].iloc[:1]}          # 5 mois de retard
+    assert fc.anchor_of(vieux, tx12, max_gap=3) == 0.0
+    assert fc.anchor_of({"frame": pd.DataFrame()}, tx12) == 0.0
+
+
+def test_forecast_path_band_is_calibrated_per_horizon():
+    """Une table de bande remplace la largeur constante, horizon par horizon.
+
+    La bande constante ±1,28·RMSE couvrait 94 % des cas à court terme et 57 % à dix-huit
+    mois pour une promesse de 80 % : une erreur qui grandit avec l'horizon ne tient pas
+    dans une largeur fixe. Les horizons absents de la table gardent l'ancienne bande.
+    """
+    idx = pd.date_range("2020-01-01", periods=40, freq="MS")
+    macro = pd.DataFrame({
+        "Date": idx,
+        "Credit_Logement_Taux_Interet": np.linspace(1.0, 4.0, 40),
+        "Intentions_Achat_Logement": np.linspace(-1.0, 1.0, 40),
+        "Taux_Chomage_BIT": np.linspace(8.0, 7.0, 40),
+    })
+    tx12 = pd.Series(np.linspace(800_000, 950_000, 31), index=idx[:31], name="tx12")
+    lags = {"kr": 6, "ki": 4, "kc": 2}
+    beta = np.array([500_000.0, -10_000.0, 50_000.0, -20_000.0])
+    band = pd.DataFrame({"horizon": [1, 2], "lo_off": [-10_000.0, -40_000.0],
+                         "hi_off": [5_000.0, 30_000.0]})
+    path = fc.forecast_path(macro, tx12, lags, beta, sigma=5_000.0, horizon=18, band=band)
+
+    assert abs((path["lo"].iloc[0] - path["pred"].iloc[0]) + 10_000.0) < 1e-6
+    assert abs((path["hi"].iloc[0] - path["pred"].iloc[0]) - 5_000.0) < 1e-6
+    assert abs((path["lo"].iloc[1] - path["pred"].iloc[1]) + 40_000.0) < 1e-6
+    # horizon non calibré : repli sur ±z·sigma, symétrique
+    assert abs((path["hi"].iloc[5] - path["pred"].iloc[5]) - 1.2816 * 5_000.0) < 1e-6
 
 
 def test_propagate_to_series_drives_sales_from_tx_path():

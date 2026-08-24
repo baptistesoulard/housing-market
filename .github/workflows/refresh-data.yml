@@ -75,7 +75,11 @@ jobs:
           # d'aperçu de partage n'exécutent pas de JS), donc les dates sont commitées
           # comme les JSON. L'oublier ici ferait afficher des dates figées à la dernière
           # publication manuelle, sur la page qui sert justement à établir la provenance.
+          # forecast_band.csv n'est réécrit que par `--calibrate`, que ce job ne lance pas :
+          # il est là pour que le jour où on l'y ajoute, l'étalon de la bande ne soit pas
+          # silencieusement laissé hors du commit.
           git add data_manual_input data/ventes_ancien.csv data/forecast_archive.csv \
+                  data/forecast_band.csv \
                   web/observable/src/data web/observable/src/a-propos.md
           if git diff --cached --quiet; then
             echo "Aucune donnée modifiée — rien à committer."

@@ -56,7 +56,14 @@ confrontée au réel.</p>
 
   L'erreur naïve est citée à côté de l'erreur du modèle, et ce n'est pas une coquetterie :
   publier le seul chiffre du modèle laisserait croire qu'il bat la référence à tous les
-  horizons, alors qu'il lui est inférieur en deçà de 4 mois (voir /previsions-passees).
+  horizons, alors qu'il lui est inférieur en deçà de 6 mois (voir /previsions-passees).
+
+  Le couple 5,7 / 5,9 % est serré, et c'est le prix de l'honnêteté : il est mesuré sur
+  210 millésimes couvrant HUIT épisodes de marché (2009-2026), là où l'ancien couple
+  4,1 / 7,2 % ne portait que sur le choc de taux de 2022-2024 — c'est-à-dire le seul
+  épisode que ce modèle réussit brillamment. À 12 mois, le même calcul donne 6,4 %
+  contre 10,3 % : si un jour ce bandeau doit vendre le modèle plutôt que le décrire,
+  c'est cet horizon-là qu'il faut citer, pas un autre échantillon.
 -->
 <ul class="hm-stats">
   <li>
@@ -68,8 +75,8 @@ confrontée au réel.</p>
     <span class="d">INSEE, SDES, IGEDD, Banque de France, BCE — aucune donnée achetée</span>
   </li>
   <li>
-    <span class="n">4,1 %</span>
-    <span class="d">d'erreur moyenne à 6 mois — une prévision naïve se trompe de 7,2 %</span>
+    <span class="n">5,7 %</span>
+    <span class="d">d'erreur moyenne à 6 mois — une prévision naïve se trompe de 5,9 %</span>
   </li>
   <li>
     <span class="n">Chaque lundi</span>

@@ -116,6 +116,20 @@ def reset():
         _state.clear()
 
 
+def _band():
+    """La bande calibrée, ou None si l'archive n'a pas encore été étalonnée.
+
+    Import tardif : `forecast_archive` n'est pas une dépendance du moteur de calcul, et
+    l'absence de la table ne doit jamais empêcher une projection — elle retombe alors sur
+    la bande de largeur constante.
+    """
+    try:
+        import forecast_archive as fa
+        return fa.read_band()
+    except Exception:                                   # noqa: BLE001
+        return None
+
+
 # ------------------------------------------------------------------ questions métier
 def health() -> dict:
     """L'API répond-elle, et sur quelles données ?"""
@@ -174,8 +188,13 @@ def projection(horizon: int = 18) -> dict:
     s = _load()
     bt = s["tx"]["backtest"]
     sigma = float(bt["rmse"]) if "rmse" in bt else float(s["tx"]["rmse"])
+    # Recalage sur le dernier point observé, et bande calibrée sur les erreurs passées :
+    # les deux viennent de `forecast_archive`, qui est le juge du modèle. La projection
+    # publiée est donc corrigée par sa propre feuille de match, ce qui est le seul emploi
+    # honnête d'une archive de prévisions.
     path = fc.forecast_path(s["macro"], s["tx12"], s["lags"], s["tx"]["beta"], sigma,
-                            horizon=horizon)
+                            horizon=horizon, anchor=fc.anchor_of(s["tx"], s["tx12"]),
+                            band=_band())
     if path is None or path.empty:
         return {"available": False, "reason": "lags_too_short", "series": []}
     rows = _series(path, "Date", {"predicted": "pred", "lo": "lo", "hi": "hi"})

@@ -14,6 +14,7 @@ l'écran quand elle casse :
 Les tests n'ont besoin ni de l'entrepôt DuckDB ni du moteur : les fonctions du module sont
 pures et prennent les structures déjà calculées.
 """
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -242,3 +243,71 @@ def test_les_millesimes_s_arretent_ou_on_le_demande():
                       index=pd.date_range("2026-01-01", periods=6, freq="MS"))
     vintages = fa.monthly_vintages(serie, "2026-01-01", until="2026-02-01")
     assert len(vintages) == 2
+
+
+# ------------------------------------------------------------------ sens et bande
+def test_le_taux_de_bon_sens_compare_les_directions_pas_les_niveaux():
+    """« Le marché monte-t-il ou baisse-t-il ? » est la question du lecteur.
+
+    Une MAPE demande de savoir ce qu'est une erreur relative moyenne ; un taux de bon sens
+    se lit tel quel, et c'est sur lui qu'une décision d'achat ou un plan de charge se
+    prennent. Le sens s'apprécie par rapport au dernier chiffre CONNU au moment de la
+    prévision — la même référence que la naïve, sans quoi les deux ne se compareraient pas.
+    """
+    rows = _rows(predicted=(950_000.0, 850_000.0), last_observed=900_000.0)
+    realise = pd.Series([960_000.0, 890_000.0],
+                        index=pd.to_datetime(["2026-07-01", "2026-08-01"]))
+    table = fa.by_horizon(fa.evaluate(rows, realise))
+    # h1 : prévu au-dessus de 900k, réalisé au-dessus  -> bon sens
+    # h2 : prévu en dessous, réalisé en dessous        -> bon sens
+    assert table["direction"].tolist() == [1.0, 1.0]
+
+    rows = _rows(predicted=(950_000.0,), last_observed=900_000.0)
+    realise = pd.Series([880_000.0], index=pd.to_datetime(["2026-07-01"]))
+    assert fa.by_horizon(fa.evaluate(rows, realise))["direction"].iloc[0] == 0.0
+
+
+def test_la_couverture_dit_ce_que_la_bande_vaut_vraiment():
+    """Une bande annoncée à 80 % qui en couvre 57 % n'est pas une bande, c'est un décor."""
+    rows = _rows(predicted=(900_000.0, 900_000.0), sigma=10_000.0)
+    realise = pd.Series([905_000.0, 950_000.0],           # dedans, puis dehors
+                        index=pd.to_datetime(["2026-07-01", "2026-08-01"]))
+    assert fa.by_horizon(fa.evaluate(rows, realise))["coverage"].tolist() == [1.0, 0.0]
+
+
+def test_la_bande_calibree_suit_les_quantiles_de_l_erreur_signee():
+    """`band_table` étalonne la bande sur les erreurs passées, par horizon.
+
+    L'erreur retenue est SIGNÉE : le modèle surestime de façon croissante avec l'horizon,
+    et une bande symétrique autour d'une prévision biaisée rate d'un côté plus que de
+    l'autre. Les bornes sont donc inversées — surestimer de 30 000 dans 90 % des cas veut
+    dire que le réalisé est au moins 30 000 SOUS la prévision aussi souvent.
+    """
+    ev = pd.DataFrame({"horizon": [1] * 40,
+                       "predicted": np.linspace(900_000.0, 940_000.0, 40),
+                       "realized": 900_000.0})
+    table = fa.band_table(ev, lo_q=0.10, hi_q=0.90, min_obs=20)
+    assert table["horizon"].tolist() == [1] and table["n"].iloc[0] == 40
+    erreurs = ev["predicted"] - ev["realized"]
+    assert abs(table["lo_off"].iloc[0] + erreurs.quantile(0.90)) < 1e-6
+    assert abs(table["hi_off"].iloc[0] + erreurs.quantile(0.10)) < 1e-6
+    assert table["lo_off"].iloc[0] < table["hi_off"].iloc[0]
+
+
+def test_un_horizon_trop_peu_observe_n_est_pas_calibre():
+    """Mieux vaut la bande constante qu'un quantile tiré de cinq points."""
+    ev = pd.DataFrame({"horizon": [1] * 30 + [2] * 5,
+                       "predicted": 910_000.0, "realized": 900_000.0})
+    assert fa.band_table(ev, min_obs=20)["horizon"].tolist() == [1]
+    assert fa.band_table(pd.DataFrame()).empty
+
+
+def test_la_bande_fait_un_aller_retour_par_le_disque(tmp_path):
+    chemin = str(tmp_path / "forecast_band.csv")
+    assert fa.read_band(chemin) is None                   # absente -> repli, pas d'erreur
+    band = pd.DataFrame({"horizon": [2, 1], "n": [30, 30],
+                         "lo_off": [-40_000.0, -10_000.0], "hi_off": [30_000.0, 5_000.0]})
+    fa.write_band(band, chemin)
+    relue = fa.read_band(chemin)
+    assert relue["horizon"].tolist() == [1, 2]            # triée, pour un diff lisible
+    assert relue["lo_off"].tolist() == [-10_000.0, -40_000.0]

@@ -904,11 +904,20 @@ def build_archive(con, frames: dict) -> dict:
             "n_evaluated": int(len(evaluated)),
             "first_vintage": (_iso_month(rows["data_vintage"].min()) if len(rows) else None),
             "last_vintage": (_iso_month(rows["data_vintage"].max()) if len(rows) else None),
+            # `direction` (part de fois où le SENS annoncé était le bon) et `coverage`
+            # (part de mois réellement tombés dans la bande) accompagnent la MAPE : la
+            # première est la seule des trois qu'un lecteur non statisticien peut utiliser
+            # telle quelle, la seconde est ce qui dit si la bande affichée vaut sa
+            # promesse.
             "horizons": [
                 {"horizon": int(r.horizon), "n": int(r.n),
                  "mape": round(float(r.mape), 2),
                  "naive_mape": round(float(r.naive_mape), 2),
-                 "skill": (round(float(r.skill), 3) if pd.notna(r.skill) else None)}
+                 "skill": (round(float(r.skill), 3) if pd.notna(r.skill) else None),
+                 "direction": (round(float(r.direction), 3)
+                               if pd.notna(r.direction) else None),
+                 "coverage": (round(float(r.coverage), 3)
+                              if pd.notna(r.coverage) else None)}
                 for r in horizons.itertuples()
             ],
             # Les faisceaux : une trajectoire par millésime. La bande n'y est pas — 48

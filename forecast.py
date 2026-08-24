@@ -46,10 +46,18 @@ def build_target(df_ventes_ancien):
 
 
 def _macro_indexed(df_macro):
-    """Date-indexed macro with unemployment interpolated to monthly (it is quarterly)."""
+    """Date-indexed macro with unemployment interpolated to monthly (it is quarterly).
+
+    L'interpolation remplit les mois INTERMÉDIAIRES, jamais au-delà de la dernière
+    observation. `limit_direction="both"`, utilisé jusqu'ici, prolongeait la série de
+    jusqu'à trois mois en recopiant le dernier trimestre publié — et comme la valeur
+    n'était alors plus NaN, `forecast_path` ne déclenchait pas son report explicite et
+    marquait le point `assured=True`. L'hypothèse était faite, elle n'était plus signalée.
+    `limit_area="inside"` la laisse manquante, donc visible.
+    """
     m = df_macro.set_index("Date").sort_index().copy()
     if "Taux_Chomage_BIT" in m:
-        m["Taux_Chomage_BIT"] = m["Taux_Chomage_BIT"].interpolate(limit_direction="both")
+        m["Taux_Chomage_BIT"] = m["Taux_Chomage_BIT"].interpolate(limit_area="inside")
     return m
 
 
@@ -162,8 +170,73 @@ def fit_tx_model(df_macro, tx12, kr, ki, kc, split="2021-12-01"):
             "lags": {"kr": kr, "ki": ki, "kc": kc}, "backtest": bt}
 
 
-def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816):
+#: Durée sur laquelle le recalage sur le dernier point observé s'éteint linéairement.
+#: L'optimum est PLAT : mesuré sur 48 millésimes puis confirmé sur 210, toutes les valeurs
+#: entre 6 et 12 mois donnent la même erreur à 0,1 point près. 9 est le milieu de ce
+#: plateau, pas un réglage ajusté — c'est ce qui met le paramètre à l'abri du
+#: surapprentissage.
+FADE_MONTHS = 9
+
+
+def anchor_of(model, tx12, max_gap=6):
+    """Erreur de NIVEAU du modèle à son point ajusté le plus récent.
+
+    C'est la correction d'ordonnée à l'origine du prévisionniste : le modèle est une
+    régression de niveau, il reconstruit la série depuis la macro sans jamais regarder où
+    elle se trouve réellement. Son erreur au premier mois projeté vaut donc son résidu
+    d'estimation — 4,2 % en moyenne, quand recopier le dernier chiffre connu n'en coûte
+    que 1,2 %. Mesurer cet écart et l'ajouter à la trajectoire rend au modèle l'ancrage
+    qui lui manque.
+
+    L'écart est pris sur la DERNIÈRE ligne du frame ajusté, pas sur le dernier mois de
+    `tx12`, et les deux ne coïncident pas : le frame s'arrête au dernier mois où *tous* les
+    prédicteurs décalés sont observés, or le chômage est trimestriel et n'est plus
+    extrapolé (voir `_macro_indexed`) — il manque donc jusqu'à deux mois par rapport aux
+    transactions. Exiger la coïncidence renverrait 0.0 en pratique toujours, ce qui
+    désactiverait le recalage sans le dire. Sur une série aussi lisse qu'un cumul 12 mois,
+    le résidu d'il y a deux mois est un estimateur de niveau tout aussi bon.
+
+    `max_gap` borne cette tolérance : au-delà, l'écart décrit un état du marché qui n'est
+    plus le présent, et mieux vaut ne pas recaler du tout. Renvoie alors 0.0, comme quand
+    le modèle n'a pas de frame — la projection est celle d'avant, sans recalage.
+    """
+    frame = model.get("frame") if isinstance(model, dict) else None
+    if frame is None or frame.empty:
+        return 0.0
+    obs = tx12.dropna()
+    if obs.empty:
+        return 0.0
+    fitted = frame.assign(Date=pd.to_datetime(frame["Date"])).sort_values("Date")
+    last_fit = fitted["Date"].iloc[-1]
+    gap = (obs.index.max().year - last_fit.year) * 12 + (obs.index.max().month - last_fit.month)
+    if gap > max_gap or gap < 0:
+        return 0.0
+    return float(fitted["obs"].iloc[-1] - fitted["fit"].iloc[-1])
+
+
+def _fade(h, fade_months):
+    """Poids du recalage à l'horizon `h` (1 = plein, 0 = éteint), extinction linéaire."""
+    if not fade_months or fade_months <= 0:
+        return 0.0
+    return max(0.0, 1.0 - (h - 1) / float(fade_months))
+
+
+def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816,
+                  anchor=0.0, fade_months=FADE_MONTHS, band=None):
     """Forward monthly path of 12-month transactions out to `horizon` months.
+
+    `anchor` (voir `anchor_of`) est ajouté à chaque point avec un poids qui décroît
+    linéairement sur `fade_months` : plein au premier mois projeté, nul au-delà. Le modèle
+    part ainsi du dernier chiffre connu et rejoint progressivement sa propre trajectoire —
+    la seule chose qu'il sait faire à long terme. `anchor=0.0` restitue exactement le
+    comportement d'avant.
+
+    `band` : table [horizon, lo_off, hi_off] des décalages empiriques de la bande, calibrée
+    sur les erreurs de l'archive (voir `forecast_archive.band_table`). Quand elle est
+    absente, on retombe sur l'ancienne bande de largeur CONSTANTE ±`z`·`sigma` — dont la
+    couverture réelle vaut 94 % aux horizons courts et 57 % à dix-huit mois pour une
+    promesse de 80 %, parce qu'une erreur qui grandit avec l'horizon ne tient pas dans une
+    largeur fixe.
 
     Two regimes, flagged by the `assured` column:
       * assured=True — every predictor is an ALREADY-OBSERVED value (shifted by its estimated
@@ -200,8 +273,10 @@ def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816):
     end = last_obs + pd.DateOffset(months=horizon)
     future = pd.date_range(last_obs + pd.DateOffset(months=1), end, freq="MS")
 
+    offsets = _band_offsets(band, horizon, z, sigma)
+
     rows = []
-    for t in future:
+    for h, t in enumerate(future, start=1):
         vals, assured = [], True
         for col, k in preds:
             v = m[col].get(t - pd.DateOffset(months=k))
@@ -209,9 +284,31 @@ def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816):
                 v, assured = last_vals[col], False  # carry forward the last observed value
             vals.append(float(v))
         pred = float(beta[0] + beta[1] * vals[0] + beta[2] * vals[1] + beta[3] * vals[2])
+        pred += float(anchor) * _fade(h, fade_months)
+        lo_off, hi_off = offsets[h]
         rows.append({"Date": t, "pred": pred,
-                     "lo": pred - z * sigma, "hi": pred + z * sigma, "assured": assured})
+                     "lo": pred + lo_off, "hi": pred + hi_off, "assured": assured})
     return pd.DataFrame(rows, columns=["Date", "pred", "lo", "hi", "assured"])
+
+
+def _band_offsets(band, horizon, z, sigma):
+    """{horizon: (lo_off, hi_off)} — décalages de la bande, calibrés ou constants.
+
+    La bande calibrée est ASYMÉTRIQUE, et c'est voulu : le modèle surestime le réalisé de
+    façon croissante avec l'horizon (+0,7 % à un mois, +6,4 % à dix-huit sur la fenêtre
+    observée). Une bande symétrique autour d'une prévision biaisée rate d'un côté plus que
+    de l'autre ; les quantiles empiriques de l'erreur SIGNÉE, eux, portent le biais avec
+    eux.
+    """
+    flat = (-z * sigma, z * sigma)
+    offsets = {h: flat for h in range(1, horizon + 1)}
+    if band is None or len(band) == 0:
+        return offsets
+    for row in band.itertuples():
+        h = int(row.horizon)
+        if 1 <= h <= horizon:
+            offsets[h] = (float(row.lo_off), float(row.hi_off))
+    return offsets
 
 
 def scenario(rate_beta, tx_beta, base, scen):

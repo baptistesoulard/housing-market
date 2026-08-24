@@ -55,10 +55,24 @@ from __future__ import annotations
 import argparse
 import os
 
+import numpy as np
 import pandas as pd
 
 ARCHIVE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "data", "forecast_archive.csv")
+
+#: Bande calibrée sur les erreurs passées, produite par `--calibrate` (voir `band_table`).
+BAND_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "data", "forecast_band.csv")
+
+#: Premier millésime rétro-simulé. 2009 et non 2022 : la fenêtre courte ne couvre qu'un
+#: épisode — le choc de taux de 2022-2024 — c'est-à-dire précisément celui qu'un modèle
+#: piloté par les taux réussit le mieux. Mesuré dessus, le modèle évite 49 % de l'erreur
+#: naïve ; mesuré sur 2009-2026, 18 %, et il PERD contre elle pendant la crise financière,
+#: le creux de 2012-2015 et le Covid. Publier le premier chiffre seul serait choisir sa
+#: fenêtre. Avant 2009, la recherche de décalages n'a pas assez d'historique et retombe
+#: sur ses valeurs de repli : ces millésimes-là ne prouveraient rien.
+BACKFILL_START = "2009-01-01"
 
 #: Fenêtre d'entraînement du backtest — même valeur que `api.engine.FORECAST_SPLIT` et
 #: `app.py:_FORECAST_SPLIT`, recopiée plutôt qu'importée pour la même raison qu'eux : ce
@@ -221,15 +235,76 @@ def by_horizon(evaluated: pd.DataFrame) -> pd.DataFrame:
     aucune raison de se ressembler, et c'est l'horizon qui intéresse le lecteur. La colonne
     `skill` est la part d'erreur évitée par rapport à la naïve — négative, elle dit que le
     modèle fait moins bien que « demain ressemblera à aujourd'hui », ce qui doit se voir.
+
+    `direction` répond à la question que le lecteur se pose vraiment — « le marché
+    monte-t-il ou baisse-t-il ? » — en comparant le SENS annoncé au sens réalisé, tous deux
+    mesurés par rapport au dernier chiffre connu au moment de la prévision. Une MAPE
+    demande de savoir ce qu'est une erreur relative moyenne ; un taux de bon sens se lit
+    tel quel, et c'est l'information sur laquelle une décision d'achat ou un plan de charge
+    se prennent réellement. `coverage` est la part de mois réellement tombés dans la bande
+    annoncée : sans elle, rien ne dit qu'une bande « à 80 % » en vaut 80.
     """
+    cols = ["horizon", "n", "mape", "naive_mape", "skill", "direction", "coverage"]
     if evaluated.empty:
-        return pd.DataFrame(columns=["horizon", "n", "mape", "naive_mape", "skill"])
-    grouped = evaluated.groupby("horizon").agg(
+        return pd.DataFrame(columns=cols)
+    ev = evaluated.copy()
+    ev["_hit"] = (np.sign(ev["predicted"] - ev["naive"])
+                  == np.sign(ev["realized"] - ev["naive"])).astype(float)
+    ev["_in"] = ((ev["realized"] >= ev["lo"]) & (ev["realized"] <= ev["hi"])).astype(float)
+    grouped = ev.groupby("horizon").agg(
         n=("ape", "size"), mape=("ape", "mean"), naive_mape=("naive_ape", "mean"),
+        direction=("_hit", "mean"), coverage=("_in", "mean"),
     ).reset_index()
     grouped["skill"] = 1 - grouped["mape"] / grouped["naive_mape"].where(
         grouped["naive_mape"] > 0)
-    return grouped
+    return grouped[cols]
+
+
+def band_table(evaluated: pd.DataFrame, lo_q: float = 0.10, hi_q: float = 0.90,
+               min_obs: int = 20) -> pd.DataFrame:
+    """Décalages empiriques de la bande, par horizon — la calibration que la bande n'a pas.
+
+    L'archive contient déjà la distribution des erreurs passées à chaque horizon : c'est
+    exactement ce qu'il faut pour dire de combien une prévision à six mois peut se tromper.
+    La bande devient donc calibrée sur le module qui la juge, au lieu d'être postulée à
+    ±1,28·RMSE — une largeur constante qui couvrait 94 % des cas à court terme et 57 % à
+    dix-huit mois pour une promesse de 80 %.
+
+    Les quantiles portent sur l'erreur SIGNÉE `predicted − realized`, d'où l'inversion des
+    bornes : si le modèle a surestimé de 30 000 dans 90 % des cas, alors le réalisé se
+    trouve au moins 30 000 SOUS la prévision d'autant de fois.
+
+    Un horizon vu moins de `min_obs` fois est écarté plutôt que calibré sur trop peu :
+    `forecast_path` retombe alors sur la bande constante pour ces horizons-là.
+    """
+    cols = ["horizon", "n", "lo_off", "hi_off"]
+    if evaluated.empty:
+        return pd.DataFrame(columns=cols)
+    err = evaluated["predicted"] - evaluated["realized"]
+    grouped = evaluated.assign(_err=err).groupby("horizon")["_err"]
+    table = pd.DataFrame({
+        "horizon": [int(h) for h in grouped.groups],
+        "n": [int(grouped.get_group(h).size) for h in grouped.groups],
+        "lo_off": [-float(grouped.get_group(h).quantile(hi_q)) for h in grouped.groups],
+        "hi_off": [-float(grouped.get_group(h).quantile(lo_q)) for h in grouped.groups],
+    })
+    return table[table["n"] >= min_obs].sort_values("horizon").reset_index(drop=True)
+
+
+def read_band(path: str = BAND_PATH) -> pd.DataFrame | None:
+    """La table de bande calibrée, ou None si elle n'a pas encore été produite."""
+    if not os.path.exists(path):
+        return None
+    band = pd.read_csv(path)
+    missing = [c for c in ("horizon", "lo_off", "hi_off") if c not in band.columns]
+    if missing:
+        raise ValueError(f"{path} : colonnes manquantes {missing}")
+    return band
+
+
+def write_band(band: pd.DataFrame, path: str = BAND_PATH) -> None:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    band.sort_values("horizon").to_csv(path, index=False)
 
 
 # --------------------------------------------------------------------- câblage
@@ -247,7 +322,8 @@ def _engine_snapshot(kind: str = "archive", run_date=None) -> pd.DataFrame:
 
 
 def retro_rows(macro: pd.DataFrame, tx12: pd.Series, vintages, *,
-               split: str = FORECAST_SPLIT, horizon: int = 18) -> pd.DataFrame:
+               split: str = FORECAST_SPLIT, horizon: int = 18,
+               band: pd.DataFrame | None = None) -> pd.DataFrame:
     """Rétro-simule le modèle à chaque millésime : entrées tronquées, modèle réajusté.
 
     La troncature est la seule chose qui rende l'exercice honnête — elle porte sur la macro
@@ -269,7 +345,8 @@ def retro_rows(macro: pd.DataFrame, tx12: pd.Series, vintages, *,
         model = fc.fit_tx_model(m, t, split=split, **lags)
         backtest = model["backtest"]
         sigma = float(backtest.get("rmse", model["rmse"]))
-        path = fc.forecast_path(m, t, lags, model["beta"], sigma, horizon=horizon)
+        path = fc.forecast_path(m, t, lags, model["beta"], sigma, horizon=horizon,
+                                anchor=fc.anchor_of(model, t), band=band)
         if path is None or path.empty:
             continue
         projection = {
@@ -302,14 +379,20 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--record", action="store_true",
                         help="enregistre la prévision du jour (job hebdomadaire)")
-    parser.add_argument("--backfill", metavar="DEPUIS", nargs="?", const="2022-07-01",
+    parser.add_argument("--backfill", metavar="DEPUIS", nargs="?", const=BACKFILL_START,
                         help="recalcule les millésimes rétro-simulés depuis cette date")
+    parser.add_argument("--calibrate", action="store_true",
+                        help="réétalonne la bande sur les erreurs rétro-simulées, puis "
+                             "rejoue le backfill avec elle (implique --backfill)")
     parser.add_argument("--report", action="store_true",
                         help="affiche l'erreur par horizon, modèle contre naïve")
     parser.add_argument("--path", default=ARCHIVE_PATH)
+    parser.add_argument("--band-path", default=BAND_PATH)
     args = parser.parse_args(argv)
-    if not (args.record or args.backfill or args.report):
-        parser.error("choisir --record, --backfill ou --report")
+    if not (args.record or args.backfill or args.calibrate or args.report):
+        parser.error("choisir --record, --backfill, --calibrate ou --report")
+    if args.calibrate and not args.backfill:
+        args.backfill = BACKFILL_START
 
     archive = read(args.path)
 
@@ -321,8 +404,20 @@ def main(argv=None) -> int:
         macro = DataManager().read_frames()[2]
         tx12 = q.transactions_run_rate(con)
         vintages = monthly_vintages(tx12, args.backfill)
+        band = None if args.calibrate else read_band(args.band_path)
         print(f"[archive] rétro-simulation de {len(vintages)} millésime(s)…")
-        rows = retro_rows(macro, tx12, vintages)
+        rows = retro_rows(macro, tx12, vintages, band=band)
+        if args.calibrate:
+            # DEUX passes, et l'ordre n'est pas négociable. La bande se calibre sur les
+            # erreurs de POINT, qui ne dépendent pas d'elle : la première passe les
+            # produit avec la bande constante, la seconde rejoue les mêmes prévisions en
+            # n'ayant changé que lo/hi. Calibrer sur des erreurs déjà corrigées par une
+            # bande précédente ferait dériver l'étalon à chaque exécution.
+            band = band_table(evaluate(rows, tx12))
+            write_band(band, args.band_path)
+            print(f"[archive] bande calibrée sur {len(band)} horizon(s) "
+                  f"-> {args.band_path}")
+            rows = retro_rows(macro, tx12, vintages, band=band)
         # La rétro-simulation est REJOUÉE en entier : elle est déterministe, et la garder
         # incrémentale mélangerait des lignes calculées avec des versions différentes du
         # modèle. Les lignes `archive`, elles, ne sont jamais réécrites.
