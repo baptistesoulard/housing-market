@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T17:53:52+00:00",
+  "generated_at": "2026-08-24T06:50:12+00:00",
   "title": "🏦 Contexte Macroéconomique et Financement",
   "caption": "Indicateurs de contexte macroéconomique et de conditions de financement : confiance des ménages (INSEE), taux du crédit habitat (BdF/BCE), Euribor 3 mois et OAT 10 ans (BCE), intentions d'achat de logement et taux de chômage BIT (INSEE).",
   "how_to_read": "Ces indicateurs expliquent le marché plus qu'ils ne le décrivent, et la plupart le précèdent. Les soldes d'opinion (confiance, intentions, rénovation, BLS) se lisent en écart à leur repère — le zéro ou la moyenne de longue période — pas en niveau absolu. La demande de crédits (BLS) est l'indicateur le plus avancé de la page : les banques la constatent avant que les transactions ne bougent. Sur les volumes, les renégociations sont isolées car elles ne déclenchent ni transaction ni chantier.",
@@ -11339,7 +11339,11 @@
         },
         {
           "date": "2026-07-01",
-          "value": -13.7
+          "value": -13.2
+        },
+        {
+          "date": "2026-08-01",
+          "value": -14.0
         }
       ]
     },
@@ -12573,7 +12577,11 @@
         },
         {
           "date": "2026-07-01",
-          "value": -10.0
+          "value": -9.6
+        },
+        {
+          "date": "2026-08-01",
+          "value": -5.3
         }
       ]
     }

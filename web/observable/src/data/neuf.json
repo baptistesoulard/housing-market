@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T20:57:58+00:00",
+  "generated_at": "2026-08-24T06:50:12+00:00",
   "title": "🏗️ Marché du neuf — de l'autorisation à la vente",
   "caption": "Le tunnel du logement neuf au niveau national : permis de construire et mises en chantier (SIT@DEL), dynamique individuel vs collectif, puis commercialisation des logements neufs (ECLN).",
   "how_to_read": "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier 6 à 12 mois plus tard, puis un logement commercialisé. Le cumul 12 mois glissant lisse la saisonnalité et donne le niveau annuel courant ; la vue brute montre le mois réel, beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus.",
@@ -26,11 +26,11 @@
     },
     {
       "label": "Réservations particuliers ECLN (trimestre)",
-      "value": "16 502",
-      "delta": "+0,6% YoY",
+      "value": "16 112",
+      "delta": "-2,1% YoY",
       "subs": [
         "Trimestre vs même trimestre n-1",
-        "Dernier trimestre disponible : 2026-T1"
+        "Dernier trimestre disponible : 2026-T2"
       ]
     }
   ],
@@ -25754,19 +25754,19 @@
     ]
   },
   "ecln": {
-    "last_quarter": "2026-T1",
+    "last_quarter": "2026-T2",
     "kpis": [
       {
         "label": "Réservations particuliers (trim.)",
-        "value": "16 502"
+        "value": "16 112"
       },
       {
         "label": "Mises en vente (trim.)",
-        "value": "13 939"
+        "value": "17 499"
       },
       {
         "label": "Encours à la vente",
-        "value": "118 927"
+        "value": "124 027"
       },
       {
         "label": "Délai d'écoulement",
@@ -25776,188 +25776,193 @@
     "stock_rows": [
       {
         "date": "2017-01-01",
-        "encours": 110545.0,
-        "mises_en_vente": 34228.0
+        "encours": 110581.0,
+        "mises_en_vente": 34232.0
       },
       {
         "date": "2017-04-01",
-        "encours": 114396.0,
-        "mises_en_vente": 33865.0
+        "encours": 114410.0,
+        "mises_en_vente": 33852.0
       },
       {
         "date": "2017-07-01",
-        "encours": 113623.0,
-        "mises_en_vente": 32291.0
+        "encours": 113635.0,
+        "mises_en_vente": 32302.0
       },
       {
         "date": "2017-10-01",
-        "encours": 115502.0,
-        "mises_en_vente": 34148.0
+        "encours": 115519.0,
+        "mises_en_vente": 34154.0
       },
       {
         "date": "2018-01-01",
-        "encours": 121712.0,
-        "mises_en_vente": 38730.0
+        "encours": 121723.0,
+        "mises_en_vente": 38734.0
       },
       {
         "date": "2018-04-01",
-        "encours": 123211.0,
-        "mises_en_vente": 33743.0
+        "encours": 123210.0,
+        "mises_en_vente": 33727.0
       },
       {
         "date": "2018-07-01",
-        "encours": 124022.0,
-        "mises_en_vente": 32664.0
+        "encours": 124025.0,
+        "mises_en_vente": 32674.0
       },
       {
         "date": "2018-10-01",
-        "encours": 120827.0,
-        "mises_en_vente": 30448.0
+        "encours": 120842.0,
+        "mises_en_vente": 30464.0
       },
       {
         "date": "2019-01-01",
-        "encours": 118575.0,
-        "mises_en_vente": 30571.0
+        "encours": 118583.0,
+        "mises_en_vente": 30568.0
       },
       {
         "date": "2019-04-01",
-        "encours": 118367.0,
-        "mises_en_vente": 31544.0
+        "encours": 118360.0,
+        "mises_en_vente": 31521.0
       },
       {
         "date": "2019-07-01",
-        "encours": 117020.0,
-        "mises_en_vente": 31517.0
+        "encours": 117017.0,
+        "mises_en_vente": 31528.0
       },
       {
         "date": "2019-10-01",
-        "encours": 113500.0,
-        "mises_en_vente": 30229.0
+        "encours": 113516.0,
+        "mises_en_vente": 30264.0
       },
       {
         "date": "2020-01-01",
-        "encours": 111940.0,
-        "mises_en_vente": 24191.0
+        "encours": 111950.0,
+        "mises_en_vente": 24174.0
       },
       {
         "date": "2020-04-01",
-        "encours": 108340.0,
-        "mises_en_vente": 18991.0
+        "encours": 108331.0,
+        "mises_en_vente": 18977.0
       },
       {
         "date": "2020-07-01",
-        "encours": 106822.0,
-        "mises_en_vente": 27274.0
+        "encours": 106818.0,
+        "mises_en_vente": 27282.0
       },
       {
         "date": "2020-10-01",
-        "encours": 107536.0,
-        "mises_en_vente": 26758.0
+        "encours": 107546.0,
+        "mises_en_vente": 26796.0
       },
       {
         "date": "2021-01-01",
-        "encours": 103935.0,
-        "mises_en_vente": 29714.0
+        "encours": 103948.0,
+        "mises_en_vente": 29694.0
       },
       {
         "date": "2021-04-01",
-        "encours": 105277.0,
-        "mises_en_vente": 30234.0
+        "encours": 105258.0,
+        "mises_en_vente": 30189.0
       },
       {
         "date": "2021-07-01",
-        "encours": 106916.0,
-        "mises_en_vente": 30182.0
+        "encours": 106901.0,
+        "mises_en_vente": 30202.0
       },
       {
         "date": "2021-10-01",
-        "encours": 107081.0,
-        "mises_en_vente": 28975.0
+        "encours": 107092.0,
+        "mises_en_vente": 29055.0
       },
       {
         "date": "2022-01-01",
-        "encours": 104679.0,
-        "mises_en_vente": 28796.0
+        "encours": 104763.0,
+        "mises_en_vente": 28813.0
       },
       {
         "date": "2022-04-01",
-        "encours": 108894.0,
-        "mises_en_vente": 29630.0
+        "encours": 108902.0,
+        "mises_en_vente": 29534.0
       },
       {
         "date": "2022-07-01",
-        "encours": 113099.0,
-        "mises_en_vente": 28451.0
+        "encours": 113124.0,
+        "mises_en_vente": 28526.0
       },
       {
         "date": "2022-10-01",
-        "encours": 121429.0,
-        "mises_en_vente": 29130.0
+        "encours": 121457.0,
+        "mises_en_vente": 29292.0
       },
       {
         "date": "2023-01-01",
-        "encours": 127178.0,
-        "mises_en_vente": 25587.0
+        "encours": 127388.0,
+        "mises_en_vente": 25648.0
       },
       {
         "date": "2023-04-01",
-        "encours": 131667.0,
-        "mises_en_vente": 22544.0
+        "encours": 131799.0,
+        "mises_en_vente": 22505.0
       },
       {
         "date": "2023-07-01",
-        "encours": 134007.0,
-        "mises_en_vente": 19322.0
+        "encours": 134115.0,
+        "mises_en_vente": 19355.0
       },
       {
         "date": "2023-10-01",
-        "encours": 132044.0,
-        "mises_en_vente": 15891.0
+        "encours": 132175.0,
+        "mises_en_vente": 16059.0
       },
       {
         "date": "2024-01-01",
-        "encours": 130449.0,
-        "mises_en_vente": 16528.0
+        "encours": 130732.0,
+        "mises_en_vente": 16433.0
       },
       {
         "date": "2024-04-01",
-        "encours": 127222.0,
-        "mises_en_vente": 15743.0
+        "encours": 127266.0,
+        "mises_en_vente": 15645.0
       },
       {
         "date": "2024-07-01",
-        "encours": 122501.0,
-        "mises_en_vente": 13805.0
+        "encours": 122502.0,
+        "mises_en_vente": 13841.0
       },
       {
         "date": "2024-10-01",
-        "encours": 119224.0,
-        "mises_en_vente": 15834.0
+        "encours": 119360.0,
+        "mises_en_vente": 16185.0
       },
       {
         "date": "2025-01-01",
-        "encours": 120818.0,
-        "mises_en_vente": 19885.0
+        "encours": 121325.0,
+        "mises_en_vente": 19905.0
       },
       {
         "date": "2025-04-01",
-        "encours": 121575.0,
-        "mises_en_vente": 18707.0
+        "encours": 122302.0,
+        "mises_en_vente": 18968.0
       },
       {
         "date": "2025-07-01",
-        "encours": 122172.0,
-        "mises_en_vente": 18405.0
+        "encours": 123315.0,
+        "mises_en_vente": 18819.0
       },
       {
         "date": "2025-10-01",
-        "encours": 122700.0,
-        "mises_en_vente": 15969.0
+        "encours": 124411.0,
+        "mises_en_vente": 16993.0
       },
       {
         "date": "2026-01-01",
-        "encours": 118927.0,
-        "mises_en_vente": 13939.0
+        "encours": 122128.0,
+        "mises_en_vente": 15752.0
+      },
+      {
+        "date": "2026-04-01",
+        "encours": 124027.0,
+        "mises_en_vente": 17499.0
       }
     ],
     "delai_rows": [
@@ -26047,7 +26052,7 @@
       },
       {
         "date": "2022-04-01",
-        "delai_mois": 10.5
+        "delai_mois": 10.2
       },
       {
         "date": "2022-07-01",
@@ -26055,7 +26060,7 @@
       },
       {
         "date": "2022-10-01",
-        "delai_mois": 14.399999999999999
+        "delai_mois": 14.700000000000001
       },
       {
         "date": "2023-01-01",
@@ -26067,7 +26072,7 @@
       },
       {
         "date": "2023-07-01",
-        "delai_mois": 22.799999999999997
+        "delai_mois": 22.5
       },
       {
         "date": "2023-10-01",
@@ -26083,7 +26088,7 @@
       },
       {
         "date": "2024-07-01",
-        "delai_mois": 21.0
+        "delai_mois": 20.700000000000003
       },
       {
         "date": "2024-10-01",
@@ -26095,7 +26100,7 @@
       },
       {
         "date": "2025-04-01",
-        "delai_mois": 22.200000000000003
+        "delai_mois": 22.5
       },
       {
         "date": "2025-07-01",
@@ -26107,207 +26112,217 @@
       },
       {
         "date": "2026-01-01",
-        "delai_mois": 21.9
+        "delai_mois": 22.200000000000003
+      },
+      {
+        "date": "2026-04-01",
+        "delai_mois": 22.5
       }
     ],
     "cat_rows": [
       {
         "date": "2018-01-01",
-        "particuliers": 33687.0,
-        "sociaux": 9631.0,
-        "institutionnels": 2136.0
+        "particuliers": 33584.0,
+        "sociaux": 9601.0,
+        "institutionnels": 2171.0
       },
       {
         "date": "2018-04-01",
-        "particuliers": 34718.0,
-        "sociaux": 7307.0,
-        "institutionnels": 1651.0
+        "particuliers": 34730.0,
+        "sociaux": 7327.0,
+        "institutionnels": 1618.0
       },
       {
         "date": "2018-07-01",
-        "particuliers": 33728.0,
-        "sociaux": 8221.0,
-        "institutionnels": 1685.0
+        "particuliers": 33731.0,
+        "sociaux": 8226.0,
+        "institutionnels": 1664.0
       },
       {
         "date": "2018-10-01",
-        "particuliers": 34967.0,
-        "sociaux": 7455.0,
-        "institutionnels": 2351.0
+        "particuliers": 35095.0,
+        "sociaux": 7469.0,
+        "institutionnels": 2361.0
       },
       {
         "date": "2019-01-01",
-        "particuliers": 34790.0,
-        "sociaux": 8945.0,
-        "institutionnels": 2063.0
+        "particuliers": 34631.0,
+        "sociaux": 8935.0,
+        "institutionnels": 2056.0
       },
       {
         "date": "2019-04-01",
-        "particuliers": 34969.0,
-        "sociaux": 9686.0,
-        "institutionnels": 2183.0
+        "particuliers": 34986.0,
+        "sociaux": 9705.0,
+        "institutionnels": 2150.0
       },
       {
         "date": "2019-07-01",
-        "particuliers": 35307.0,
-        "sociaux": 7747.0,
-        "institutionnels": 3121.0
+        "particuliers": 35280.0,
+        "sociaux": 7763.0,
+        "institutionnels": 3096.0
       },
       {
         "date": "2019-10-01",
-        "particuliers": 35721.0,
-        "sociaux": 7577.0,
-        "institutionnels": 2417.0
+        "particuliers": 35838.0,
+        "sociaux": 7429.0,
+        "institutionnels": 2431.0
       },
       {
         "date": "2020-01-01",
-        "particuliers": 28644.0,
-        "sociaux": 8687.0,
-        "institutionnels": 2768.0
+        "particuliers": 28568.0,
+        "sociaux": 8684.0,
+        "institutionnels": 2788.0
       },
       {
         "date": "2020-04-01",
-        "particuliers": 21584.0,
-        "sociaux": 9990.0,
-        "institutionnels": 3890.0
+        "particuliers": 21595.0,
+        "sociaux": 10028.0,
+        "institutionnels": 3853.0
       },
       {
         "date": "2020-07-01",
-        "particuliers": 31699.0,
-        "sociaux": 11393.0,
-        "institutionnels": 2840.0
+        "particuliers": 31635.0,
+        "sociaux": 11406.0,
+        "institutionnels": 2817.0
       },
       {
         "date": "2020-10-01",
-        "particuliers": 28975.0,
-        "sociaux": 11276.0,
-        "institutionnels": 2577.0
+        "particuliers": 29034.0,
+        "sociaux": 11304.0,
+        "institutionnels": 2597.0
       },
       {
         "date": "2021-01-01",
-        "particuliers": 35534.0,
-        "sociaux": 9975.0,
-        "institutionnels": 2885.0
+        "particuliers": 35506.0,
+        "sociaux": 9951.0,
+        "institutionnels": 2890.0
       },
       {
         "date": "2021-04-01",
-        "particuliers": 32437.0,
-        "sociaux": 9784.0,
-        "institutionnels": 3322.0
+        "particuliers": 32477.0,
+        "sociaux": 9833.0,
+        "institutionnels": 3305.0
       },
       {
         "date": "2021-07-01",
-        "particuliers": 30825.0,
-        "sociaux": 9802.0,
-        "institutionnels": 3642.0
+        "particuliers": 30766.0,
+        "sociaux": 9806.0,
+        "institutionnels": 3613.0
       },
       {
         "date": "2021-10-01",
-        "particuliers": 31675.0,
-        "sociaux": 9816.0,
-        "institutionnels": 3993.0
+        "particuliers": 31665.0,
+        "sociaux": 9784.0,
+        "institutionnels": 4031.0
       },
       {
         "date": "2022-01-01",
-        "particuliers": 33541.0,
-        "sociaux": 9551.0,
-        "institutionnels": 3711.0
+        "particuliers": 33554.0,
+        "sociaux": 9534.0,
+        "institutionnels": 3703.0
       },
       {
         "date": "2022-04-01",
-        "particuliers": 29563.0,
-        "sociaux": 7724.0,
-        "institutionnels": 3874.0
+        "particuliers": 29626.0,
+        "sociaux": 7781.0,
+        "institutionnels": 3911.0
       },
       {
         "date": "2022-07-01",
-        "particuliers": 26902.0,
-        "sociaux": 9008.0,
-        "institutionnels": 2814.0
+        "particuliers": 26899.0,
+        "sociaux": 9137.0,
+        "institutionnels": 2784.0
       },
       {
         "date": "2022-10-01",
-        "particuliers": 23191.0,
-        "sociaux": 9795.0,
-        "institutionnels": 2704.0
+        "particuliers": 23144.0,
+        "sociaux": 9768.0,
+        "institutionnels": 2703.0
       },
       {
         "date": "2023-01-01",
-        "particuliers": 20821.0,
-        "sociaux": 9423.0,
-        "institutionnels": 2712.0
+        "particuliers": 20838.0,
+        "sociaux": 9444.0,
+        "institutionnels": 2688.0
       },
       {
         "date": "2023-04-01",
-        "particuliers": 18832.0,
-        "sociaux": 10773.0,
-        "institutionnels": 1727.0
+        "particuliers": 18902.0,
+        "sociaux": 10834.0,
+        "institutionnels": 1747.0
       },
       {
         "date": "2023-07-01",
-        "particuliers": 16633.0,
-        "sociaux": 10245.0,
-        "institutionnels": 3914.0
+        "particuliers": 16674.0,
+        "sociaux": 10405.0,
+        "institutionnels": 3913.0
       },
       {
         "date": "2023-10-01",
-        "particuliers": 15966.0,
-        "sociaux": 13473.0,
-        "institutionnels": 2094.0
+        "particuliers": 15942.0,
+        "sociaux": 13641.0,
+        "institutionnels": 2124.0
       },
       {
         "date": "2024-01-01",
-        "particuliers": 16250.0,
-        "sociaux": 12853.0,
-        "institutionnels": 2387.0
+        "particuliers": 16237.0,
+        "sociaux": 12864.0,
+        "institutionnels": 2366.0
       },
       {
         "date": "2024-04-01",
-        "particuliers": 17167.0,
-        "sociaux": 14686.0,
-        "institutionnels": 1936.0
+        "particuliers": 17260.0,
+        "sociaux": 14892.0,
+        "institutionnels": 1981.0
       },
       {
         "date": "2024-07-01",
-        "particuliers": 18032.0,
-        "sociaux": 11720.0,
-        "institutionnels": 1772.0
+        "particuliers": 18109.0,
+        "sociaux": 11823.0,
+        "institutionnels": 1708.0
       },
       {
         "date": "2024-10-01",
-        "particuliers": 17827.0,
-        "sociaux": 11273.0,
-        "institutionnels": 2134.0
+        "particuliers": 17822.0,
+        "sociaux": 11749.0,
+        "institutionnels": 2130.0
       },
       {
         "date": "2025-01-01",
-        "particuliers": 16410.0,
-        "sociaux": 11056.0,
-        "institutionnels": 2828.0
+        "particuliers": 16362.0,
+        "sociaux": 11211.0,
+        "institutionnels": 2893.0
       },
       {
         "date": "2025-04-01",
-        "particuliers": 16334.0,
-        "sociaux": 10933.0,
-        "institutionnels": 2891.0
+        "particuliers": 16465.0,
+        "sociaux": 11343.0,
+        "institutionnels": 2914.0
       },
       {
         "date": "2025-07-01",
-        "particuliers": 16587.0,
-        "sociaux": 11456.0,
-        "institutionnels": 2834.0
+        "particuliers": 16802.0,
+        "sociaux": 11929.0,
+        "institutionnels": 2827.0
       },
       {
         "date": "2025-10-01",
-        "particuliers": 15871.0,
-        "sociaux": 10361.0,
-        "institutionnels": 2593.0
+        "particuliers": 15969.0,
+        "sociaux": 10588.0,
+        "institutionnels": 2586.0
       },
       {
         "date": "2026-01-01",
-        "particuliers": 16502.0,
-        "sociaux": 11134.0,
-        "institutionnels": 2184.0
+        "particuliers": 16917.0,
+        "sociaux": 11425.0,
+        "institutionnels": 2112.0
+      },
+      {
+        "date": "2026-04-01",
+        "particuliers": 16112.0,
+        "sociaux": 10639.0,
+        "institutionnels": 2464.0
       }
     ],
     "prixm2_rows": [
@@ -26397,7 +26412,7 @@
       },
       {
         "date": "2022-04-01",
-        "prix": 4646.0
+        "prix": 4645.0
       },
       {
         "date": "2022-07-01",
@@ -26409,15 +26424,15 @@
       },
       {
         "date": "2023-01-01",
-        "prix": 4800.0
+        "prix": 4802.0
       },
       {
         "date": "2023-04-01",
-        "prix": 4823.0
+        "prix": 4824.0
       },
       {
         "date": "2023-07-01",
-        "prix": 4771.0
+        "prix": 4773.0
       },
       {
         "date": "2023-10-01",
@@ -26425,7 +26440,7 @@
       },
       {
         "date": "2024-01-01",
-        "prix": 4809.0
+        "prix": 4808.0
       },
       {
         "date": "2024-04-01",
@@ -26433,31 +26448,35 @@
       },
       {
         "date": "2024-07-01",
-        "prix": 4719.0
+        "prix": 4721.0
       },
       {
         "date": "2024-10-01",
-        "prix": 4751.0
+        "prix": 4752.0
       },
       {
         "date": "2025-01-01",
-        "prix": 4883.0
+        "prix": 4886.0
       },
       {
         "date": "2025-04-01",
-        "prix": 4942.0
+        "prix": 4944.0
       },
       {
         "date": "2025-07-01",
-        "prix": 4892.0
+        "prix": 4890.0
       },
       {
         "date": "2025-10-01",
-        "prix": 4951.0
+        "prix": 4946.0
       },
       {
         "date": "2026-01-01",
-        "prix": 4990.0
+        "prix": 4992.0
+      },
+      {
+        "date": "2026-04-01",
+        "prix": 4996.0
       }
     ]
   },

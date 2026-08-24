@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T10:06:26+00:00",
+  "generated_at": "2026-08-24T06:50:12+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -34,7 +34,7 @@
   "freshness": [
     "SIT@DEL : juin 2026",
     "IGEDD : juin 2026",
-    "ECLN : 2026-T1"
+    "ECLN : 2026-T2"
   ],
   "how_to_read": "Chaque pastille résume la tendance des 3 derniers mois vs un an plus tôt : 🟢 vent favorable · 🟠 stable · 🔴 vent contraire. Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
   "blocks": [
@@ -60,10 +60,10 @@
           "sub": "+0,8% vs un an plus tôt (3 derniers mois) · total exact : 954 000"
         },
         {
-          "emoji": "🟠",
+          "emoji": "🔴",
           "title": "Réservations particuliers neuf (ECLN)",
-          "value": "16 502 /trim.",
-          "sub": "+0,6% vs même trimestre un an plus tôt"
+          "value": "16 112 /trim.",
+          "sub": "-2,1% vs même trimestre un an plus tôt"
         }
       ],
       "links": [

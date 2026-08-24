@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-20T15:08:36+00:00",
+  "generated_at": "2026-08-24T06:50:12+00:00",
   "title": "🎯 Prévisions passées — ce que nous annoncions",
   "caption": "Toutes les prévisions de transactions produites par le modèle, face à ce qui s'est réellement passé. Une prévision publiée sans son historique n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre en défaut.",
   "how_to_read": "Deux natures de prévisions cohabitent ici et ne se valent pas. Les prévisions PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — personne ne peut les retoucher. Les prévisions RÉTRO-SIMULÉES ont été recalculées après coup en tronquant les données au mois visé : elles montrent que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles restent séparées partout. Leur limite : les transactions sont révisées, donc une rétro-simulation voit des données un peu meilleures que celles de l'époque.",
@@ -36,7 +36,7 @@
   "crossover_horizon": 4,
   "kinds": {
     "archive": {
-      "n_rows": 18,
+      "n_rows": 36,
       "n_vintages": 1,
       "n_evaluated": 0,
       "first_vintage": "2026-06-01",
@@ -51,8 +51,20 @@
               925797
             ],
             [
+              "2026-07-01",
+              925797
+            ],
+            [
               "2026-08-01",
               912790
+            ],
+            [
+              "2026-08-01",
+              912790
+            ],
+            [
+              "2026-09-01",
+              911874
             ],
             [
               "2026-09-01",
@@ -63,11 +75,27 @@
               912790
             ],
             [
+              "2026-10-01",
+              912790
+            ],
+            [
+              "2026-11-01",
+              907293
+            ],
+            [
               "2026-11-01",
               907293
             ],
             [
               "2026-12-01",
+              902712
+            ],
+            [
+              "2026-12-01",
+              902712
+            ],
+            [
+              "2027-01-01",
               902712
             ],
             [
@@ -79,11 +107,27 @@
               901796
             ],
             [
+              "2027-02-01",
+              901796
+            ],
+            [
+              "2027-03-01",
+              902712
+            ],
+            [
               "2027-03-01",
               902712
             ],
             [
               "2027-04-01",
+              897215
+            ],
+            [
+              "2027-04-01",
+              897215
+            ],
+            [
+              "2027-05-01",
               897215
             ],
             [
@@ -95,7 +139,19 @@
               897215
             ],
             [
+              "2027-06-01",
+              897215
+            ],
+            [
               "2027-07-01",
+              897215
+            ],
+            [
+              "2027-07-01",
+              897215
+            ],
+            [
+              "2027-08-01",
               897215
             ],
             [
@@ -107,11 +163,27 @@
               897215
             ],
             [
+              "2027-09-01",
+              897215
+            ],
+            [
+              "2027-10-01",
+              897215
+            ],
+            [
               "2027-10-01",
               897215
             ],
             [
               "2027-11-01",
+              897215
+            ],
+            [
+              "2027-11-01",
+              897215
+            ],
+            [
+              "2027-12-01",
               897215
             ],
             [
@@ -3959,7 +4031,7 @@
   "current": {
     "vintage": "2026-06-01",
     "vintage_label": "juin 2026",
-    "run_date": "2026-08-20",
+    "run_date": "2026-08-24",
     "r2": 0.914,
     "points": [
       {
@@ -3974,7 +4046,7 @@
         "predicted": 912790,
         "lo": 841587,
         "hi": 983994,
-        "assured": false
+        "assured": true
       },
       {
         "date": "2026-09-01",
