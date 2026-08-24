@@ -517,6 +517,14 @@ ${NAV_ICONS}
   border-radius: 6px; padding: 0.75rem 1.1rem; margin: 1.2rem 0; font-size: 0.9rem;
   background: var(--hm-surface); }
 .hm-note p { margin: 0.3rem 0; }
+/* Formule affichee. Une definition de calcul se lit comme une equation, pas comme une
+   phrase : fond neutre, centre, et une graisse sur le nom de la grandeur. Volontairement
+   en texte et non en notation mathematique -- la page s'adresse d'abord a un lecteur qui
+   veut savoir CE QU'ON DIVISE PAR QUOI, pas a qui lit du LaTeX. */
+.hm-formula { background: var(--hm-surface); border: 1px solid var(--hm-border);
+  border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center;
+  font-size: 0.95rem; color: var(--hm-ink); }
+.hm-formula b { font-weight: 700; }
 /* Tableau des sources (page À propos) : lisible sans être un tableau de données.
    Quatre colonnes ne tiennent plus sur un téléphone : le tableau défile DANS son
    conteneur plutôt que de pousser la page entière de côté. La colonne de date est

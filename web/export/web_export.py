@@ -636,6 +636,7 @@ def build_neuf(con, frames: dict) -> dict:
                     "metrics": [{"key": "permis", "name": "Permis de Construire"},
                                 {"key": "mises", "name": "Mises en Chantier"}]},
         "ecln": ecln,
+        "transformation": _transformation(con),
     }
 
 
@@ -1104,6 +1105,67 @@ def _benchmark(projection: dict) -> dict | None:
         "dans_la_fourchette": bool(BENCHMARK_FNAIM["lo"] <= point["predicted"]
                                    <= BENCHMARK_FNAIM["hi"]),
         "ecart_au_milieu_pct": round((point["predicted"] / milieu - 1) * 100, 1),
+    }
+
+
+#: Date de la mesure qui a écarté le modèle « permis → mises en chantier » (voir
+#: `_transformation`). Stockée plutôt que recalculée : c'est un résultat sur la MÉTHODE,
+#: pas une métrique vivante, et rejouer un backtest à origine glissante de 197 millésimes
+#: à chaque export ajouterait des minutes au job hebdomadaire pour un chiffre qui ne bouge
+#: pas d'une semaine à l'autre. Le protocole est dans CLAUDE.md.
+NEUF_GATE = {
+    "mesure_le": "2026-08-24",
+    "millesimes": 197,
+    "mape": 9.15,
+    "naive_mape": 7.30,
+    "skill": -0.252,
+    "direction": 0.52,
+}
+
+
+def _transformation(con) -> dict:
+    """Permis → mises en chantier : le taux de transformation, et la preuve que les permis
+    n'ont PAS d'avance.
+
+    L'intuition — « un permis précède mécaniquement un chantier, donc SIT@DEL donne une
+    avance gratuite à qui fabrique du second œuvre » — est fausse dans cette série, et
+    `lag_profile` le montre sans commentaire : le R² de chantiers(t) ~ permis(t−k) est
+    MAXIMAL à k = 0 et décroît de façon monotone. Une courbe qui descend dès le premier
+    mois est exactement l'inverse de ce qu'on attend d'un indicateur avancé.
+
+    Ce que les données soutiennent, en revanche, c'est le TAUX DE TRANSFORMATION : la part
+    des logements autorisés qui sont effectivement ouverts en chantier. Il ne prévoit rien
+    — il décrit ce que les promoteurs font de leurs autorisations, ce qui est déjà une
+    information de premier ordre pour un fournisseur.
+    """
+    import forecast as _fc
+
+    flux = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"]).set_index("Date").sort_index()
+    permis, chantiers = flux["Permis"].dropna(), flux["MisesEnChantier"].dropna()
+    p12, m12 = permis.rolling(12).sum(), chantiers.rolling(12).sum()
+    taux = (m12 / p12).dropna()
+    if taux.empty:
+        return {}
+
+    profil = []
+    for k in range(0, 13):
+        X = pd.DataFrame({"x": permis.shift(k)}).join(chantiers.rename("y")).dropna()
+        if len(X) < 60:
+            continue
+        _, r2, _, _ = _fc.ols(X[["x"]].values, X["y"].values)
+        profil.append({"lag": k, "r2": round(float(r2), 4)})
+
+    return {
+        "rows": [{"date": _iso_month(d), "taux": round(float(v) * 100, 2)}
+                 for d, v in taux.items()],
+        "actuel": round(float(taux.iloc[-1]) * 100, 1),
+        "moyenne": round(float(taux.mean()) * 100, 1),
+        "min": {"valeur": round(float(taux.min()) * 100, 1), "date": _iso_month(taux.idxmin())},
+        "max": {"valeur": round(float(taux.max()) * 100, 1), "date": _iso_month(taux.idxmax())},
+        "dernier_permis": int(round(float(p12.dropna().iloc[-1]))),
+        "dernier_chantier": int(round(float(m12.dropna().iloc[-1]))),
+        "lag_profile": profil,
+        "gate": NEUF_GATE,
     }
 
 

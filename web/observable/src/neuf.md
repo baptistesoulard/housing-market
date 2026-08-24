@@ -6,9 +6,9 @@ toc: true
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
         filterYears, sumByType, withCsvExport,
-        MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
+        MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
-import {series} from "./components/theme.js";
+import {series, ui} from "./components/theme.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
 ```
 
@@ -228,3 +228,140 @@ function eclnPrix() {
 </div>
 
 <div class="hm-meta">Source : SDES — ECLN (CVS-CJO)</div>
+
+## 🔄 Du permis au chantier : ce que les autorisations disent vraiment
+
+<!--
+  Cette section publie un RÉSULTAT NÉGATIF autant qu'un indicateur, et c'est délibéré. Le
+  plan initial prévoyait ici un modèle de prévision « permis → mises en chantier » pour le
+  professionnel du bâtiment, sur l'intuition qu'un permis précède mécaniquement un chantier.
+  Mesuré, c'est faux dans cette série : voir le profil de décalage plus bas et CLAUDE.md.
+  Ce qui subsiste — le taux de transformation — est descriptif, ne prévoit rien, et n'a
+  donc besoin d'aucune validation hors échantillon.
+-->
+
+Un logement autorisé n'est pas un logement construit. L'écart entre les deux se mesure, il
+bouge beaucoup, et il dit ce que les promoteurs font réellement de leurs autorisations —
+une information plus directe, pour qui fournit le chantier, qu'une prévision.
+
+```js
+const TR = neuf.transformation ?? null;
+```
+
+```js
+if (TR) display(cardGrid([
+  {label: "Taux de transformation", value: nf1.format(TR.actuel) + " %",
+   subs: [`moyenne de long terme : ${nf1.format(TR.moyenne)} %`]},
+  {label: "Logements autorisés", value: nf0.format(TR.dernier_permis),
+   subs: ["sur les 12 derniers mois"]},
+  {label: "Logements mis en chantier", value: nf0.format(TR.dernier_chantier),
+   subs: ["sur les 12 derniers mois"]},
+], kpiCard));
+```
+
+<div class="hm-formula">
+  <b>Taux de transformation</b> =
+  mises en chantier sur 12 mois ÷ logements autorisés sur 12 mois
+</div>
+
+```js
+if (TR) display(withCsvExport(Plot.plot({
+  width, height: 300, marginLeft: 52, marginBottom: 34,
+  x: {type: "utc", label: null},
+  y: {label: "Taux de transformation (%)", grid: true, zero: false,
+      tickFormat: (v) => nf0.format(v) + " %"},
+  marks: [
+    Plot.ruleY([TR.moyenne], {stroke: ui.subtle, strokeDasharray: "4 3"}),
+    Plot.text([{x: new Date(TR.rows[0].date), y: TR.moyenne}],
+              {x: "x", y: "y", text: () => `moyenne ${nf1.format(TR.moyenne)} %`,
+               dy: -8, dx: 4, textAnchor: "start", fill: ui.subtle, fontSize: 11}),
+    Plot.lineY(TR.rows, {x: (d) => new Date(d.date), y: "taux",
+                         stroke: series.violet, strokeWidth: 2.2}),
+    Plot.dot([TR.rows[TR.rows.length - 1]], {x: (d) => new Date(d.date), y: "taux",
+                                             fill: series.violet, r: 4.5,
+                                             stroke: "white", strokeWidth: 2}),
+    Plot.crosshairX(TR.rows, {x: (d) => new Date(d.date), y: "taux", color: ui.subtle}),
+    Plot.tip(TR.rows, Plot.pointerX({
+      x: (d) => new Date(d.date), y: "taux", ...TIP,
+      title: (d) => `${fmtMonthFR(new Date(d.date))}\n${nf1.format(d.taux)} % des logements autorisés ouverts en chantier`,
+    })),
+  ],
+}), TR.rows, "neuf-taux-transformation"));
+```
+
+```js
+if (TR) display(html`<div class="hm-caption">Aujourd'hui
+  <b>${nf1.format(TR.actuel)} %</b> des logements autorisés sont effectivement ouverts en
+  chantier, contre ${nf1.format(TR.moyenne)} % en moyenne de long terme. Le creux de
+  ${nf1.format(TR.min.valeur)} % date de ${fmtMonthFR(new Date(TR.min.date))}, le pic de
+  ${nf1.format(TR.max.valeur)} % de ${fmtMonthFR(new Date(TR.max.date))}. Un taux qui
+  s'enfonce signale des projets autorisés puis différés — un carnet de commandes qui ne se
+  matérialise pas.</div>`);
+```
+
+### Pourquoi cette page ne publie pas de prévision du neuf
+
+<div class="hm-caption">
+Le plan de ce site prévoyait ici un modèle « permis → mises en chantier », sur une intuition
+qui paraît solide : une autorisation précède forcément un chantier, donc elle devrait donner
+de l'avance. Mesurée, l'intuition ne tient pas. Publier la mesure vaut mieux que publier le
+modèle.
+</div>
+
+```js
+// La preuve tient dans une seule courbe. Si les permis précédaient les chantiers, le R²
+// culminerait à un décalage POSITIF — trois mois, six mois — et redescendrait de part et
+// d'autre. Il est maximal à zéro et décroît de façon monotone : les deux séries bougent
+// ENSEMBLE, sans avance exploitable.
+if (TR && TR.lag_profile.length) display(withCsvExport(Plot.plot({
+  width, height: 260, marginLeft: 56, marginBottom: 40,
+  x: {label: "Décalage appliqué aux permis (mois)", tickFormat: "d", grid: false},
+  y: {label: "R² du lien permis → chantiers", grid: true, zero: true},
+  marks: [
+    Plot.lineY(TR.lag_profile, {x: "lag", y: "r2", stroke: series.brick, strokeWidth: 2.2}),
+    Plot.dot(TR.lag_profile.slice(0, 1), {x: "lag", y: "r2", fill: series.brick, r: 5.5}),
+    Plot.text(TR.lag_profile.slice(0, 1), {x: "lag", y: "r2", dy: -14, dx: 4,
+              text: () => "maximum à 0 mois", fill: series.brick, fontWeight: 600,
+              textAnchor: "start"}),
+    Plot.tip(TR.lag_profile, Plot.pointerX({
+      x: "lag", y: "r2", ...TIP,
+      title: (d) => `Permis décalés de ${d.lag} mois\nR² = ${nf1.format(d.r2 * 100)} %`,
+    })),
+  ],
+}), TR.lag_profile, "neuf-profil-decalage"));
+```
+
+```js
+if (TR) display(html`<details class="hm-howto">
+  <summary>Le détail de la mesure, et les limites de cette page</summary>
+  <p><b>Ce qui a été testé.</b> Une régression par horizon, mises en chantier sur 12 mois à
+  <i>t + h</i> expliquées par les autorisations sur 12 mois et par l'écart cumulé
+  autorisations − chantiers, estimée sur la seule fenêtre d'entraînement puis appliquée en
+  aveugle sur ${nf0.format(TR.gate.millesimes)} millésimes, de 2010 à aujourd'hui.</p>
+  <p><b>Résultat.</b> ${nf1.format(TR.gate.mape)} % d'erreur moyenne contre
+  ${nf1.format(TR.gate.naive_mape)} % pour une prévision qui se contente de prolonger le
+  dernier niveau connu — soit <b>${nf0.format(Math.abs(TR.gate.skill) * 100)} % d'erreur en
+  PLUS</b>, et le sens du marché annoncé juste
+  ${nf0.format(TR.gate.direction * 100)} % du temps, c'est-à-dire à pile ou face. Le modèle
+  se dégrade à mesure que l'horizon s'allonge. Aucun des quatre blocs d'horizon ne franchit
+  le seuil d'entrée du site (5 % d'erreur évitée). Mesure du ${TR.gate.mesure_le}.</p>
+  <p><b>Pourquoi, probablement.</b> Les deux séries sont corrigées des variations
+  saisonnières et remontent par la même voie administrative : le délai de déclaration pèse
+  vraisemblablement plus que le délai physique de chantier. Le décalage réel entre
+  l'autorisation et la première pelletée existe, mais il est propre à chaque projet, et la
+  moyenne nationale mensuelle l'efface.</p>
+  <p><b>Limites du taux de transformation lui-même.</b> Il rapporte deux flux mesurés sur
+  la même fenêtre de douze mois, alors que les chantiers d'un mois donné proviennent
+  d'autorisations réparties sur plusieurs mois antérieurs : le ratio n'est donc pas un taux
+  de conversion projet par projet, mais un indicateur de régime. Il peut dépasser 100 %
+  quand un stock d'autorisations anciennes se débloque, et une autorisation abandonnée
+  n'est jamais retirée de la série. Il se lit en tendance et par rapport à sa moyenne, pas
+  comme une probabilité.</p>
+  <p><b>Ce que cette page ne fera pas.</b> Publier une prévision du neuf tant qu'un modèle
+  n'aura pas battu cette référence naïve hors échantillon. La page
+  <a href="/previsions">Prévision &amp; Scénarios</a> couvre le marché de l'ancien, où le
+  modèle passe ce test à partir de six mois.</p>
+</details>`);
+```
+
+<div class="hm-meta">Source : SDES — SIT@DEL2 (CVS-CJO), France entière</div>

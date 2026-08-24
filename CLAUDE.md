@@ -716,6 +716,45 @@ Trois conséquences à tenir :
    de faire mieux — et elle coûterait ~68 PDF lus à la main (la Banque de France renvoie 403
    à tout script). Ne pas s'y lancer sans une raison nouvelle.
 
+**Un permis ne précède PAS une mise en chantier — mesuré le 2026-08-24, et c'est
+contre-intuitif.** Le plan prévoyait un modèle de prévision du neuf pour le professionnel du
+bâtiment, sur une intuition que j'ai répétée sans la vérifier : « une autorisation précède
+mécaniquement un chantier, donc SIT@DEL donne une avance gratuite ». Elle est fausse dans
+cette série, et de deux façons indépendantes :
+
+* sur les flux mensuels, le R² de `chantiers(t) ~ permis(t−k)` est **maximal à k = 0**
+  (0,710) et décroît de façon **monotone** (0,627 à un mois, 0,539 à six, 0,258 à douze).
+  Un indicateur avancé donnerait une bosse à un décalage positif ; ici la courbe descend
+  dès le premier mois. C'est ce profil que la page publie — la preuve tient en une courbe.
+* backtest à origine glissante, 197 millésimes depuis 2010, une régression par horizon
+  (`y(t+h) ~ permis12(t) + écart cumulé`) : **0 bloc d'horizon franchi sur 4**, et le
+  modèle fait **25 % d'erreur en PLUS** que la persistance (9,15 % contre 7,30 %), en se
+  dégradant avec l'horizon (−31 % à 13-18 mois). Sens du marché annoncé juste 52 % du
+  temps, c'est-à-dire à pile ou face.
+
+Attention au piège qui m'a d'abord induit en erreur : mesuré sur les **cumuls 12 mois**, le
+décalage optimal ressort aussi à 0 — mais pour une raison sans rapport, deux fenêtres de
+douze mois se recouvrant presque entièrement. Il faut passer par les **flux mensuels** pour
+que la question ait un sens. Et le R² brut donnait le modèle gagnant à h = 18 (0,347 contre
+0,203) : artefact d'échantillon, que le backtest hors échantillon renverse complètement.
+
+Cause probable : les deux séries sont CVS-CJO et remontent par la même voie administrative,
+si bien que le délai de déclaration pèse davantage que le délai physique de chantier. Le
+décalage réel existe projet par projet, mais la moyenne nationale mensuelle l'efface.
+
+**Ce que la page publie à la place : le taux de transformation.** Mises en chantier sur
+12 mois ÷ logements autorisés sur 12 mois — 78,0 % aujourd'hui contre 84,8 % en moyenne de
+long terme. Il ne prévoit rien, donc il n'a besoin d'aucune validation hors échantillon, et
+il dit ce qu'un fournisseur veut savoir : combien d'autorisations deviennent des chantiers.
+Ses limites sont écrites sur la page et doivent y rester — il rapporte deux flux d'une même
+fenêtre et non une conversion projet par projet, il peut dépasser 100 % quand un stock
+ancien se débloque, et une autorisation abandonnée n'est jamais retirée de la série.
+`NEUF_GATE` dans `web_export.py` porte le résultat de la mesure, **stocké et daté** plutôt
+que recalculé : c'est un résultat sur la méthode, pas une métrique vivante, et rejouer
+197 millésimes à chaque export coûterait des minutes au job hebdomadaire pour un chiffre qui
+ne bouge pas. `tests/test_web_structure.py` refuse que la formule, le profil de décalage,
+l'aveu ou les limites disparaissent de la page.
+
 **La ventilation par épisode est le pendant de la ventilation par horizon.** `_by_episode`
 découpe les millésimes en huit épisodes de marché. L'une dit *à quelle distance* le modèle
 sert, l'autre *dans quelles conditions* — et c'est la seconde qui explique la première :
@@ -941,7 +980,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 250 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 251 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

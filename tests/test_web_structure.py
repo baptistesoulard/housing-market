@@ -263,3 +263,28 @@ def test_aucune_page_n_emploie_viewof(nom):
     assert not fautifs, (
         f"{nom} emploie `viewof`, que Framework ne connaît pas — la cellule sera retirée "
         f"du build en silence : {fautifs[:2]}")
+
+
+def test_la_page_neuf_publie_sa_formule_et_ses_limites():
+    """La section « Du permis au chantier » doit garder ce qui la rend honnête.
+
+    Elle publie un RÉSULTAT NÉGATIF autant qu'un indicateur : le modèle de prévision du
+    neuf qui était prévu à cet endroit a été mesuré, puis écarté — les permis n'ont aucune
+    avance exploitable sur les mises en chantier (R² maximal à zéro décalage, décroissant
+    ensuite). Une session ultérieure pourrait « alléger » la page en retirant l'aveu et en
+    ne gardant que l'indicateur ; ce serait une régression d'honnêteté, pas une
+    simplification. Le taux de transformation, lui, n'a de sens que si l'on dit ce qu'il
+    n'est PAS — il rapporte deux flux d'une même fenêtre, pas une conversion projet par
+    projet, et peut dépasser 100 %.
+    """
+    src = _page("neuf")
+    assert "hm-formula" in src, (
+        "neuf.md : la formule du taux de transformation n'est plus affichée — "
+        "un ratio publié sans son calcul n'est pas vérifiable")
+    for attendu, pourquoi in [
+        ("lag_profile", "la preuve que les permis n'ont pas d'avance"),
+        ("ne publie pas de prévision", "l'explication du modèle écarté"),
+        ("Limites du taux de transformation", "les limites de l'indicateur"),
+        ("gate", "le chiffre de la mesure qui a écarté le modèle"),
+    ]:
+        assert attendu in src, f"neuf.md : « {attendu} » a disparu — {pourquoi}"
