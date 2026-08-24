@@ -164,8 +164,12 @@ const tauxPlot = () => {
   // bas, sans que rien n'explique le saut : deux fragments du MÊME modèle, calculés sur des
   // bases différentes, que personne ne pouvait interpréter. Continue, elle rend l'écart
   // avec la courbe publiée lisible — cet écart EST le biais de niveau qu'on corrige.
+  // `publie` est transporté jusqu'ici, sans quoi la vignette de survol ne peut pas montrer
+  // la valeur verte : les mois projetés ne portaient que la sortie brute, et le lecteur
+  // survolait la courbe publiée sans jamais pouvoir en lire le chiffre.
   const rows = histo(R.series).concat(
-    depuis(R.projected).map((d) => ({date: d.date, observed: null, modelled: d.modelled})));
+    depuis(R.projected).map((d) => ({date: d.date, observed: null,
+                                     modelled: d.modelled, publie: d.rate})));
   const proj = depuis(R.projected).map((d) => ({date: d.date, value: d.rate}));
   return withCsvExport(Plot.plot({
     height: 300, marginLeft: 54, marginRight: 78, marginBottom: 34,
@@ -207,10 +211,31 @@ const tauxPlot = () => {
         x: (d) => new Date(d.date), y: "modelled", ...TIP,
         title: (d) => [
           fmtMonthFR(new Date(d.date)),
-          d.observed == null ? "Pas encore publié" : `Pratiqué : ${nf1.format(d.observed)} %`,
-          `Modèle brut : ${nf1.format(d.modelled)} %`,
+          d.observed == null
+            ? "Taux pratiqué : pas encore publié"
+            : `Taux pratiqué : ${nf1.format(d.observed)} %`,
+          `Modèle brut (marché décalé de ${R.lag} mois) : ${nf1.format(d.modelled)} %`,
+          // La valeur recalée n'existe que sur les mois projetés : sur l'historique c'est
+          // le taux pratiqué lui-même qui sert d'ancrage, l'afficher n'aurait pas de sens.
+          // L'écart corrigé est donc rappelé là, et là seulement, où il se lit.
+          ...(d.publie == null ? [] : [
+            `Ce que nous publions : ${nf1.format(d.publie)} %`,
+            `Écart corrigé : ${nf1.format(d.modelled - d.publie)} pt`,
+          ]),
         ].join("\n"),
       })),
+      // Le repère analyste a SA propre vignette : il n'appartient à aucune des séries
+      // mensuelles, donc le pointeur en X du graphique ne l'atteindrait jamais.
+      B2 && depuis([B2]).length ? Plot.tip([B2], Plot.pointer({
+        x: (d) => new Date(d.date), y: "valeur", ...TIP,
+        title: (d) => [
+          d.source,
+          `Anticipation : ${nf1.format(d.valeur)} % à l'horizon ${d.horizon}`,
+          `Relevé le ${d.releve_le}`,
+          "Horizon plus lointain que le nôtre :",
+          "les deux se complètent, elles ne portent pas sur le même mois.",
+        ].join("\n"),
+      })) : null,
     ].filter(Boolean),
   }), rows, "previsions-modele-taux");
 };
