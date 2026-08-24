@@ -180,12 +180,38 @@ if (R) display(html`<div class="hm-panels">
       <b>Un point de taux de marché en plus ⇒ environ
       +${nf1.format(R.coefficients.marche)} pt de taux de crédit, atteint en
       ${R.lag} mois.</b><br>
-      Les coefficients de l'<abbr title="Obligation d'État française à 10 ans">OAT</abbr> et
-      de l'Euribor ne se lisent pas séparément : ils sont corrélés à 0,83 sur la période, si
-      bien que l'ajustement attribue presque tout au premier. C'est leur SOMME qui a un
-      sens, et c'est elle que pilote le panneau de scénarios.<br>
       <span style="color:${ui.subtle}">Sources : Banque de France / BCE.</span>
     </div>
+  </div>
+</div>`);
+```
+
+```js
+// LA FORMULE, EN CLAIR. Elle avait disparu en réécrivant la section : les cartes donnaient
+// le délai et la sensibilité totale, mais plus l'équation ni les deux coefficients. Or
+// c'est elle qui rend le modèle vérifiable — un lecteur doit pouvoir refaire le calcul.
+// Même dispositif que le taux de transformation sur « Marché du neuf » (.hm-formula), pour
+// que les deux pages présentent leurs calculs de la même façon.
+//
+// Le décalage est écrit DANS l'équation, sur chaque terme, et non relégué en légende :
+// c'est le paramètre qui a le plus changé le modèle, et le lire hors de la formule
+// laisserait croire à une relation contemporaine.
+// Un seul format pour les coefficients : hm.js n'expose que nf0 et nf1, et un coefficient
+// de 0,669 arrondi a une decimale deviendrait 0,7 -- l'equation ne serait plus verifiable.
+const nfCoef = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 2, maximumFractionDigits: 3});
+
+if (R) display(html`<div class="hm-formula">
+  <b>Taux de crédit du mois <i>t</i></b> =
+  ${nfCoef.format(R.coefficients.intercept)}
+  + ${nfCoef.format(R.coefficients.oat)} × OAT(<i>t</i> − ${R.lag} mois)
+  + ${nfCoef.format(R.coefficients.euribor)} × Euribor(<i>t</i> − ${R.lag} mois)
+  <div class="hm-caption" style="margin-top:0.5rem">
+    Les deux coefficients ne se lisent pas séparément : l'OAT et l'Euribor sont corrélés à
+    0,83 sur la période, si bien que l'ajustement attribue presque tout au premier. C'est
+    leur <b>somme, ${nfCoef.format(R.coefficients.marche)}</b>, qui a un sens — un point de
+    taux de marché en plus finit par ajouter ${nf1.format(R.coefficients.marche)} point au
+    taux de crédit. C'est elle que pilote le panneau de scénarios, et c'est pourquoi les
+    deux curseurs de taux ont été fusionnés en un seul.
   </div>
 </div>`);
 ```

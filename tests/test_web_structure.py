@@ -13,6 +13,8 @@ liens d'Observable Framework ne regardant pas les fragments (#ancre).
 
 Ce test ferme ce trou-là, en pur Python : il n'a besoin ni de Node ni d'un build.
 """
+import glob
+import json
 import os
 import re
 import unicodedata
@@ -336,3 +338,76 @@ def test_chaque_helper_utilise_est_importe(nom):
     assert not manquants, (
         f"{nom}.md utilise {sorted(manquants)} sans l'importer depuis hm.js — "
         "la page se construira sans erreur et cassera dans le navigateur")
+
+
+# Globaux du runtime Observable et du navigateur : ils n'ont ni import ni cellule qui les
+# définisse, et ce sont pourtant des entrées légitimes.
+_GLOBAUX = {
+    "display", "view", "html", "svg", "Plot", "d3", "Inputs", "FileAttachment", "width",
+    "Generators", "Mutable", "now", "dark", "resize", "invalidation",
+    "Math", "Date", "Object", "Array", "JSON", "Intl", "Set", "Map", "Number", "String",
+    "Event", "console", "URL", "document", "window", "fetch", "Promise", "RegExp",
+    "parseFloat", "parseInt", "isNaN", "NaN", "undefined", "Boolean", "Error", "Symbol",
+    "WeakMap", "Infinity", "FormData", "localStorage", "location", "navigator", "Blob",
+    "TextDecoder", "AbortController", "setTimeout",
+}
+
+
+def test_aucune_cellule_construite_ne_reference_un_identifiant_inconnu():
+    """La preuve structurelle qu'aucun « RuntimeError: X is not defined » ne peut survenir.
+
+    Le test d'imports ci-dessus ne couvre que les helpers de hm.js ; celui-ci couvre TOUT.
+    Le HTML construit déclare, pour chaque cellule, ses `inputs` et ses `outputs` : une
+    entrée qui n'est ni un global, ni un nom importé, ni la sortie d'une autre cellule est
+    un identifiant que le runtime ne pourra pas résoudre — et la page affichera l'erreur en
+    rouge à la place du graphique, sans que le build ait bronché.
+
+    Deux pièges dans sa fabrication, rencontrés tous les deux : une cellule qui ne consomme
+    rien n'a PAS de clé `inputs` (il faut donc lire les deux clés indépendamment, sinon ses
+    sorties sont ignorées et l'on croit à un défaut), et les noms importés sont des entrées
+    sans être des sorties.
+
+    Se saute sans `dist/` : il exige un build, que la suite ne lance pas.
+    """
+    dist = os.path.join(os.path.dirname(_WEB), "dist")
+    pages = sorted(glob.glob(os.path.join(dist, "*.html")))
+    depart = sorted(glob.glob(os.path.join(dist, "departement", "*.html")))
+    if not pages:
+        pytest.skip("dist/ absent — lancer `npm run build` pour activer ce test")
+
+    for html in pages + depart[:1]:
+        md = os.path.join(_WEB, os.path.basename(html).replace(".html", ".md"))
+        if not os.path.exists(md):
+            md = os.path.join(_WEB, "departement", "[code].md")
+            if os.path.basename(html).replace(".html", "") not in dvf_codes():
+                continue
+        src, page = open(html, encoding="utf-8", errors="replace").read(), open(md, encoding="utf-8").read()
+        blocs = re.findall(r'define\(\{id: "[a-f0-9]+",([^\n]*?)body:', src)
+        if not blocs:
+            continue
+        definis, utilises = set(_GLOBAUX) | _noms_importes(page), set()
+        for bloc in blocs:
+            sorties = re.search(r"outputs: (\[[^]]*\])", bloc)
+            entrees = re.search(r"inputs: (\[[^]]*\])", bloc)
+            if sorties:
+                definis |= set(json.loads(sorties.group(1).replace("'", '"')))
+            if entrees:
+                utilises |= set(json.loads(entrees.group(1).replace("'", '"')))
+        inconnus = sorted(utilises - definis)
+        assert not inconnus, (
+            f"{os.path.basename(html)} référence {inconnus} sans que rien ne les définisse — "
+            "la page affichera « RuntimeError: … is not defined » à la place du graphique")
+
+
+def _noms_importes(src):
+    out = set()
+    for bloc in re.findall(r"import \{([^}]*)\} from", src, re.S):
+        out |= {x.strip().split(" as ")[-1].strip()
+                for x in bloc.replace("\n", " ").split(",") if x.strip()}
+    return out | set(re.findall(r"import (\w+) from", src))
+
+
+def dvf_codes():
+    """Les pages départementales partagent un seul source : n'en vérifier qu'une suffit."""
+    return {os.path.basename(p).replace(".html", "") for p in
+            glob.glob(os.path.join(os.path.dirname(_WEB), "dist", "departement", "*.html"))}

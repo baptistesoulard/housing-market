@@ -740,7 +740,16 @@ le modèle de taux, parce que la vérification portait sur le HTML construit (le
 étaient bien là) et non sur l'exécution des cellules. C'est le même angle mort que `viewof`
 ci-dessous : le build ne dit rien, seul le navigateur le montre.
 
-`tests/test_web_structure.py::test_chaque_helper_utilise_est_importe` couvre les onze pages.
+DEUX tests couvrent désormais ce trou, et ils sont complémentaires.
+`test_chaque_helper_utilise_est_importe` compare les exports de `hm.js` aux imports de chaque
+page et tourne SANS build. `test_aucune_cellule_construite_ne_reference_un_identifiant_inconnu`
+est la preuve structurelle complète : le HTML construit déclare pour chaque cellule ses
+`inputs` et ses `outputs`, donc une entrée qui n'est ni un global, ni un nom importé, ni la
+sortie d'une autre cellule est un identifiant que le runtime ne résoudra pas. Il couvre TOUT
+(y compris un `nf2` qui n'existe nulle part, que le premier test laisse passer), mais il exige
+un `dist/` et se saute sans lui.
+
+`test_chaque_helper_utilise_est_importe` couvre les onze pages.
 Deux pièges dans sa fabrication, tous deux rencontrés :
 
 * une page a le droit de définir SA propre version d'un helper — `synthese.md` spécialise
@@ -750,6 +759,11 @@ Deux pièges dans sa fabrication, tous deux rencontrés :
   exactement le défaut à attraper. Ma première version du test avait ce trou et ne détectait
   rien. Les `...` sont donc protégés AVANT de retirer les accès `objet.membre`, et une
   contre-épreuve vérifie que le test échoue bien sur la version cassée.
+
+Le test structurel a lui aussi ses deux pièges, rencontrés : une cellule qui ne consomme rien
+n'a PAS de clé `inputs` (il faut donc lire `inputs` et `outputs` indépendamment, sinon ses
+sorties sont ignorées et l'on croit à un défaut — c'est ce qui faisait passer `zscore` pour
+inconnu), et les noms importés sont des entrées sans être des sorties.
 
 **`viewof` n'existe pas dans Observable Framework, et son emploi est SILENCIEUX.** C'est
 de la syntaxe notebook : Framework retire la cellule entière du build sans erreur ni
