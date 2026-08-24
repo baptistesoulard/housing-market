@@ -673,6 +673,49 @@ chiffre est un total d'année, le nôtre un cumul glissant) ; l'écart de périm
 est dit sur la page ; et deux tests de `test_web_links.py` refusent une année révolue ou un
 repère sans lien ni date de relevé.
 
+**Le report à plat des prédicteurs n'est PAS une faiblesse : c'est la bonne hypothèse, au
+moins pour les taux (mesuré le 2026-08-24).** Au-delà de leur dernière observation, les
+prédicteurs sont maintenus à leur dernière valeur. J'ai longtemps décrit ça comme
+« transparent mais faible », et suspecté ce report d'être la source du biais croissant
+(+0,7 % à un mois, +6,4 % à dix-huit). Testé : **faux**.
+
+La courbe des taux BCE (dataset `YC`, quotidienne depuis 2004) permet de calculer le taux à
+10 ans que le marché attend dans h mois, et de reconstruire cette anticipation à N'IMPORTE
+QUELLE date passée — la courbe d'hier *est* l'archive de ce qu'on anticipait hier. La
+substitution est donc entièrement backtestable, sans avoir à retrouver une prévision
+publiée. Chaîne testée : courbe → forwards 10 ans et 3 mois → variation attendue → étage 1
+appliqué en ÉCART (donc immunisé à son biais de niveau de 0,77 pt) → étage 2.
+
+Résultat sur 209 millésimes, **0 bloc d'horizon franchi sur 4** :
+
+| bloc | report à plat | forwards | gain |
+|---|---|---|---|
+| 1-3 | 3,94 % | 3,94 % | +0,0 % |
+| 4-6 | 5,35 % | 5,34 % | +0,2 % |
+| 7-12 | 6,25 % | 6,19 % | +0,9 % |
+| 13-18 | 7,10 % | 7,21 % | **−1,5 %** |
+
+Ce n'est pas un défaut de câblage : 47 % des mois sont effectivement modifiés, et sur
+ceux-là précisément le report à plat fait 7,18 % contre 7,20 % aux forwards. Les forwards
+sont **légèrement moins bons**. C'est un résultat classique de la littérature sur les taux —
+l'hypothèse des anticipations échoue empiriquement et la marche aléatoire est très difficile
+à battre — mais il fallait le mesurer ici plutôt que le supposer dans un sens ou dans
+l'autre.
+
+Trois conséquences à tenir :
+
+1. **Ne pas re-tenter la substitution par les forwards.** Le builder `build_yield_curve` a
+   été écrit, exécuté, mesuré, puis RETIRÉ avec son CSV : laisser une source rafraîchie
+   chaque semaine et un fichier versionné pour une hypothèse réfutée est du poids mort.
+2. **Le biais croissant a une autre cause.** Il reste à expliquer, et ce n'est pas le report
+   à plat des taux. Piste restante : le modèle est une régression de niveau sur des séries
+   à supports disjoints selon le régime (voir « les cycles ne sont pas comparables »).
+3. **La moitié « chômage » du lot 5b perd son fondement.** Elle supposait qu'une projection
+   institutionnelle batte le report à plat. Si les forwards échouent là où le marché est
+   profond et liquide, une projection de chômage publiée quatre fois par an a peu de chances
+   de faire mieux — et elle coûterait ~68 PDF lus à la main (la Banque de France renvoie 403
+   à tout script). Ne pas s'y lancer sans une raison nouvelle.
+
 **La ventilation par épisode est le pendant de la ventilation par horizon.** `_by_episode`
 découpe les millésimes en huit épisodes de marché. L'une dit *à quelle distance* le modèle
 sert, l'autre *dans quelles conditions* — et c'est la seconde qui explique la première :
