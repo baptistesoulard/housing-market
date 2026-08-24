@@ -192,34 +192,36 @@ d'accord, et le prix affiché est celui des rares transactions qui aboutissent.
 <details class="hm-howto">
   <summary>La méthode, en clair</summary>
   <div class="hm-caption">
-    <p><b>D'où viennent les données.</b> DVF (Demandes de valeurs foncières), publié par la
-    DGFiP sous licence ouverte : ce sont les ventes réellement enregistrées, pas des
-    annonces ni des estimations.</p>
 
-    <p><b>Ce qui est retenu.</b> Uniquement les mutations qualifiées de « vente » portant
-    sur <b>un seul logement</b> (maison ou appartement). Sont écartées : les ventes en
-    l'état futur d'achèvement, dont le prix n'est pas comparable à celui d'un bien
-    existant ; les échanges et adjudications ; les ventes portant sur plusieurs logements,
-    qu'aucune clé ne permet de répartir.</p>
+**D'où viennent les données.** DVF (Demandes de valeurs foncières), publié par la
+DGFiP sous licence ouverte : ce sont les ventes réellement enregistrées, pas des
+annonces ni des estimations.
 
-    <p><b>Les dépendances sont conservées.</b> Une maison vendue avec son garage est une
-    vente normale, et c'est le bien que l'on compare. Le prix au m² inclut donc ces
-    annexes et <b>surestime légèrement</b> le logement seul. Les exclure aurait coûté les
-    deux tiers des ventes et déformé l'échantillon.</p>
+**Ce qui est retenu.** Uniquement les mutations qualifiées de « vente » portant
+sur **un seul logement** (maison ou appartement). Sont écartées : les ventes en
+l'état futur d'achèvement, dont le prix n'est pas comparable à celui d'un bien
+existant ; les échanges et adjudications ; les ventes portant sur plusieurs logements,
+qu'aucune clé ne permet de répartir.
 
-    <p><b>Médiane, pas moyenne.</b> La moitié des ventes sont au-dessus, la moitié en
-    dessous. Une moyenne serait tirée vers le haut par quelques ventes exceptionnelles.
-    Les prix au m² les plus extrêmes (1 % de chaque côté, par département et par année)
-    sont écartés.</p>
+**Les dépendances sont conservées.** Une maison vendue avec son garage est une
+vente normale, et c'est le bien que l'on compare. Le prix au m² inclut donc ces
+annexes et **surestime légèrement** le logement seul. Les exclure aurait coûté les
+deux tiers des ventes et déformé l'échantillon.
 
-    <p><b>Un département n'est pas un marché.</b> C'est la limite principale de cette
-    page. Entre une métropole et sa campagne, l'écart de prix peut dépasser celui entre
-    deux départements. La médiane départementale situe un ordre de grandeur, elle ne dit
-    rien du prix d'un bien précis.</p>
+**Médiane, pas moyenne.** La moitié des ventes sont au-dessus, la moitié en
+dessous. Une moyenne serait tirée vers le haut par quelques ventes exceptionnelles.
+Les prix au m² les plus extrêmes (1 % de chaque côté, par département et par année)
+sont écartés.
 
-    <p><b>Fenêtre de publication.</b> DVF ne republie que les cinq dernières années ;
-    l'historique plus ancien a été reconstitué depuis des millésimes archivés, avec une
-    méthode dont l'écart mesuré sur la médiane est inférieur à 0,2 %.</p>
+**Un département n'est pas un marché.** C'est la limite principale de cette
+page. Entre une métropole et sa campagne, l'écart de prix peut dépasser celui entre
+deux départements. La médiane départementale situe un ordre de grandeur, elle ne dit
+rien du prix d'un bien précis.
+
+**Fenêtre de publication.** DVF ne republie que les cinq dernières années ;
+l'historique plus ancien a été reconstitué depuis des millésimes archivés, avec une
+méthode dont l'écart mesuré sur la médiane est inférieur à 0,2 %.
+
   </div>
 </details>
 
