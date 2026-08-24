@@ -114,11 +114,12 @@ déjà publiés déterminent alors le taux de crédit des mois à venir.
 // légendes de « Marché du neuf » : à trois séries dont une projection, masquer l'une ne
 // sert à rien — la comparaison EST le propos de ce graphique.
 const legendeTaux = R ? [
-  {name: "Taux de crédit observé", color: series.brick},
-  {name: `Reconstitué par le modèle (marché décalé de ${R.lag} mois)`,
+  {name: "Taux réellement pratiqué", color: series.brick},
+  {name: `Sortie brute du modèle (marché décalé de ${R.lag} mois)`,
    color: series.blue, dash: true},
   ...(R.projected.length
-      ? [{name: "Déjà déterminé par les taux publiés", color: series.green, dash: true}]
+      ? [{name: "Ce que nous publions : brut recalé sur le dernier taux connu",
+          color: series.green, dash: true}]
       : []),
 ] : [];
 ```
@@ -132,7 +133,13 @@ if (R) display(html`<div class="hm-legend hm-legend--static">${legendeTaux.map((
 
 ```js
 const tauxPlot = () => {
-  const rows = R.series;
+  // La courbe BRUTE est tracée d'un seul tenant, ajustement puis mois à venir. Elle
+  // s'arrêtait auparavant au dernier mois observé et la projection repartait 0,5 pt plus
+  // bas, sans que rien n'explique le saut : deux fragments du MÊME modèle, calculés sur des
+  // bases différentes, que personne ne pouvait interpréter. Continue, elle rend l'écart
+  // avec la courbe publiée lisible — cet écart EST le biais de niveau qu'on corrige.
+  const rows = R.series.concat(
+    R.projected.map((d) => ({date: d.date, observed: null, modelled: d.modelled})));
   const proj = R.projected.map((d) => ({date: d.date, value: d.rate}));
   return withCsvExport(Plot.plot({
     height: 300, marginLeft: 54, marginRight: 78, marginBottom: 34,
@@ -152,16 +159,23 @@ const tauxPlot = () => {
       proj.length ? Plot.text(proj.slice(-1), {x: (d) => new Date(d.date), y: "value",
                     text: (d) => " " + nf1.format(d.value) + " %", fill: series.green,
                     textAnchor: "start", dx: 6, dy: -10, fontWeight: 700}) : null,
-      Plot.text(rows.slice(-1), {x: (d) => new Date(d.date), y: "observed",
+      // L'étiquette de fin du RÉEL doit viser le dernier mois RÉELLEMENT observé, pas la
+      // dernière ligne : depuis que la courbe brute se prolonge, les derniers points ont
+      // un `observed` nul et l'étiquette se serait affichée « NaN % » dans le vide.
+      Plot.text(R.series.slice(-1), {x: (d) => new Date(d.date), y: "observed",
                 text: (d) => " " + nf1.format(d.observed) + " %", fill: series.brick,
                 textAnchor: "start", dx: 6, dy: 12, fontWeight: 700}),
-      Plot.crosshairX(rows, {x: (d) => new Date(d.date), y: "observed", color: ui.subtle}),
+      Plot.crosshairX(rows, {x: (d) => new Date(d.date), y: "modelled", color: ui.subtle}),
       Plot.tip(rows, Plot.pointerX({
-        x: (d) => new Date(d.date), y: "observed", ...TIP,
-        title: (d) => `${fmtMonthFR(new Date(d.date))}\nObservé : ${nf1.format(d.observed)} %\nModèle : ${nf1.format(d.modelled)} %`,
+        x: (d) => new Date(d.date), y: "modelled", ...TIP,
+        title: (d) => [
+          fmtMonthFR(new Date(d.date)),
+          d.observed == null ? "Pas encore publié" : `Pratiqué : ${nf1.format(d.observed)} %`,
+          `Modèle brut : ${nf1.format(d.modelled)} %`,
+        ].join("\n"),
       })),
     ].filter(Boolean),
-  }), R.series, "previsions-modele-taux");
+  }), rows, "previsions-modele-taux");
 };
 ```
 
@@ -183,6 +197,33 @@ if (R) display(html`<div class="hm-panels">
       <span style="color:${ui.subtle}">Sources : Banque de France / BCE.</span>
     </div>
   </div>
+</div>`);
+```
+
+```js
+// COMMENT LIRE CE GRAPHIQUE. Il portait trois courbes sans dire ce que chacune est, et
+// deux d'entre elles sortaient du MÊME modèle sur des bases différentes : la reconstitution
+// brute s'arrêtait au dernier mois observé, la projection repartait 0,5 pt plus bas. Le
+// lecteur voyait un saut inexpliqué. Les deux formant maintenant une lecture cohérente, il
+// reste à dire laquelle sert à quoi — sans quoi l'écart entre elles reste énigmatique.
+if (R && R.projected.length) display(html`<div class="hm-note">
+  <p><strong>Comment lire ces trois courbes.</strong></p>
+  <ul>
+    <li><b style="color:${series.brick}">Le taux réellement pratiqué</b> — ce que
+    l'Observatoire Crédit Logement a mesuré. Il s'arrête à
+    ${fmtMonthFR(new Date(R.series[R.series.length - 1].date))}, dernier mois publié.</li>
+    <li><b style="color:${series.blue}">La sortie brute du modèle</b> — ce que la formule
+    donne à partir des taux de marché d'il y a ${R.lag} mois. Elle continue au-delà du
+    réel, puisque ces taux de marché-là sont déjà connus. Elle est plus nerveuse que le
+    réel : les marchés bougent chaque jour, les barèmes bancaires par paliers.</li>
+    <li><b style="color:${series.green}">Ce que nous publions</b> — la même sortie brute,
+    recalée sur le dernier taux réellement pratiqué.</li>
+  </ul>
+  <p>L'écart entre la courbe bleue et la verte, aujourd'hui
+  <b>${nf1.format(R.projected[0].modelled - R.projected[0].rate)} point</b>, n'est pas une
+  erreur : c'est la part du mouvement des marchés que les banques ne répercutent pas. Le
+  modèle sur-prédit systématiquement le niveau, donc seules ses <i>variations</i> sont
+  fiables — et c'est le recalage qui les transforme en un taux publiable.</p>
 </div>`);
 ```
 

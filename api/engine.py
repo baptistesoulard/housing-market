@@ -161,8 +161,11 @@ def rate_model() -> dict:
         "lag": int(rm["lag"]),
         "coefficients": {"intercept": b[0], "oat": b[1], "euribor": b[2],
                          "marche": b[1] + b[2]},
+        # `rate` = la valeur publiée, recalée sur le dernier taux observé ; `modelled` = la
+        # sortie brute du même modèle, qui prolonge la courbe d'ajustement sans rupture.
         "projected": [{"date": _iso(r.Date), "rate": _num(r.taux),
-                       "source": _iso(r.source)} for r in path.itertuples()],
+                       "modelled": _num(r.modelled), "source": _iso(r.source)}
+                      for r in path.itertuples()],
         "series": _series(rm["frame"], "Date", {"observed": "obs", "modelled": "fit"}),
     }
 

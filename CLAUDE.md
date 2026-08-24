@@ -673,6 +673,25 @@ relation d'avance. **Ne pas confondre avec le cas des permis de construire**, o�
 décroît dès le premier mois : là il n'y a aucune avance, ici il y en a une. Chercher les deux
 décalages séparément donne 0,9323 au lieu de 0,9320 — un paramètre de plus pour rien.
 
+**Le graphique de l'étage 1 porte TROIS courbes, et deux d'entre elles sortent du même
+modèle — ne pas les recoller par erreur.** Première version livrée, illisible : la
+reconstitution s'arrêtait au dernier mois observé (3,75 %) et la projection repartait 0,51 pt
+plus bas (3,24 %), parce que la première est la sortie BRUTE et la seconde la sortie RECALÉE.
+Deux fragments du même calcul sur des bases différentes, séparés par un saut qu'aucune
+légende n'expliquait.
+
+`rate_path` renvoie donc les deux — `modelled` (brute) et `taux` (publiée). La courbe brute
+est tracée d'un seul tenant, ajustement puis mois à venir, et l'écart qui la sépare de la
+courbe publiée **est** le biais de niveau : 0,59 pt, soit la part du mouvement de marché que
+les banques ne répercutent pas. Visible et expliqué, au lieu d'être subi. Un encart « comment
+lire ces trois courbes » nomme chacune ; le retirer rendrait la section incompréhensible, ce
+qu'elle a été.
+
+Deux détails qui cassent si on prolonge la courbe sans y penser : l'étiquette de fin du réel
+doit viser `R.series` et non la dernière ligne (les mois projetés ont un `observed` nul, elle
+afficherait « NaN % »), et la vignette de survol doit se caler sur `modelled`, seule série
+définie partout.
+
 **Conséquence produit, et c'est la vraie raison de l'avoir fait :** `forecast.rate_path()`
 publie les mois de taux de crédit que les taux de marché DÉJÀ parus déterminent — sept mois
 d'avance sans la moindre hypothèse. À rapprocher de la projection des transactions, dont la

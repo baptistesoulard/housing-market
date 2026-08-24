@@ -128,18 +128,27 @@ def rate_path(df_macro, beta, lag):
 
     Ancré EN ÉCART sur le dernier taux réellement observé, comme `scenario` : le modèle
     sur-prédit le niveau (les banques ne répercutent pas tout), donc seules ses variations
-    sont fiables. Renvoie [Date, taux, source] — `source` étant le mois de marché qui
-    détermine la ligne, pour que la page puisse le montrer.
+    sont fiables.
+
+    Renvoie [Date, taux, modelled, source]. `taux` est la valeur PUBLIÉE, recalée ; `modelled`
+    est la sortie BRUTE du même modèle, sur laquelle l'ajustement historique est tracé. Les
+    deux sont renvoyées parce que n'en montrer qu'une rendait le graphique inintelligible :
+    la courbe d'ajustement s'arrêtait au dernier mois observé (à 3,75 %) et la projection
+    repartait 0,51 pt plus bas (à 3,24 %), sans que rien n'explique le saut. Avec les deux,
+    la courbe brute est continue et l'écart qui la sépare de la courbe publiée EST le biais
+    de niveau — visible, et non plus subi. `source` est le mois de marché qui détermine la
+    ligne, pour que la page puisse le montrer.
     """
     m = _macro_indexed(df_macro)
     rate = m["Credit_Logement_Taux_Interet"].dropna()
     oat, euribor = m["OAT_10ans"].dropna(), m["Euribor_3M"].dropna()
+    cols = ["Date", "taux", "modelled", "source"]
     if rate.empty or oat.empty or euribor.empty or lag <= 0:
-        return pd.DataFrame(columns=["Date", "taux", "source"])
+        return pd.DataFrame(columns=cols)
     last, marche = rate.index.max(), min(oat.index.max(), euribor.index.max())
     base_o, base_e = oat.get(last - pd.DateOffset(months=lag)), euribor.get(last - pd.DateOffset(months=lag))
     if base_o is None or base_e is None or pd.isna(base_o) or pd.isna(base_e):
-        return pd.DataFrame(columns=["Date", "taux", "source"])
+        return pd.DataFrame(columns=cols)
 
     rows = []
     for h in range(1, lag + 1):
@@ -152,8 +161,9 @@ def rate_path(df_macro, beta, lag):
             break
         rows.append({"Date": t,
                      "taux": float(rate.iloc[-1] + beta[1] * (o - base_o) + beta[2] * (e - base_e)),
+                     "modelled": float(beta[0] + beta[1] * o + beta[2] * e),
                      "source": src})
-    return pd.DataFrame(rows, columns=["Date", "taux", "source"])
+    return pd.DataFrame(rows, columns=cols)
 
 
 def _design(m, tx12, kr, ki, kc):
