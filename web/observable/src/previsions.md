@@ -23,6 +23,7 @@ const T = data.available ? data.transactions : null;
 const P = data.available ? data.projection : null;
 const V = data.available ? data.verdict : null;
 const B = data.available ? data.benchmark : null;
+const B2 = data.available ? data.benchmark_taux : null;
 const pct = (v) => nf1.format(v * 100) + " %";
 ```
 
@@ -101,38 +102,137 @@ if (data.available) display(html`<hr>`);
 
 ## 1. Modèle de taux de crédit (OAT 10 ans + Euribor 3 mois)
 
+Le crédit immobilier français est à taux fixe, et les banques publient des barèmes qu'elles
+lissent : leur réaction aux taux de marché n'est pas immédiate. Le modèle **mesure ce délai**
+au lieu de le supposer — et c'est ce qui lui donne son intérêt, puisque les taux de marché
+déjà publiés déterminent alors le taux de crédit des mois à venir.
+
+```js
+// LÉGENDE STATIQUE. Le graphique porte trois courbes dont deux se ressemblent beaucoup, et
+// les étiquettes de fin de ligne donnaient la valeur sans jamais dire l'identité : rien
+// n'indiquait laquelle était l'observé. Statique et non cliquable, contrairement aux
+// légendes de « Marché du neuf » : à trois séries dont une projection, masquer l'une ne
+// sert à rien — la comparaison EST le propos de ce graphique.
+const legendeTaux = R ? [
+  {name: "Taux de crédit observé", color: series.brick},
+  {name: `Reconstitué par le modèle (marché décalé de ${R.lag} mois)`,
+   color: series.blue, dash: true},
+  ...(R.projected.length
+      ? [{name: "Déjà déterminé par les taux publiés", color: series.green, dash: true}]
+      : []),
+] : [];
+```
+
+```js
+if (R) display(html`<div class="hm-legend hm-legend--static">${legendeTaux.map((m) => html`<span class="hm-legend-item">
+  <span class="hm-swatch" style=${m.dash
+    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
+    : {background: m.color}}></span>${m.name}</span>`)}</div>`);
+```
+
+```js
+const tauxPlot = () => {
+  const rows = R.series;
+  const proj = R.projected.map((d) => ({date: d.date, value: d.rate}));
+  return withCsvExport(Plot.plot({
+    height: 300, marginLeft: 54, marginRight: 78, marginBottom: 34,
+    x: {type: "utc", label: null},
+    y: {label: "Taux (%)", grid: true, zero: false, tickFormat: (v) => nf1.format(v) + " %"},
+    marks: [
+      Plot.lineY(rows, {x: (d) => new Date(d.date), y: "modelled", stroke: series.blue,
+                        strokeWidth: 2.2, strokeDasharray: "6 4"}),
+      Plot.lineY(rows, {x: (d) => new Date(d.date), y: "observed", stroke: series.brick,
+                        strokeWidth: 2.4}),
+      proj.length ? Plot.lineY(proj, {x: (d) => new Date(d.date), y: "value",
+                                      stroke: series.green, strokeWidth: 2.4,
+                                      strokeDasharray: "3 3"}) : null,
+      proj.length ? Plot.dot(proj.slice(-1), {x: (d) => new Date(d.date), y: "value",
+                                              fill: series.green, r: 4.5, stroke: "white",
+                                              strokeWidth: 2}) : null,
+      proj.length ? Plot.text(proj.slice(-1), {x: (d) => new Date(d.date), y: "value",
+                    text: (d) => " " + nf1.format(d.value) + " %", fill: series.green,
+                    textAnchor: "start", dx: 6, dy: -10, fontWeight: 700}) : null,
+      Plot.text(rows.slice(-1), {x: (d) => new Date(d.date), y: "observed",
+                text: (d) => " " + nf1.format(d.observed) + " %", fill: series.brick,
+                textAnchor: "start", dx: 6, dy: 12, fontWeight: 700}),
+      Plot.crosshairX(rows, {x: (d) => new Date(d.date), y: "observed", color: ui.subtle}),
+      Plot.tip(rows, Plot.pointerX({
+        x: (d) => new Date(d.date), y: "observed", ...TIP,
+        title: (d) => `${fmtMonthFR(new Date(d.date))}\nObservé : ${nf1.format(d.observed)} %\nModèle : ${nf1.format(d.modelled)} %`,
+      })),
+    ].filter(Boolean),
+  }), R.series, "previsions-modele-taux");
+};
+```
+
 ```js
 if (R) display(html`<div class="hm-panels">
+  <div>${tauxPlot()}</div>
   <div>
-    ${multiLine({
-      rows: [
-        ...R.series.map((d) => ({date: d.date, value: d.observed, series: "Taux observé"})),
-        ...R.series.map((d) => ({date: d.date, value: d.modelled, series: "Taux modélisé"}))
-      ],
-      meta: [{name: "Taux observé", color: series.brick},
-             {name: "Taux modélisé", color: series.blue, dash: true}],
-      yLabel: "Taux (%)", height: 300,
-      valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %",
-      filename: "previsions-modele-taux"
-    })}
-  </div>
-  <div>
-    ${kpiCard({label: "R² du modèle de taux", value: pct(R.r2)})}
+    ${cardGrid([
+      {label: "Délai de répercussion", value: `${R.lag} mois`,
+       subs: ["entre le marché et le barème des banques"]},
+      {label: "Part du mouvement répercutée",
+       value: nf0.format(R.coefficients.marche * 100) + " %",
+       subs: ["par point de taux de marché"]},
+    ], kpiCard)}
     <div class="hm-caption" style="margin-top:0.6rem">
-      <b>Taux ≈ ${nf1.format(R.coefficients.intercept)} +
-      ${nf1.format(R.coefficients.oat)}·OAT +
-      ${nf1.format(R.coefficients.euribor)}·Euribor</b><br>
-      +1 pt de taux de marché ⇒ ~+${nf1.format(R.coefficients.oat + R.coefficients.euribor)} pt
-      de taux crédit. Les deux coefficients ne se lisent pas séparément : l'OAT et l'Euribor
-      sont corrélés à 0,83 sur la période, si bien que l'ajustement attribue presque tout au
-      premier. C'est leur SOMME qui a un sens, et c'est elle que pilote le panneau de
-      scénarios.<br>
-      L'écart 2023-25 (taux sous l'OAT) reflète des banques qui retiennent leurs barèmes.<br>
+      <b>Un point de taux de marché en plus ⇒ environ
+      +${nf1.format(R.coefficients.marche)} pt de taux de crédit, atteint en
+      ${R.lag} mois.</b><br>
+      Les coefficients de l'<abbr title="Obligation d'État française à 10 ans">OAT</abbr> et
+      de l'Euribor ne se lisent pas séparément : ils sont corrélés à 0,83 sur la période, si
+      bien que l'ajustement attribue presque tout au premier. C'est leur SOMME qui a un
+      sens, et c'est elle que pilote le panneau de scénarios.<br>
       <span style="color:${ui.subtle}">Sources : Banque de France / BCE.</span>
     </div>
   </div>
 </div>`);
 ```
+
+```js
+// Ce que le délai rend possible, et qui n'existait pas avant : des mois de taux de crédit
+// déterminés SANS aucune hypothèse. À rapprocher de la projection des transactions, dont
+// la fenêtre « sans hypothèse » vaut zéro mois sur dix-huit.
+if (R && R.projected.length) display(html`<div class="hm-note">
+  <p><strong>${R.projected.length} mois de taux de crédit sont déjà joués.</strong> Puisque
+  les barèmes réagissent avec ${R.lag} mois de retard, les taux de marché déjà publiés
+  déterminent le taux de crédit jusqu'en
+  ${fmtMonthFR(new Date(R.projected[R.projected.length - 1].date))} :
+  <strong>${nf1.format(R.projected[R.projected.length - 1].rate)} %</strong>, contre
+  ${nf1.format(R.series[R.series.length - 1].observed)} % au dernier mois observé. Aucune
+  hypothèse de marché n'entre dans ce chiffre — seulement des taux déjà publiés et le délai
+  mesuré.</p>
+  ${B2 ? html`<p class="hm-caption">Pour situer : ${B2.source} anticipe
+  <b>${nf1.format(B2.valeur)} %</b> à l'horizon ${B2.horizon}. ${B2.note}
+  (Relevé le ${B2.releve_le}.)</p>` : ""}
+</div>`);
+```
+
+<details class="hm-howto">
+  <summary>Pourquoi un délai, et ce qu'il ne dit pas</summary>
+
+```js
+if (R) display(html`<p>Sans délai, le modèle expliquait <b>83,8 %</b> de la variance du taux
+  de crédit ; avec, <b>${pct(R.r2)}</b>. L'écart ne vient pas d'un paramètre de plus ajusté
+  au passé : testé à l'aveugle — entraîné jusqu'en 2019, jugé sur le choc de taux de 2022
+  qu'il n'avait pas vu — le délai réduit l'erreur de <b>42 %</b>. Et il est stable :
+  recherché à chaque millésime annuel depuis 2012, il reste entre 5 et 7 mois sans jamais
+  s'effondrer à zéro.</p>
+  <p>Il change aussi la lecture de l'écart 2023-2025, quand le taux de crédit est resté sous
+  ce que l'OAT laissait attendre. On l'attribuait entièrement à des banques retenant leurs
+  barèmes ; une bonne part n'était que ce délai de répercussion. L'écart résiduel passe de
+  0,77 à 0,59 point — le comportement des banques en explique donc le reste, pas le tout.</p>
+  <p><b>Trois limites.</b> Le délai est une <i>moyenne</i> : la transmission a été plus
+  rapide lors de la remontée de 2022 que pendant les années de taux bas. Le modèle
+  sur-prédit le niveau, parce que les banques ne répercutent jamais la totalité d'un
+  mouvement — c'est pourquoi tout ce qui en découle, projection comme scénarios, est ancré
+  sur le dernier taux réellement observé et n'en utilise que les <i>variations</i>. Enfin ce
+  modèle n'améliore <b>pas</b> la prévision de transactions : celle-ci utilise le taux de
+  crédit observé, jamais le taux reconstitué.</p>`);
+```
+
+</details>
 
 ## 2. Nowcast des transactions & backtest hors échantillon
 

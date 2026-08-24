@@ -472,3 +472,79 @@ def test_base_100_ignore_les_autres_annees():
     """Le slicer de période ne doit jamais pouvoir déplacer la base."""
     df = _serie_annuelle([2014, 2015, 2016], {2014: 50.0, 2015: 100.0, 2016: 400.0})
     assert ana.base_100(df, ["V"])["V"] == 100.0
+
+
+# --- Etage 1 : le delai de repercussion --------------------------------------------------
+
+def test_search_rate_lag_retrouve_un_delai_injecte():
+    """Le credit reagit aux taux de marche avec retard : la grille doit le retrouver.
+
+    Le crédit immobilier français est à taux fixe et les banques lissent leurs barèmes.
+    Ignorer ce délai coûtait cher et de façon mesurable — R² 0,838 contre 0,932 sur les
+    données réelles, et surtout 0,744 contre 0,432 de RMSE hors échantillon. Ici on
+    fabrique une série dont le délai est CONNU, pour vérifier que la recherche le retrouve
+    au lieu de se raccrocher au décalage nul.
+    """
+    idx = pd.date_range("2005-01-01", periods=200, freq="MS")
+    rng = np.random.default_rng(7)
+    oat = pd.Series(np.cumsum(rng.normal(0, 0.12, 200)) + 3.0, index=idx)
+    eur = pd.Series(np.cumsum(rng.normal(0, 0.10, 200)) + 2.0, index=idx)
+    taux = 1.2 + 0.7 * oat.shift(5) + 0.1 * eur.shift(5)      # delai injecte : 5 mois
+    macro = pd.DataFrame({"Date": idx, "OAT_10ans": oat.values, "Euribor_3M": eur.values,
+                          "Credit_Logement_Taux_Interet": taux.values})
+    assert fc.search_rate_lag(macro, min_obs=60) == 5
+
+    fit = fc.fit_rate_model(macro)
+    assert fit["lag"] == 5 and fit["r2"] > 0.999
+    assert abs(fit["beta"][1] - 0.7) < 1e-6
+
+
+def test_fit_rate_model_lag_zero_restitue_le_modele_contemporain():
+    """`lag=0` doit reproduire exactement l'ancien modèle — la porte de sortie."""
+    idx = pd.date_range("2010-01-01", periods=150, freq="MS")
+    rng = np.random.default_rng(3)
+    macro = pd.DataFrame({
+        "Date": idx,
+        "OAT_10ans": np.cumsum(rng.normal(0, 0.1, 150)) + 3.0,
+        "Euribor_3M": np.cumsum(rng.normal(0, 0.08, 150)) + 1.5,
+        "Credit_Logement_Taux_Interet": np.cumsum(rng.normal(0, 0.09, 150)) + 2.5,
+    })
+    a = fc.fit_rate_model(macro, lag=0)
+    m = fc._macro_indexed(macro)
+    d = m.dropna(subset=["Credit_Logement_Taux_Interet", "OAT_10ans", "Euribor_3M"])
+    b, r2, _, _ = fc.ols(d[["OAT_10ans", "Euribor_3M"]].values,
+                         d["Credit_Logement_Taux_Interet"].values)
+    assert a["lag"] == 0 and abs(a["r2"] - r2) < 1e-12
+    assert all(abs(x - y) < 1e-12 for x, y in zip(a["beta"], b))
+
+
+def test_rate_path_n_utilise_que_des_taux_deja_publies():
+    """La projection du taux de crédit ne doit contenir AUCUNE hypothèse de marché.
+
+    C'est tout l'intérêt du délai : si les barèmes réagissent avec k mois de retard, les
+    taux de marché déjà publiés fixent déjà le taux de crédit des k mois suivants. Chaque
+    ligne doit donc pointer un mois source RÉELLEMENT observé, et la trajectoire s'arrêter
+    dès que la source manque.
+    """
+    idx = pd.date_range("2020-01-01", periods=40, freq="MS")
+    oat = pd.Series(np.linspace(1.0, 4.0, 40), index=idx)
+    eur = pd.Series(np.linspace(0.0, 2.0, 40), index=idx)
+    taux = pd.Series(np.linspace(1.5, 3.5, 40), index=idx)
+    taux.iloc[-4:] = np.nan                     # le taux de credit accuse 4 mois de retard
+    macro = pd.DataFrame({"Date": idx, "OAT_10ans": oat.values, "Euribor_3M": eur.values,
+                          "Credit_Logement_Taux_Interet": taux.values})
+    beta = np.array([1.0, 0.7, 0.1])
+    path = fc.rate_path(macro, beta, lag=6)
+
+    assert not path.empty
+    dernier_marche = idx[-1]
+    assert (path["source"] <= dernier_marche).all(), "une source depasse les taux publies"
+    assert (path["Date"] > taux.dropna().index.max()).all()
+    # chaque ligne est bien decalee de `lag` mois par rapport a sa source
+    ecarts = ((path["Date"].dt.year - path["source"].dt.year) * 12
+              + (path["Date"].dt.month - path["source"].dt.month))
+    assert set(ecarts) == {6}
+    # ancrage en ecart : la premiere valeur part du dernier taux REELLEMENT observe
+    assert abs(path["taux"].iloc[0] - taux.dropna().iloc[-1]) < 1.0
+    # lag nul -> aucune avance, donc aucune ligne
+    assert fc.rate_path(macro, beta, lag=0).empty

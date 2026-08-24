@@ -235,3 +235,44 @@ def test_la_page_de_prevision_affiche_la_section_des_hypotheses_ecartees():
     assert "refutations" in src, (
         "previsions.md n'affiche plus les hypothèses écartées — publier uniquement ce qui "
         "a marché est un biais de sélection, pas une simplification")
+
+
+def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():
+    """Le repère analyste sur le taux de crédit, même discipline que celui des volumes.
+
+    Il est plus solide que le repère FNAIM sur un point : l'Observatoire Crédit Logement/CSA
+    PRODUIT la série que le site modélise, donc sa prévision porte exactement sur la même
+    grandeur — aucun écart de périmètre à expliquer. Il est plus fragile sur un autre : son
+    horizon ne recouvre pas celui que nos taux de marché publiés permettent de déterminer,
+    et la page doit le dire plutôt que de laisser croire à une comparaison terme à terme.
+    """
+    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
+    if not data.get("available") or not data.get("benchmark_taux"):
+        return
+    b = data["benchmark_taux"]
+    assert b.get("url", "").startswith("http"), "le repère de taux doit porter son lien"
+    datetime.date.fromisoformat(b["releve_le"])
+    assert 0 < b["valeur"] < 15, f"repère de taux invraisemblable : {b['valeur']}"
+    assert b.get("note"), "le décalage d'horizon doit être explicité"
+
+
+def test_le_modele_de_taux_publie_son_delai_de_repercussion():
+    """Sans le délai affiché, les deux coefficients de l'étage 1 sont illisibles.
+
+    Ils ne se lisent pas séparément (OAT et Euribor corrélés à 0,83) et ils ne se lisent pas
+    non plus sans savoir QUAND le mouvement se répercute. Le délai est la troisième
+    information indispensable, et c'est celle qui manquait.
+    """
+    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
+    if not data.get("available"):
+        return
+    r = data["rate"]
+    assert isinstance(r.get("lag"), int) and 0 <= r["lag"] <= 12, (
+        f"délai de répercussion absent ou invraisemblable : {r.get('lag')}")
+    somme = r["coefficients"]["marche"]
+    assert abs(somme - (r["coefficients"]["oat"] + r["coefficients"]["euribor"])) < 1e-9, (
+        "le coefficient « marché » doit être la somme des deux, c'est la seule lisible")
+    for p in r.get("projected", []):
+        assert p["source"] < p["date"], (
+            "un mois projeté doit venir d'un mois de marché ANTÉRIEUR — sinon la "
+            "projection contient une hypothèse au lieu de taux déjà publiés")

@@ -1233,6 +1233,29 @@ REFUTATIONS = [
 ]
 
 
+#: Repère analyste pour le TAUX DE CRÉDIT. Plus solide que le repère FNAIM des volumes :
+#: l'Observatoire Crédit Logement/CSA est le PRODUCTEUR de la série que ce site modélise,
+#: donc sa prévision porte exactement sur la même grandeur — aucun écart de périmètre à
+#: expliquer, contrairement aux 0,6 % qui séparent les volumes Notaires de la série IGEDD.
+#:
+#: Le calendrier, en revanche, ne se recouvre PAS : notre projection sans hypothèse s'arrête
+#: à l'horizon du délai de répercussion (~7 mois), la leur porte sur fin 2027. Les deux se
+#: complètent, elles ne se comparent pas au même mois — et la page doit le dire.
+#:
+#: Saisi à la main, donc daté et testé comme BENCHMARK_FNAIM.
+BENCHMARK_TAUX = {
+    "source": "Observatoire Crédit Logement / CSA",
+    "url": "https://lobservatoire.creditlogement.fr/",
+    "horizon": "fin 2027",
+    "valeur": 3.95,
+    "releve_le": "2026-08-24",
+    "note": ("L'Observatoire produit la série même que ce site modélise : sa prévision "
+             "porte donc exactement sur la même grandeur. Elle vise fin 2027, au-delà de "
+             "l'horizon que nos seuls taux de marché publiés permettent de déterminer — "
+             "les deux se complètent plutôt qu'elles ne se comparent."),
+}
+
+
 def _iso_month(value) -> str:
     return pd.Timestamp(value).strftime("%Y-%m-%d")
 
@@ -1278,6 +1301,7 @@ def build_previsions(con, frames: dict) -> dict:
         payload["verdict"] = _verdict(payload["projection"], con)
         payload["benchmark"] = _benchmark(payload["projection"])
     payload["refutations"] = REFUTATIONS
+    payload["benchmark_taux"] = BENCHMARK_TAUX
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
     return payload
 

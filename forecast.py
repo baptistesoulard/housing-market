@@ -61,15 +61,99 @@ def _macro_indexed(df_macro):
     return m
 
 
-def fit_rate_model(df_macro):
-    """Stage 1: credit rate ~ OAT + Euribor. Returns dict with beta, r2, rmse and an
-    aligned frame [Date, obs, fit]."""
+#: Grille du délai de répercussion des taux de marché sur le taux de crédit (étage 1).
+RATE_LAG_GRID = range(0, 13)
+
+
+def search_rate_lag(df_macro, grid=RATE_LAG_GRID, min_obs=100):
+    """Le délai, en mois, entre un mouvement des taux de marché et le barème des banques.
+
+    Le crédit immobilier français est à taux fixe et les banques publient des barèmes
+    qu'elles lissent : leur réaction à l'OAT n'est pas instantanée. Ignorer ce délai — ce
+    que faisait ce modèle — coûte cher, et de façon mesurable : R² 0,838 contre 0,932, RMSE
+    0,474 contre 0,307, et **0,744 contre 0,432 hors échantillon** sur un test entraîné
+    jusqu'en 2019 et jugé sur le choc de taux qu'il n'avait pas vu.
+
+    Le délai est CHERCHÉ et non figé, mais il est remarquablement stable : refait à chaque
+    millésime annuel depuis 2012, il reste entre 5 et 7 mois et ne s'effondre jamais à
+    zéro. Le profil du R² monte franchement jusqu'à 6-7 mois puis redescend — la forme
+    d'une vraie relation d'avance, à ne pas confondre avec le cas des permis de construire
+    (voir CLAUDE.md), où la courbe décroît dès le premier mois et où il n'y a donc aucune
+    avance à exploiter.
+
+    Une même grille pour les deux taux : les chercher séparément donne 0,9323 au lieu de
+    0,9320, un gain nul pour un paramètre de plus.
+    """
     m = _macro_indexed(df_macro)
-    d = m.dropna(subset=["Credit_Logement_Taux_Interet", "OAT_10ans", "Euribor_3M"])
-    beta, r2, rmse, pred = ols(d[["OAT_10ans", "Euribor_3M"]].values,
-                               d["Credit_Logement_Taux_Interet"].values)
-    frame = pd.DataFrame({"Date": d.index, "obs": d["Credit_Logement_Taux_Interet"].values, "fit": pred})
-    return {"beta": beta, "r2": r2, "rmse": rmse, "frame": frame}
+    best = None
+    for k in grid:
+        d = _rate_design(m, k)
+        if len(d) < min_obs:
+            continue
+        _, r2, _, _ = ols(d[["oat", "euribor"]].values, d["rate"].values)
+        if best is None or r2 > best[0]:
+            best = (r2, int(k))
+    return 0 if best is None else best[1]
+
+
+def _rate_design(m, lag):
+    """Frame aligné [oat, euribor, rate] pour l'étage 1, marché décalé de `lag` mois."""
+    X = pd.DataFrame({"oat": m["OAT_10ans"].shift(lag), "euribor": m["Euribor_3M"].shift(lag)})
+    return X.join(m["Credit_Logement_Taux_Interet"].rename("rate")).dropna()
+
+
+def fit_rate_model(df_macro, lag=None):
+    """Stage 1: credit rate ~ OAT + Euribor, market rates lagged by `lag` months.
+
+    `lag=None` cherche le délai (voir `search_rate_lag`) ; `lag=0` restitue exactement le
+    modèle contemporain d'avant. Returns dict with beta, r2, rmse, lag and an aligned frame
+    [Date, obs, fit].
+    """
+    m = _macro_indexed(df_macro)
+    lag = search_rate_lag(df_macro) if lag is None else int(lag)
+    d = _rate_design(m, lag)
+    beta, r2, rmse, pred = ols(d[["oat", "euribor"]].values, d["rate"].values)
+    frame = pd.DataFrame({"Date": d.index, "obs": d["rate"].values, "fit": pred})
+    return {"beta": beta, "r2": r2, "rmse": rmse, "lag": lag, "frame": frame}
+
+
+def rate_path(df_macro, beta, lag):
+    """Taux de crédit des mois à venir que les taux de marché DÉJÀ PUBLIÉS déterminent.
+
+    C'est la conséquence la plus utile du délai, et elle n'existait pas avant : puisque le
+    barème des banques réagit avec `lag` mois de retard, les taux de marché des `lag`
+    derniers mois fixent déjà le taux de crédit des `lag` mois à venir. Aucune hypothèse
+    sur les marchés n'est nécessaire — à comparer avec la fenêtre « sans hypothèse » de la
+    prévision de transactions, qui vaut zéro mois sur dix-huit.
+
+    Ancré EN ÉCART sur le dernier taux réellement observé, comme `scenario` : le modèle
+    sur-prédit le niveau (les banques ne répercutent pas tout), donc seules ses variations
+    sont fiables. Renvoie [Date, taux, source] — `source` étant le mois de marché qui
+    détermine la ligne, pour que la page puisse le montrer.
+    """
+    m = _macro_indexed(df_macro)
+    rate = m["Credit_Logement_Taux_Interet"].dropna()
+    oat, euribor = m["OAT_10ans"].dropna(), m["Euribor_3M"].dropna()
+    if rate.empty or oat.empty or euribor.empty or lag <= 0:
+        return pd.DataFrame(columns=["Date", "taux", "source"])
+    last, marche = rate.index.max(), min(oat.index.max(), euribor.index.max())
+    base_o, base_e = oat.get(last - pd.DateOffset(months=lag)), euribor.get(last - pd.DateOffset(months=lag))
+    if base_o is None or base_e is None or pd.isna(base_o) or pd.isna(base_e):
+        return pd.DataFrame(columns=["Date", "taux", "source"])
+
+    rows = []
+    for h in range(1, lag + 1):
+        t = last + pd.DateOffset(months=h)
+        src = t - pd.DateOffset(months=lag)
+        if src > marche:
+            break
+        o, e = oat.get(src), euribor.get(src)
+        if o is None or e is None or pd.isna(o) or pd.isna(e):
+            break
+        rows.append({"Date": t,
+                     "taux": float(rate.iloc[-1] + beta[1] * (o - base_o) + beta[2] * (e - base_e)),
+                     "source": src})
+    return pd.DataFrame(rows, columns=["Date", "taux", "source"])
 
 
 def _design(m, tx12, kr, ki, kc):

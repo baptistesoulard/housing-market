@@ -654,6 +654,48 @@ dur.** La généralisation à N prédicteurs (`_design`, `search_tx_lags`, `fore
 faite : sans quatrième prédicteur qui passe la porte, c'est un refactor large — Python, JS
 et tests — pour aucun gain mesurable. À faire le jour où un candidat passe, pas avant.
 
+**L'étage 1 porte un DÉLAI DE RÉPERCUSSION, et il est estimé, pas supposé.** Le crédit
+immobilier français est à taux fixe et les banques lissent leurs barèmes : leur réaction aux
+taux de marché n'est pas instantanée. Le modèle était contemporain ; il décale désormais
+l'OAT et l'Euribor de `search_rate_lag()` mois — **7 sur les données actuelles**. Gains
+mesurés, tous dans le même sens :
+
+| | contemporain | décalé |
+|---|---|---|
+| R² | 0,838 | **0,932** |
+| RMSE | 0,474 | **0,307** |
+| RMSE **hors échantillon** (entraîné ≤ 2019, jugé sur le choc de 2022) | 0,744 | **0,432** |
+
+Le délai est **cherché à chaque ajustement mais remarquablement stable** : refait à chaque
+millésime annuel depuis 2012, il reste entre 5 et 7 mois et ne s'effondre jamais à zéro. Le
+profil du R² monte franchement jusqu'à 6-7 mois puis redescend — c'est la forme d'une vraie
+relation d'avance. **Ne pas confondre avec le cas des permis de construire**, où la courbe
+décroît dès le premier mois : là il n'y a aucune avance, ici il y en a une. Chercher les deux
+décalages séparément donne 0,9323 au lieu de 0,9320 — un paramètre de plus pour rien.
+
+**Conséquence produit, et c'est la vraie raison de l'avoir fait :** `forecast.rate_path()`
+publie les mois de taux de crédit que les taux de marché DÉJÀ parus déterminent — sept mois
+d'avance sans la moindre hypothèse. À rapprocher de la projection des transactions, dont la
+fenêtre « sans hypothèse » vaut **zéro** mois sur dix-huit. Ancrée en écart sur le dernier
+taux observé, comme `scenario`, parce que le modèle sur-prédit le niveau.
+
+**Le récit de l'écart 2023-2025 a changé.** Les deux surfaces l'attribuaient entièrement à
+« des banques qui retiennent leurs barèmes ». Avec le délai, l'écart résiduel tombe de 0,77 à
+0,59 point : le comportement des banques en explique le reste, pas le tout. `app.py` et
+`previsions.md` ont été corrigés ENSEMBLE — deux surfaces qui racontent la même chose
+différemment est exactement ce que l'axe compute existe pour empêcher.
+
+**Ce délai n'améliore PAS la prévision de transactions**, et la page le dit : l'étage 2
+utilise le taux de crédit *observé*, jamais le reconstitué. C'est un gain d'explication et de
+scénario, pas de MAPE.
+
+**`BENCHMARK_TAUX` est le repère analyste du taux**, sur le modèle de `BENCHMARK_FNAIM` :
+l'Observatoire Crédit Logement/CSA anticipe ~3,95 % fin 2027. Il est plus solide que le
+repère des volumes — l'Observatoire PRODUIT la série que le site modélise, donc aucun écart
+de périmètre à expliquer — et plus fragile sur un point : son horizon ne recouvre pas celui
+que nos taux publiés déterminent (fin 2027 contre ~7 mois). La page dit que les deux se
+complètent au lieu de se comparer. Saisi à la main, donc daté et testé.
+
 **Les deux taux de l'étage 1 se pilotent ENSEMBLE, et c'est un correctif.** L'OAT 10 ans et
 l'Euribor 3 mois sont corrélés à +0,83 (VIF 3,24) : l'OLS ne peut pas les séparer et
 attribue presque tout au premier — coefficients publiés 0,707 et **0,013**. Exposés comme

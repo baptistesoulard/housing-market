@@ -151,10 +151,18 @@ def rate_model() -> dict:
     s = _load()
     rm = s["rate"]
     b = [float(x) for x in rm["beta"]]
+    # `lag` : le délai de répercussion des taux de marché sur le barème des banques, et
+    # `projected` : les mois à venir que les taux de marché DÉJÀ publiés déterminent, sans
+    # aucune hypothèse. Voir `forecast.rate_path`.
+    path = fc.rate_path(s["macro"], rm["beta"], rm["lag"])
     return {
         "r2": _num(rm["r2"]),
         "rmse": _num(rm["rmse"]),
-        "coefficients": {"intercept": b[0], "oat": b[1], "euribor": b[2]},
+        "lag": int(rm["lag"]),
+        "coefficients": {"intercept": b[0], "oat": b[1], "euribor": b[2],
+                         "marche": b[1] + b[2]},
+        "projected": [{"date": _iso(r.Date), "rate": _num(r.taux),
+                       "source": _iso(r.source)} for r in path.itertuples()],
         "series": _series(rm["frame"], "Date", {"observed": "obs", "modelled": "fit"}),
     }
 
