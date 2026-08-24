@@ -342,13 +342,16 @@ modèle.
 // d'autre. Il est maximal à zéro et décroît de façon monotone : les deux séries bougent
 // ENSEMBLE, sans avance exploitable.
 if (TR && TR.lag_profile.length) display(withCsvExport(Plot.plot({
-  width, height: 260, marginLeft: 56, marginBottom: 40,
+  width, height: 260, marginLeft: 56, marginBottom: 40, marginTop: 34,
   x: {label: "Décalage appliqué aux permis (mois)", tickFormat: "d", grid: false},
-  y: {label: "R² du lien permis → chantiers", grid: true, zero: true},
+  // Domaine avec marge au-dessus du maximum (k=0) : sans elle, le point le plus haut
+  // touche le bord du cadre et son étiquette "maximum à 0 mois" (dy:-14) chevauche le
+  // libellé de l'axe Y, rendu par Plot juste au-dessus du cadre au même endroit.
+  y: {label: "R² du lien permis → chantiers", grid: true, zero: true, domain: [0, TR.lag_profile[0].r2 * 1.2]},
   marks: [
     Plot.lineY(TR.lag_profile, {x: "lag", y: "r2", stroke: series.brick, strokeWidth: 2.2}),
     Plot.dot(TR.lag_profile.slice(0, 1), {x: "lag", y: "r2", fill: series.brick, r: 5.5}),
-    Plot.text(TR.lag_profile.slice(0, 1), {x: "lag", y: "r2", dy: -14, dx: 4,
+    Plot.text(TR.lag_profile.slice(0, 1), {x: "lag", y: "r2", dy: -14, dx: 6,
               text: () => "maximum à 0 mois", fill: series.brick, fontWeight: 600,
               textAnchor: "start"}),
     Plot.tip(TR.lag_profile, Plot.pointerX({
