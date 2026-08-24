@@ -343,8 +343,9 @@ if (TR) display(html`<details class="hm-howto">
   dernier niveau connu — soit <b>${nf0.format(Math.abs(TR.gate.skill) * 100)} % d'erreur en
   PLUS</b>, et le sens du marché annoncé juste
   ${nf0.format(TR.gate.direction * 100)} % du temps, c'est-à-dire à pile ou face. Le modèle
-  se dégrade à mesure que l'horizon s'allonge. Aucun des quatre blocs d'horizon ne franchit
-  le seuil d'entrée du site (5 % d'erreur évitée). Mesure du ${TR.gate.mesure_le}.</p>
+  se dégrade à mesure que l'horizon s'allonge. Aucune des quatre plages d'horizon
+  (1-3, 4-6, 7-12 et 13-18 mois) ne franchit le seuil d'entrée du site : 5 % d'erreur évitée
+  sur des données jamais vues. Mesure du ${TR.gate.mesure_le}.</p>
   <p><b>Pourquoi, probablement.</b> Les deux séries sont corrigées des variations
   saisonnières et remontent par la même voie administrative : le délai de déclaration pèse
   vraisemblablement plus que le délai physique de chantier. Le décalage réel entre

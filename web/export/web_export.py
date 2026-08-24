@@ -1183,14 +1183,14 @@ def _transformation(con) -> dict:
 #: dans CLAUDE.md.
 #:
 #: Le seuil d'entrée du modèle, rappelé sur la page : au moins 5 % d'erreur évitée hors
-#: échantillon sur au moins 3 des 4 blocs d'horizon.
+#: échantillon sur au moins 3 des 4 plages d'horizon (1-3, 4-6, 7-12 et 13-18 mois).
 REFUTATIONS = [
     {
         "titre": "Ajouter ce que les banques disent de la demande de crédit",
         "idee": ("Chaque trimestre, les banques déclarent à la Banque de France si la "
                  "demande de prêts au logement monte ou baisse. Cette enquête paraît AVANT "
                  "les chiffres de transactions : elle devrait donc les annoncer."),
-        "mesure": "+3,7 % d'erreur évitée — 1 bloc d'horizon sur 4",
+        "mesure": "+3,7 % d'erreur évitée — 1 plage d'horizon sur 4",
         "lecon": ("Sur les seules années 2022-2024, elle faisait gagner 14 %. Mais ces "
                   "années-là sont le choc de taux, c'est-à-dire précisément l'épisode où la "
                   "demande de crédit s'effondre puis rebondit le plus fort. Sur huit "
@@ -1206,7 +1206,7 @@ REFUTATIONS = [
                  "coté : la courbe des taux dit quel niveau le marché attend dans six mois, "
                  "dans un an, dans deux ans. Remplacer « rien ne bouge » par « ce que le "
                  "marché anticipe » semblait un gain acquis."),
-        "mesure": "0 bloc d'horizon sur 4 — et légèrement PIRE que le report à plat",
+        "mesure": "0 plage d'horizon sur 4 — et légèrement PIRE que le report à plat",
         "lecon": ("Sur les mois réellement concernés, le report à plat se trompe de 7,18 % "
                   "et les anticipations de marché de 7,20 %. C'est un résultat connu de la "
                   "littérature sur les taux : les taux à terme prédisent mal les taux "
@@ -1220,7 +1220,7 @@ REFUTATIONS = [
         "idee": ("Une autorisation d'urbanisme précède forcément l'ouverture du chantier. "
                  "Les permis devraient donc donner plusieurs mois d'avance sur les mises en "
                  "chantier — l'indicateur rêvé pour qui fournit le bâtiment."),
-        "mesure": "0 bloc d'horizon sur 4 — 25 % d'erreur en PLUS qu'une simple persistance",
+        "mesure": "0 plage d'horizon sur 4 — 25 % d'erreur en PLUS qu'une simple persistance",
         "lecon": ("Le lien entre les deux séries est maximal à décalage NUL et faiblit "
                   "ensuite, mois après mois : les permis ne devancent rien. Les deux "
                   "séries sont corrigées des variations saisonnières et remontent par la "

@@ -515,9 +515,16 @@ troisième a été affirmée pendant des semaines avant d'être vérifiée. Tout
 passées : là on montre où le modèle se trompe, ici ce qu'on a renoncé à lui ajouter.
 
 Le seuil pour qu'un indicateur entre dans le modèle est le même pour tous : **éviter au
-moins 5 % d'erreur sur des données qu'il n'a pas vues**, à au moins trois des quatre plages
-d'horizon. Jamais sur sa capacité à coller au passé — c'est exactement ce qui fait entrer
-des indicateurs inutiles.
+moins 5 % d'erreur sur des données qu'il n'a pas vues**, et l'éviter sur au moins **trois
+des quatre plages d'horizon — 1 à 3 mois, 4 à 6, 7 à 12, et 13 à 18**. Jamais sur sa
+capacité à coller au passé : c'est exactement ce qui fait entrer des indicateurs inutiles.
+
+Pourquoi quatre plages plutôt qu'une moyenne ? Parce que l'erreur du modèle n'a rien à voir
+d'une plage à l'autre — il perd contre une prévision naïve en deçà de six mois et lui prend
+40 % d'erreur au-delà d'un an. Une moyenne unique laisserait passer un indicateur qui
+n'améliore qu'une plage étroite, ce qui n'est pas un progrès du modèle mais une coïncidence
+localisée. C'est précisément le cas de la première idée ci-dessous : la seule plage qu'elle
+franchit est celle où le modèle est de toute façon battu par le hasard.
 
 ```js
 // Ces trois entrées sont des CONSTANTES DATÉES côté export (voir REFUTATIONS dans
