@@ -524,9 +524,128 @@ c'est le dernier cumul 12 mois observé au moment de la prévision, information 
 plus une fois la série révisée.
 
 **La référence naïve n'est pas décorative.** Sur les données réelles, le modèle est *moins
-bon* qu'elle en deçà de 4 mois (`skill` négatif aux horizons 1-3) et évite ~65 % de son
-erreur vers 8-11 mois. Publier un MAPE unique de 4,7 % masquerait le premier fait. La page
-montre la zone où le modèle perd — c'est le propos, pas un aveu.
+bon* qu'elle aux horizons courts et évite une bonne part de son erreur au-delà. Publier un
+MAPE unique masquerait le premier fait. La page montre la zone où le modèle perd — c'est le
+propos, pas un aveu.
+
+**La fenêtre du backtest est 2009, pas 2022, et ce n'est pas un détail de mesure.**
+`BACKFILL_START = "2009-01-01"`. La fenêtre courte d'origine (2022-07) ne couvre qu'UN
+épisode — le choc de taux de 2022-2024 — c'est-à-dire précisément celui qu'un modèle piloté
+par les taux réussit le mieux : il y évite 49 % de l'erreur naïve et annonce le bon sens
+neuf fois sur dix. Mesuré sur 2009-2026 (210 millésimes, huit épisodes), l'écart évité tombe
+à 18 %, le taux de bon sens à 74 %, et le modèle **perd contre la naïve dans trois épisodes
+sur huit** : la crise financière de 2008-2009, le creux long de 2012-2015 et le Covid — à
+chaque fois quand le moteur du marché n'était pas le coût du crédit. Choisir la fenêtre
+courte, c'est choisir son résultat. Avant 2009 la recherche de décalages manque
+d'historique et retombe sur ses valeurs de repli : ces millésimes ne prouveraient rien.
+
+Corollaire mesuré, à connaître avant de toucher à l'un des deux : **allonger la fenêtre sans
+le recalage (ci-dessous) fait passer le KPI de l'accueil de « 4,1 % contre 7,2 % » à « 6,4 %
+contre 5,9 % » — donc à un modèle qui PERD à six mois.** Avec le recalage, 5,5 % contre
+5,9 %. `tests/test_web_links.py` verrouille ce chiffre contre `archive.json` : les deux
+changements doivent arriver ensemble, sinon le site publie pendant un temps un chiffre qui
+le dessert.
+
+**Le recalage sur le dernier point observé (`forecast.anchor_of` + `FADE_MONTHS`).** Le
+modèle est une régression de NIVEAU : il reconstruit la série depuis la macro sans jamais
+regarder où elle se trouve réellement. Son erreur au premier mois projeté valait donc son
+résidu d'estimation (~4,2 %) là où recopier le dernier chiffre connu n'en coûte que 1,2 % —
+et l'erreur restait PLATE de l'horizon 1 à l'horizon 10, signature d'un biais de niveau et
+non d'une erreur d'horizon. `forecast_path` ajoute désormais l'écart observé−ajusté du
+dernier mois, avec un poids qui s'éteint linéairement sur `FADE_MONTHS`.
+
+`FADE_MONTHS = 9` est le milieu d'un PLATEAU, pas un réglage ajusté : mesuré sur 48
+millésimes puis confirmé sur 210, toutes les valeurs entre 6 et 12 mois donnent la même
+erreur à 0,1 point près. C'est ce qui met ce paramètre à l'abri du surapprentissage, et
+c'est la raison de le documenter ici — un successeur tenté de « l'optimiser » ne gagnerait
+rien et perdrait cette garantie. Gain mesuré : −11 % d'erreur globale, −42 % sur les
+horizons 1 à 3, seuil de bascule contre la naïve avancé d'un mois. C'est le seul résultat
+de l'audit qui ressort *renforcé* de l'allongement de la fenêtre : il ne corrige pas une
+relation économique, mais un défaut de construction, donc il ne dépend pas du régime.
+
+**La bande est calibrée sur l'archive, plus postulée.** Elle valait ±1,28·RMSE, une largeur
+CONSTANTE à tous les horizons : couverture réelle 94 % aux horizons 1-10 et 57 % à dix-huit
+mois, pour une promesse de 80 % — trop large là où elle rassure, trop étroite là où elle
+engage. `band_table()` prend les quantiles 10/90 de l'erreur SIGNÉE par horizon et les écrit
+dans `data/forecast_band.csv` (versionné, comme l'archive). L'erreur est signée exprès : le
+modèle surestime de façon croissante avec l'horizon, et une bande symétrique autour d'une
+prévision biaisée rate d'un côté plus que de l'autre.
+
+**`--calibrate` fait DEUX passes, et l'ordre n'est pas négociable.** La bande se calibre sur
+les erreurs de POINT, qui ne dépendent pas d'elle : la première passe les produit avec la
+bande constante, la seconde rejoue exactement les mêmes prévisions en n'ayant changé que
+`lo`/`hi`. Calibrer sur des erreurs déjà corrigées par une bande précédente ferait dériver
+l'étalon à chaque exécution. Un horizon vu moins de 20 fois n'est pas calibré : `forecast_path`
+retombe sur la bande constante pour celui-là plutôt que d'extrapoler un quantile sur cinq points.
+
+**`_macro_indexed` n'extrapole plus.** Elle interpolait le chômage trimestriel avec
+`limit_direction="both"`, ce qui PROLONGEAIT la série jusqu'à trois mois au-delà de sa
+dernière observation. La valeur n'étant alors plus NaN, `forecast_path` ne déclenchait pas
+son report explicite et marquait le point `assured=True` : l'hypothèse était faite, elle
+n'était simplement plus signalée. `limit_area="inside"` la laisse manquante, donc visible.
+Conséquence attendue et voulue : le repère « sans hypothèse » recule, et il dira la vérité —
+avec `kc=0`, cette fenêtre est de toute façon structurellement nulle (0 des 864 points
+rétro-simulés était assuré).
+
+**Un prédicteur n'entre dans l'étage 2 que s'il gagne HORS ÉCHANTILLON, sur la fenêtre
+longue.** Critère : ≥ 5 % d'erreur évitée sur ≥ 3 des 4 blocs d'horizon (1-3, 4-6, 7-12,
+13-18), décalage retenu stable sur les millésimes. Jamais sur le R² d'ajustement — c'est
+lui qui a fait entrer, dans des tentatives antérieures, la production de crédits et
+l'activité rénovation, qui *dégradent* toutes deux la prévision hors échantillon.
+
+**Exemple travaillé, et refus : la demande de crédits BLS (2026-08-24).** Elle était la
+candidate évidente — publiée avant les transactions, qualifiée d'« indicateur avancé » par
+le site lui-même sur la page Environnement, décalage stable (12 mois, 95 % des
+millésimes). Mesurée sur 48 millésimes elle faisait gagner 14 % ; mesurée sur les 210,
+avec l'ancrage en place, **+3,7 % et un seul bloc d'horizon franchi sur quatre**. Deux
+causes qui se cumulent :
+
+1. la fenêtre courte est le choc de taux, c'est-à-dire l'épisode où la demande de crédit
+   s'effondre puis rebondit spectaculairement — son information marginale y est maximale
+   et nulle part ailleurs ;
+2. **le recalage avait déjà pris le gain.** L'ancrage corrige l'erreur de NIVEAU du modèle,
+   or c'est exactement sous cette forme qu'une variable de demande manquante se
+   manifestait. Les deux correctifs se disputaient la même variance.
+
+À retenir pour tout candidat suivant : mesurer *après* le lot 1, jamais avant, sinon on
+crédite le prédicteur d'un gain que l'ancrage fournit gratuitement. Le peu de gain restant
+se concentrait d'ailleurs sur 1-3 mois, la zone où le modèle est de toute façon battu par
+une marche aléatoire. Le script de la porte est
+`scratchpad/gate_bls.py` dans l'historique de la session — sa recherche de décalage est
+CONDITIONNELLE (les trois autres figés), donc conservatrice.
+
+**Le modèle est resté à TROIS prédicteurs, donc `forecast.py` garde ses trois colonnes en
+dur.** La généralisation à N prédicteurs (`_design`, `search_tx_lags`, `forecast_path`,
+`scenario`, plus `LAG_GRIDS` et le port JS `computeScenario`) a été préparée puis NON
+faite : sans quatrième prédicteur qui passe la porte, c'est un refactor large — Python, JS
+et tests — pour aucun gain mesurable. À faire le jour où un candidat passe, pas avant.
+
+**Les deux taux de l'étage 1 se pilotent ENSEMBLE, et c'est un correctif.** L'OAT 10 ans et
+l'Euribor 3 mois sont corrélés à +0,83 (VIF 3,24) : l'OLS ne peut pas les séparer et
+attribue presque tout au premier — coefficients publiés 0,707 et **0,013**. Exposés comme
+deux curseurs indépendants sur « Prévision & Scénarios », celui de l'Euribor était donc
+INERTE : balayé sur toute sa course, cinq points de taux, il déplaçait la prévision de
+0,3 %, contre 11 %, 24 % et 18 % pour les trois autres. Un levier affiché qui ne lève rien
+est pire qu'un levier absent — le visiteur en conclut que le taux interbancaire n'agit pas
+sur le marché immobilier, ce qui est faux.
+
+La page expose maintenant un seul curseur « taux de marché (écart, en points) » qui déplace
+les deux du même écart, et affiche la SOMME des coefficients (0,72 pt de taux de crédit par
+point de marché) — la seule des deux quantités qui ait un sens. `fit_rate_model`,
+`forecast.scenario` et le port JS `computeScenario` sont **inchangés** : ils reçoivent
+toujours les deux valeurs séparément, donc `tests/test_web_js_parity.py` tient sans
+retouche. Deux tests de `test_web_links.py` verrouillent l'affaire — la somme des
+coefficients doit rester ≥ 0,25, et la page n'a pas le droit de réexposer une étiquette de
+curseur portant l'OAT ou l'Euribor seul. Retirer purement et simplement l'Euribor de
+l'étage 1 reste une option propre (le R² passe de 0,8378 à 0,8377) mais toucherait les
+textes statiques de plusieurs pages et le tableau des sources ; non fait pour cette raison.
+
+**`by_horizon` porte trois métriques, pas une.** `direction` (part de fois où le SENS annoncé
+par rapport au dernier chiffre connu était le bon) est la seule des trois qu'un lecteur non
+statisticien peut utiliser telle quelle — et c'est celle sur laquelle une décision d'achat ou
+un plan de charge se prennent réellement. `coverage` est la part de mois tombés dans la bande
+annoncée : sans elle, rien ne dit qu'une bande « à 80 % » en vaut 80. Les deux sont exportées
+dans `archive.json`.
 
 **La garde de contenu évite une archive qui gonfle pour rien.** Le job hebdomadaire tourne
 même sans nouveauté ; `append_if_new` compare la prévision aux lignes du dernier
@@ -740,7 +859,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 230 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 238 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

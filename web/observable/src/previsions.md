@@ -93,8 +93,12 @@ if (R) display(html`<div class="hm-panels">
       <b>Taux ≈ ${nf1.format(R.coefficients.intercept)} +
       ${nf1.format(R.coefficients.oat)}·OAT +
       ${nf1.format(R.coefficients.euribor)}·Euribor</b><br>
-      +1 pt d'OAT ⇒ ~+${nf1.format(R.coefficients.oat)} pt de taux crédit. L'écart 2023-25
-      (taux sous l'OAT) reflète des banques qui retiennent leurs barèmes.<br>
+      +1 pt de taux de marché ⇒ ~+${nf1.format(R.coefficients.oat + R.coefficients.euribor)} pt
+      de taux crédit. Les deux coefficients ne se lisent pas séparément : l'OAT et l'Euribor
+      sont corrélés à 0,83 sur la période, si bien que l'ajustement attribue presque tout au
+      premier. C'est leur SOMME qui a un sens, et c'est elle que pilote le panneau de
+      scénarios.<br>
+      L'écart 2023-25 (taux sous l'OAT) reflète des banques qui retiennent leurs barèmes.<br>
       <span style="color:${ui.subtle}">Sources : Banque de France / BCE.</span>
     </div>
   </div>
@@ -290,14 +294,37 @@ const r1 = (v) => Math.round(v * 10) / 10;
 ```
 
 ```js
-const oat = base ? view(Inputs.range([0, 5.5],
-  {label: "OAT 10 ans (%)", step: 0.1, value: r1(base.oat)})) : null;
-const euribor = base ? view(Inputs.range([-0.5, 4.5],
-  {label: "Euribor 3 mois (%)", step: 0.1, value: r1(base.euribor)})) : null;
+// UN SEUL curseur de financement, et c'est un correctif, pas une simplification.
+// L'OAT 10 ans et l'Euribor 3 mois sont corrélés à +0,83 : l'OLS de l'étage 1 ne peut pas
+// les séparer et attribue tout au premier (0,707 contre 0,013). Exposés séparément, le
+// curseur Euribor était donc INERTE — balayé sur toute sa course, cinq points de taux, il
+// déplaçait la prévision de 0,3 %, contre 11 à 24 % pour les trois autres. Un levier
+// affiché qui ne lève rien est pire qu'un levier absent : le visiteur en conclut que le
+// taux interbancaire n'agit pas sur le marché immobilier, ce qui est faux.
+// Les deux bougent ensemble, comme dans la réalité, et la sensibilité affichée est leur
+// somme. `computeScenario` est inchangée — elle reçoit toujours les deux valeurs.
+const dTaux = base ? view(Inputs.range([-2.5, 2.5], {
+  label: "Taux de marché (écart, en points)", step: 0.1, value: 0,
+})) : null;
 const chom = base ? view(Inputs.range([6.5, 11],
   {label: "Taux de chômage (%)", step: 0.1, value: r1(base.unemployment)})) : null;
 const intentZ = base ? view(Inputs.range([-2.5, 2.5],
   {label: "Intentions d'achat (écarts-types)", step: 0.1, value: r1(base.intentions_z)})) : null;
+```
+
+```js
+const oat = base ? base.oat + dTaux : null;
+const euribor = base ? base.euribor + dTaux : null;
+```
+
+```js
+if (base) display(html`<div class="hm-caption">Le curseur déplace l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr>
+  10 ans et l'<abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr>
+  3 mois du même écart : ils sont trop liés dans l'histoire (+0,83) pour que le modèle
+  sache les distinguer, et les afficher séparément donnait un levier sans effet.
+  Position actuelle : OAT ${nf1.format(oat)} %, Euribor ${nf1.format(euribor)} % —
+  soit <b>${nf1.format(R.coefficients.oat + R.coefficients.euribor)} pt</b> de taux de
+  crédit par point de taux de marché.</div>`);
 ```
 
 ```js

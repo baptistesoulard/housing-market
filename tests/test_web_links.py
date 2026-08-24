@@ -144,3 +144,43 @@ def test_le_libelle_de_base_annonce_la_meme_annee():
     pire qu'une base arbitraire assumée."""
     label = _chart()["base_label"]
     assert label and "2015" in label, f"libellé de base inattendu : {label!r}"
+
+
+# --- Aucun levier de scénario ne doit être inerte -------------------------------------
+# L'OAT 10 ans et l'Euribor 3 mois sont corrélés à +0,83 : l'ajustement de l'étage 1 ne
+# peut pas les séparer et attribue presque tout au premier (0,707 contre 0,013). Exposés
+# comme deux curseurs indépendants, celui de l'Euribor ne déplaçait la prévision que de
+# 0,3 % sur toute sa course, contre 11 à 24 % pour les trois autres. Un levier affiché qui
+# ne lève rien est pire qu'un levier absent : le visiteur en conclut que le taux
+# interbancaire n'agit pas sur le marché immobilier, ce qui est faux. La page pilote donc
+# les deux taux ENSEMBLE, et ces deux tests empêchent de revenir en arrière sans le voir.
+PREVISIONS_JSON = WEB / "src" / "data" / "previsions.json"
+PREVISIONS_MD = WEB / "src" / "previsions.md"
+
+
+def test_la_sensibilite_du_financement_est_materielle_une_fois_les_deux_taux_reunis():
+    """La SOMME des deux coefficients doit être un levier réel, même si l'un est nul."""
+    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
+    if not data.get("available"):
+        return                                   # modèle non calibré : rien à vérifier
+    coef = data["rate"]["coefficients"]
+    somme = coef["oat"] + coef["euribor"]
+    assert somme >= 0.25, (
+        f"+1 pt de taux de marché ne déplace le taux de crédit que de {somme:.3f} pt — "
+        "le panneau de scénarios n'a plus de levier de financement digne de ce nom")
+
+
+def test_la_page_ne_reexpose_pas_deux_curseurs_de_taux_separes():
+    """Un curseur par taux de marché ramènerait le levier inerte.
+
+    On vérifie l'ABSENCE d'étiquettes de curseur portant l'un des deux taux seul. La page
+    peut parfaitement nommer l'OAT et l'Euribor dans son texte — c'est même souhaitable —
+    mais pas comme deux entrées indépendantes.
+    """
+    src = PREVISIONS_MD.read_text(encoding="utf-8")
+    etiquettes = re.findall(r'Inputs\.range\([^)]*?\{[^}]*?label:\s*"([^"]+)"', src, re.S)
+    fautives = [e for e in etiquettes
+                if ("OAT" in e or "Euribor" in e) and "marché" not in e]
+    assert not fautives, (
+        f"curseur(s) de taux exposé(s) séparément : {fautives} — l'OAT et l'Euribor sont "
+        "trop corrélés pour être pilotés indépendamment (voir le commentaire ci-dessus)")
