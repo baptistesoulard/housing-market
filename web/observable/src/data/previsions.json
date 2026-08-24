@@ -9569,6 +9569,7 @@
     "source": "Observatoire Crédit Logement / CSA",
     "url": "https://lobservatoire.creditlogement.fr/",
     "horizon": "fin 2027",
+    "date": "2027-12-01",
     "valeur": 3.95,
     "releve_le": "2026-08-24",
     "note": "L'Observatoire produit la série même que ce site modélise : sa prévision porte donc exactement sur la même grandeur. Elle vise fin 2027, au-delà de l'horizon que nos seuls taux de marché publiés permettent de déterminer — les deux se complètent plutôt qu'elles ne se comparent."

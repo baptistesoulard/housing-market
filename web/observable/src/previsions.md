@@ -4,8 +4,9 @@ toc: true
 ---
 
 ```js
-import {multiLine, cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {multiLine, cardGrid, kpiCard, withCsvExport, filterYears, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
+import {periodFilter} from "./components/period.js";
 import {computeScenario} from "./components/api.js";
 ```
 
@@ -25,6 +26,30 @@ const V = data.available ? data.verdict : null;
 const B = data.available ? data.benchmark : null;
 const B2 = data.available ? data.benchmark_taux : null;
 const pct = (v) => nf1.format(v * 100) + " %";
+```
+
+```js
+// La frise de période, comme sur les autres onglets. Elle ne rogne que l'AFFICHAGE de
+// l'historique : rien n'est recalculé, le modèle reste ajusté sur toute la profondeur
+// disponible — un modèle réestimé au gré d'un curseur ne serait plus celui que l'archive
+// des prévisions passées a jugé.
+const periode = Generators.input(periodFilter({
+  min: data.period.min, max: data.period.max,
+  note: "Rogne l'historique affiché. Les projections, postérieures au dernier mois publié, restent visibles.",
+}));
+```
+
+```js
+// Deux façons de rogner, et la distinction n'est pas cosmétique. `histo` applique la frise
+// entière aux séries observées. `depuis` n'applique QUE la borne basse, et sert aux séries
+// PROJETÉES : elles sont postérieures au dernier mois publié, donc au maximum de la frise,
+// et la borne haute les ferait disparaître dès qu'on touche au curseur — c'est-à-dire
+// masquer la prévision sur une page de prévision.
+const histo = (rows, field = "date") => filterYears(rows, periode, field);
+const depuis = (rows, field = "date") => {
+  const lo = Math.min(periode[0], periode[1]);
+  return rows.filter((r) => +String(r[field]).slice(0, 4) >= lo);
+};
 ```
 
 # 📡 Prévision des transactions & scénarios
@@ -121,6 +146,7 @@ const legendeTaux = R ? [
       ? [{name: "Ce que nous publions : brut recalé sur le dernier taux connu",
           color: series.green, dash: true}]
       : []),
+  ...(B2 ? [{name: `Anticipation ${B2.source} (${B2.horizon})`, color: series.violet}] : []),
 ] : [];
 ```
 
@@ -138,9 +164,9 @@ const tauxPlot = () => {
   // bas, sans que rien n'explique le saut : deux fragments du MÊME modèle, calculés sur des
   // bases différentes, que personne ne pouvait interpréter. Continue, elle rend l'écart
   // avec la courbe publiée lisible — cet écart EST le biais de niveau qu'on corrige.
-  const rows = R.series.concat(
-    R.projected.map((d) => ({date: d.date, observed: null, modelled: d.modelled})));
-  const proj = R.projected.map((d) => ({date: d.date, value: d.rate}));
+  const rows = histo(R.series).concat(
+    depuis(R.projected).map((d) => ({date: d.date, observed: null, modelled: d.modelled})));
+  const proj = depuis(R.projected).map((d) => ({date: d.date, value: d.rate}));
   return withCsvExport(Plot.plot({
     height: 300, marginLeft: 54, marginRight: 78, marginBottom: 34,
     x: {type: "utc", label: null},
@@ -159,10 +185,21 @@ const tauxPlot = () => {
       proj.length ? Plot.text(proj.slice(-1), {x: (d) => new Date(d.date), y: "value",
                     text: (d) => " " + nf1.format(d.value) + " %", fill: series.green,
                     textAnchor: "start", dx: 6, dy: -10, fontWeight: 700}) : null,
+      // LE REPÈRE ANALYSTE, posé à sa date. Un point isolé et non un prolongement de
+      // courbe : son horizon (fin 2027) est bien au-delà du dernier mois que nos taux de
+      // marché publiés déterminent (janvier 2027), et tracer un trait entre les deux
+      // suggérerait une trajectoire que ni eux ni nous ne publions. L'espace vide entre le
+      // dernier point vert et ce repère EST l'information — il montre que les deux
+      // prévisions ne portent pas sur le même moment.
+      B2 && depuis([B2]).length ? Plot.dot([B2], {x: (d) => new Date(d.date), y: "valeur",
+                    fill: series.violet, r: 5, stroke: "white", strokeWidth: 2}) : null,
+      B2 && depuis([B2]).length ? Plot.text([B2], {x: (d) => new Date(d.date), y: "valeur",
+                    text: (d) => nf1.format(d.valeur) + " %", fill: series.violet,
+                    dy: -12, fontWeight: 700}) : null,
       // L'étiquette de fin du RÉEL doit viser le dernier mois RÉELLEMENT observé, pas la
       // dernière ligne : depuis que la courbe brute se prolonge, les derniers points ont
       // un `observed` nul et l'étiquette se serait affichée « NaN % » dans le vide.
-      Plot.text(R.series.slice(-1), {x: (d) => new Date(d.date), y: "observed",
+      Plot.text(histo(R.series).slice(-1), {x: (d) => new Date(d.date), y: "observed",
                 text: (d) => " " + nf1.format(d.observed) + " %", fill: series.brick,
                 textAnchor: "start", dx: 6, dy: 12, fontWeight: 700}),
       Plot.crosshairX(rows, {x: (d) => new Date(d.date), y: "modelled", color: ui.subtle}),
@@ -351,9 +388,9 @@ if (T) display(html`<p>Le R² de ce modèle vaut <b>${pct(T.r2)}</b>, et ce chif
 ```js
 if (T) display(multiLine({
   rows: [
-    ...T.series.map((d) => ({date: d.date, value: d.observed, series: "Observé (IGEDD)"})),
-    ...T.backtest.series.map((d) => ({date: d.date, value: d.predicted,
-                                      series: "Prévision hors échantillon"}))
+    ...histo(T.series).map((d) => ({date: d.date, value: d.observed, series: "Observé (IGEDD)"})),
+    ...histo(T.backtest.series).map((d) => ({date: d.date, value: d.predicted,
+                                             series: "Prévision hors échantillon"}))
   ],
   meta: [{name: "Observé (IGEDD)", color: series.brick},
          {name: "Prévision hors échantillon", color: series.blue, dash: true}],
@@ -458,13 +495,15 @@ function zscore(rows) {
 ```js
 if (sens) display(multiLine({
   rows: [
-    ...zscore(sens.transactions_series).map((d) => ({...d, series: "Transactions (cumul 12 m)"})),
-    ...zscore(sens.predictor_series).map((d) => {
+    ...histo(zscore(sens.transactions_series)).map((d) => ({...d, series: "Transactions (cumul 12 m)"})),
+    // Rogné APRÈS le décalage : filtrer avant ferait glisser la fenêtre affichée du
+    // nombre de mois du décalage, et les deux courbes ne couvriraient plus la même période.
+    ...histo(zscore(sens.predictor_series).map((d) => {
       const t = new Date(d.date + "T00:00:00Z");
       t.setUTCMonth(t.getUTCMonth() + lagN);
       return {date: t.toISOString().slice(0, 10), value: d.value,
               series: `${predictorLabels[predictor]} décalé +${lagN} m`};
-    })
+    }))
   ],
   meta: [{name: "Transactions (cumul 12 m)", color: series.brick},
          {name: `${predictorLabels[predictor]} décalé +${lagN} m`, color: series.blue, dash: true}],
@@ -494,11 +533,13 @@ if (P && P.available) display(withCsvExport(Plot.plot({
   x: {type: "utc", label: null},
   y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
   marks: [
-    Plot.areaY(P.series, {x: (d) => new Date(d.date), y1: "lo", y2: "hi",
+    // La bande et la trajectoire projetées ne reçoivent que la borne basse : elles sont
+    // postérieures au dernier mois publié, donc au maximum de la frise.
+    Plot.areaY(depuis(P.series), {x: (d) => new Date(d.date), y1: "lo", y2: "hi",
                           fill: series.brick, fillOpacity: 0.12}),
-    Plot.lineY(T.series, {x: (d) => new Date(d.date), y: "observed",
+    Plot.lineY(histo(T.series), {x: (d) => new Date(d.date), y: "observed",
                           stroke: series.brick, strokeWidth: 2.2}),
-    Plot.lineY(P.series, {x: (d) => new Date(d.date), y: "predicted",
+    Plot.lineY(depuis(P.series), {x: (d) => new Date(d.date), y: "predicted",
                           stroke: series.blue, strokeWidth: 2.2, strokeDasharray: "4 3"}),
     // Frontière entre la partie sans hypothèse et le report des indicateurs manquants.
     Plot.ruleX(P.series.filter((d) => d.assured).slice(-1),

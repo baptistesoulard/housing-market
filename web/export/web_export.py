@@ -1247,6 +1247,9 @@ BENCHMARK_TAUX = {
     "source": "Observatoire Crédit Logement / CSA",
     "url": "https://lobservatoire.creditlogement.fr/",
     "horizon": "fin 2027",
+    # Date exploitable, pour que le graphique puisse POSER le repère au bon endroit plutôt
+    # que de le laisser en note. Décembre 2027 : « fin 2027 » au sens de leur publication.
+    "date": "2027-12-01",
     "valeur": 3.95,
     "releve_le": "2026-08-24",
     "note": ("L'Observatoire produit la série même que ce site modélise : sa prévision "

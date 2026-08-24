@@ -708,12 +708,30 @@ différemment est exactement ce que l'axe compute existe pour empêcher.
 utilise le taux de crédit *observé*, jamais le reconstitué. C'est un gain d'explication et de
 scénario, pas de MAPE.
 
+**La page de prévision porte la frise de période, et son filtrage a DEUX régimes.** Elle ne
+rogne que l'affichage : rien n'est recalculé, le modèle reste ajusté sur toute la profondeur
+disponible — un modèle réestimé au gré d'un curseur ne serait plus celui que l'archive des
+prévisions passées a jugé. La distinction à ne pas perdre : `histo()` applique la frise
+entière aux séries observées, `depuis()` n'applique QUE la borne basse aux séries PROJETÉES.
+Ces dernières sont postérieures au dernier mois publié, donc au maximum de la frise : leur
+appliquer la borne haute les ferait disparaître dès qu'on touche au curseur, c'est-à-dire
+masquer la prévision sur une page de prévision. Le repère analyste, daté de fin 2027, relève
+du même régime.
+
+Un piège propre au graphique d'alignement : le prédicteur y est décalé avant d'être tracé, et
+le rognage doit venir APRÈS ce décalage — filtrer avant ferait glisser la fenêtre affichée du
+nombre de mois du décalage, et les deux courbes ne couvriraient plus la même période.
+
 **`BENCHMARK_TAUX` est le repère analyste du taux**, sur le modèle de `BENCHMARK_FNAIM` :
 l'Observatoire Crédit Logement/CSA anticipe ~3,95 % fin 2027. Il est plus solide que le
 repère des volumes — l'Observatoire PRODUIT la série que le site modélise, donc aucun écart
 de périmètre à expliquer — et plus fragile sur un point : son horizon ne recouvre pas celui
 que nos taux publiés déterminent (fin 2027 contre ~7 mois). La page dit que les deux se
-complètent au lieu de se comparer. Saisi à la main, donc daté et testé.
+complètent au lieu de se comparer, et le graphique le MONTRE : le repère est posé à sa date
+comme un point isolé, jamais relié à notre trajectoire. L'espace vide entre notre dernier
+point (janvier 2027) et le sien (fin 2027) est l'information — tracer un trait entre les deux
+suggérerait une trajectoire que ni eux ni nous ne publions. Saisi à la main, donc daté et
+testé.
 
 **Les deux taux de l'étage 1 se pilotent ENSEMBLE, et c'est un correctif.** L'OAT 10 ans et
 l'Euribor 3 mois sont corrélés à +0,83 (VIF 3,24) : l'OLS ne peut pas les séparer et
