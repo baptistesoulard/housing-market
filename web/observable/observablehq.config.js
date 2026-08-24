@@ -283,10 +283,15 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
    pour le seuil « grand texte »). Le même jeton assombri sert déjà de fond à .hm-skip,
    pour cette raison exacte, et donne 5,99:1. C'est aussi ce que dit le commentaire de
    --hm-brick en tête de fichier : bon pour un fond derrière rien, pas derrière du
-   texte. */
+   texte.
+
+   RAYON en pilule (9999px) et PADDING de .hm-btn, dont ce bouton voisine les exemplaires
+   sur l'accueil : il était le seul du site à garder un rayon de 6px, et 0.9rem de
+   padding horizontal le rendait plus étroit que ses voisins une fois arrondi. Ne pas le
+   ramener à une valeur en pixels. */
 .hm-cta[href], .hm-cta[href]:visited { display: inline-block; margin: 0.5rem 0 1rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 6px; background: var(--hm-brick-text); color: var(--hm-bg);
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px; background: var(--hm-brick-text); color: var(--hm-bg);
   font-weight: 600; text-decoration: none; }
 .hm-cta:hover { filter: brightness(1.08); }
 .hm-api-offline { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
