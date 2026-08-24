@@ -271,13 +271,22 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-capacite-chiffre { font-size: 2.6rem; font-weight: 700; color: var(--hm-ink);
   line-height: 1.1; }
 .hm-capacite-legende { font-size: 0.9rem; color: var(--hm-ink); }
-/* :visited répété pour battre a:visited, comme .hm-btn--primary plus bas (même raison :
-   à spécificité égale de classe, le sélecteur avec pseudo-classe l'emporte sur la
-   simple classe .hm-cta). Sans ça, un clic sur ce bouton lui faisait perdre son
-   --hm-bg pour la couleur de lien visité par défaut du navigateur — illisible sur le
-   fond brick. */
-.hm-cta, .hm-cta:visited { display: inline-block; margin: 0.5rem 0 1rem; padding: 0.5rem 0.9rem;
-  border-radius: 6px; background: var(--hm-brick); color: var(--hm-bg);
+/* [href] dans le sélecteur, MÊME DÉFAUT qu'à .hm-shortcut et .hm-btn : le thème
+   Observable pose « a[href] { color: var(--theme-foreground-focus) } », à spécificité
+   0,1,1 — la simple classe .hm-cta (0,1,0) se faisait battre en silence, et le bouton
+   rendait en BLEU DE LIEN sur son fond brick, dès le premier affichage et pas seulement
+   une fois visité. .hm-cta[href] passe à 0,2,0 et l'emporte ; :visited est répété par
+   dessus pour l'état visité, comme le fait déjà .hm-btn--primary[href].
+
+   Le FOND est --hm-brick-text, pas --hm-brick : mesuré dans le navigateur, blanc sur
+   brick plafonne à 3,92:1, sous les 4,5:1 qu'exige ce libellé (16 px / 600, trop petit
+   pour le seuil « grand texte »). Le même jeton assombri sert déjà de fond à .hm-skip,
+   pour cette raison exacte, et donne 5,99:1. C'est aussi ce que dit le commentaire de
+   --hm-brick en tête de fichier : bon pour un fond derrière rien, pas derrière du
+   texte. */
+.hm-cta[href], .hm-cta[href]:visited { display: inline-block; margin: 0.5rem 0 1rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px; background: var(--hm-brick-text); color: var(--hm-bg);
   font-weight: 600; text-decoration: none; }
 .hm-cta:hover { filter: brightness(1.08); }
 .hm-api-offline { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
@@ -442,7 +451,10 @@ ${NAV_ICONS}
 .hm-btn { display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
   padding: 0.5rem 1.1rem; border-radius: 9999px; font-weight: 600; font-size: 0.95rem;
   border: 1px solid var(--hm-border); background: var(--hm-surface); color: var(--hm-ink); }
-.hm-btn--primary, .hm-btn--primary:visited { background: var(--hm-brick); border-color: var(--hm-brick);
+/* Fond --hm-brick-text et non --hm-brick, même raison qu'à .hm-cta plus haut : blanc sur
+   brick mesure 3,92:1, sous les 4,5:1 requis pour ce libellé (15,2 px / 600). Le jeton
+   assombri donne 5,99:1. Les deux boutons pleins du site restent ainsi identiques. */
+.hm-btn--primary, .hm-btn--primary:visited { background: var(--hm-brick-text); border-color: var(--hm-brick-text);
   color: var(--hm-bg); }
 .hm-btn:hover, .hm-btn:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick-text); background: var(--hm-bg); }
 .hm-btn--primary:hover, .hm-btn--primary:focus-visible { background: var(--hm-ink); border-color: var(--hm-ink);
