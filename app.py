@@ -2227,10 +2227,12 @@ with tab_forecast:
         with a2:
             st.metric("R²", f"{_rm['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_rm['r2']:.2f}")
             _rb = _rm["beta"]
-            _rlag, _rsum = int(_rm["lag"]), _rb[1] + _rb[2]
+            # Un seul taux de marché depuis le retrait de l'Euribor (forecast.RATE_DRIVER) :
+            # le coefficient se lit tel quel, plus besoin d'en sommer deux.
+            _rlag, _rsum = int(_rm["lag"]), _rb[1]
             st.metric(_L("Délai de répercussion", "Pass-through delay"),
                       _L(f"{_rlag} mois", f"{_rlag} months"))
-            _eq = f"{_rb[0]:.2f} + {_rb[1]:.2f}·OAT + {_rb[2]:.2f}·Euribor"
+            _eq = f"{_rb[0]:.2f} + {_rb[1]:.2f}·OAT"
             if lang_code == "FR":
                 _eq = _eq.replace(".", ",")
             st.markdown(f"**{_L('Taux', 'Rate')} ≈ {_eq}** "
@@ -2240,9 +2242,9 @@ with tab_forecast:
             # bonne part de l'écart 2023-25 s'explique par la répercussion différée, pas
             # seulement par des banques qui retiennent leurs barèmes.
             st.caption(_L(
-                "+1 pt de taux de marché ⇒ ~+%.2f pt de taux crédit, atteint en %d mois. L'écart 2023-25 vient d'abord de ce délai ; ce qu'il en reste tient aux banques qui n'en répercutent jamais la totalité."
+                "+1 pt d'OAT ⇒ ~+%.2f pt de taux crédit, atteint en %d mois. L'écart 2023-25 vient d'abord de ce délai ; ce qu'il en reste tient aux banques qui n'en répercutent jamais la totalité."
                 % (_rsum, _rlag),
-                "+1pp market rate ⇒ ~+%.2fpp credit rate, reached after %d months. The 2023-25 gap is mostly this delay; the remainder is banks never passing through the full move."
+                "+1pp OAT ⇒ ~+%.2fpp credit rate, reached after %d months. The 2023-25 gap is mostly this delay; the remainder is banks never passing through the full move."
                 % (_rsum, _rlag)))
             st.caption(_L("Sources : Banque de France/BCE (taux, OAT, Euribor).",
                           "Sources: Banque de France/ECB (rate, OAT, Euribor)."))

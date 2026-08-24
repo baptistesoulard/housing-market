@@ -79,14 +79,18 @@ export function bestLagFit(driverRows, salesRows, lags = 19) {
  * taux sur-prédit le niveau courant (voir le commentaire de `forecast.scenario`), donc
  * seule la SENSIBILITÉ aux variations est fiable.
  *
- * rateCoef/txCoef : `{intercept, oat, euribor}` / `{intercept, rate, intentions,
+ * rateCoef/txCoef : `{intercept, oat}` / `{intercept, rate, intentions,
  * unemployment}`, tels qu'exportés dans previsions.json (rate.coefficients /
  * transactions.coefficients). base : scenario_baseline du même export. scen :
- * {oat, euribor, chom, intentZ} — les quatre curseurs du panneau.
+ * {oat, chom, intentZ} — les trois curseurs du panneau.
  */
-export function computeScenario(rateCoef, txCoef, base, {oat, euribor, chom, intentZ}) {
+export function computeScenario(rateCoef, txCoef, base, {oat, chom, intentZ}) {
+  // Un seul taux de marché depuis le retrait de l'Euribor de l'étage 1 (voir
+  // `forecast.RATE_DRIVER`) : il n'apportait rien en ajustement et dégradait de 19 % hors
+  // échantillon. `forecast.scenario` fait exactement ce calcul-ci, et
+  // tests/test_web_js_parity.py compare les deux sur les mêmes hypothèses.
   const intent = base.intentions_mean + intentZ * base.intentions_std;
-  const dRate = rateCoef.oat * (oat - base.oat) + rateCoef.euribor * (euribor - base.euribor);
+  const dRate = rateCoef.oat * (oat - base.oat);
   const rateScen = base.rate_now + dRate;
   const dTx = txCoef.rate * dRate
     + txCoef.intentions * (intent - base.intentions)

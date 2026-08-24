@@ -733,6 +733,29 @@ point (janvier 2027) et le sien (fin 2027) est l'information — tracer un trait
 suggérerait une trajectoire que ni eux ni nous ne publions. Saisi à la main, donc daté et
 testé.
 
+**L'Euribor a été RETIRÉ de l'étage 1 le 2026-08-25, sur mesure.** Il n'apportait rien en
+ajustement (R² 0,9320 avec, 0,9282 sans) et **dégradait de 19 % hors échantillon** — RMSE
+0,432 contre 0,348 sur un test entraîné jusqu'en 2019 et jugé sur le choc de 2022, avec un
+biais deux fois pire (−0,309 contre −0,160). Signature d'un régresseur colinéaire qui ajuste
+du bruit : il aide sur le passé, il nuit sur l'inconnu. L'argument économique concordait — le
+crédit immobilier français est à taux FIXE, adossé à du financement long, donc c'est l'OAT
+10 ans qui le tarife ; l'Euribor décrit un coût court, de second ordre pour un prêt de vingt
+ans. Il était là par symétrie, pas par mécanisme.
+
+Trois bénéfices, au-delà de l'erreur : **le coefficient devient lisible tel quel** (0,742 pt
+de taux de crédit par point d'OAT — toute la mise en garde « les deux ne se lisent pas
+séparément » disparaît), la colinéarité (r 0,83, VIF 3,24) disparaît avec lui, et le curseur
+fusionné cesse d'être un contournement pour devenir la forme naturelle du modèle : un taux,
+un levier. Le décalage retenu ne bouge pas — 7 mois avec ou sans, c'est une propriété de la
+transmission et non de la spécification.
+
+`RATE_DRIVER` porte ce choix dans `forecast.py`. `rate_beta` n'a plus que DEUX éléments, ce
+qui touche `forecast.scenario`, le port JS `computeScenario` et `tests/test_web_js_parity.py`
+— les trois ont été mis à jour ensemble, le cas de test « +1 pt d'Euribor seul » étant
+remplacé par « −1 pt d'OAT » puisqu'il testait un levier qui n'existe plus. **L'Euribor reste
+une série publiée** du site (page Environnement, tableau des sources) : seul son rôle de
+régresseur tombe.
+
 **Les deux taux de l'étage 1 se pilotent ENSEMBLE, et c'est un correctif.** L'OAT 10 ans et
 l'Euribor 3 mois sont corrélés à +0,83 (VIF 3,24) : l'OLS ne peut pas les séparer et
 attribue presque tout au premier — coefficients publiés 0,707 et **0,013**. Exposés comme

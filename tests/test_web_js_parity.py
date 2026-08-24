@@ -151,18 +151,21 @@ process.stdout.write(JSON.stringify(computeScenario(
     return json.loads(out.stdout)
 
 
-@pytest.mark.parametrize("oat,euribor,chom,z", [
-    (3.85, 2.43, 8.3, 0.0),      # scénario = baseline : aucun changement
-    (4.85, 2.43, 8.3, 0.0),      # +1 pt d'OAT seul
-    (3.85, 3.43, 8.3, 0.0),      # +1 pt d'Euribor seul
-    (3.85, 2.43, 9.3, 0.0),      # +1 pt de chômage seul
-    (3.35, 1.93, 7.3, 1.5),      # les quatre leviers ensemble
+# L'Euribor a disparu des hypothèses : l'étage 1 ne régresse plus que sur l'OAT (voir
+# `forecast.RATE_DRIVER`). Le cas « +1 pt d'Euribor seul » n'a donc plus d'objet — il
+# testait un levier qui n'existe plus.
+@pytest.mark.parametrize("oat,chom,z", [
+    (3.85, 8.3, 0.0),      # scénario = baseline : aucun changement
+    (4.85, 8.3, 0.0),      # +1 pt d'OAT seul
+    (2.85, 8.3, 0.0),      # -1 pt d'OAT seul
+    (3.85, 9.3, 0.0),      # +1 pt de chômage seul
+    (3.35, 7.3, 1.5),      # les trois leviers ensemble
 ])
-def test_scenario_matches_python(oat, euribor, chom, z):
+def test_scenario_matches_python(oat, chom, z):
     """`computeScenario` (JS) et `forecast.scenario` (Python) sur les mêmes hypothèses."""
-    rate_beta = [1.30, 0.71, 0.01]
+    rate_beta = [1.22, 0.742]
     tx_beta = [2_671_810.7, -91_616.5, 13_006.8, -50_424.8]
-    rate_coef = {"intercept": rate_beta[0], "oat": rate_beta[1], "euribor": rate_beta[2]}
+    rate_coef = {"intercept": rate_beta[0], "oat": rate_beta[1]}
     tx_coef = {"intercept": tx_beta[0], "rate": tx_beta[1],
                "intentions": tx_beta[2], "unemployment": tx_beta[3]}
 
@@ -170,15 +173,15 @@ def test_scenario_matches_python(oat, euribor, chom, z):
     base_intent = intentions_now  # la baseline Python ancre "intent" sur la valeur RÉELLE
     scen_intent = intentions_mean + z * intentions_std
 
-    py_base = {"oat": 3.85, "euribor": 2.4254, "intent": base_intent, "chom": 8.3,
+    py_base = {"oat": 3.85, "intent": base_intent, "chom": 8.3,
                "rate_now": 3.16, "tx_now": 954_000.0}
-    py_scen = {"oat": oat, "euribor": euribor, "intent": scen_intent, "chom": chom}
+    py_scen = {"oat": oat, "intent": scen_intent, "chom": chom}
     py = fc.scenario(rate_beta, tx_beta, py_base, py_scen)
 
-    js_base = {"oat": 3.85, "euribor": 2.4254, "rate_now": 3.16, "tx_now": 954_000.0,
+    js_base = {"oat": 3.85, "rate_now": 3.16, "tx_now": 954_000.0,
                "intentions": intentions_now, "intentions_mean": intentions_mean,
                "intentions_std": intentions_std, "unemployment": 8.3}
-    js_scen = {"oat": oat, "euribor": euribor, "chom": chom, "intentZ": z}
+    js_scen = {"oat": oat, "chom": chom, "intentZ": z}
     js = _run_js_scenario(rate_coef, tx_coef, js_base, js_scen)
 
     assert js["rate"] == pytest.approx(py["rate"], rel=1e-9)

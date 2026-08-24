@@ -159,8 +159,10 @@ def rate_model() -> dict:
         "r2": _num(rm["r2"]),
         "rmse": _num(rm["rmse"]),
         "lag": int(rm["lag"]),
-        "coefficients": {"intercept": b[0], "oat": b[1], "euribor": b[2],
-                         "marche": b[1] + b[2]},
+        # Un seul coefficient de marché depuis le retrait de l'Euribor : `marche` reste
+        # exposé sous ce nom, le front et les tests le lisant ainsi, mais il ne somme plus
+        # rien — il EST le coefficient de l'OAT, et se lit donc tel quel.
+        "coefficients": {"intercept": b[0], "oat": b[1], "marche": b[1]},
         # `rate` = la valeur publiée, recalée sur le dernier taux observé ; `modelled` = la
         # sortie brute du même modèle, qui prolonge la courbe d'ajustement sans rupture.
         "projected": [{"date": _iso(r.Date), "rate": _num(r.taux),
@@ -287,6 +289,8 @@ def run_scenario(oat=None, euribor=None, unemployment=None, intentions_z=None) -
     s = _load()
     base = scenario_baseline()
     z = base["intentions_z"] if intentions_z is None else float(intentions_z)
+    # `euribor` reste accepté pour ne pas casser les appelants, mais n'entre plus dans le
+    # calcul du taux : voir `forecast.RATE_DRIVER`.
     scen = {
         "oat": base["oat"] if oat is None else float(oat),
         "euribor": base["euribor"] if euribor is None else float(euribor),

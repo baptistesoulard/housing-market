@@ -148,78 +148,64 @@ def test_le_libelle_de_base_annonce_la_meme_annee():
 
 
 # --- Aucun levier de scénario ne doit être inerte -------------------------------------
-# L'OAT 10 ans et l'Euribor 3 mois sont corrélés à +0,83 : l'ajustement de l'étage 1 ne
-# peut pas les séparer et attribue presque tout au premier (0,707 contre 0,013). Exposés
-# comme deux curseurs indépendants, celui de l'Euribor ne déplaçait la prévision que de
-# 0,3 % sur toute sa course, contre 11 à 24 % pour les trois autres. Un levier affiché qui
-# ne lève rien est pire qu'un levier absent : le visiteur en conclut que le taux
-# interbancaire n'agit pas sur le marché immobilier, ce qui est faux. La page pilote donc
-# les deux taux ENSEMBLE, et ces deux tests empêchent de revenir en arrière sans le voir.
+# Histoire de ce garde-fou, qui explique sa forme actuelle. L'étage 1 régressait sur l'OAT
+# ET l'Euribor, corrélés à +0,83 : l'ajustement attribuait presque tout au premier (0,707
+# contre 0,013), si bien que le curseur Euribor de la page était INERTE — balayé sur toute
+# sa course il déplaçait la prévision de 0,3 %, contre 11 à 24 % pour les trois autres. On
+# a d'abord fusionné les deux curseurs, puis mesuré que l'Euribor ne servait à rien du tout
+# (voir forecast.RATE_DRIVER) et on l'a retiré du modèle. Il reste UN taux de marché, dont
+# ces deux tests vérifient qu'il pilote réellement quelque chose.
 PREVISIONS_JSON = WEB / "src" / "data" / "previsions.json"
 PREVISIONS_MD = WEB / "src" / "previsions.md"
 
 
-def test_la_sensibilite_du_financement_est_materielle_une_fois_les_deux_taux_reunis():
-    """La SOMME des deux coefficients doit être un levier réel, même si l'un est nul."""
+def test_la_sensibilite_du_financement_est_materielle():
+    """Le seul coefficient de marché doit rester un levier réel."""
     data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
     if not data.get("available"):
         return                                   # modèle non calibré : rien à vérifier
     coef = data["rate"]["coefficients"]
-    somme = coef["oat"] + coef["euribor"]
-    assert somme >= 0.25, (
-        f"+1 pt de taux de marché ne déplace le taux de crédit que de {somme:.3f} pt — "
+    assert coef["oat"] >= 0.25, (
+        f"+1 pt d'OAT ne déplace le taux de crédit que de {coef['oat']:.3f} pt — "
         "le panneau de scénarios n'a plus de levier de financement digne de ce nom")
 
 
-def test_la_page_ne_reexpose_pas_deux_curseurs_de_taux_separes():
-    """Un curseur par taux de marché ramènerait le levier inerte.
+def test_la_page_n_expose_pas_de_curseur_de_taux_hors_marche():
+    """Un curseur par taux ramènerait le levier inerte d'avant.
 
-    On vérifie l'ABSENCE d'étiquettes de curseur portant l'un des deux taux seul. La page
-    peut parfaitement nommer l'OAT et l'Euribor dans son texte — c'est même souhaitable —
-    mais pas comme deux entrées indépendantes.
+    La page peut parfaitement nommer l'OAT dans son texte — c'est même souhaitable — mais
+    pas exposer plusieurs taux comme des entrées indépendantes.
     """
     src = PREVISIONS_MD.read_text(encoding="utf-8")
     etiquettes = re.findall(r'Inputs\.range\([^)]*?\{[^}]*?label:\s*"([^"]+)"', src, re.S)
-    fautives = [e for e in etiquettes
-                if ("OAT" in e or "Euribor" in e) and "marché" not in e]
+    fautives = [e for e in etiquettes if "Euribor" in e]
     assert not fautives, (
-        f"curseur(s) de taux exposé(s) séparément : {fautives} — l'OAT et l'Euribor sont "
-        "trop corrélés pour être pilotés indépendamment (voir le commentaire ci-dessus)")
+        f"curseur(s) Euribor exposé(s) : {fautives} — l'Euribor ne fait plus partie du "
+        "modèle de taux (voir forecast.RATE_DRIVER)")
 
 
-# --- Le repère externe ne doit pas vieillir en silence ---------------------------------
-# La fourchette FNAIM est SAISIE À LA MAIN, deux à quatre fois par an, sur un graphique qui
-# se rafraîchit toutes les semaines. Sans garde, la page continuerait d'afficher « pour
-# 2026 » longtemps après 2026 — et de se comparer à un repère périmé, ce qui est pire que
-# de ne pas se comparer du tout. Même mode de panne que les dates du tableau des sources.
-def test_le_repere_externe_vise_une_annee_encore_a_venir():
+def test_le_modele_de_taux_publie_son_delai_de_repercussion():
+    """Sans le délai affiché, le coefficient de l'étage 1 est illisible.
+
+    Il dit de combien le taux de crédit bouge, mais pas QUAND — et c'est cette seconde
+    moitié qui manquait avant que le délai ne soit estimé.
+    """
     data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
-    if not data.get("available") or not data.get("benchmark"):
+    if not data.get("available"):
         return
-    b = data["benchmark"]
-    cible = datetime.date.fromisoformat(b["date"])
-    assert cible >= datetime.date.today().replace(month=1, day=1), (
-        f"le repère {b['source']} vise {b['annee']}, année révolue — mettre à jour "
-        "BENCHMARK_FNAIM dans web/export/web_export.py, ou le retirer")
+    r = data["rate"]
+    assert isinstance(r.get("lag"), int) and 0 <= r["lag"] <= 12, (
+        f"délai de répercussion absent ou invraisemblable : {r.get('lag')}")
+    coef = r["coefficients"]
+    assert "euribor" not in coef, "l'Euribor a été retiré de l'étage 1 — voir RATE_DRIVER"
+    assert abs(coef["marche"] - coef["oat"]) < 1e-9, (
+        "`marche` doit valoir le coefficient de l'OAT : un seul taux, un seul levier")
+    for p in r.get("projected", []):
+        assert p["source"] < p["date"], (
+            "un mois projeté doit venir d'un mois de marché ANTÉRIEUR — sinon la "
+            "projection contient une hypothèse au lieu de taux déjà publiés")
 
 
-def test_le_repere_externe_dit_sa_source_et_sa_date_de_releve():
-    """Un chiffre repris d'un tiers sans lien ni date n'est pas vérifiable par le lecteur."""
-    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
-    if not data.get("available") or not data.get("benchmark"):
-        return
-    b = data["benchmark"]
-    assert b.get("url", "").startswith("http"), "le repère externe doit porter son lien"
-    assert b.get("releve_le"), "le repère externe doit porter sa date de relevé"
-    assert b["lo"] < b["hi"], "fourchette du repère externe incohérente"
-
-
-# --- Les hypothèses écartées restent publiées ------------------------------------------
-# Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.
-# Ces trois refus ont chacun coûté un backtest de plusieurs centaines de millésimes ; les
-# retirer parce qu'ils « font désordre » serait exactement le contraire du propos du site,
-# qui publie déjà les horizons où son modèle perd. Chaque entrée doit porter sa date : ce
-# sont des mesures, pas des opinions, et une mesure sans date ne se vérifie pas.
 def test_les_hypotheses_ecartees_sont_publiees_avec_leur_date():
     data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
     refs = data.get("refutations")
@@ -254,25 +240,3 @@ def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():
     datetime.date.fromisoformat(b["releve_le"])
     assert 0 < b["valeur"] < 15, f"repère de taux invraisemblable : {b['valeur']}"
     assert b.get("note"), "le décalage d'horizon doit être explicité"
-
-
-def test_le_modele_de_taux_publie_son_delai_de_repercussion():
-    """Sans le délai affiché, les deux coefficients de l'étage 1 sont illisibles.
-
-    Ils ne se lisent pas séparément (OAT et Euribor corrélés à 0,83) et ils ne se lisent pas
-    non plus sans savoir QUAND le mouvement se répercute. Le délai est la troisième
-    information indispensable, et c'est celle qui manquait.
-    """
-    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
-    if not data.get("available"):
-        return
-    r = data["rate"]
-    assert isinstance(r.get("lag"), int) and 0 <= r["lag"] <= 12, (
-        f"délai de répercussion absent ou invraisemblable : {r.get('lag')}")
-    somme = r["coefficients"]["marche"]
-    assert abs(somme - (r["coefficients"]["oat"] + r["coefficients"]["euribor"])) < 1e-9, (
-        "le coefficient « marché » doit être la somme des deux, c'est la seule lisible")
-    for p in r.get("projected", []):
-        assert p["source"] < p["date"], (
-            "un mois projeté doit venir d'un mois de marché ANTÉRIEUR — sinon la "
-            "projection contient une hypothèse au lieu de taux déjà publiés")

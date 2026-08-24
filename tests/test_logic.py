@@ -489,13 +489,17 @@ def test_search_rate_lag_retrouve_un_delai_injecte():
     rng = np.random.default_rng(7)
     oat = pd.Series(np.cumsum(rng.normal(0, 0.12, 200)) + 3.0, index=idx)
     eur = pd.Series(np.cumsum(rng.normal(0, 0.10, 200)) + 2.0, index=idx)
-    taux = 1.2 + 0.7 * oat.shift(5) + 0.1 * eur.shift(5)      # delai injecte : 5 mois
+    taux = 1.2 + 0.7 * oat.shift(5)                           # delai injecte : 5 mois
+    # L'Euribor est présent dans la frame mais ne participe PAS à la construction du taux :
+    # l'étage 1 ne doit pas le lire (voir `forecast.RATE_DRIVER`). S'il le reprenait, le
+    # coefficient retrouvé s'écarterait de 0,7 et le test le dirait.
     macro = pd.DataFrame({"Date": idx, "OAT_10ans": oat.values, "Euribor_3M": eur.values,
                           "Credit_Logement_Taux_Interet": taux.values})
     assert fc.search_rate_lag(macro, min_obs=60) == 5
 
     fit = fc.fit_rate_model(macro)
     assert fit["lag"] == 5 and fit["r2"] > 0.999
+    assert len(fit["beta"]) == 2, "l'étage 1 ne doit porter qu'un seul taux de marché"
     assert abs(fit["beta"][1] - 0.7) < 1e-6
 
 
@@ -511,8 +515,8 @@ def test_fit_rate_model_lag_zero_restitue_le_modele_contemporain():
     })
     a = fc.fit_rate_model(macro, lag=0)
     m = fc._macro_indexed(macro)
-    d = m.dropna(subset=["Credit_Logement_Taux_Interet", "OAT_10ans", "Euribor_3M"])
-    b, r2, _, _ = fc.ols(d[["OAT_10ans", "Euribor_3M"]].values,
+    d = m.dropna(subset=["Credit_Logement_Taux_Interet", "OAT_10ans"])
+    b, r2, _, _ = fc.ols(d[["OAT_10ans"]].values,
                          d["Credit_Logement_Taux_Interet"].values)
     assert a["lag"] == 0 and abs(a["r2"] - r2) < 1e-12
     assert all(abs(x - y) < 1e-12 for x, y in zip(a["beta"], b))

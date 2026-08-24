@@ -62,7 +62,7 @@ const depuis = (rows, field = "date") => {
 
 Prévoir des transactions immobilières revient à prévoir une demande, et ce site le fait
 avec les méthodes de la planification, en deux étages. Le premier explique le taux du
-crédit immobilier par les taux de marché ; le second explique les ventes de logements
+crédit immobilier par l'OAT 10 ans ; le second explique les ventes de logements
 anciens par ce taux de crédit, les intentions d'achat des ménages et le chômage, chacun
 pris avec son propre décalage.
 
@@ -72,8 +72,8 @@ sont archivées et confrontées au réalisé sur leur propre page.
 
 <div class="hm-caption">
 Modèle chiffré « indicateurs avancés → transactions », calibré sur les séries réelles.
-Deux étages : (1) le taux de crédit est modélisé à partir de l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans et de l'<abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr>
-3 mois ; (2) les ventes de logements anciens (cumul 12 mois) sont expliquées par le taux
+Deux étages : (1) le taux de crédit est modélisé à partir de l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans, avec le délai
+que les banques mettent à répercuter ; (2) les ventes de logements anciens (cumul 12 mois) sont expliquées par le taux
 de crédit, les intentions d'achat et le chômage, chacun décalé. Un <abbr title="Test du modèle sur des données qu'il n'a pas vues à l'entraînement">backtest</abbr> hors
 échantillon mesure la valeur prédictive.
 </div>
@@ -125,7 +125,7 @@ if (V) display(html`<div class="hm-takeaways">
 if (data.available) display(html`<hr>`);
 ```
 
-## 1. Modèle de taux de crédit (OAT 10 ans + Euribor 3 mois)
+## 1. Modèle de taux de crédit (OAT 10 ans)
 
 Le crédit immobilier français est à taux fixe, et les banques publient des barèmes qu'elles
 lissent : leur réaction aux taux de marché n'est pas immédiate. Le modèle **mesure ce délai**
@@ -140,7 +140,7 @@ déjà publiés déterminent alors le taux de crédit des mois à venir.
 // sert à rien — la comparaison EST le propos de ce graphique.
 const legendeTaux = R ? [
   {name: "Taux réellement pratiqué", color: series.brick},
-  {name: `Sortie brute du modèle (marché décalé de ${R.lag} mois)`,
+  {name: `Sortie brute du modèle (OAT décalée de ${R.lag} mois)`,
    color: series.blue, dash: true},
   ...(R.projected.length
       ? [{name: "Ce que nous publions : brut recalé sur le dernier taux connu",
@@ -307,14 +307,13 @@ if (R) display(html`<div class="hm-formula">
   <b>Taux de crédit du mois <i>t</i></b> =
   ${nfCoef.format(R.coefficients.intercept)}
   + ${nfCoef.format(R.coefficients.oat)} × OAT(<i>t</i> − ${R.lag} mois)
-  + ${nfCoef.format(R.coefficients.euribor)} × Euribor(<i>t</i> − ${R.lag} mois)
   <div class="hm-caption" style="margin-top:0.5rem">
-    Les deux coefficients ne se lisent pas séparément : l'OAT et l'Euribor sont corrélés à
-    0,83 sur la période, si bien que l'ajustement attribue presque tout au premier. C'est
-    leur <b>somme, ${nfCoef.format(R.coefficients.marche)}</b>, qui a un sens — un point de
-    taux de marché en plus finit par ajouter ${nf1.format(R.coefficients.marche)} point au
-    taux de crédit. C'est elle que pilote le panneau de scénarios, et c'est pourquoi les
-    deux curseurs de taux ont été fusionnés en un seul.
+    Un seul coefficient, et il se lit tel quel : un point d'OAT en plus finit par ajouter
+    <b>${nf1.format(R.coefficients.oat)} point</b> au taux de crédit, au bout de
+    ${R.lag} mois. L'Euribor 3 mois figurait ici jusqu'au 25 août 2026 ; mesuré, il
+    n'apportait rien à l'ajustement et dégradait la prévision de 19 % sur des données
+    jamais vues. Le crédit immobilier français est à taux fixe, adossé à du financement
+    long : c'est l'OAT qui le tarife.
   </div>
 </div>`);
 ```
@@ -691,17 +690,14 @@ if (base) display(html`<div class="hm-shortcuts">
 
 ```js
 const oat = base ? base.oat + dTaux : null;
-const euribor = base ? base.euribor + dTaux : null;
 ```
 
 ```js
 if (base) display(html`<div class="hm-caption">Le curseur déplace l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr>
-  10 ans et l'<abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr>
-  3 mois du même écart : ils sont trop liés dans l'histoire (+0,83) pour que le modèle
-  sache les distinguer, et les afficher séparément donnait un levier sans effet.
-  Position actuelle : OAT ${nf1.format(oat)} %, Euribor ${nf1.format(euribor)} % —
-  soit <b>${nf1.format(R.coefficients.oat + R.coefficients.euribor)} pt</b> de taux de
-  crédit par point de taux de marché.</div>`);
+  10 ans, seul taux de marché que le modèle retient : c'est lui qui tarife un crédit à taux
+  fixe adossé à du financement long. Position actuelle
+  <b>${nf1.format(oat)} %</b>, soit <b>${nf1.format(R.coefficients.oat)} pt</b> de taux de
+  crédit par point d'OAT, au bout de ${R.lag} mois.</div>`);
 ```
 
 ```js
@@ -710,7 +706,7 @@ if (base) display(html`<div class="hm-caption">Le curseur déplace l'<abbr title
 // aller-retour réseau à chaque déplacement de curseur, contrairement au POST que l'API
 // exposait pour cette même route.
 const sc = base
-  ? computeScenario(R.coefficients, T.coefficients, base, {oat, euribor, chom, intentZ})
+  ? computeScenario(R.coefficients, T.coefficients, base, {oat, chom, intentZ})
   : null;
 ```
 

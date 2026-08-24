@@ -81,8 +81,9 @@ def search_rate_lag(df_macro, grid=RATE_LAG_GRID, min_obs=100):
     (voir CLAUDE.md), où la courbe décroît dès le premier mois et où il n'y a donc aucune
     avance à exploiter.
 
-    Une même grille pour les deux taux : les chercher séparément donne 0,9323 au lieu de
-    0,9320, un gain nul pour un paramètre de plus.
+    Le décalage retenu vaut 7 mois, et il ne change pas selon qu'on régresse sur l'OAT seul
+    ou sur l'OAT et l'Euribor — c'est une propriété de la transmission, pas de la
+    spécification.
     """
     m = _macro_indexed(df_macro)
     best = None
@@ -90,15 +91,26 @@ def search_rate_lag(df_macro, grid=RATE_LAG_GRID, min_obs=100):
         d = _rate_design(m, k)
         if len(d) < min_obs:
             continue
-        _, r2, _, _ = ols(d[["oat", "euribor"]].values, d["rate"].values)
+        _, r2, _, _ = ols(d[["oat"]].values, d["rate"].values)
         if best is None or r2 > best[0]:
             best = (r2, int(k))
     return 0 if best is None else best[1]
 
 
+#: Le SEUL taux de marché de l'étage 1. L'Euribor 3 mois en a été retiré le 2026-08-25 :
+#: mesuré, il n'apportait rien en ajustement (R² 0,9320 contre 0,9282) et DÉGRADAIT de 19 %
+#: hors échantillon (RMSE 0,432 contre 0,348), signature d'un régresseur colinéaire — r 0,83
+#: avec l'OAT, VIF 3,24 — qui ajuste du bruit. L'argument économique va dans le même sens :
+#: le crédit immobilier français est à taux FIXE, adossé à du financement long, donc c'est
+#: l'OAT 10 ans qui le tarife ; l'Euribor décrit un coût court, de second ordre pour un prêt
+#: de vingt ans. Il reste une série publiée du site (page Environnement) — seul son rôle de
+#: régresseur tombe.
+RATE_DRIVER = "OAT_10ans"
+
+
 def _rate_design(m, lag):
-    """Frame aligné [oat, euribor, rate] pour l'étage 1, marché décalé de `lag` mois."""
-    X = pd.DataFrame({"oat": m["OAT_10ans"].shift(lag), "euribor": m["Euribor_3M"].shift(lag)})
+    """Frame aligné [oat, rate] pour l'étage 1, marché décalé de `lag` mois."""
+    X = pd.DataFrame({"oat": m[RATE_DRIVER].shift(lag)})
     return X.join(m["Credit_Logement_Taux_Interet"].rename("rate")).dropna()
 
 
@@ -112,7 +124,7 @@ def fit_rate_model(df_macro, lag=None):
     m = _macro_indexed(df_macro)
     lag = search_rate_lag(df_macro) if lag is None else int(lag)
     d = _rate_design(m, lag)
-    beta, r2, rmse, pred = ols(d[["oat", "euribor"]].values, d["rate"].values)
+    beta, r2, rmse, pred = ols(d[["oat"]].values, d["rate"].values)
     frame = pd.DataFrame({"Date": d.index, "obs": d["rate"].values, "fit": pred})
     return {"beta": beta, "r2": r2, "rmse": rmse, "lag": lag, "frame": frame}
 
@@ -141,13 +153,13 @@ def rate_path(df_macro, beta, lag):
     """
     m = _macro_indexed(df_macro)
     rate = m["Credit_Logement_Taux_Interet"].dropna()
-    oat, euribor = m["OAT_10ans"].dropna(), m["Euribor_3M"].dropna()
+    oat = m[RATE_DRIVER].dropna()
     cols = ["Date", "taux", "modelled", "source"]
-    if rate.empty or oat.empty or euribor.empty or lag <= 0:
+    if rate.empty or oat.empty or lag <= 0:
         return pd.DataFrame(columns=cols)
-    last, marche = rate.index.max(), min(oat.index.max(), euribor.index.max())
-    base_o, base_e = oat.get(last - pd.DateOffset(months=lag)), euribor.get(last - pd.DateOffset(months=lag))
-    if base_o is None or base_e is None or pd.isna(base_o) or pd.isna(base_e):
+    last, marche = rate.index.max(), oat.index.max()
+    base_o = oat.get(last - pd.DateOffset(months=lag))
+    if base_o is None or pd.isna(base_o):
         return pd.DataFrame(columns=cols)
 
     rows = []
@@ -156,12 +168,12 @@ def rate_path(df_macro, beta, lag):
         src = t - pd.DateOffset(months=lag)
         if src > marche:
             break
-        o, e = oat.get(src), euribor.get(src)
-        if o is None or e is None or pd.isna(o) or pd.isna(e):
+        o = oat.get(src)
+        if o is None or pd.isna(o):
             break
         rows.append({"Date": t,
-                     "taux": float(rate.iloc[-1] + beta[1] * (o - base_o) + beta[2] * (e - base_e)),
-                     "modelled": float(beta[0] + beta[1] * o + beta[2] * e),
+                     "taux": float(rate.iloc[-1] + beta[1] * (o - base_o)),
+                     "modelled": float(beta[0] + beta[1] * o),
                      "source": src})
     return pd.DataFrame(rows, columns=cols)
 
@@ -410,12 +422,14 @@ def scenario(rate_beta, tx_beta, base, scen):
     over-predicts the rate because banks hold it below what the OAT implies). We apply the
     estimated SENSITIVITIES to the *changes* vs the current actual baseline.
 
-    base : {oat, euribor, intent, chom, rate_now, tx_now} — current actual values.
-    scen : {oat, euribor, intent, chom} — scenario values.
+    base : {oat, intent, chom, rate_now, tx_now} — current actual values.
+    scen : {oat, intent, chom} — scenario values. (`euribor` peut encore être présent : il
+    est simplement ignoré depuis le retrait de l'Euribor de l'étage 1, voir RATE_DRIVER.)
     Returns {rate, d_rate, tx, d_tx}: implied credit rate and 12-month transactions.
     """
-    d_rate = (rate_beta[1] * (scen["oat"] - base["oat"])
-              + rate_beta[2] * (scen["euribor"] - base["euribor"]))
+    # `rate_beta` ne porte plus qu'un coefficient de marché depuis le retrait de l'Euribor
+    # (voir RATE_DRIVER) : un seul taux, un seul levier, et le coefficient se lit tel quel.
+    d_rate = rate_beta[1] * (scen["oat"] - base["oat"])
     rate_scen = base["rate_now"] + d_rate
     d_tx = (tx_beta[1] * d_rate
             + tx_beta[2] * (scen["intent"] - base["intent"])
