@@ -191,16 +191,6 @@ df_ecln_full = df_ecln
 # Full-history user-imported company sales (forecast propagation uses the untouched series).
 df_company_sales_full = df_company_sales
 
-# --- Handle parameter application from state (placed before any widget render) ---
-if "opt_applied" in st.session_state and st.session_state["opt_applied"]:
-    st.session_state["c1_lag"] = int(st.session_state["opt_c1_lag"])
-    st.session_state["c1_w"] = float(st.session_state["opt_c1_w"])
-    st.session_state["c2_lag"] = int(st.session_state["opt_c2_lag"])
-    st.session_state["c2_w"] = float(st.session_state["opt_c2_w"])
-    st.session_state["c3_lag"] = int(st.session_state["opt_c3_lag"])
-    st.session_state["c3_w"] = float(st.session_state["opt_c3_w"])
-    st.session_state["opt_applied"] = False
-
 # --- Sidebar Controls ---
 st.sidebar.title("🏠 Market Intelligence")
 
@@ -2198,14 +2188,14 @@ with tab_forecast:
     st.header(_L("📡 Prévision des transactions & scénarios",
                  "📡 Transaction forecast & scenarios"))
     st.write(_L(
-        "Formalisation des onglets Time-Lag / Composite en un modèle chiffré « indicateurs "
-        "avancés → transactions », calibré sur les séries réelles (logique BPCE). Deux "
+        "Un modèle chiffré « indicateurs avancés → transactions », calibré sur les séries "
+        "réelles (logique BPCE). Deux "
         "étages : (1) le taux de crédit est modélisé à partir de l'OAT 10 ans et de "
         "l'Euribor 3 mois ; (2) les ventes de logements anciens (cumul 12 mois) sont "
         "expliquées par le taux de crédit, les intentions d'achat et le chômage, chacun "
         "décalé. Un backtest hors échantillon mesure la valeur prédictive.",
-        "The Time-Lag / Composite tabs formalised into a quantified 'leading indicators → "
-        "transactions' model, calibrated on the real series (BPCE logic). Two stages: (1) the "
+        "A quantified 'leading indicators → transactions' model, calibrated on the real "
+        "series (BPCE logic). Two stages: (1) the "
         "credit rate is modelled from the 10-year OAT and 3-month Euribor; (2) existing-home "
         "sales (12-month sum) are explained by the credit rate, purchase intentions and "
         "unemployment, each lagged. An out-of-sample backtest measures predictive value."))
@@ -2803,11 +2793,11 @@ with tab_donnees:
         _cs_max = df_company_sales_full["Date"].max().strftime("%Y-%m")
         st.success(_L(
             f"Série active : « {_cs_name} » — {len(df_company_sales_full)} mois ({_cs_min} → {_cs_max}). "
-            f"Sélectionnable comme benchmark dans l'Atelier exploratoire (Time-Lag / Composite) "
-            f"et dans « 📡 Prévision & Scénarios ».",
+            f"Utilisée par « 📡 Prévision & Scénarios » : élasticité transactions→ventes et "
+            f"propagation des scénarios.",
             f"Active series: '{_cs_name}' — {len(df_company_sales_full)} months ({_cs_min} → {_cs_max}). "
-            f"Selectable as a benchmark in the Exploratory Workshop (Time-Lag / Composite) "
-            f"and in '📡 Forecast & Scenarios'."))
+            f"Used by '📡 Forecast & Scenarios': transactions→sales elasticity and scenario "
+            f"propagation."))
         st.dataframe(df_company_sales_full.tail(12), use_container_width=True)
 
     _cs_col1, _cs_col2 = st.columns([2, 1])

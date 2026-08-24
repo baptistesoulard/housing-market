@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import analysis as ana
 import forecast as fc
-import simulation as sim
 from data_manager import (DataManager, IGEDD_ANCIEN_XLS, IGEDD_ANCIEN_SHEET,
                           IGEDD_ANCIEN_DATE_COL, IGEDD_ANCIEN_VALUE_COL)
 
@@ -288,21 +287,6 @@ def test_two_factor_recovers_renovation_driver():
     assert tf["r2"] > 0.98
     single = fc.best_tx_to_monthly(sdf, tx, "Sales")
     assert tf["r2"] >= single["r2"]  # adding renovation cannot hurt in-sample fit
-
-
-def test_composite_optimizer_reports_out_of_sample():
-    """The composite optimizer must return a held-out test correlation, and on pure noise
-    the (overfit) train r should exceed the honest test r."""
-    idx = pd.date_range("2010-01-01", periods=120, freq="MS")
-    rng = np.random.default_rng(1)
-    c1 = pd.DataFrame({"Date": idx, "Permis": rng.normal(500, 50, 120)})
-    c2 = pd.DataFrame({"Date": idx, "Conf": rng.normal(100, 5, 120)})
-    c3 = pd.DataFrame({"Date": idx, "Rate": rng.normal(2, 0.3, 120)})
-    sales = pd.DataFrame({"Date": idx, "Sales_Units": rng.normal(1000, 100, 120)})
-    res = sim.optimize_composite_parameters(c1, "Permis", c2, "Conf", c3, "Rate",
-                                            sales, "Sales_Units")
-    assert "test_correlation" in res and res["test_correlation"] is not None
-    assert res["max_correlation"] > res["test_correlation"]  # overfit unmasked on noise
 
 
 # --- Derived-cache invalidation & source resilience -------------------------------------

@@ -307,6 +307,20 @@ contrats/logging » — ce backlog est caduc tant que l'import CSV ad hoc n'est 
 `synthetic_circularity_warning()` d'`app.py`, devenue morte avec le benchmark synthétique
 du Time-Lag, a été supprimée elle aussi.
 
+**Le code de l'Atelier a fini d'être retiré le 2026-08-24.** Le retrait du 2026-08-20
+avait décâblé l'onglet mais laissé ses moteurs dans `simulation.py` : `find_optimal_lag`
+(recherche de décalage par max-r), `min_max_normalize`, `create_composite_indicator` et
+`optimize_composite_parameters`, plus le handler de session `opt_applied` en tête
+d'`app.py` (il recopiait les paramètres du grid-search composite dans les curseurs, et
+plus rien n'écrivait ces clés). Tout est parti, avec le test
+`test_composite_optimizer_reports_out_of_sample`. **`simulation.py` ne porte plus que
+`shift_indicator`**, qui est de la mise en forme (deux appels dans `app.py`) et non une
+méthode rivale de la recherche en grille de `forecast.search_tx_lags` — c'est cette
+rivalité sans arbitre qui avait motivé le retrait de l'onglet. Les textes qui présentaient
+encore la Prévision comme « la formalisation des onglets Time-Lag / Composite », ou les
+ventes importées comme « sélectionnables dans l'Atelier », ont été réécrits : ils
+renvoyaient à une interface que le lecteur ne peut plus ouvrir.
+
 ## Le site public — ce qui doit rester vrai
 
 Le front est passé de tableau de bord déployé à **site destiné à être partagé** (LinkedIn

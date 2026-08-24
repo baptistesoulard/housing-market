@@ -2,20 +2,19 @@
 
 Dashboard **Streamlit** d'analyse conjoncturelle du marché immobilier français (national) et d'aide à la prévision. Il met en regard la construction neuve (SIT@DEL / SDES), la commercialisation du neuf (ECLN), les ventes dans l'ancien (IGEDD), les prix (Notaires-INSEE), l'accessibilité, le contexte macro-financier (confiance, taux, Euribor, OAT, intentions d'achat, chômage, volume et demande de crédits) et un module de **prévision des transactions** avec scénarios.
 
-L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) pour les corréler aux indicateurs de marché dans les moteurs Time-Lag / Composite / Prévision, et de **générer un bilan PDF** (chiffres clés, commentaire d'analyse, graphiques, repère BPCE) depuis la barre latérale.
+L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) pour les corréler aux indicateurs de marché dans le moteur de prévision, et de **générer un bilan PDF** (chiffres clés, commentaire d'analyse, graphiques, repère BPCE) depuis la barre latérale.
 
 ## Aperçu des onglets
 
-L'application est organisée en **8 onglets** suivant les segments de marché puis l'entonnoir de lecture (où en est le marché → pourquoi → où va-t-il → outils).
+L'application est organisée en **7 onglets** suivant les segments de marché puis l'entonnoir de lecture (où en est le marché → pourquoi → où va-t-il → outils).
 
 0. **🧭 Synthèse** — page d'accueil « coup d'œil » : **chips d'état par pilier** (🟢/🟠/🔴 pour Neuf, Ancien, Financement), encart **« À retenir »** en puces (une par pilier + implication demande second œuvre), 3 blocs de cartes (*Activité* / *Conditions de financement* / *Perspective* avec verdict vs cible BPCE), fraîcheur des données par source, et un **graphique croisé neuf/ancien en deux panneaux** — niveaux réels sur échelle unique + base 100 (moyenne 2015, convention INSEE). Chiffres nationaux, indépendants du filtre de période.
 1. **🏗️ Marché du neuf** — permis et mises en chantier (SIT@DEL : cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1), **dynamique Individuel vs Collectif** (driver du second œuvre), puis section **Commercialisation Neuf (ECLN)** : encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
 2. **🏠 Marché de l'ancien** — ventes dans l'ancien (IGEDD : cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle), puis section **Prix & Accessibilité** : indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
 3. **🏦 Environnement & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois), **demande de crédits (enquête BLS)** — indicateur avancé — et **activité du second œuvre** (rénovation, passée & prévue).
 4. **📰 Actualités & Aides** — veille curatée des dispositifs d'aide FR/UE (Jeanbrun, MaPrimeRénov', PTZ, DPE, CEE, EAHP…), impacts qualitatifs par pilier et échéancier.
-5. **📡 Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés, **lags cherchés sur le train seul**), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE ; **exportable vers SAP IBP**), **propagation à une prévision mensuelle des ventes société** par famille (également exportable), **rénovation en 3ᵉ driver** (comparatif R² transactions seules vs transactions+rénovation), **repère BPCE L'Observatoire 2026**, et panneau de scénarios à 4 leviers (OAT / Euribor / chômage / **intentions d'achat** → transactions → CA benchmark).
-6. **🔬 Atelier exploratoire** — deux sous-onglets : **⏱️ Time Lag** (décalage d'un indicateur avancé et corrélation avec les ventes, ou un CA d'entreprise réel) et **🧪 Composite** (indicateur composite pondéré, grid-search des lags/poids).
-7. **⚙️ Données & Export** — deux sous-onglets : **📂 Sources & Imports** — inspection / upload des jeux de données (les uploads sont **validés par les contrats pandera** avant écrasement) et **import des ventes mensuelles d'une société** (CSV `Date, Sales` — **multi-séries** : une colonne `Serie`/`Produit`/`Famille` crée une famille de produits par valeur, sélectionnable dans les moteurs ; **cible par défaut** des ateliers, les ventes synthétiques ne servant que de repli avec avertissement de circularité) — et **💾 Export SAP IBP** de l'indicateur avancé.
+5. **📡 Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés, **lags cherchés sur le train seul**), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE), **propagation à une prévision mensuelle des ventes société** par famille, **rénovation en 3ᵉ driver** (comparatif R² transactions seules vs transactions+rénovation), **repère BPCE L'Observatoire 2026**, et panneau de scénarios à 4 leviers (OAT / Euribor / chômage / **intentions d'achat** → transactions → ventes société importées).
+6. **⚙️ Données & Sources** — **import des ventes mensuelles d'une société** (CSV `Date, Sales` — **multi-séries** : une colonne `Serie`/`Produit`/`Famille` crée une famille de produits par valeur, sélectionnable dans le moteur de prévision), ou dépôt versionné d'un fichier par famille dans `data_manual_input/ventes-<famille>.csv`.
 
 ## Lancer en local
 
@@ -145,16 +144,16 @@ Dernière série définie deux fois : le cumul 12 mois des transactions. L'ongle
 
 ## Modules
 
-- `app.py` — interface Streamlit (8 onglets dont la Synthèse, bilingue FR/EN).
+- `app.py` — interface Streamlit (7 onglets dont la Synthèse, bilingue FR/EN).
 - `translations.py` — dictionnaire de traductions `T` (FR/EN) extrait d'`app.py`.
 - `data_manager.py` — chargement / génération / cache des jeux de données (dont import des ventes société).
 - `analysis.py` — filtres, agrégations, cumuls glissants, momentum et commentaire d'analyse auto-généré.
-- `simulation.py` — décalage temporel et indicateur composite.
-- `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→CA/ventes).
+- `simulation.py` — décalage temporel d'un indicateur (le reste du module, recherche de décalage par r de Pearson et indicateur composite, est parti avec l'onglet « Atelier exploratoire »).
+- `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→ventes société).
 - `actualites.py` — veille curatée des dispositifs d'aide FR/UE (onglet « Actualités & Aides ») : items, jalons et impacts qualitatifs par pilier.
 - `housing_data/` — **couche données réutilisable** : `schema.py` (contrats typés pandera, un par dataset) et `warehouse.py` (persistance **Parquet** + surface SQL **DuckDB** embarquée, zéro serveur). Découplée de Streamlit : une API, un notebook ou un front statique peuvent consommer le même entrepôt.
 - `queries.py` — **couche de calcul SQL partagée** : DuckDB est le moteur d'agrégation unique des trois surfaces (`app.py`, `web/export/web_export.py`, `report.py`). Cumuls glissants (fonctions de fenêtre), YoY, z-score, capacité d'emprunt, regroupements par type — définis UNE fois, donc les trois surfaces affichent les mêmes chiffres par construction.
-- `export.py` — export SAP IBP.
+- `export.py` — export SAP IBP (module intact mais **débranché** : besoin métier suspendu, plus aucun appelant ni test).
 - `fetch_new_sources.py` — acquisition des sources réelles (INSEE / SDES / BCE).
 - `report.py` — génération du **rapport PDF** (bilan : chiffres clés, commentaire, graphiques, repère BPCE) via reportlab + matplotlib. Bouton « 📄 Rapport PDF » dans la barre latérale.
 
