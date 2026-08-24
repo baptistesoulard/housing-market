@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T08:03:34+00:00",
+  "generated_at": "2026-08-24T17:28:24+00:00",
   "title": "🎯 Prévisions passées — ce que nous annoncions",
   "caption": "Toutes les prévisions de transactions produites par le modèle, face à ce qui s'est réellement passé. Une prévision publiée sans son historique n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre en défaut.",
   "how_to_read": "Deux natures de prévisions cohabitent ici et ne se valent pas. Les prévisions PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — personne ne peut les retoucher. Les prévisions RÉTRO-SIMULÉES ont été recalculées après coup en tronquant les données au mois visé : elles montrent que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles restent séparées partout. Leur limite : les transactions sont révisées, donc une rétro-simulation voit des données un peu meilleures que celles de l'époque.",
@@ -34,6 +34,71 @@
     }
   ],
   "crossover_horizon": 6,
+  "episodes": [
+    {
+      "label": "2009 · sortie de crise financière",
+      "n": 216,
+      "vintages": 12,
+      "mape": 11.01,
+      "naive_mape": 13.1,
+      "skill": 0.159,
+      "direction": 0.759
+    },
+    {
+      "label": "2010-11 · rebond",
+      "n": 432,
+      "vintages": 24,
+      "mape": 4.78,
+      "naive_mape": 8.21,
+      "skill": 0.418,
+      "direction": 0.801
+    },
+    {
+      "label": "2012-15 · creux long, crise de la dette",
+      "n": 864,
+      "vintages": 48,
+      "mape": 7.31,
+      "naive_mape": 7.33,
+      "skill": 0.003,
+      "direction": 0.738
+    },
+    {
+      "label": "2016-19 · expansion, records",
+      "n": 864,
+      "vintages": 48,
+      "mape": 3.78,
+      "naive_mape": 5.03,
+      "skill": 0.25,
+      "direction": 0.644
+    },
+    {
+      "label": "2020-21 · Covid puis record",
+      "n": 432,
+      "vintages": 24,
+      "mape": 8.15,
+      "naive_mape": 7.86,
+      "skill": -0.036,
+      "direction": 0.588
+    },
+    {
+      "label": "2022-24 · choc de taux",
+      "n": 648,
+      "vintages": 36,
+      "mape": 5.21,
+      "naive_mape": 11.84,
+      "skill": 0.56,
+      "direction": 0.927
+    },
+    {
+      "label": "2025-26 · reprise",
+      "n": 153,
+      "vintages": 17,
+      "mape": 4.16,
+      "naive_mape": 4.0,
+      "skill": -0.04,
+      "direction": 0.529
+    }
+  ],
   "kinds": {
     "archive": {
       "n_rows": 36,

@@ -238,3 +238,28 @@ def test_chaque_page_de_donnees_a_un_chapeau_statique(nom):
     assert len(chapeau.split()) >= 40, (
         f"{nom} : {len(chapeau.split())} mots de chapeau statique — la page est muette "
         "pour un robot d'indexation")
+
+
+@pytest.mark.parametrize("nom", PAGES_DE_DONNEES)
+def test_aucune_page_n_emploie_viewof(nom):
+    """`viewof` est de la syntaxe NOTEBOOK : Framework retire la cellule, sans rien dire.
+
+    Rencontré en câblant les boutons de scénario de « Prévision » : `set(viewof dTaux, …)`
+    a fait disparaître le bloc entier du build — pas d'erreur, pas d'avertissement, 240
+    liens toujours validés, et simplement aucun bouton sur la page. Le défaut ne se voit
+    qu'en cherchant le code dans le HTML construit, ce que personne ne fait par réflexe.
+
+    Le motif correct dans Framework est de garder une référence à l'entrée avant de la
+    passer à `view()` :
+
+        const monInput = Inputs.range(…);
+        const maValeur = view(monInput);        // monInput reste adressable ailleurs
+    """
+    # Les lignes de COMMENTAIRE sont exclues : la mise en garde ci-dessus vit aussi dans le
+    # code des pages, où elle est le plus utile, et se ferait attraper par sa propre règle.
+    fautifs = [ligne.strip() for ligne in _page(nom).splitlines()
+               if re.search(r"\bviewof\b", ligne)
+               and not ligne.strip().startswith(("//", "*", "<!--"))]
+    assert not fautifs, (
+        f"{nom} emploie `viewof`, que Framework ne connaît pas — la cellule sera retirée "
+        f"du build en silence : {fautifs[:2]}")

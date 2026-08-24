@@ -23,8 +23,8 @@ const LIVE = A.kinds.archive;
 const d = (s) => new Date(s);
 const moisFR = (s) => fmtMonthFR(d(s));
 
-// Les faisceaux, en format long : une ligne par (millésime, mois visé). Les 48
-// trajectoires ne sont PAS 48 séries à distinguer — c'est un nuage. Elles partagent donc
+// Les faisceaux, en format long : une ligne par (millésime, mois visé). Les 210
+// trajectoires ne sont PAS 210 séries à distinguer — c'est un nuage. Elles partagent donc
 // une seule teinte discrète, et les couleurs sont réservées à ce qu'on doit lire : le
 // réalisé, la prévision en cours, et le millésime éventuellement mis en avant.
 const faisceaux = RETRO.fans.flatMap((f) =>
@@ -57,9 +57,10 @@ référence à tous les horizons, et c'est précisément ce que cette page sert 
 <div class="hm-takeaways">
   <strong>Ce que dit cette page</strong>
   <ul>
-    <li>Sur les millésimes rétro-simulés, le modèle se trompe de <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.mape ?? 0)} %</strong> en moyenne à six mois, contre <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.naive_mape ?? 0)} %</strong> pour une prévision naïve.</li>
-    <li>En deçà de <strong>${A.crossover_horizon} mois</strong>, il fait <strong>moins bien</strong> qu'une prévision naïve : à court terme, un cumul 12 mois bouge trop peu pour qu'un modèle apporte quoi que ce soit.</li>
-    <li>Son domaine utile est <strong>${A.crossover_horizon} à 12 mois</strong> ; au-delà, son erreur croît vite parce que ses prédicteurs doivent eux-mêmes être prolongés.</li>
+    <li>Le modèle annonce le <strong>bon sens du marché</strong> — hausse ou baisse — dans <strong>${nf0.format((RETRO.horizons.find((h) => h.horizon === 12)?.direction ?? 0) * 100)} %</strong> des cas à douze mois, et <strong>${nf0.format((RETRO.horizons.find((h) => h.horizon === 6)?.direction ?? 0) * 100)} %</strong> à six mois. C'est la mesure qui compte pour décider ; l'erreur en pourcentage vient après.</li>
+    <li>Il se trompe de <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.mape ?? 0)} %</strong> en moyenne à six mois, contre <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.naive_mape ?? 0)} %</strong> pour une prévision naïve.</li>
+    <li>En deçà de <strong>${A.crossover_horizon} mois</strong>, il fait <strong>moins bien</strong> que cette prévision naïve : à court terme, un cumul 12 mois bouge trop peu pour qu'un modèle apporte quoi que ce soit.</li>
+    <li>Son domaine utile est <strong>${A.crossover_horizon} à 18 mois</strong>. Mais ce score moyen cache l'essentiel : le modèle est piloté par les taux, donc il excelle quand ce sont les taux qui font le marché et décroche quand c'est autre chose — voir la ventilation par épisode plus bas.</li>
   </ul>
 </div>
 
@@ -112,8 +113,12 @@ display(withCsvExport(Plot.plot({
   marks: [
     // Le nuage des trajectoires : trait fin, teinte neutre, très transparent. Il doit se
     // lire comme une texture — la dispersion est l'information, pas chaque trait.
+    // 210 trajectoires, pas 48 : l'opacité et l'épaisseur sont descendues d'autant, sans
+    // quoi le nuage vire au aplat gris et la dispersion — la seule information qu'il
+    // porte — disparaît. Aucune trajectoire n'est retirée : le nuage doit rester complet,
+    // c'est ce qui rend l'export CSV honnête.
     Plot.line(faisceaux, {x: "date", y: "value", z: "vintage",
-                          stroke: ui.greyLine, strokeWidth: 1, strokeOpacity: 0.3}),
+                          stroke: ui.greyLine, strokeWidth: 0.6, strokeOpacity: 0.14}),
     // La bande de la prévision en cours, sous les traits : c'est elle que les millésimes
     // à venir viendront juger.
     encours.length ? Plot.areaY(encours, {x: "date", y1: "lo", y2: "hi",
@@ -227,6 +232,80 @@ display(html`<details class="hm-howto">
 </details>`);
 ```
 
+## Où le modèle gagne, où il perd
+
+<div class="hm-caption">
+Un score moyen unique répond à la mauvaise question. Ce modèle est piloté par les taux :
+il excelle quand ce sont les taux qui font le marché, et décroche quand c'est autre chose.
+Publier la ventilation, c'est publier son domaine de validité plutôt que sa meilleure
+année.
+</div>
+
+```js
+// Cette ventilation est le pendant du graphique par horizon : l'un dit "à quelle distance
+// le modèle sert", l'autre "dans quelles conditions". C'est le second qui explique le
+// premier — les trois épisodes perdants (crise financière, creux 2012-15, Covid) ont en
+// commun que le moteur du marché n'y était PAS le coût du crédit.
+const EP = A.episodes ?? [];
+```
+
+```js
+if (EP.length) display(Plot.plot({
+  width, height: 42 + EP.length * 38, marginLeft: 220, marginRight: 60, marginTop: 26,
+  x: {label: "Erreur moyenne (%)", grid: true, domain: [0, Math.max(...EP.map((e) => e.naive_mape)) * 1.1]},
+  y: {label: null, domain: EP.map((e) => e.label)},
+  color: {domain: ["Notre modèle", A.naive_label], range: [series.brick, series.blue], legend: true},
+  marks: [
+    Plot.ruleY(EP, {y: "label", x1: "mape", x2: "naive_mape", stroke: ui.border, strokeWidth: 2}),
+    Plot.dot(EP, {y: "label", x: "naive_mape", fill: series.blue, r: 5.5}),
+    Plot.dot(EP, {y: "label", x: "mape", fill: series.brick, r: 5.5}),
+    Plot.text(EP, {y: "label", x: "naive_mape", dx: 14, textAnchor: "start",
+                   text: (e) => (e.skill > 0 ? `−${nf0.format(e.skill * 100)} %` : "perd"),
+                   fill: (e) => (e.skill > 0 ? series.green : series.brick), fontWeight: 600}),
+    Plot.tip(EP, Plot.pointer({
+      y: "label", x: "mape", ...TIP,
+      title: (e) => `${e.label}
+${e.vintages} millésimes
+Modèle : ${nf1.format(e.mape)} %
+Naïve : ${nf1.format(e.naive_mape)} %
+Bon sens : ${nf0.format(e.direction * 100)} %`,
+    })),
+  ],
+}));
+```
+
+<div class="hm-caption">
+Point rouge = notre erreur, point bleu = celle d'une prévision naïve. À droite, la part
+d'erreur évitée — ou « perd » quand le modèle fait moins bien. Les trois épisodes perdants
+ont un point commun : le moteur du marché n'y était pas le coût du crédit. En 2008 c'était
+le rationnement bancaire, en 2012-2015 la confiance dans un contexte de taux déjà bas, en
+2020 la fermeture administrative des études notariales.
+</div>
+
+```js
+if (EP.length) display(html`<details class="hm-howto">
+  <summary>Les mêmes chiffres en tableau</summary>
+  <div class="hm-scroller">
+    <table class="hm-sources">
+      <caption class="hm-caption">Erreur par épisode de marché, sur les millésimes rétro-simulés.</caption>
+      <thead><tr>
+        <th scope="col">Épisode</th><th scope="col">Millésimes</th>
+        <th scope="col">Erreur du modèle</th><th scope="col">Erreur d'une prévision naïve</th>
+        <th scope="col">Erreur évitée</th><th scope="col">Sens annoncé juste</th>
+      </tr></thead>
+      <tbody>${EP.map((e) => html`<tr>
+        <th scope="row">${e.label}</th>
+        <td>${e.vintages}</td>
+        <td>${nf1.format(e.mape)} %</td>
+        <td>${nf1.format(e.naive_mape)} %</td>
+        <td>${e.skill == null || e.skill <= 0 ? "aucune" : nf0.format(e.skill * 100) + " %"}</td>
+        <td>${nf0.format(e.direction * 100)} %</td>
+      </tr>`)}</tbody>
+    </table>
+  </div>
+</details>`);
+```
+
 ## L'archive en direct
 
 ```js
@@ -236,8 +315,13 @@ const premierEcheance = A.current
 display(cardGrid([
   {label: "Prévisions publiées et enregistrées", value: nf0.format(LIVE.n_vintages),
    subs: [LIVE.n_vintages ? `depuis ${moisFR(LIVE.first_vintage)}` : "aucune pour l'instant"]},
-  {label: "Mois déjà échus, jugeables", value: nf0.format(LIVE.n_evaluated),
-   subs: [LIVE.n_evaluated ? "confrontés au réalisé" : `le premier sera ${premierEcheance ?? "—"}`]},
+  // « 0 mois échu » se lit comme une page inachevée, alors que c'est une promesse datée :
+  // la première prévision publiée sera jugeable à un mois précis, connu d'avance. Un
+  // compte à rebours dit la même vérité en la rendant vérifiable.
+  {label: LIVE.n_evaluated ? "Mois déjà échus, jugeables" : "Première échéance jugeable",
+   value: LIVE.n_evaluated ? nf0.format(LIVE.n_evaluated) : (premierEcheance ?? "—"),
+   subs: [LIVE.n_evaluated ? "confrontés au réalisé"
+                           : "d'ici là, seules les rétro-simulations ont un verdict"]},
   {label: "Millésimes rétro-simulés", value: nf0.format(RETRO.n_vintages),
    subs: [`${nf0.format(RETRO.n_evaluated)} mois confrontés au réalisé`]},
 ], kpiCard));

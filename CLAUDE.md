@@ -640,6 +640,45 @@ curseur portant l'OAT ou l'Euribor seul. Retirer purement et simplement l'Euribo
 l'étage 1 reste une option propre (le R² passe de 0,8378 à 0,8377) mais toucherait les
 textes statiques de plusieurs pages et le tableau des sources ; non fait pour cette raison.
 
+**Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
+entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
+d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,
+ampleur, mois visé) et la fiabilité mesurée à cet horizon. Il porte des chiffres, donc il
+ne peut PAS vivre dans le chapeau statique, que rien ne régénère : c'est le seul bloc de
+tête de page légitimement dynamique. `_VERDICT_HORIZON = 6` — l'horizon auquel un
+particulier raisonne, et le premier auquel le modèle bat la naïve. Le seuil de 1,5 %
+en deçà duquel il dit « stable » n'est pas cosmétique : l'erreur à six mois vaut 5,7 %,
+donc annoncer une variation plus petite reviendrait à commenter son propre bruit.
+
+**Le R² a quitté les cartes de tête, et ne doit pas y revenir.** Autocorrélation des
+résidus 0,88, Durbin-Watson 0,24 : sur deux séries tendancielles régressées en niveau, un
+R² de 91 % est mécanique et ne prouve rien. Il vit désormais dans un repli avec cette
+explication. Les cartes portent à la place le **taux de bon sens** et l'erreur à six mois,
+tous deux issus de l'archive — donc de prévisions réellement confrontées au réel.
+
+**`viewof` n'existe pas dans Observable Framework, et son emploi est SILENCIEUX.** C'est
+de la syntaxe notebook : Framework retire la cellule entière du build sans erreur ni
+avertissement — liens toujours validés, page construite, simplement aucun bouton. Rencontré
+en câblant les scénarios nommés (`set(viewof dTaux, …)`), et repérable uniquement en
+cherchant le code dans le HTML construit. Le motif correct est de garder la référence à
+l'entrée : `const monInput = Inputs.range(…); const maValeur = view(monInput);`.
+`tests/test_web_structure.py` refuse désormais `viewof` hors commentaire.
+
+**Le repère externe est saisi à la main et doit porter sa date.** `BENCHMARK_FNAIM` dans
+`web_export.py` : la fourchette annuelle de la FNAIM (900-920 k pour 2026) est la SEULE
+prévision chiffrée de volumes publiée en France — les Notaires, qui ont pourtant les
+avant-contrats, ne projettent que les prix. Notre modèle donne 912 619, dans leur
+fourchette. Trois contraintes : c'est un **point de décembre**, jamais une courbe (leur
+chiffre est un total d'année, le nôtre un cumul glissant) ; l'écart de périmètre (~0,6 %)
+est dit sur la page ; et deux tests de `test_web_links.py` refusent une année révolue ou un
+repère sans lien ni date de relevé.
+
+**La ventilation par épisode est le pendant de la ventilation par horizon.** `_by_episode`
+découpe les millésimes en huit épisodes de marché. L'une dit *à quelle distance* le modèle
+sert, l'autre *dans quelles conditions* — et c'est la seconde qui explique la première :
+les trois épisodes où il perd (crise financière, creux 2012-15, Covid) ont en commun que
+le moteur du marché n'y était pas le coût du crédit.
+
 **`by_horizon` porte trois métriques, pas une.** `direction` (part de fois où le SENS annoncé
 par rapport au dernier chiffre connu était le bon) est la seule des trois qu'un lecteur non
 statisticien peut utiliser telle quelle — et c'est celle sur laquelle une décision d'achat ou
@@ -859,7 +898,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 238 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 250 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

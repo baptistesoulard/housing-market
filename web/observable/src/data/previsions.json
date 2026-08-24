@@ -9492,6 +9492,36 @@
       }
     ]
   },
+  "verdict": {
+    "horizon": 6,
+    "target_month": "décembre 2026",
+    "direction": "baisse",
+    "change_pct": -4.3,
+    "predicted": 912619,
+    "lo": 828103,
+    "hi": 975298,
+    "sentence": "D'ici décembre 2026, le marché des logements anciens devrait reculer d'environ 4 %.",
+    "reliability": {
+      "horizon": 6,
+      "direction": 0.716,
+      "mape": 5.68,
+      "naive_mape": 5.93,
+      "n": 204
+    }
+  },
+  "benchmark": {
+    "source": "FNAIM",
+    "url": "https://www.fnaim.fr/4361-marche-du-logement-la-reprise-sous-conditions.htm",
+    "annee": 2026,
+    "lo": 900000,
+    "hi": 920000,
+    "releve_le": "2026-01-01",
+    "note": "Prévision annuelle publiée par la FNAIM. Son chiffre est un TOTAL d'année ; le nôtre un cumul sur douze mois glissants — les deux ne coïncident qu'en décembre. Les périmètres diffèrent aussi d'environ 0,6 % : à fin février 2026, les Notaires comptaient 958 000 ventes là où notre série IGEDD en voit 952 000 en mars.",
+    "date": "2026-12-01",
+    "notre_prevision": 912619,
+    "dans_la_fourchette": true,
+    "ecart_au_milieu_pct": 0.3
+  },
   "period": {
     "min": 2000,
     "max": 2026

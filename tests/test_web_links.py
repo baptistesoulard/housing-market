@@ -8,6 +8,7 @@ construirait sans avertissement, et le clic donnerait un 404 en production.
 
 C'est ce trou-là que ferme ce test — il compare les chemins des deux côtés.
 """
+import datetime
 import json
 import pathlib
 import re
@@ -184,3 +185,30 @@ def test_la_page_ne_reexpose_pas_deux_curseurs_de_taux_separes():
     assert not fautives, (
         f"curseur(s) de taux exposé(s) séparément : {fautives} — l'OAT et l'Euribor sont "
         "trop corrélés pour être pilotés indépendamment (voir le commentaire ci-dessus)")
+
+
+# --- Le repère externe ne doit pas vieillir en silence ---------------------------------
+# La fourchette FNAIM est SAISIE À LA MAIN, deux à quatre fois par an, sur un graphique qui
+# se rafraîchit toutes les semaines. Sans garde, la page continuerait d'afficher « pour
+# 2026 » longtemps après 2026 — et de se comparer à un repère périmé, ce qui est pire que
+# de ne pas se comparer du tout. Même mode de panne que les dates du tableau des sources.
+def test_le_repere_externe_vise_une_annee_encore_a_venir():
+    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
+    if not data.get("available") or not data.get("benchmark"):
+        return
+    b = data["benchmark"]
+    cible = datetime.date.fromisoformat(b["date"])
+    assert cible >= datetime.date.today().replace(month=1, day=1), (
+        f"le repère {b['source']} vise {b['annee']}, année révolue — mettre à jour "
+        "BENCHMARK_FNAIM dans web/export/web_export.py, ou le retirer")
+
+
+def test_le_repere_externe_dit_sa_source_et_sa_date_de_releve():
+    """Un chiffre repris d'un tiers sans lien ni date n'est pas vérifiable par le lecteur."""
+    data = json.loads(PREVISIONS_JSON.read_text(encoding="utf-8"))
+    if not data.get("available") or not data.get("benchmark"):
+        return
+    b = data["benchmark"]
+    assert b.get("url", "").startswith("http"), "le repère externe doit porter son lien"
+    assert b.get("releve_le"), "le repère externe doit porter sa date de relevé"
+    assert b["lo"] < b["hi"], "fourchette du repère externe incohérente"

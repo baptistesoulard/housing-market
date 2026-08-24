@@ -983,6 +983,8 @@ def build_archive(con, frames: dict) -> dict:
     crossover = next((h["horizon"] for h in kinds["retro"]["horizons"]
                       if h["skill"] is not None and h["skill"] > 0), None)
 
+    episodes = _by_episode(fa.evaluate(archive[archive["kind"] == "retro"], realized))
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "title": "🎯 Prévisions passées — ce que nous annoncions",
@@ -1001,10 +1003,107 @@ def build_archive(con, frames: dict) -> dict:
             "une rétro-simulation voit des données un peu meilleures que celles de l'époque."),
         "kpis": kpis,
         "crossover_horizon": crossover,
+        "episodes": episodes,
         "kinds": kinds,
         "current": current,
         "realized": series,
         "naive_label": "Prévision naïve (le marché reste où il est)",
+    }
+
+
+#: Les huit épisodes de marché couverts par la rétro-simulation, bornés par millésime.
+#: Un score moyen unique répond a la mauvaise question : le modele est pilote par les
+#: taux, donc il excelle quand ce sont les taux qui font le marche et decroche quand
+#: c'est autre chose. Publier la ventilation, c'est publier son domaine de validite.
+_EPISODES = [
+    ("2009-01-01", "2009-12-01", "2009 · sortie de crise financière"),
+    ("2010-01-01", "2011-12-01", "2010-11 · rebond"),
+    ("2012-01-01", "2015-12-01", "2012-15 · creux long, crise de la dette"),
+    ("2016-01-01", "2019-12-01", "2016-19 · expansion, records"),
+    ("2020-01-01", "2021-12-01", "2020-21 · Covid puis record"),
+    ("2022-01-01", "2024-12-01", "2022-24 · choc de taux"),
+    ("2025-01-01", "2030-12-01", "2025-26 · reprise"),
+]
+
+
+def _by_episode(evaluated: pd.DataFrame) -> list[dict]:
+    """Erreur du modèle contre la naïve, épisode par épisode.
+
+    C'est la ventilation qui manquait le plus : mesuré sur la seule fenêtre 2022-2024, le
+    modèle évite près de la moitié de l'erreur naïve ; sur les huit épisodes, moins d'un
+    cinquième, et il PERD dans trois d'entre eux. Montrer où il perd est le propos de la
+    page, pas un aveu — c'est ce qui distingue une prévision publiée d'une opinion.
+    """
+    if evaluated.empty:
+        return []
+    ev = evaluated.copy()
+    ev["_v"] = pd.to_datetime(ev["data_vintage"])
+    ev["_hit"] = (np.sign(ev["predicted"] - ev["naive"])
+                  == np.sign(ev["realized"] - ev["naive"])).astype(float)
+    out = []
+    for start, end, label in _EPISODES:
+        s = ev[(ev["_v"] >= pd.Timestamp(start)) & (ev["_v"] <= pd.Timestamp(end))]
+        if s.empty:
+            continue
+        mape, naive_mape = float(s["ape"].mean()), float(s["naive_ape"].mean())
+        out.append({
+            "label": label,
+            "n": int(len(s)),
+            "vintages": int(s["data_vintage"].nunique()),
+            "mape": round(mape, 2),
+            "naive_mape": round(naive_mape, 2),
+            "skill": round(1 - mape / naive_mape, 3) if naive_mape > 0 else None,
+            "direction": round(float(s["_hit"].mean()), 3),
+        })
+    return out
+
+
+#: Repère externe : la seule prévision CHIFFRÉE de volumes publiée en France.
+#:
+#: Personne ne prévoit ce que ce site prévoit. Les Notaires disposent pourtant du meilleur
+#: indicateur avancé qui soit — les avant-contrats, trois mois d'avance sur l'acte — mais
+#: ne s'en servent que pour projeter les PRIX. La FNAIM, elle, publie une fourchette de
+#: volumes pour l'année en cours. C'est notre unique point de contrôle externe.
+#:
+#: SAISI À LA MAIN, deux à quatre fois par an. D'où `releve_le` : sans date de relevé, ce
+#: chiffre vieillirait en silence sur un graphique qui, lui, se rafraîchit toutes les
+#: semaines — le mode de panne exact que le tableau des sources d'À propos évite déjà.
+#: `tests/test_web_links.py` échoue si l'année visée est révolue.
+BENCHMARK_FNAIM = {
+    "source": "FNAIM",
+    "url": "https://www.fnaim.fr/4361-marche-du-logement-la-reprise-sous-conditions.htm",
+    "annee": 2026,
+    "mois_cible": "2026-12-01",
+    "lo": 900_000,
+    "hi": 920_000,
+    "releve_le": "2026-01-01",
+    "note": ("Prévision annuelle publiée par la FNAIM. Son chiffre est un TOTAL d'année ; "
+             "le nôtre un cumul sur douze mois glissants — les deux ne coïncident qu'en "
+             "décembre. Les périmètres diffèrent aussi d'environ 0,6 % : à fin février "
+             "2026, les Notaires comptaient 958 000 ventes là où notre série IGEDD en "
+             "voit 952 000 en mars."),
+}
+
+
+def _benchmark(projection: dict) -> dict | None:
+    """Le repère externe, aligné sur le mois où il est comparable — décembre, et lui seul.
+
+    Renvoie None si le mois cible n'est plus dans la projection : un repère qu'on ne peut
+    plus confronter n'a rien à faire sur un graphique.
+    """
+    cible = pd.Timestamp(BENCHMARK_FNAIM["mois_cible"])
+    point = next((p for p in projection.get("series", [])
+                  if pd.Timestamp(p["date"]) == cible), None)
+    if point is None:
+        return None
+    milieu = (BENCHMARK_FNAIM["lo"] + BENCHMARK_FNAIM["hi"]) / 2
+    return {
+        **{k: v for k, v in BENCHMARK_FNAIM.items() if k != "mois_cible"},
+        "date": _iso_month(cible),
+        "notre_prevision": int(round(point["predicted"])),
+        "dans_la_fourchette": bool(BENCHMARK_FNAIM["lo"] <= point["predicted"]
+                                   <= BENCHMARK_FNAIM["hi"]),
+        "ecart_au_milieu_pct": round((point["predicted"] / milieu - 1) * 100, 1),
     }
 
 
@@ -1050,8 +1149,79 @@ def build_previsions(con, frames: dict) -> dict:
         }
     except engine.EngineUnavailable as e:
         payload = {"available": False, "reason": str(e)}
+    if payload["available"]:
+        payload["verdict"] = _verdict(payload["projection"], con)
+        payload["benchmark"] = _benchmark(payload["projection"])
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
     return payload
+
+
+#: Horizon du verdict de tête. Six mois : c'est l'horizon auquel un particulier raisonne
+#: (« j'achète maintenant ou au printemps ? ») et le premier auquel le modèle bat la
+#: référence naïve. Plus court, il ne sait rien dire que « demain ressemblera à
+#: aujourd'hui » ne dise mieux ; plus long, le lecteur décroche.
+_VERDICT_HORIZON = 6
+
+_MOIS_FR = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
+            "septembre", "octobre", "novembre", "décembre")
+
+
+def _verdict(projection: dict, con) -> dict | None:
+    """La phrase que la page ne disait pas : où va le marché, et à quel point s'y fier.
+
+    Jusqu'ici « Prévision & Scénarios » publiait les ENTRAILLES du modèle — un R², une
+    MAPE, trois coefficients OLS, un z-score d'intentions d'achat — et nulle part sa
+    conclusion. Ce bloc la calcule, avec la seule mesure de fiabilité qu'un lecteur non
+    statisticien peut utiliser telle quelle : la part de fois où le SENS annoncé à cet
+    horizon s'est avéré le bon.
+
+    Tout est dérivé des nombres, donc rien à maintenir à la main — c'est la contrainte
+    qui interdisait de mettre ce verdict dans le chapeau statique de la page.
+    """
+    series = projection.get("series") or []
+    if len(series) < _VERDICT_HORIZON:
+        return None
+    point = series[_VERDICT_HORIZON - 1]
+    base = projection.get("last_observed")
+    if not base:
+        return None
+    change = (point["predicted"] / base - 1) * 100
+
+    horizons = fa.by_horizon(fa.evaluate(
+        fa.read().query("kind == 'retro'"), q.transactions_run_rate(con)))
+    row = horizons[horizons["horizon"] == _VERDICT_HORIZON]
+    reliability = None if row.empty else {
+        "horizon": _VERDICT_HORIZON,
+        "direction": round(float(row["direction"].iloc[0]), 3),
+        "mape": round(float(row["mape"].iloc[0]), 2),
+        "naive_mape": round(float(row["naive_mape"].iloc[0]), 2),
+        "n": int(row["n"].iloc[0]),
+    }
+
+    # Le seuil de 1,5 % n'est pas cosmétique : l'erreur du modèle à six mois est de
+    # l'ordre de 5,7 %, donc annoncer une variation plus petite que ça reviendrait à
+    # commenter son propre bruit. En deçà, le verdict dit « stable » — et c'est une
+    # information, pas une dérobade.
+    if abs(change) < 1.5:
+        sens, phrase = "stable", "devrait rester à peu près stable"
+    elif change > 0:
+        sens, phrase = "hausse", f"devrait progresser d'environ {abs(change):.0f} %"
+    else:
+        sens, phrase = "baisse", f"devrait reculer d'environ {abs(change):.0f} %"
+
+    target = pd.Timestamp(point["date"])
+    return {
+        "horizon": _VERDICT_HORIZON,
+        "target_month": f"{_MOIS_FR[target.month - 1]} {target.year}",
+        "direction": sens,
+        "change_pct": round(change, 1),
+        "predicted": int(round(point["predicted"])),
+        "lo": int(round(point["lo"])),
+        "hi": int(round(point["hi"])),
+        "sentence": (f"D'ici {_MOIS_FR[target.month - 1]} {target.year}, "
+                     f"le marché des logements anciens {phrase}."),
+        "reliability": reliability,
+    }
 
 
 _BUILDERS = {"synthese": build_synthese, "neuf": build_neuf, "ancien": build_ancien,
