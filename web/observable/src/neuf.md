@@ -134,21 +134,49 @@ display(monthNumsN.length
 <div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre (fermetures, menuiseries, sécurité, domotique) qu'un logement collectif : c'est le driver de volume le plus direct.</div>
 
 ```js
-const ivMetric = view(Inputs.radio(
+const ivMetrics = view(Inputs.checkbox(
   new Map([["Mises en Chantier", "MisesEnChantier"], ["Permis de Construire", "Permis"]]),
-  {value: "MisesEnChantier", label: "Indicateur"}));
+  {value: ["MisesEnChantier"], label: "Indicateur"}));
 ```
 
 ```js
-const ivBlock = neuf.indiv_collectif[ivMetric];
-const ivMeta = [...new Map(ivBlock.lines.map((d) => [d.series, {name: d.series, color: d.color}])).values()];
+// Légende cliquable, dans SA PROPRE cellule : elle ne dépend pas de `ivMetrics`, donc
+// cocher/décocher un indicateur ne recrée pas ce Mutable et ne réinitialise donc pas ce
+// que l'utilisateur a déjà masqué. On retient les séries explicitement MASQUÉES plutôt
+// que les visibles, comme la courbe d'ouverture de page.
+const ivHidden = Mutable(new Set());
+function toggleIv(name) { const s = new Set(ivHidden.value); s.has(name) ? s.delete(name) : s.add(name); ivHidden.value = s; }
 ```
 
-${cardGrid(ivBlock.kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: k.roll12_yoy ? k.roll12_yoy + " sur 12 mois" : null, subs: [`3 derniers mois vs n-1 : ${k.last3_yoy}`]}))}
+```js
+const IV_METRIC_LABELS = {MisesEnChantier: "Mises en Chantier", Permis: "Permis de Construire"};
+const ivMulti = ivMetrics.length > 1;
+// Une ligne par (groupe, indicateur) : quand les deux indicateurs sont cochés, le nom de
+// série est suffixé pour que la légende les distingue, et les Mises en Chantier passent en
+// pointillé — la même convention que la courbe d'ouverture de page, plus haut.
+const ivLines = ivMetrics.flatMap((metric) => neuf.indiv_collectif[metric].lines.map((d) => ({
+  ...d,
+  series: ivMulti ? `${d.series} — ${IV_METRIC_LABELS[metric]}` : d.series,
+  dash: metric === "MisesEnChantier" ? "dash" : null,
+})));
+const ivMeta = [...new Map(ivLines.map((d) => [d.series, {name: d.series, color: d.color, dash: d.dash}])).values()];
+// `ivHidden` référencé nu (pas `.value`) : cellule EN AVAL de celle qui le définit, donc
+// on récupère la valeur courante déballée — même mécanique que `visN`/`visR` ailleurs.
+const ivActive = new Set(ivMeta.map((m) => m.name).filter((n) => !ivHidden.has(n)));
+function ivSection() {
+  return html`<div>
+    ${ivMetrics.map((metric) => html`<div>
+      ${ivMulti ? html`<div class="hm-panel-title">${IV_METRIC_LABELS[metric]}</div>` : ""}
+      ${cardGrid(neuf.indiv_collectif[metric].kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: k.roll12_yoy ? k.roll12_yoy + " sur 12 mois" : null, subs: [`3 derniers mois vs n-1 : ${k.last3_yoy}`]}))}
+    </div>`)}
+    <div class="hm-panel-title">${ivMulti ? "Mises en Chantier & Permis de Construire" : IV_METRIC_LABELS[ivMetrics[0]]} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
+    ${legend(ivMeta, ivActive, toggleIv)}
+    ${multiLine({rows: filterYears(ivLines, rangeN), meta: ivMeta, active: ivActive, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", width, filename: "neuf-individuel-vs-collectif-" + ivMetrics.join("-")})}
+  </div>`;
+}
+```
 
-<div class="hm-panel-title">${ivMetric === "Permis" ? "Permis de Construire" : "Mises en Chantier"} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
-
-${multiLine({rows: filterYears(ivBlock.lines, rangeN), meta: ivMeta, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", width, filename: "neuf-individuel-vs-collectif-" + ivMetric})}
+${ivMetrics.length ? ivSection() : html`<div class="hm-caption">Sélectionnez au moins un indicateur.</div>`}
 
 ```js
 // ============================ Section ECLN ============================
