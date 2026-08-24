@@ -732,6 +732,25 @@ R² de 91 % est mécanique et ne prouve rien. Il vit désormais dans un repli av
 explication. Les cartes portent à la place le **taux de bon sens** et l'erreur à six mois,
 tous deux issus de l'archive — donc de prévisions réellement confrontées au réel.
 
+**Un helper utilisé sans être importé ne casse QUE dans le navigateur.** `observable build`
+valide les liens, pas les références de cellules : une page qui emploie `TIP` sans l'importer
+se construit sans un mot — 240 liens toujours validés — et affiche
+`RuntimeError: TIP is not defined` en rouge à la place du graphique. Arrivé en production sur
+le modèle de taux, parce que la vérification portait sur le HTML construit (les textes
+étaient bien là) et non sur l'exécution des cellules. C'est le même angle mort que `viewof`
+ci-dessous : le build ne dit rien, seul le navigateur le montre.
+
+`tests/test_web_structure.py::test_chaque_helper_utilise_est_importe` couvre les onze pages.
+Deux pièges dans sa fabrication, tous deux rencontrés :
+
+* une page a le droit de définir SA propre version d'un helper — `synthese.md` spécialise
+  `legend` et `fmtMonthFR` — donc les noms déclarés localement sont exclus ;
+* l'opérateur de décomposition `...TIP` commence par un point, si bien qu'une règle naïve
+  « pas précédé d'un point » le confond avec un accès de propriété et laisse passer
+  exactement le défaut à attraper. Ma première version du test avait ce trou et ne détectait
+  rien. Les `...` sont donc protégés AVANT de retirer les accès `objet.membre`, et une
+  contre-épreuve vérifie que le test échoue bien sur la version cassée.
+
 **`viewof` n'existe pas dans Observable Framework, et son emploi est SILENCIEUX.** C'est
 de la syntaxe notebook : Framework retire la cellule entière du build sans erreur ni
 avertissement — liens toujours validés, page construite, simplement aucun bouton. Rencontré

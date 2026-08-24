@@ -30,6 +30,12 @@ SOCLE = ["🔑 Chiffres Clés",
 JUMELLES = {"neuf": "ancien", "ancien": "neuf"}
 
 
+def _composant(nom):
+    """Le source d'un module de web/observable/src/components/."""
+    with open(os.path.join(_WEB, "components", nom), encoding="utf-8") as f:
+        return f.read()
+
+
 def _page(nom):
     with open(os.path.join(_WEB, f"{nom}.md"), encoding="utf-8") as f:
         return f.read()
@@ -288,3 +294,45 @@ def test_la_page_neuf_publie_sa_formule_et_ses_limites():
         ("gate", "le chiffre de la mesure qui a écarté le modèle"),
     ]:
         assert attendu in src, f"neuf.md : « {attendu} » a disparu — {pourquoi}"
+
+
+@pytest.mark.parametrize("nom", PAGES_DE_DONNEES + ["index", "a-propos"])
+def test_chaque_helper_utilise_est_importe(nom):
+    """Un helper employé sans être importé ne casse QUE dans le navigateur.
+
+    `observable build` valide les liens, pas les références de cellules : une page qui
+    utilise `TIP` sans l'importer se construit sans un mot, 240 liens toujours validés, et
+    affiche `RuntimeError: TIP is not defined` en rouge à la place du graphique. Rencontré
+    en ajoutant la vignette au modèle de taux — le défaut a été poussé en production parce
+    que la vérification portait sur le HTML construit (les textes étaient bien là) et non
+    sur l'exécution des cellules.
+
+    On ne regarde que les identifiants employés SEULS : `Plot.tip` ne compte pas (c'est un
+    accès à un objet déjà importé) et `legend:` non plus (c'est une clé d'objet). Restent
+    les usages qui exigent vraiment l'import.
+    """
+    src = _page(nom)
+    exports = set(re.findall(r"^export (?:function|const) ([A-Za-z_]\w*)",
+                             _composant("hm.js"), re.M))
+    importes = set()
+    for bloc in re.findall(r'import \{([^}]*)\} from "\./components/[^"]+"', src, re.S):
+        importes |= {x.strip() for x in bloc.replace("\n", " ").split(",") if x.strip()}
+
+    # Une page a le droit de définir SA propre version d'un helper plutôt que de
+    # l'importer — « synthese » le fait pour `legend` et `fmtMonthFR`, qu'elle spécialise.
+    locales = set(re.findall(r"\b(?:function|const|let|var)\s+([A-Za-z_]\w*)", src))
+
+    # On cherche les usages NUS. Deux formes doivent être écartées avant la recherche, et
+    # l'ordre compte : l'opérateur de décomposition `...TIP` commence par un point, donc
+    # une règle naïve « pas précédé d'un point » le confondrait avec un accès de propriété
+    # et laisserait passer exactement le défaut que ce test existe pour attraper. On
+    # protège donc `...` d'abord, puis on retire les vrais accès `objet.membre`.
+    nettoye = re.sub(r"\.\s*\w+", " ", src.replace("...", " ⋯ "))
+
+    manquants = set()
+    for nom_export in exports - importes - locales:
+        if re.search(rf"(?<![\w-]){re.escape(nom_export)}(?!\s*:)(?![\w-])", nettoye):
+            manquants.add(nom_export)
+    assert not manquants, (
+        f"{nom}.md utilise {sorted(manquants)} sans l'importer depuis hm.js — "
+        "la page se construira sans erreur et cassera dans le navigateur")
