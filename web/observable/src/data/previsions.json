@@ -20,10 +20,6 @@
         "parquet"
       ],
       [
-        "revenue",
-        "parquet"
-      ],
-      [
         "sales",
         "parquet"
       ],
@@ -9465,32 +9461,6 @@
     "intentions_z": 0.4306538047919954,
     "unemployment": 8.3,
     "tx_now": 954000.0
-  },
-  "revenue_benchmarks": {
-    "companies": [
-      {
-        "company": "Hexaom",
-        "last_quarter": "2025-10-01",
-        "last_revenue_meur": 173.4,
-        "fit": {
-          "r2": 0.5839123005987976,
-          "lag_quarters": 2,
-          "n": 32,
-          "beta_per_transaction": 0.00030004169075530405
-        }
-      },
-      {
-        "company": "Kingfisher France",
-        "last_quarter": "2024-10-01",
-        "last_revenue_meur": 947.7,
-        "fit": {
-          "r2": 0.5412920511321526,
-          "lag_quarters": 4,
-          "n": 8,
-          "beta_per_transaction": 0.0009828849145145347
-        }
-      }
-    ]
   },
   "verdict": {
     "horizon": 6,

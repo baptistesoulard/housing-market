@@ -125,17 +125,6 @@ SALES = DataFrameSchema(
     unique=["Date", "Product"],
 )
 
-REVENUE = DataFrameSchema(
-    {
-        "Date": _DATE,
-        "Company": Column(str, nullable=False, coerce=True),
-        "CA_MEUR": Column(float, Check.ge(0), nullable=False, coerce=True,
-                          title="Quarterly revenue (M€)"),
-    },
-    strict=False, coerce=True, name="revenue",
-    unique=["Date", "Company"],
-)
-
 ECLN = DataFrameSchema(
     {
         "Date": _DATE,
@@ -199,7 +188,6 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "ventes_ancien": VENTES_ANCIEN,
     "macro": MACRO,
     "sales": SALES,
-    "revenue": REVENUE,
     "ecln": ECLN,
     "company_sales": COMPANY_SALES,
     "dvf": DVF,
@@ -212,7 +200,7 @@ def validate(name: str, df, lazy: bool = True):
     Raises KeyError for an unknown dataset name and pandera.errors.SchemaError(s) when
     the frame violates its contract (with lazy=True, all failures are collected and
     reported together). An empty frame is passed through untouched — a not-yet-populated
-    optional dataset (revenue/ecln/company_sales absent) is not a contract breach.
+    optional dataset (ecln/company_sales absent) is not a contract breach.
     """
     schema = SCHEMAS[name]
     if df is None or len(df) == 0:

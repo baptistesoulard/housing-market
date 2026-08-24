@@ -329,29 +329,6 @@ def scenario(rate_beta, tx_beta, base, scen):
     return {"rate": rate_scen, "d_rate": d_rate, "tx": base["tx_now"] + d_tx, "d_tx": d_tx}
 
 
-def fit_tx_to_ca(df_revenue, tx12, company, lag_q=2):
-    """Elasticity of a company's quarterly revenue to the transactions run-rate, at
-    `lag_q` quarters. Returns dict with beta, r2, lag_q, n or None if too few points."""
-    r = (df_revenue[df_revenue["Company"] == company]
-         .set_index("Date")["CA_MEUR"].sort_index())
-    txq = tx12.resample("QS").mean()
-    d = pd.DataFrame({"ca": r}).join(txq.shift(lag_q).rename("tx")).dropna()
-    if len(d) < 8:
-        return None
-    beta, r2, _, _ = ols(d["tx"].values.reshape(-1, 1), d["ca"].values)
-    return {"beta": beta, "r2": r2, "lag_q": lag_q, "n": len(d)}
-
-
-def best_tx_to_ca(df_revenue, tx12, company, lags=range(0, 7)):
-    """Pick the transactions→revenue lag (quarters) with the highest R²."""
-    best = None
-    for lg in lags:
-        fit = fit_tx_to_ca(df_revenue, tx12, company, lag_q=lg)
-        if fit and (best is None or fit["r2"] > best["r2"]):
-            best = fit
-    return best
-
-
 def fit_tx_to_monthly(df_series, tx12, value_col="Sales", lag_m=0):
     """Elasticity of a MONTHLY company series (e.g. user-imported sales) to the 12-month
     transactions run-rate, at `lag_m` months. `tx12` is a Date-indexed Series (queries.transactions_run_rate).

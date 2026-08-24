@@ -112,20 +112,10 @@ ECLN_VALUE_COLUMNS = ["Reservations", "MisesEnVente", "Annulations", "Encours",
                       "DelaiEcoulement", "PrixM2_Collectif",
                       "Resa_Sociaux", "Resa_Institutionnels"]
 ECLN_COLUMNS = ["Date"] + ECLN_VALUE_COLUMNS
-REVENUE_COLUMNS = ["Date", "Company", "CA_MEUR"]
-
-# --- Real "company revenue" benchmark series (quarterly, national, €) ---
-# One CSV per company in data_manual_input/, named "ca-<slug>.csv", each holding
-# [Date, Company, CA_MEUR] at quarterly frequency (Date = first month of the calendar
-# quarter). These are REAL public figures compiled from investor-relations releases
-# (see data_manual_input/ca-SOURCES.md) and are NEVER synthetic. They feed the
-# "Moteur de Simulation Prospective" as an alternative sales benchmark expressed in M€.
-REVENUE_GLOB = os.path.join("data_manual_input", "ca-*.csv")
-
 # --- Versioned company sales (optional) — one CSV per product family in data_manual_input,
-# named "ventes-<slug>.csv", each [Date, Sales] (+ optional Company/Serie). Mirrors the
-# ca-*.csv convention: a traceable, git-versionable default source of company sales, used
-# when no ad-hoc upload (data/company_sales.csv) is present. The upload always wins.
+# named "ventes-<slug>.csv", each [Date, Sales] (+ optional Company/Serie). A traceable,
+# git-versionable default source of company sales, used when no ad-hoc upload
+# (data/company_sales.csv) is present. The upload always wins.
 VENTES_GLOB = os.path.join("data_manual_input", "ventes-*.csv")
 
 # Real macro series: (manual-input file, target column). Only the first two are
@@ -174,7 +164,7 @@ def sitadel_macro_is_stale(sitadel_csv, macro_csv):
     manual-input sources it was derived from.
 
     These two caches are the only ones that used to be built once and never invalidated,
-    while ventes_ancien / sales / ecln / revenue are all mtime-aware. The weekly refresh
+    while ventes_ancien / sales / ecln are all mtime-aware. The weekly refresh
     (fetch_new_sources.py + the GitHub Actions workflow) rewrites data_manual_input/ but
     commits neither derived file, so without this check the app kept serving the stale
     committed CSVs and silently dropped the newest month of every macro series.
@@ -392,7 +382,6 @@ class DataManager:
             "ventes_ancien": os.path.join(self.data_dir, "ventes_ancien.csv"),
             "macro": os.path.join(self.data_dir, "macro.csv"),
             "sales": os.path.join(self.data_dir, "sales.csv"),
-            "revenue": os.path.join(self.data_dir, "revenue.csv"),
             "ecln": os.path.join(self.data_dir, "ecln.csv"),
             # User-imported MONTHLY company sales (one company at a time, overwritten on
             # each import). Optional benchmark for the forecast / correlation engines.
@@ -418,7 +407,7 @@ class DataManager:
 
         # 2. Real SIT@DEL + macro, generated & cached together. Rebuilt when forced,
         #    missing, OR stale relative to any manual-input source — same mtime-aware
-        #    contract as ventes_ancien / sales / ecln / revenue, so a data refresh
+        #    contract as ventes_ancien / sales / ecln, so a data refresh
         #    actually propagates instead of leaving the committed CSVs a month behind.
         if force_regenerate or sitadel_macro_is_stale(self.paths["sitadel"],
                                                       self.paths["macro"]):
@@ -442,11 +431,6 @@ class DataManager:
         else:
             df_sales = self._read_dataset("sales")
 
-        # Real company-revenue benchmark (quarterly, €). Rebuilt from the ca-*.csv
-        # manual-input files; empty frame when none are present.
-        self.ensure_revenue(force_rebuild=force_regenerate)
-        df_revenue = self._read_optional("revenue", REVENUE_COLUMNS)
-
         # Real ECLN commercialisation-of-new-dwellings series (quarterly). Rebuilt from
         # the SDES manual-input CSV; empty frame when the source file is absent.
         self.ensure_ecln(force_rebuild=force_regenerate)
@@ -461,17 +445,17 @@ class DataManager:
         # as the versioned, diffable interchange copy and as the fallback.
         self._persist_to_warehouse({
             "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
-            "sales": df_sales, "revenue": df_revenue, "ecln": df_ecln,
+            "sales": df_sales, "ecln": df_ecln,
             "company_sales": df_company_sales,
         })
 
-        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
+        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_ecln, df_company_sales
 
     def read_frames(self):
         """Read the already-persisted datasets into frames WITHOUT re-generating or
         re-writing the warehouse. Cheap, side-effect-free path meant to sit behind a
         Streamlit cache keyed on `data_signature()`, so a plain rerun (moving a slider)
-        does not re-validate and re-write the seven Parquet files on every interaction.
+        does not re-validate and re-write the six Parquet files on every interaction.
 
         Reads Parquet when it is present and fresh, the CSV otherwise (see
         `housing_data.warehouse.resolve`). Assumes load_or_generate_all() has already run
@@ -481,10 +465,9 @@ class DataManager:
         df_ventes_ancien = self._read_dataset("ventes_ancien")
         df_macro = self._read_dataset("macro")
         df_sales = self._read_dataset("sales")
-        df_revenue = self._read_optional("revenue", REVENUE_COLUMNS)
         df_ecln = self._read_optional("ecln", ECLN_COLUMNS)
         df_company_sales = self._read_company_sales()
-        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales
+        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_ecln, df_company_sales
 
     def _read_dataset(self, key):
         """Read one REQUIRED dataset by warehouse name.
@@ -505,7 +488,7 @@ class DataManager:
 
     def _read_optional(self, key, columns):
         """Read an OPTIONAL dataset, or return a correctly-typed empty frame when it has
-        never been built (no ca-*.csv compiled, no ECLN source file). Shared by
+        never been built (no ECLN source file). Shared by
         load_or_generate_all and read_frames so the fallback shape is stated once."""
         if hd is not None and hd.resolve(key, data_dir=self.data_dir)[1] is not None:
             try:
@@ -567,7 +550,7 @@ class DataManager:
         [Date, Company, Serie, Sales] frame. Each file needs a Date column and a numeric
         sales column (Sales/Ventes/…); a 'Serie' column splits it further, else the file
         slug (ventes-<slug>.csv) is the series label; 'Company' is optional. Empty (typed)
-        frame when nothing matches — the versioned counterpart of the ca-*.csv benchmark."""
+        frame when nothing matches."""
         cols = ["Date", "Company", "Serie", "Sales"]
         frames = []
         for path in sorted(glob.glob(pattern)):
@@ -678,54 +661,6 @@ class DataManager:
                           f"({dmin} → {dmax}).")
         except Exception as e:
             return False, f"Erreur lors de l'import : {e}"
-
-    @staticmethod
-    def build_revenue_from_manual_inputs(pattern=REVENUE_GLOB):
-        """
-        Reads every data_manual_input/ca-*.csv file (one per company) and returns a
-        single tidy dataframe [Date, Company, CA_MEUR] at quarterly frequency, sorted
-        by company then date. Each source file must expose those three columns; the
-        Company label falls back to the file slug when the column is absent. Returns an
-        empty (correctly-typed) frame when no source file matches.
-        """
-        cols = ["Date", "Company", "CA_MEUR"]
-        frames = []
-        for path in sorted(glob.glob(pattern)):
-            df = pd.read_csv(path)
-            df["Date"] = pd.to_datetime(df["Date"])
-            if "Company" not in df.columns:
-                slug = os.path.splitext(os.path.basename(path))[0].replace("ca-", "")
-                df["Company"] = slug
-            df["CA_MEUR"] = pd.to_numeric(df["CA_MEUR"], errors="coerce")
-            frames.append(df[cols])
-        if not frames:
-            return pd.DataFrame(columns=cols)
-        out = pd.concat(frames, ignore_index=True).dropna(subset=["CA_MEUR"])
-        return out.sort_values(["Company", "Date"]).reset_index(drop=True)
-
-    def ensure_revenue(self, force_rebuild=False):
-        """
-        Guarantees data/revenue.csv holds the real company-revenue benchmark compiled
-        from the ca-*.csv manual-input files. (Re)builds it when the cache is missing or
-        force_rebuild is set. Never writes synthetic data. Returns (success, message);
-        success is True with an explanatory message even when no source file exists (the
-        benchmark is simply unavailable, not an error).
-        """
-        # Rebuild when forced, when the cache is missing, or when any source ca-*.csv is
-        # newer than the cache (so editing/adding a company refreshes automatically).
-        if os.path.exists(self.paths["revenue"]) and not force_rebuild:
-            cache_mtime = os.path.getmtime(self.paths["revenue"])
-            sources = glob.glob(REVENUE_GLOB)
-            if not sources or all(os.path.getmtime(s) <= cache_mtime for s in sources):
-                return True, "CA entreprise (benchmark réel) déjà présent."
-        df = self.build_revenue_from_manual_inputs()
-        if df.empty:
-            return True, ("Aucun fichier data_manual_input/ca-*.csv : "
-                          "benchmark CA entreprise indisponible.")
-        df.to_csv(self.paths["revenue"], index=False, encoding="utf-8")
-        companies = ", ".join(sorted(df["Company"].unique()))
-        return True, (f"CA entreprise importé : {len(df)} points trimestriels "
-                      f"({companies}).")
 
     @staticmethod
     def build_ecln_from_manual_input(path=ECLN_CSV):

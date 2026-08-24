@@ -58,7 +58,7 @@ def test_empty_optional_frame_passes():
 
 
 def test_all_known_datasets_have_a_schema():
-    expected = {"sitadel", "ventes_ancien", "macro", "sales", "revenue", "ecln",
+    expected = {"sitadel", "ventes_ancien", "macro", "sales", "ecln",
                 "company_sales", "dvf"}
     assert set(S.SCHEMAS) == expected
 
@@ -194,7 +194,7 @@ def test_data_manager_reads_through_the_warehouse():
         from_parquet = dm.read_frames()
         assert str(from_parquet[0]["Date"].dtype) == "datetime64[ns]"
         assert int(from_parquet[1]["Transactions"].sum()) == 131000
-        assert from_parquet[4].empty and from_parquet[5].empty   # revenue / ecln absent
+        assert from_parquet[4].empty and from_parquet[5].empty   # ecln / company_sales absents
 
         # Same frames once the Parquet is gone: the CSV fallback must be equivalent.
         for name in frames:

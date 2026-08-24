@@ -134,14 +134,13 @@ def _borrow_capacity_factor(rate_pct, years):
 
 # ============================ chargement partagé des frames =======================
 def load_frames() -> dict:
-    """Charge les 7 datasets une seule fois (réutilisé par tous les builders d'onglets)."""
+    """Charge les 6 datasets une seule fois (réutilisé par tous les builders d'onglets)."""
     dm = DataManager()
     dm.load_or_generate_all()
     (df_sitadel, df_ventes_ancien, df_macro, df_sales,
-     df_revenue, df_ecln, df_company_sales) = dm.read_frames()
+     df_ecln, df_company_sales) = dm.read_frames()
     return {"sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
-            "sales": df_sales, "revenue": df_revenue, "ecln": df_ecln,
-            "company_sales": df_company_sales}
+            "sales": df_sales, "ecln": df_ecln, "company_sales": df_company_sales}
 
 
 def _period_bounds(frames: dict) -> dict:
@@ -1272,7 +1271,6 @@ def build_previsions(con, frames: dict) -> dict:
             "projection": engine.projection(),
             "lag_sensitivity": {p: engine.lag_sensitivity(p) for p in engine.LAG_GRIDS},
             "scenario_baseline": engine.scenario_baseline(),
-            "revenue_benchmarks": engine.revenue_benchmarks(),
         }
     except engine.EngineUnavailable as e:
         payload = {"available": False, "reason": str(e)}

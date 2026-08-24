@@ -506,33 +506,6 @@ if (sc) display(Plot.plot({
 }));
 ```
 
-## → Propagation au chiffre d'affaires benchmark
-
-```js
-const bench = data.available ? data.revenue_benchmarks : {companies: []};
-```
-
-```js
-if (sc && bench.companies.length) display(cardGrid(
-  bench.companies.map((c) => {
-    if (!c.fit) return {label: c.company, value: "—", subs: ["trop peu de points"]};
-    const dCa = c.fit.beta_per_transaction * sc.transactions_change;
-    return {
-      label: c.company,
-      value: nf0.format(c.last_revenue_meur + dCa) + " M€",
-      delta: (dCa >= 0 ? "+" : "−") + nf0.format(Math.abs(dCa)) + " M€",
-      subs: [`R² = ${pct(c.fit.r2)} · décalage ${c.fit.lag_quarters} trimestres`]
-    };
-  }), kpiCard));
-```
-
-<div class="hm-caption">
-Élasticité transactions→CA estimée sur les trimestres publiés (indicative — les séries
-d'entreprise sont courtes). Hexaom (neuf) et Kingfisher France (rénovation) réagissent aux
-transactions avec un décalage. Le choc de transactions propagé est celui du scénario
-ci-dessus.
-</div>
-
 ## 🧪 Ce qu'on a essayé, et qui ne marche pas
 
 Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.

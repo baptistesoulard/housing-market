@@ -128,7 +128,7 @@ def read_all(names: Iterable[str] | None = None,
     """Read several datasets at once: `{name: DataFrame}`.
 
     `names` defaults to every known dataset. A dataset present in neither form is simply
-    absent from the result (optional datasets — revenue/ecln/company_sales — legitimately
+    absent from the result (optional datasets — ecln/company_sales — legitimately
     have no file until they are first built), so callers can supply their own empty shape.
     """
     wanted = list(_schema.SCHEMAS) if names is None else list(names)

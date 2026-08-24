@@ -193,12 +193,12 @@ NEWS_ITEMS = [
         },
         "impact_detail": {
             "FR": "Principal levier de solvabilisation des primo-accédants : soutien direct "
-                  "aux ventes de maisons neuves (constructeurs type Hexaom, benchmark CA de "
-                  "l'app) puis aux permis. Le volet « ancien avec travaux » alimente aussi "
+                  "aux ventes de maisons neuves puis aux permis. Le volet « ancien avec travaux » "
+                  "alimente aussi "
                   "les transactions IGEDD et le second œuvre (25 % de travaux imposés).",
             "EN": "Main solvency lever for first-time buyers: direct support to new detached-"
-                  "house sales (builders like Hexaom, the app's revenue benchmark) then to "
-                  "permits. The 'existing home with works' leg also feeds IGEDD transactions "
+                  "house sales then to permits. The 'existing home with works' leg also feeds IGEDD "
+                  "transactions "
                   "and secondary works (25% works requirement).",
         },
         "jalons": [

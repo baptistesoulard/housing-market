@@ -412,8 +412,7 @@ def test_optional_fallback_frames_match_the_real_datasets():
     lives in one constant, and this pins it to the actual file so the two cannot drift."""
     import tempfile
     import data_manager as dmod
-    for key, columns, real in (("revenue", dmod.REVENUE_COLUMNS, "data/revenue.csv"),
-                               ("ecln", dmod.ECLN_COLUMNS, "data/ecln.csv")):
+    for key, columns, real in (("ecln", dmod.ECLN_COLUMNS, "data/ecln.csv"),):
         with tempfile.TemporaryDirectory() as tmp:
             empty = dmod.DataManager(data_dir=tmp)._read_optional(key, columns)
         assert empty.empty and list(empty.columns) == columns

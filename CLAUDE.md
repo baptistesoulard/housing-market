@@ -65,7 +65,7 @@ versionnée et diffable — et le repli.
 **Pourquoi la bascule compte** : avant elle, l'app lisait les mêmes données par DEUX
 chemins — DuckDB sur les Parquet pour les agrégations, pandas sur les CSV pour tout le
 reste (options de widgets, entrées macro des modèles). Ils ne s'accordaient que parce que
-`load_or_generate_all()` réécrivait les 7 Parquet à chaque démarrage.
+`load_or_generate_all()` réécrivait les Parquet à chaque démarrage.
 
 **La garde de fraîcheur est le point porteur** : `warehouse.resolve()` ne retient un
 Parquet que s'il est au moins aussi récent que son CSV. Les CSV sont versionnés, les
@@ -156,6 +156,26 @@ la version de pandas/numpy.
 > `apiBase`, `ApiError`, l'objet `api`, `apiOfflineNotice`) — plus rien ne l'appelait,
 > et il ne porte plus que des ports JS de calculs Python (`ols1`, `shiftMonths`,
 > `bestLagFit`, `computeScenario`).
+>
+> **Le benchmark de CA entreprise a été SUPPRIMÉ le 2026-08-24 — dataset compris.** La
+> section « → Propagation au chiffre d'affaires benchmark » propageait le choc de
+> transactions du panneau de scénarios vers le CA d'Hexaom et de Kingfisher France : une
+> élasticité indicative estimée sur des séries d'entreprise courtes (32 et 8 trimestres),
+> que personne n'utilisait. Le besoin réel est l'autre module, celui qui compare un CSV
+> **importé par le visiteur** aux modèles — `bestLagFit` sur « Données & Sources », calcul
+> client, le CSV ne quitte jamais le navigateur. Ne pas confondre les deux : le dataset
+> `company_sales` (ventes société importées, mensuel) reste, `revenue` (CA trimestriel
+> publié, versionné) est parti.
+>
+> Sont partis avec lui : `data/revenue.csv`, les trois fichiers `data_manual_input/ca-*`,
+> `DataManager.build_revenue_from_manual_inputs`/`ensure_revenue` et l'entrée `revenue` du
+> registre de chemins, le contrat pandera `REVENUE` (donc la vue SQL du même nom),
+> `forecast.fit_tx_to_ca`/`best_tx_to_ca`, `simulation.resample_quarterly`/
+> `find_optimal_lag_quarterly` (écrites pour cette seule série trimestrielle),
+> `engine.revenue_benchmarks()` et sa route HTTP, plus la section de la page web et celle
+> d'`app.py`. **`read_frames()` et `load_or_generate_all()` rendent désormais SIX frames,
+> pas sept** — l'index 4 est `ecln`, plus `revenue` ; tout code qui déballe ce tuple par
+> position doit être relu, c'est le seul piège de ce retrait.
 
 Trois couches, chacune ne connaissant que la suivante :
 
@@ -996,7 +1016,7 @@ réelles. Nécessite un entrepôt construit (`python -c "from data_manager impor
 DataManager; DataManager().load_or_generate_all()"`), sinon le module se skippe.
 
 ```
-python -m pytest tests/ -q          # 253 passés, 1 skip légitime si company_sales est
+python -m pytest tests/ -q          # 249 passés, 1 skip légitime si company_sales est
                                     # vide. Les tests d'API se skippent sans Flask, ceux
                                     # de parité JS et de référencement sans Node.
 ```

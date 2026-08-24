@@ -146,11 +146,10 @@ def test_years_filter_and_type_filter_combine(con):
 
 @pytest.mark.parametrize("dataset,col,category_col", [
     ("sales", "Sales_Units", "Product"),
-    ("revenue", "CA_MEUR", "Company"),
     ("company_sales", "Sales", "Serie"),
 ])
 def test_category_col_filters_non_type_datasets(con, dataset, col, category_col):
-    """Trois datasets portent leur catégorie dans une colonne autre que `Type`. Sans
+    """Deux datasets portent leur catégorie dans une colonne autre que `Type`. Sans
     `category_col` ils restaient agrégés en pandas dans les onglets interactifs."""
     path = os.path.join(_DATA, f"{dataset}.parquet")
     if not os.path.exists(path):

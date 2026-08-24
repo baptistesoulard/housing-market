@@ -134,8 +134,8 @@ def _row_filter(types=None, years=None, category_col: str = "Type"):
     """Clause WHERE + paramètres communs aux agrégats : filtre de catégorie et/ou de période.
 
     `category_col` est la colonne qui porte la catégorie du dataset : "Type" pour
-    sitadel/ventes_ancien, mais "Product" pour sales, "Serie" pour company_sales et
-    "Company" pour revenue. Sans ce paramètre, seuls les deux premiers datasets étaient
+    sitadel/ventes_ancien, mais "Product" pour sales et "Serie" pour company_sales.
+    Sans ce paramètre, seuls les deux premiers datasets étaient
     filtrables côté SQL et les autres restaient agrégés en pandas.
 
     `years=(min, max)` reproduit le `_filter_years` d'app.py (bornes incluses, sur
@@ -168,7 +168,7 @@ def monthly(con, dataset: str, value_cols, windows=(12,), types=None,
     Remplace la chaîne `analysis.aggregate_* -> calculate_rolling_12m -> calculate_rolling`,
     qui recopiait le DataFrame à chaque étape. `types` filtre la colonne de catégorie côté
     SQL (aucune ligne inutile ne remonte) — `category_col` dit laquelle : "Type" par
-    défaut, mais "Product" (sales), "Serie" (company_sales) ou "Company" (revenue).
+    défaut, mais "Product" (sales) ou "Serie" (company_sales).
     `years=(min, max)` restreint à une période, pour les vues où l'agrégat lui-même est
     borné par le slicer d'années.
 

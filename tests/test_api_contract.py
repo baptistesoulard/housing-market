@@ -41,7 +41,6 @@ GET_ROUTES = [
     "/api/forecast/lag-sensitivity?predictor=rate",
     "/api/forecast/lag-sensitivity?predictor=intentions",
     "/api/forecast/lag-sensitivity?predictor=unemployment",
-    "/api/forecast/revenue-benchmarks",
     "/api/market/transactions-run-rate",
     "/api/market/housing-types",
 ]

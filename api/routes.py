@@ -74,11 +74,6 @@ def scenario():
         return jsonify({"error": "bad_request", "detail": str(e)}), 400
 
 
-@bp.get("/forecast/revenue-benchmarks")
-def revenue_benchmarks():
-    return jsonify(engine.revenue_benchmarks())
-
-
 @bp.get("/market/transactions-run-rate")
 def transactions_run_rate():
     return jsonify(engine.transactions_run_rate())

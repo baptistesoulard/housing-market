@@ -28,7 +28,7 @@ L'application s'ouvre sur http://localhost:8501.
 
 ## Données
 
-Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition de **toutes** les sources est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) : `python fetch_new_sources.py` rafraîchit l'intégralité de `data_manual_input/` en une commande, à l'exception des compilations manuelles `ca-*.csv` / `ventes-*.csv`. L'application, elle, ne fait aucun appel réseau.
+Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition de **toutes** les sources est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) : `python fetch_new_sources.py` rafraîchit l'intégralité de `data_manual_input/` en une commande, à l'exception des compilations manuelles `ventes-*.csv`. L'application, elle, ne fait aucun appel réseau.
 
 Le script est optimisé pour des mises à jour fréquentes et sûres :
 
@@ -93,7 +93,7 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - **Anti-fuite / anti-overfit** : (e3) recherche de décalages du modèle de transactions sur le **train uniquement** (`search_tx_lags(split=)`) — le MAPE hors échantillon n'est plus flatté ; (e2) l'**optimiseur composite** sélectionne sur un **split train/test** et affiche le **r hors échantillon** (le seul honnête sur ~9 500 combinaisons) ; (e1) l'atelier Time-Lag affiche la **corrélation sur variations annuelles** + le **n de points** à côté du r sur niveaux, avec avertissement d'auto-corrélation quand l'indicateur est lissé ; (e4) **slider « Intentions d'achat »** ajouté au panneau de scénarios (3ᵉ prédicteur enfin pilotable).
 - **Prévision mensuelle des ventes société** : `forecast.propagate_to_series` propage la trajectoire de transactions projetée à travers l'élasticité estimée → prévision par famille + bande, **exportable SAP IBP** (4ᵉ source d'export).
 - **Pilier rénovation comme 3ᵉ driver — ACTIF (2026-07-16)** : deux séries **réelles** INSEE (Enquête mensuelle de conjoncture dans l'industrie du bâtiment, **second œuvre**, CVS, mensuel 1975→2026-06) — activité **passée** (idbank 001586954) et **prévue** (001586886, avancée). Affichées dans l'onglet Contexte Macro (section « Rénovation & second œuvre »), pastille Synthèse, et 2ᵉ facteur du modèle `forecast.fit_sales_two_factor` (ventes ~ transactions + rénovation) — comparatif R² dans l'onglet Prévision. Acquisition : `fetch_new_sources.build_renovation()`. Enrichissement futur possible : un proxy de volume (MaPrimeRénov'/éco-PTZ).
-- **Import versionné des ventes** : `data_manual_input/ventes-<famille>.csv` (comme `ca-*.csv`), ingérés automatiquement quand aucun upload ad-hoc n'est présent ; **table récap « une famille = un décalage »** dans l'onglet Prévision.
+- **Import versionné des ventes** : `data_manual_input/ventes-<famille>.csv`, ingérés automatiquement quand aucun upload ad-hoc n'est présent ; **table récap « une famille = un décalage »** dans l'onglet Prévision.
 - **Tests étendus** (`tests/test_logic.py`, 10 tests) : anti-fuite du lag search, propagation ventes, modèle 2 facteurs, split de l'optimiseur composite.
 
 ### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 2)
@@ -114,7 +114,7 @@ Après la phase 0 (couche SQL `queries.py` + tests de parité) et la phase 1 (`w
 
 La phase 2 avait laissé `app.py` à moitié migré : les onglets d'affichage passaient par SQL, mais les onglets d'analyse interactive (Prévision, Atelier exploratoire, Données & Export) gardaient 11 agrégations pandas. La phase 3 les traite.
 
-- **`q.monthly` généralisé** : le filtre de catégorie codait en dur la colonne `Type`, donc seuls sitadel et ventes_ancien étaient filtrables côté SQL. Le paramètre `category_col` ouvre les trois autres datasets — `Product` (sales), `Serie` (company_sales), `Company` (revenue).
+- **`q.monthly` généralisé** : le filtre de catégorie codait en dur la colonne `Type`, donc seuls sitadel et ventes_ancien étaient filtrables côté SQL. Le paramètre `category_col` ouvre les autres datasets — `Product` (sales), `Serie` (company_sales).
 - **8 sites migrés** : sélecteur de série des ventes société importées, table récap « une famille = un décalage », les deux indicateurs de l'atelier Time-Lag, les benchmarks CA société et ventes second-œuvre, et la composante 1 de l'indicateur composite.
 - **`q.macro_rolling`** : nouveau helper pour les cumuls de crédits à l'habitat. Contrairement à `rolling_sum`, il CONSERVE les lignes à cumul NULL et les colonnes brutes — la vue superpose des barres mensuelles et une courbe cumulée sur le même axe, elle a besoin des deux.
 - **Un seul calcul reste délibérément en pandas** : le lissage 12 mois de l'atelier Time-Lag (`min_periods=1`). C'est un lissage d'affichage appliqué en aval à la série déjà agrégée, quelle que soit sa provenance parmi trois branches ; le passer en SQL obligerait à pousser toute la sélection d'indicateur dans la requête, sans gain numérique. La raison est écrite à côté du code.

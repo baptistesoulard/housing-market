@@ -175,7 +175,7 @@ def _load_frames(signature):
     return dm.read_frames()
 
 # Load datasets (national-level series), cached on the source files' mtimes.
-df_sitadel, df_ventes_ancien, df_macro, df_sales, df_revenue, df_ecln, df_company_sales = _load_frames(_data_signature())
+df_sitadel, df_ventes_ancien, df_macro, df_sales, df_ecln, df_company_sales = _load_frames(_data_signature())
 
 # Untouched full-history macro (before the year slicer below). The affordability index
 # rebases borrowing capacity to its 2015 mean from the FULL history, so the sidebar year
@@ -186,8 +186,6 @@ df_macro_full = df_macro
 # les cartes « Chiffres Clés » comme la série pilote de la prévision viennent maintenant de
 # l'entrepôt, qui est par nature l'historique complet — donc indépendant du slicer et du
 # sélecteur de segment, ce que ces copies servaient à garantir.
-# Full-history macro & revenue for the forecast models (they must not depend on the slicer).
-df_revenue_full = df_revenue
 # Full-history ECLN for the slicer-independent headline cards (Synthèse & Marché du neuf).
 df_ecln_full = df_ecln
 # Full-history user-imported company sales (forecast propagation uses the untouched series).
@@ -238,8 +236,6 @@ df_sitadel = _filter_years(df_sitadel)
 df_ventes_ancien = _filter_years(df_ventes_ancien)
 df_macro = _filter_years(df_macro)
 df_sales = _filter_years(df_sales)
-if not df_revenue.empty:
-    df_revenue = _filter_years(df_revenue)
 if not df_ecln.empty:
     df_ecln = _filter_years(df_ecln)
 if not df_company_sales.empty:
@@ -2523,35 +2519,6 @@ with tab_forecast:
             "Reading: steady-state effect (after the estimated lags) if these conditions persist, applied to the actual "
             "current level (delta approach, robust to the rate model's level bias)."))
 
-        # propagation to benchmarked company revenue
-        if df_revenue_full is not None and not df_revenue_full.empty:
-            st.markdown("**" + _L("→ Propagation au chiffre d'affaires benchmark",
-                                  "→ Propagation to benchmarked revenue") + "**")
-            _co = st.selectbox(_L("Entreprise", "Company"),
-                               sorted(df_revenue_full["Company"].unique().tolist()))
-            _caf = fc.best_tx_to_ca(df_revenue_full, _tx12, _co)
-            if _caf is None:
-                st.info(_L("Trop peu de points pour relier les transactions au CA de cette entreprise.",
-                           "Too few points to link transactions to this company's revenue."))
-            else:
-                _ca_now = float(df_revenue_full[df_revenue_full["Company"] == _co]
-                                .sort_values("Date")["CA_MEUR"].iloc[-1])
-                _d_ca = _caf["beta"][1] * _sc["d_tx"]
-                cc = st.columns(3)
-                cc[0].metric(_L("CA trimestriel récent", "Recent quarterly revenue"), f"{_ca_now:,.0f} M€".replace(",", " "))
-                cc[1].metric(_L("CA projeté (scénario)", "Projected revenue (scenario)"),
-                             f"{_ca_now + _d_ca:,.0f} M€".replace(",", " "),
-                             f"{_d_ca:+,.0f} M€".replace(",", " "))
-                _rtxt = f"{_caf['r2']:.2f}"
-                _rtxt = (_rtxt.replace(".", ",") + f" · {_caf['lag_q']}T") if lang_code == "FR" else (_rtxt + f" · {_caf['lag_q']}q")
-                cc[2].metric(_L("Lien transactions→CA (R², décalage)", "Transactions→revenue (R², lag)"), _rtxt)
-                st.caption(_L(
-                    f"Élasticité estimée sur {_caf['n']} trimestres ; R²={_caf['r2']:.2f} (indicatif — séries "
-                    f"d'entreprise courtes). Hexaom (neuf) et Kingfisher France (rénovation) réagissent aux "
-                    f"transactions avec un décalage.",
-                    f"Elasticity estimated on {_caf['n']} quarters; R²={_caf['r2']:.2f} (indicative — short company "
-                    f"series). Hexaom (new-build) and Kingfisher France (renovation) respond to transactions with a lag."))
-
         # propagation to the user-imported MONTHLY company sales (own series). Multi-series:
         # pick the product family to propagate the transactions shock onto.
         if df_company_sales_full is not None and not df_company_sales_full.empty:
@@ -2824,10 +2791,10 @@ with tab_donnees:
         "**`Serie`** columns (product family — several families in one file)."))
     st.caption(_L(
         "💡 Alternative versionnée : déposez un fichier par famille nommé "
-        "`data_manual_input/ventes-<famille>.csv` (comme les `ca-*.csv`). Ils sont ingérés "
+        "`data_manual_input/ventes-<famille>.csv`. Ils sont ingérés "
         "automatiquement quand aucun import ad-hoc n'est présent — traçable via git.",
         "💡 Versioned alternative: drop one file per family named "
-        "`data_manual_input/ventes-<family>.csv` (like the `ca-*.csv`). They are ingested "
+        "`data_manual_input/ventes-<family>.csv`. They are ingested "
         "automatically when no ad-hoc upload is present — git-traceable."))
 
     if df_company_sales_full is not None and not df_company_sales_full.empty:

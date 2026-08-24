@@ -93,7 +93,6 @@ def _load():
         con = q.open_warehouse()
         frames = DataManager().read_frames()
         macro = frames[2]
-        revenue = frames[4]
         tx12 = q.transactions_run_rate(con)
 
         if tx12.dropna().empty or not _REQUIRED_MACRO.issubset(set(macro.columns)):
@@ -105,7 +104,7 @@ def _load():
         lags = fc.search_tx_lags(macro, tx12, split=FORECAST_SPLIT)
         tx = fc.fit_tx_model(macro, tx12, split=FORECAST_SPLIT, **lags)
 
-        _state.update(con=con, macro=macro, revenue=revenue, tx12=tx12,
+        _state.update(con=con, macro=macro, tx12=tx12,
                       rate=rate, lags=lags, tx=tx)
         return _state
 
@@ -300,27 +299,6 @@ def run_scenario(oat=None, euribor=None, unemployment=None, intentions_z=None) -
         "transactions_change": _num(res["d_tx"]),
         "transactions_change_pct": (res["d_tx"] / tx0 * 100) if tx0 else None,
     }
-
-
-def revenue_benchmarks() -> dict:
-    """Élasticité transactions → chiffre d'affaires, par entreprise cotée benchmark."""
-    s = _load()
-    rev = s["revenue"]
-    if rev is None or rev.empty:
-        return {"companies": []}
-    out = []
-    for company in sorted(rev["Company"].unique().tolist()):
-        fit = fc.best_tx_to_ca(rev, s["tx12"], company)
-        last = rev[rev["Company"] == company].sort_values("Date")
-        out.append({
-            "company": str(company),
-            "last_quarter": _iso(last["Date"].iloc[-1]),
-            "last_revenue_meur": _num(last["CA_MEUR"].iloc[-1]),
-            "fit": None if fit is None else {
-                "r2": _num(fit["r2"]), "lag_quarters": int(fit["lag_q"]),
-                "n": int(fit["n"]), "beta_per_transaction": _num(fit["beta"][1])},
-        })
-    return {"companies": out}
 
 
 def transactions_run_rate() -> dict:
