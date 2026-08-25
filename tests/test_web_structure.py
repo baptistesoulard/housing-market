@@ -15,6 +15,9 @@ Ce test ferme ce trou-là, en pur Python : il n'a besoin ni de Node ni d'un buil
 """
 import glob
 import json
+import shutil
+import subprocess
+import tempfile
 import os
 import re
 import unicodedata
@@ -411,3 +414,44 @@ def dvf_codes():
     """Les pages départementales partagent un seul source : n'en vérifier qu'une suffit."""
     return {os.path.basename(p).replace(".html", "") for p in
             glob.glob(os.path.join(os.path.dirname(_WEB), "dist", "departement", "*.html"))}
+
+
+def test_chaque_cellule_js_est_syntaxiquement_valide():
+    """Une cellule qui ne compile pas est RETIRÉE du build, en silence.
+
+    C'est le troisième visage du même angle mort. `observable build` ne signale rien —
+    240 liens toujours validés, page construite, taille de page à peine différente — et la
+    cellule fautive n'existe simplement plus dans le HTML livré. Rencontré deux fois : avec
+    `viewof` (syntaxe notebook) puis avec un saut de ligne réel à l'intérieur d'une chaîne,
+    introduit par un script d'édition qui avait converti `\n` en vraie nouvelle ligne.
+
+    Les deux autres tests ne l'attrapent pas, et ne le peuvent pas : une cellule ABSENTE ne
+    référence aucun identifiant, donc le contrôle des entrées non résolues la déclare
+    saine. Il faut donc vérifier la source, pas le produit.
+
+    `node --check` sur un fichier .mjs parse sans exécuter : les identifiants inconnus, le
+    `await` de premier niveau et les `${…}` du framework passent, seule une vraie erreur de
+    syntaxe échoue.
+    """
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node absent — ce contrôle a besoin de son analyseur")
+
+    fautifs = []
+    for chemin in sorted(glob.glob(os.path.join(_WEB, "*.md"))
+                         + glob.glob(os.path.join(_WEB, "departement", "*.md"))):
+        src = open(chemin, encoding="utf-8").read()
+        for i, bloc in enumerate(re.findall(r"^```js\n(.*?)^```", src, re.S | re.M), start=1):
+            with tempfile.TemporaryDirectory() as d:
+                f = os.path.join(d, "cellule.mjs")
+                with open(f, "w", encoding="utf-8") as fh:
+                    fh.write(bloc)
+                r = subprocess.run([node, "--check", f], capture_output=True,
+                                   text=True, encoding="utf-8", timeout=60)
+            if r.returncode != 0:
+                detail = (r.stderr or "").strip().splitlines()
+                fautifs.append(f"{os.path.basename(chemin)} bloc #{i} : "
+                               + " / ".join(detail[:4]))
+    assert not fautifs, (
+        "cellule(s) JavaScript invalide(s) — le build les retirerait SANS RIEN DIRE :\n"
+        + "\n".join(fautifs))

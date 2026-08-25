@@ -232,8 +232,7 @@ if (couvert) display(ventesNat.length
               fmtMonthFR(d.date),
               `${dep.nom} : ${nf0.format(d.value)} ventes`,
               n ? `France entière : ${nf0.format(n.value)} ventes` : null,
-            ].filter(Boolean).join("
-");
+            ].filter(Boolean).join("\n");
           },
         })),
       ],

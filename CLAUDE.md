@@ -792,6 +792,31 @@ R² de 91 % est mécanique et ne prouve rien. Il vit désormais dans un repli av
 explication. Les cartes portent à la place le **taux de bon sens** et l'erreur à six mois,
 tous deux issus de l'archive — donc de prévisions réellement confrontées au réel.
 
+**TROIS façons de faire disparaître une cellule sans que rien ne le dise**, et trois tests
+pour les couvrir. C'est l'angle mort le plus coûteux du framework : `observable build`
+valide les liens, jamais l'exécution ni même la syntaxe des cellules. Il construit la page,
+annonce ses 240 liens validés, et la cellule fautive n'existe simplement plus dans le HTML
+livré.
+
+| Cause | Ce qu'on voit | Test |
+|---|---|---|
+| `viewof` (syntaxe notebook) | cellule absente, aucun bouton | `test_aucune_page_n_emploie_viewof` |
+| Erreur de SYNTAXE dans la cellule | cellule absente | `test_chaque_cellule_js_est_syntaxiquement_valide` |
+| Identifiant non importé / inexistant | `RuntimeError: X is not defined` en rouge | `test_chaque_helper_utilise_est_importe` + `test_aucune_cellule_construite_ne_reference_un_identifiant_inconnu` |
+
+**Les deux familles ne se recouvrent pas, et c'est le piège.** Une cellule ABSENTE ne
+référence aucun identifiant : le contrôle des entrées non résolues la déclare donc saine.
+Vérifier le produit ne suffit jamais — il faut aussi vérifier la source. `node --check` sur
+un fichier `.mjs` parse sans exécuter : identifiants inconnus, `await` de premier niveau et
+`${…}` du framework passent, seule une vraie erreur de syntaxe échoue.
+
+Le cas rencontré le 2026-08-25 mérite d'être connu : un script d'édition Python a converti
+`
+` en **vraie nouvelle ligne** à l'intérieur d'une chaîne JavaScript. Syntaxe invalide,
+cellule retirée, graphique disparu, build muet. Depuis, **préférer l'outil d'édition à un
+script pour toute chaîne contenant des échappements** — la même erreur avait déjà failli
+passer sur `previsions.md`.
+
 **Un helper utilisé sans être importé ne casse QUE dans le navigateur.** `observable build`
 valide les liens, pas les références de cellules : une page qui emploie `TIP` sans l'importer
 se construit sans un mot — 240 liens toujours validés — et affiche
