@@ -46,8 +46,8 @@ toc: false
 <div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (<abbr title="Demandes de Valeurs Foncières : fichier de la DGFiP recensant les ventes immobilières réellement enregistrées">DVF</abbr>, DGFiP)</div>
 
 ```js
-import {multiLine, cardGrid, kpiCard, nf0, nf1} from "../components/hm.js";
-import {series} from "../components/theme.js";
+import {multiLine, cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "../components/hm.js";
+import {series, ui} from "../components/theme.js";
 ```
 
 ```js
@@ -172,19 +172,91 @@ if (parType.length) display(multiLine({
 ## Combien de ventes ? Le marché est-il bloqué ?
 
 ```js
-if (couvert) display(multiLine({
-  rows: dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.ventes[i],
-                                           series: "Ventes par trimestre"})),
-  meta: [{name: "Ventes par trimestre", color: series.blue}],
-  yLabel: "Nombre de ventes retenues", valueFmt: (v) => nf0.format(v), width,
-  filename: "departement-" + dep.code + "-ventes"
-}));
+// DEUX AXES, et c'est la seule façon honnête de superposer ces deux séries : un
+// département compte quelques milliers de ventes par trimestre quand la France en compte
+// cent cinquante mille. Ramenées au même axe, la courbe départementale serait écrasée sur
+// zéro. Le second axe autorise la comparaison des FORMES — la seule question qui vaille
+// ici : est-ce que ce marché suit le pays, ou fait-il autre chose ?
+//
+// La série nationale vient de l'annuaire, déjà chargé pour le sélecteur : elle est
+// calculée sur les MÊMES données DVF, avec le MÊME filtre et la même maille trimestrielle
+// (voir `q.dvf_national_median`). Comparer un département à une France construite
+// autrement n'aurait rien voulu dire.
+const ventesDep = couvert
+  ? dep.ensemble.dates.map((d, i) => ({date: new Date(d), value: dep.ensemble.ventes[i]}))
+  : [];
+const ventesNat = (annuaire.national?.dates ?? [])
+  .map((d, i) => ({date: new Date(d), value: annuaire.national.ventes[i]}))
+  .filter((r) => r.value != null);
+
+// Facteur d'échelle : on aligne les MAXIMA, si bien que les deux courbes occupent la même
+// hauteur et que seule leur forme se compare. L'axe de droite annule ce facteur pour
+// réafficher les vrais effectifs nationaux — le lecteur n'a jamais à faire la conversion.
+const kNat = (ventesDep.length && ventesNat.length)
+  ? Math.max(...ventesDep.map((r) => r.value)) / Math.max(...ventesNat.map((r) => r.value))
+  : 1;
+```
+
+```js
+if (couvert && ventesNat.length) display(html`<div class="hm-legend hm-legend--static">${[
+  {name: `${dep.nom} — ventes par trimestre (axe de gauche)`, color: series.blue},
+  {name: "France entière — même méthode (axe de droite)", color: series.violet, dash: true},
+].map((m) => html`<span class="hm-legend-item">
+  <span class="hm-swatch" style=${m.dash
+    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
+    : {background: m.color}}></span>${m.name}</span>`)}</div>`);
+```
+
+```js
+if (couvert) display(ventesNat.length
+  ? withCsvExport(Plot.plot({
+      width, height: 340, marginLeft: 62, marginRight: 78, marginBottom: 34,
+      x: {type: "utc", label: null},
+      y: {label: "Ventes retenues dans le département", grid: true, zero: true,
+          tickFormat: (v) => nf0.format(v)},
+      marks: [
+        Plot.axisY({anchor: "right", label: "France entière", labelAnchor: "top",
+                    tickFormat: (v) => nf0.format(Math.round(v / kNat / 1000)) + " k",
+                    stroke: series.violet, color: series.violet}),
+        Plot.lineY(ventesNat, {x: "date", y: (d) => d.value * kNat, stroke: series.violet,
+                               strokeWidth: 2, strokeDasharray: "5 3"}),
+        Plot.lineY(ventesDep, {x: "date", y: "value", stroke: series.blue, strokeWidth: 2.4}),
+        Plot.dot(ventesDep.slice(-1), {x: "date", y: "value", fill: series.blue, r: 4,
+                                       stroke: "white", strokeWidth: 2}),
+        Plot.crosshairX(ventesDep, {x: "date", y: "value", color: ui.subtle}),
+        Plot.tip(ventesDep, Plot.pointerX({
+          x: "date", y: "value", ...TIP,
+          title: (d) => {
+            const n = ventesNat.find((r) => +r.date === +d.date);
+            return [
+              fmtMonthFR(d.date),
+              `${dep.nom} : ${nf0.format(d.value)} ventes`,
+              n ? `France entière : ${nf0.format(n.value)} ventes` : null,
+            ].filter(Boolean).join("
+");
+          },
+        })),
+      ],
+    }), ventesDep.map((r, i) => ({date: dep.ensemble.dates[i], departement: r.value,
+                                  france: ventesNat.find((n) => +n.date === +r.date)?.value ?? null})),
+       "departement-" + dep.code + "-ventes")
+  : multiLine({
+      rows: dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.ventes[i],
+                                               series: "Ventes par trimestre"})),
+      meta: [{name: "Ventes par trimestre", color: series.blue}],
+      yLabel: "Nombre de ventes retenues", valueFmt: (v) => nf0.format(v), width,
+      filename: "departement-" + dep.code + "-ventes"
+    }));
 ```
 
 <div class="hm-caption">
 Le nombre de ventes dit ce que le prix tait. Un marché où les prix tiennent mais où les
 volumes s'effondrent est un marché <b>bloqué</b> : vendeurs et acheteurs n'y sont plus
 d'accord, et le prix affiché est celui des rares transactions qui aboutissent.
+La courbe nationale, en pointillé, sert de repère : les deux axes ont des échelles
+différentes — un département pèse quelques milliers de ventes par trimestre, la France
+plus de cent cinquante mille — et seules les <b>formes</b> se comparent. Un décrochage
+local quand le pays tient, ou l'inverse, est ce qu'il faut y chercher.
 </div>
 
 ## Ce que ces chiffres comptent — et ce qu'ils ne comptent pas

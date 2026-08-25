@@ -1143,6 +1143,32 @@ build : 101 titres distincts, 101 descriptions distinctes, 0 doublon.
 page départementale ouverte en préversion affichera sa structure sans ses chiffres. Se
 vérifier sur `dist/`.
 
+### La courbe nationale sur le graphique des ventes
+
+Le graphique « Combien de ventes ? » superpose le département et la France entière sur
+**deux axes**, et c'est la seule superposition honnête possible : un département compte
+quelques milliers de ventes par trimestre (272 au maximum en Lozère) quand la France en
+compte jusqu'à 269 000. Ramenées au même axe, la courbe départementale serait écrasée sur
+zéro. Le facteur d'échelle aligne les MAXIMA — les deux courbes occupent alors la même
+hauteur — et l'axe de droite annule ce facteur pour réafficher les vrais effectifs, si bien
+que le lecteur n'a jamais de conversion à faire.
+
+Ce qu'on compare est donc une **forme**, pas un niveau, et la légende comme le chapeau le
+disent. La question à laquelle le graphique répond : ce marché suit-il le pays, ou fait-il
+autre chose ?
+
+**La série nationale vient de l'annuaire déjà chargé** (`departements.json`, `national`),
+jamais du fichier départemental : elle y est stockée une seule fois pour tout le site, ce qui
+laisse intact le budget de 10 Ko par département. Elle est calculée par
+`q.dvf_national_median` sur les MÊMES données DVF, le MÊME filtre et la même maille
+trimestrielle — comparer un département à une France construite autrement (l'IGEDD, par
+exemple, qui est mensuel, en cumul 12 mois et couvre l'Alsace-Moselle) n'aurait rien voulu
+dire. Corollaire : cette « France entière » exclut les quatre départements sans DVF.
+
+Le graphique retombe sur l'ancien tracé à une seule courbe si la série nationale manque, et
+les quatre départements non couverts ne l'affichent pas du tout — ils sont déjà derrière le
+garde `couvert`.
+
 ### Ce que ces pages ne font pas, et ne doivent pas faire
 
 - **Pas de prévision régionalisée.** Les taux, le chômage et les intentions d'achat sont
