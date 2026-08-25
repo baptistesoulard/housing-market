@@ -771,12 +771,12 @@ with tab_synthese:
     # Credit rate direction (rising rate = headwind → down).
     _r_last, _r_prev = _last_prev("Credit_Logement_Taux_Interet")
     if _r_last is None:
-        _cards_fin.append(("⚪", _L("Taux de crédit habitat", "Housing-loan rate"), "—", ""))
+        _cards_fin.append(("⚪", _L("Taux de crédit habitat (toutes durées)", "Housing-loan rate (all terms)"), "—", ""))
     else:
         _dr = None if _r_prev is None else _r_last - _r_prev
         _r_status = "flat" if _dr is None else ("down" if _dr > 0.1 else ("up" if _dr < -0.1 else "flat"))
         _r_val = (f"{_r_last:.2f} %".replace(".", ",") if lang_code == "FR" else f"{_r_last:.2f}%")
-        _r_sub = _L("sur un an : ", "1-year change: ") + (_pct_fr(_dr).replace("%", " pt") if _dr is not None else "—")
+        _r_sub = _L("toutes durées confondues · sur un an : ", "all loan terms combined · 1-year change: ") + (_pct_fr(_dr).replace("%", " pt") if _dr is not None else "—")
         _cards_fin.append((_dot(_r_status), _L("Taux de crédit habitat", "Housing-loan rate"), _r_val, _r_sub))
     # Credit demand (BLS expectations, leading) — plain-language wording, survey named in the sub.
     _bls_last, _ = _last_prev("Demande_Credit_Perspectives")
@@ -2297,7 +2297,7 @@ with tab_forecast:
         with st.expander(_L("🔬 Vérifier les décalages retenus (en déplacer un, voir le R² bouger)",
                             "🔬 Inspect the retained lags (move one, watch R² move)")):
             _lag_specs = {
-                _L("Taux de crédit", "Credit rate"):
+                _L("Taux de crédit (toutes durées)", "Credit rate (all terms)"):
                     ("kr", "Credit_Logement_Taux_Interet", 0, 12, _L("Taux (%)", "Rate (%)")),
                 _L("Intentions d'achat", "Purchase intentions"):
                     ("ki", "Intentions_Achat_Logement", 0, 18, _L("Solde d'opinion", "Opinion balance")),
@@ -2447,7 +2447,7 @@ with tab_forecast:
         bp[1].metric(_L("Total neuf + ancien", "Total new + existing"),
                      f"{BPCE_TX_TOTAL_2026:,.0f}".replace(",", " "),
                      _L("−5 % vs 2025", "−5% vs 2025"), delta_color="off")
-        bp[2].metric(_L("Taux de crédit T4 2026", "Credit rate Q4 2026"),
+        bp[2].metric(_L("Taux de crédit T4 2026 (toutes durées)", "Credit rate Q4 2026 (all terms)"),
                      (f"{BPCE_RATE_Q4_2026:.2f} %".replace(".", ",") if lang_code == "FR" else f"{BPCE_RATE_Q4_2026:.2f}%"),
                      _L("+34 pdb sur un an", "+34bp YoY"), delta_color="off")
         bp[3].metric(_L("Prix ancien T4 2026", "Existing-home price Q4 2026"),
@@ -2499,7 +2499,7 @@ with tab_forecast:
                           {"oat": _oat, "euribor": _eur, "intent": _int, "chom": _chom})
         with sc2:
             r1c = st.columns(3)
-            r1c[0].metric(_L("Taux de crédit implicite", "Implied credit rate"),
+            r1c[0].metric(_L("Taux de crédit implicite (toutes durées)", "Implied credit rate (all terms)"),
                           (f"{_sc['rate']:.2f}%".replace(".", ",") if lang_code == "FR" else f"{_sc['rate']:.2f}%"),
                           (f"{_sc['d_rate']:+.2f} pt".replace(".", ",") if lang_code == "FR" else f"{_sc['d_rate']:+.2f}pp"))
             r1c[1].metric(_L("Ventes projetées (12 mois)", "Projected sales (12m)"),

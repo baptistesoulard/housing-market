@@ -23,7 +23,7 @@ const macro = await FileAttachment("./data/macro.json").json();
 
 Le marché du logement ne se comprend pas sans ce qui le finance et ce qui décide les
 ménages. Cette page rassemble les indicateurs qui expliquent le marché plus qu'ils ne le
-décrivent, et qui pour la plupart le précèdent : taux du crédit immobilier, <abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr> 3 mois
+décrivent, et qui pour la plupart le précèdent : taux du crédit immobilier (toutes durées confondues), <abbr title="Taux auquel les banques de la zone euro se prêtent entre elles à court terme">Euribor</abbr> 3 mois
 et <abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans, confiance des ménages, intentions d'achat de logement, chômage au sens du
 <abbr title="Bureau International du Travail, dont la définition standardisée permet de comparer le chômage entre pays">BIT</abbr>, production de crédits à l'habitat et demande de crédits mesurée par l'enquête <abbr title="Bank Lending Survey : enquête trimestrielle de la BCE sur les conditions de crédit bancaire">BLS</abbr>.
 
@@ -61,7 +61,7 @@ function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(n
   </div>
   <div>
     <div class="hm-panel-title">Taux d'intérêt et conditions de financement</div>
-    <div class="hm-panel-sub">taux crédit habitat · Euribor 3 mois · OAT 10 ans — en %</div>
+    <div class="hm-panel-sub">taux crédit habitat (toutes durées) · Euribor 3 mois · OAT 10 ans — en %</div>
     ${legend(macro.rates.meta, visR, toggleR)}
     ${multiLine({rows: filterYears(macro.rates.rows, rangeM), meta: macro.rates.meta, active: visR, yLabel: "Taux d'intérêt (%)", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-taux-interet"})}
   </div>

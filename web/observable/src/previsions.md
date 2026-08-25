@@ -62,7 +62,7 @@ const depuis = (rows, field = "date") => {
 
 Prévoir des transactions immobilières revient à prévoir une demande, et ce site le fait
 avec les méthodes de la planification, en deux étages. Le premier explique le taux du
-crédit immobilier par l'OAT 10 ans ; le second explique les ventes de logements
+crédit immobilier (toutes durées confondues) par l'OAT 10 ans ; le second explique les ventes de logements
 anciens par ce taux de crédit, les intentions d'achat des ménages et le chômage, chacun
 pris avec son propre décalage.
 
@@ -304,7 +304,7 @@ if (R && R.projected.length) display(html`<div class="hm-note">
 const nfCoef = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 2, maximumFractionDigits: 3});
 
 if (R) display(html`<div class="hm-formula">
-  <b>Taux de crédit du mois <i>t</i></b> =
+  <b>Taux de crédit du mois <i>t</i></b> (toutes durées) =
   ${nfCoef.format(R.coefficients.intercept)}
   + ${nfCoef.format(R.coefficients.oat)} × OAT(<i>t</i> − ${R.lag} mois)
   <div class="hm-caption" style="margin-top:0.5rem">
@@ -438,7 +438,7 @@ arrive en une requête, donc le curseur ne provoque aucun aller-retour réseau.
 </div>
 
 ```js
-const predictorLabels = {rate: "Taux de crédit", intentions: "Intentions d'achat",
+const predictorLabels = {rate: "Taux de crédit (toutes durées)", intentions: "Intentions d'achat",
                          unemployment: "Taux de chômage"};
 const predictor = view(Inputs.select(Object.keys(predictorLabels), {
   label: "Prédicteur à inspecter", format: (k) => predictorLabels[k], value: "rate"
@@ -712,7 +712,7 @@ const sc = base
 
 ```js
 if (sc) display(cardGrid([
-  {label: "Taux de crédit implicite", value: nf1.format(sc.rate) + " %",
+  {label: "Taux de crédit implicite (toutes durées)", value: nf1.format(sc.rate) + " %",
    delta: (sc.rate_change >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.rate_change)) + " pt"},
   {label: "Ventes projetées (12 mois)", value: nf0.format(sc.transactions),
    delta: (sc.transactions_change >= 0 ? "+" : "−") + nf0.format(Math.abs(sc.transactions_change))},

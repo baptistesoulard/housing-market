@@ -298,11 +298,11 @@ def build_synthese(con, frames: dict) -> dict:
     cards_fin = []
     r_last, r_prev = _last_prev("Credit_Logement_Taux_Interet")
     if r_last is None:
-        cards_fin.append({"emoji": "⚪", "title": "Taux de crédit habitat", "value": "—", "sub": ""})
+        cards_fin.append({"emoji": "⚪", "title": "Taux de crédit habitat (toutes durées)", "value": "—", "sub": ""})
     else:
         dr = None if r_prev is None else r_last - r_prev
         r_status = "flat" if dr is None else ("down" if dr > 0.1 else ("up" if dr < -0.1 else "flat"))
-        r_sub = "sur un an : " + (_pct_fr(dr).replace("%", " pt") if dr is not None else "—")
+        r_sub = "toutes durées confondues · sur un an : " + (_pct_fr(dr).replace("%", " pt") if dr is not None else "—")
         cards_fin.append({"emoji": _dot(r_status), "title": "Taux de crédit habitat",
                           "value": f"{r_last:.2f} %".replace(".", ","), "sub": r_sub})
     bls_last, _ = _last_prev("Demande_Credit_Perspectives")
@@ -733,7 +733,7 @@ def build_macro(con, frames: dict) -> dict:
         return q.macro_series(con, col, digits=4)
 
     # Taux : format long des 3 séries togglables.
-    rate_defs = [("Credit_Logement_Taux_Interet", "Taux Crédit Habitat", COLOR_TEXT),
+    rate_defs = [("Credit_Logement_Taux_Interet", "Taux Crédit Habitat (toutes durées)", COLOR_TEXT),
                  ("Euribor_3M", "Euribor 3 mois", COLOR_BLUE),
                  ("OAT_10ans", "OAT 10 ans", COLOR_GREEN)]
     rate_rows, rate_meta = [], []

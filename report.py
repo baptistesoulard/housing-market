@@ -144,7 +144,7 @@ def _chart_indiv_collectif(con, lang):
 
 def _chart_rates(con, lang):
     fig, ax = plt.subplots(figsize=(7.4, 2.7))
-    series = [("Credit_Logement_Taux_Interet", BRICK, _L("Taux crédit habitat", "Housing loan rate", lang)),
+    series = [("Credit_Logement_Taux_Interet", BRICK, _L("Taux crédit habitat (toutes durées)", "Housing loan rate (all terms)", lang)),
               ("OAT_10ans", GREEN, _L("OAT 10 ans", "10-year OAT", lang)),
               ("Euribor_3M", BLUE, _L("Euribor 3 mois", "3-month Euribor", lang))]
     # Un aller-retour SQL donne les indicateurs réellement renseignés, au lieu d'un
@@ -279,7 +279,7 @@ def build_pdf_report(con, lang="FR"):
                               "Benchmark: BPCE L'Observatoire 2026 forecasts", lang), h2))
     bhdr = [_L("Transactions ancien", "Existing-home transactions", lang),
             _L("Total neuf + ancien", "Total new + existing", lang),
-            _L("Taux crédit T4", "Credit rate Q4", lang),
+            _L("Taux crédit T4 (ttes durées)", "Credit rate Q4 (all terms)", lang),
             _L("Prix ancien T4", "Existing price Q4", lang)]
     brow = [f"{_num(BPCE_TX_ANCIEN_2026, lang)} (-6%)", f"{_num(BPCE_TX_TOTAL_2026, lang)} (-5%)",
             (f"{BPCE_RATE_Q4_2026:.2f} %".replace(".", ",") if lang == "FR" else f"{BPCE_RATE_Q4_2026:.2f}%"),
