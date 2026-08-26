@@ -650,6 +650,46 @@ par un taux de conversion dégradé. Elle énonce maintenant le déficit dans le
 25 794 manquent à l'appel ». À vérifier sur tout écart publié : le signe arithmétique et
 le signe ressenti doivent pointer dans le même sens.
 
+**Un contrefactuel n'a pas sa place dans une puce, et la référence du taux de conversion
+était contaminée (2026-08-26).** La puce 2 portait « 25 794 manquent à l'appel ». Trois
+défauts, à ce niveau de lecture :
+
+1. c'est **la seule quantité des puces qui ne s'est jamais produite** — tout le reste est
+   observé, et le lecteur ne fait pas la différence à la vitesse d'une puce ;
+2. **précision fantaisiste** : l'écart-type du taux de conversion vaut 4,9 points, ce qui
+   déplace l'écart de **±18 328 logements**. Cinq chiffres significatifs sur une grandeur
+   connue au millier près ;
+3. **le nombre dépend de la fenêtre de référence** — 25 794 / 27 684 / 29 963 selon
+   qu'on prend 2000-2026, 2010-19 ou 2001-2022 — et ça ne se voit pas.
+
+La puce ne porte donc plus que **les deux taux** (« seulement 78 % des permis deviennent
+des chantiers, contre 85 % dans les années 2010 »). C'est la RUPTURE qui parle, et elle
+est franche : le taux tenait entre **85,0 et 87,7 %** sur les quatre sous-périodes de 2001
+à 2022, crise de 2008 comprise, avant de tomber à **77,8 %** sur 2023-2026. Le contrefactuel
+reste sur la CARTE, où un lecteur descendu jusque-là a le temps de le lire comme tel —
+arrondi au millier (`_arrondi_millier`) et avec sa fenêtre nommée.
+
+**Correctif de fond dans la foulée : la référence du taux de conversion est passée de
+« moyenne depuis 2000 » (84,8 %) à `ana.LEVEL_REF_YEARS` (85,3 %).** L'ancienne englobait
+la rupture de 2023-2026 qu'on cherche précisément à mesurer : **l'anomalie diluait sa
+propre référence** et se faisait paraître plus petite. C'est exactement la faute que
+`LEVEL_REF_YEARS` a été écrite pour éviter côté niveaux. J'avais d'abord classé cette
+double convention « cosmétique, 0,5 point » — vrai sur le nombre, faux sur la méthode.
+
+⚠️ La page « Marché du neuf » garde, elle, `TR.moyenne` = moyenne sur tout l'historique :
+c'est légitime là-bas (une ligne de moyenne tracée sur le graphique de toute la série,
+labellisée comme telle) et ce n'est pas la même question qu'un contrefactuel. **Les deux
+chiffres coexistent donc, mais chacun NOMME sa fenêtre** — « en moyenne sur 2010-19 » d'un
+côté, « moyenne de long terme » de l'autre. Ne jamais publier l'un des deux sans sa
+fenêtre : c'est ce qui rend la coexistence honnête plutôt qu'incohérente.
+
+**Règle générale sortie de là : le signe arithmétique et le signe RESSENTI doivent pointer
+dans le même sens.** Aucun test ne l'attrape. Et sa contrepartie : ne pas retourner une
+formulation juste pour frapper plus fort — dire « 22 % des permis ne sortent pas de terre
+contre 14 % avant » (+57 % en relatif) plutôt que « 78 % contre 85 % » (−9 %) décrit le
+même fait et double l'impression. C'est un choix rhétorique, il revient à l'auteur du
+site, pas au générateur.
+
 **Divergence assumée sur la puce 4.** Le site y publie la projection (« ventes anciennes
 projetées en recul d'environ 4 % d'ici décembre 2026 ») ; `app.py` retombe sur l'état des
 transactions, faute de verdict — même raison que pour sa carte de Perspective, documentée

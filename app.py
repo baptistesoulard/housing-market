@@ -670,13 +670,21 @@ with tab_synthese:
     _flux_tr = _sy_roll_sit.set_index("Date").sort_index()
     _taux_tr = (_flux_tr["MisesEnChantier"].dropna().rolling(12).sum()
                 / _flux_tr["Permis"].dropna().rolling(12).sum()).dropna()
+    # La référence du taux de conversion est la MÊME décennie que celle des niveaux
+    # (ana.LEVEL_REF_YEARS), et c'est un correctif : la moyenne sur tout l'historique
+    # (84,8 %) englobe la rupture de 2023-2026 qu'on cherche justement à mesurer —
+    # l'anomalie diluait sa propre référence. Le taux tenait entre 85 et 88 % sur les
+    # quatre sous-périodes de 2001 à 2022, crise de 2008 comprise, donc le choix de
+    # fenêtre ne change presque rien au niveau (85,3 % contre 84,8 %) mais rend la
+    # comparaison honnête. La fenêtre est NOMMÉE partout où le chiffre apparaît.
     _tr = None
-    if not _taux_tr.empty:
-        _tr_now, _tr_moy = float(_taux_tr.iloc[-1]) * 100, float(_taux_tr.mean()) * 100
+    _tr_ref = _taux_tr.loc[ana.LEVEL_REF_YEARS[0]:ana.LEVEL_REF_YEARS[1]]
+    if not _taux_tr.empty and not _tr_ref.empty:
+        _tr_now, _tr_moy = float(_taux_tr.iloc[-1]) * 100, float(_tr_ref.mean()) * 100
         _tr_implied = _sy_k_permis["current_12m"] * _tr_moy / 100.0
         _tr = {"now": _tr_now, "moy": _tr_moy, "implied": _tr_implied,
                "ecart": _tr_implied - _sy_k_mises["current_12m"],
-               "since": int(_taux_tr.index[0].year),
+               "ref_label": f"{ana.LEVEL_REF_YEARS[0]}-{ana.LEVEL_REF_YEARS[1][-2:]}",
                "status": ("down" if _tr_now < _tr_moy - 2
                           else ("up" if _tr_now > _tr_moy + 2 else "flat"))}
     # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
@@ -785,18 +793,16 @@ with tab_synthese:
                     f"permits {_p3} and starts {_m3} over 3 months; 12-month trend {_m12}")
     _l2 = f"{_dot(_pn['amont'])} **{_L('Le carnet', 'The order book')}** — {_corps}"
     if _tr:
-        # Le sens compte plus que le nombre : « 25 794 de plus qu'aujourd'hui » se lit
-        # comme une bonne nouvelle alors que c'est un MANQUE. On énonce donc le déficit.
-        _tr_now_txt, _tr_moy_txt = f"{_tr['now']:.1f} %", f"{_tr['moy']:.1f} %"
-        if lang_code == "FR":
-            _tr_now_txt = _tr_now_txt.replace(".", ",")
-            _tr_moy_txt = _tr_moy_txt.replace(".", ",")
-        _l2 += _L(f". Et seulement {_tr_now_txt} des permis deviennent des chantiers, contre "
-                  f"{_tr_moy_txt} habituellement : {_th(abs(_tr['ecart']))} "
-                  + ("manquent à l'appel" if _tr["ecart"] > 0 else "en plus"),
-                  f". And only {_tr_now_txt} of permits become starts, versus "
-                  f"{_tr_moy_txt} normally: {_th(abs(_tr['ecart']))} "
-                  + ("missing" if _tr["ecart"] > 0 else "extra"))
+        # La puce porte les DEUX TAUX et rien d'autre. Le volume contrefactuel qui s'y
+        # trouvait (« 25 794 manquent à l'appel ») avait trois défauts à ce niveau de
+        # lecture : c'est la seule quantité des puces qui ne s'est jamais produite ;
+        # l'écart-type du taux (4,9 pt) la déplace de ±18 000 logements, donc cinq
+        # chiffres significatifs sur une grandeur connue à un près ; et sa valeur dépend
+        # de la fenêtre de référence, ce qui ne se voit pas. C'est la RUPTURE qui parle.
+        _l2 += _L(f". Et seulement {_tr['now']:.0f} % des permis deviennent des chantiers, "
+                  f"contre {_tr['moy']:.0f} % dans les années 2010",
+                  f". And only {_tr['now']:.0f}% of permits become starts, versus "
+                  f"{_tr['moy']:.0f}% through the 2010s")
     _ip3 = _sy_mom_ip.get("last3_seq")
     if _ip3 is not None:
         _l2 += _L(f". La maison individuelle pure reste le segment porteur ({_pct_fr(_ip3)} "
@@ -958,28 +964,34 @@ with tab_synthese:
     # et il manquait : sans lui, « 376 k permis » se lit comme 376 k chantiers à venir. Il
     # ne prévoit rien — il décrit ce que les promoteurs font de leurs autorisations.
     if _tr:
-        # Le sens doit sauter aux yeux. La formulation précédente — « les permis
-        # donneraient 319 k chantiers, soit 25 794 de PLUS qu'aujourd'hui » — se lisait
+        # La carte est l'endroit où un contrefactuel a sa place — le lecteur descendu
+        # jusque-là a le temps de le lire comme tel — à deux conditions : que la fenêtre
+        # de référence soit NOMMÉE, et que le nombre soit arrondi à la précision qu'il a
+        # vraiment (±18 000 à un écart-type du taux, donc le millier au mieux).
+        #
+        # Le SENS doit aussi sauter aux yeux. La formulation d'origine — « les permis
+        # donneraient 321 k chantiers, soit 28 000 de PLUS qu'aujourd'hui » — se lisait
         # comme une bonne nouvelle : l'œil accroche « de plus » et comprend croissance,
         # alors que le fait est un MANQUE causé par un taux de conversion dégradé.
         _tr_val, _tr_moy_txt = f"{_tr['now']:.1f} %", f"{_tr['moy']:.1f} %"
         if lang_code == "FR":
             _tr_val, _tr_moy_txt = _tr_val.replace(".", ","), _tr_moy_txt.replace(".", ",")
+        _tr_arrondi = _th(int(round(abs(_tr["ecart"]) / 1000.0) * 1000))
         _cards_carnet.append((
             _dot(_tr["status"]),
             _L("Taux de transformation permis → chantiers", "Permit-to-start conversion rate"),
             _tr_val,
             _L("part des logements autorisés effectivement ouverts en chantier · contre "
-               f"{_tr_moy_txt} en moyenne depuis {_tr['since']}",
+               f"{_tr_moy_txt} en moyenne sur {_tr['ref_label']}",
                "share of permitted dwellings actually started · versus "
-               f"{_tr_moy_txt} on average since {_tr['since']}"),
-            _L(f"au taux habituel, les permis des 12 derniers mois auraient donné "
+               f"{_tr_moy_txt} on average over {_tr['ref_label']}"),
+            _L(f"au taux des années 2010, les permis des 12 derniers mois auraient donné "
                f"{_human(_tr['implied'])} chantiers au lieu de "
-               f"{_human(_sy_k_mises['current_12m'])} : {_th(abs(_tr['ecart']))} "
-               + ("manquent à l'appel" if _tr["ecart"] > 0 else "en plus"),
-               f"at the usual rate, the last 12 months of permits would have given "
+               f"{_human(_sy_k_mises['current_12m'])} — environ {_tr_arrondi} "
+               + ("manquent à l'appel" if _tr["ecart"] > 0 else "de plus"),
+               f"at the 2010s rate, the last 12 months of permits would have given "
                f"{_human(_tr['implied'])} starts instead of "
-               f"{_human(_sy_k_mises['current_12m'])}: {_th(abs(_tr['ecart']))} "
+               f"{_human(_sy_k_mises['current_12m'])} — about {_tr_arrondi} "
                + ("missing" if _tr["ecart"] > 0 else "extra"))))
     # New-build reservations (ECLN, quarterly). ECLN est elle aussi publiée CVS-CJO (voir
     # data_manager.py) : même raisonnement que pour SIT@DEL, donc même lecture séquentielle
