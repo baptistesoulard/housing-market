@@ -767,12 +767,16 @@ with tab_synthese:
     _p3, _m3 = _pct_fr(_h_permis["value"]), _pct_fr(_h_mises["value"])
     _m12 = _pct_fr(_sy_k_mises["yoy_12m_pct"])
     if _pn["kind"] == "amont_repli":
-        _corps = _L(f"les permis reculent ({_p3} sur 3 mois) pendant que les chantiers "
-                    f"tiennent sur le stock d'autorisations déjà délivrées "
+        # Pas « tiennent sur le stock d'autorisations » : le site MESURE ce lien
+        # (lag_profile) et le RÉFUTE — R² maximal à k=0, décroissant ensuite, donc
+        # aucune avance mesurable. Affirmer une courroie de transmission contredirait
+        # la page « Marché du neuf ». On ne rapporte que le fait observé.
+        _corps = _L(f"les permis reculent ({_p3} sur 3 mois) plus vite que les chantiers, "
+                    f"qui marquent le pas après une forte année "
                     f"({_m3} sur 3 mois, {_m12} sur 12 mois)",
-                    f"permits are falling ({_p3} over 3 months) while starts still run on "
-                    f"the stock of permits already granted ({_m3} over 3 months, "
-                    f"{_m12} over 12 months)")
+                    f"permits are falling ({_p3} over 3 months) faster than starts, which "
+                    f"are easing off after a strong year "
+                    f"({_m3} over 3 months, {_m12} over 12 months)")
     elif _pn["kind"] == "amont_reprise":
         _corps = _L(f"les permis repartent ({_p3} sur 3 mois) avant les chantiers "
                     f"({_m3} sur 3 mois, {_m12} sur 12 mois) — l'effet se verra dans 12 à 18 mois",

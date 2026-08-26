@@ -383,8 +383,14 @@ def build_synthese(con, frames: dict) -> dict:
     p3, m3 = _pct_fr(h_permis["value"]), _pct_fr(h_mises["value"])
     m12 = _pct_fr(k_mises["yoy_12m_pct"])
     if pn["kind"] == "amont_repli":
-        corps = (f"les permis reculent ({p3} sur 3 mois) pendant que les chantiers tiennent "
-                 f"sur le stock d'autorisations déjà délivrées ({m3} sur 3 mois, "
+        # Pas « tiennent sur le stock d'autorisations » : le site MESURE ce lien
+        # (lag_profile dans _transformation) et le RÉFUTE — le R² de chantiers(t) ~
+        # permis(t−k) est maximal à k=0 et décroît, signe qu'il n'y a pas d'avance
+        # mesurable. Affirmer une courroie de transmission contredirait la page
+        # « Marché du neuf ». On ne rapporte que le fait : les chantiers ralentissent
+        # moins vite que les permis, sans en attribuer la cause au stock de permis.
+        corps = (f"les permis reculent ({p3} sur 3 mois) plus vite que les chantiers, qui "
+                 f"marquent le pas après une forte année ({m3} sur 3 mois, "
                  f"{m12} sur 12 mois)")
     elif pn["kind"] == "amont_reprise":
         corps = (f"les permis repartent ({p3} sur 3 mois) avant les chantiers "
