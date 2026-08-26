@@ -575,6 +575,50 @@ les deux. `app.py` publie donc déjà une projection non recalée et à bande co
 mais c'est la vraie raison pour laquelle brancher le verdict sur `app.py` demande une passe
 dédiée : il faudrait d'abord aligner son moteur.
 
+**Les blocs de la Synthèse sont rangés par HORIZON, plus par source (2026-08-26).**
+« Activité / Financement / Perspective » regroupait ce qui vient du même fichier — le plan
+mental du producteur. Un lecteur qui décide va du présent vers l'avenir, d'où quatre blocs
+dans cet ordre, sur les deux surfaces :
+
+| Bloc | Ce qu'il répond | Cartes |
+|---|---|---|
+| Aujourd'hui — ce qui se construit et se vend | ce qui consomme des matériaux maintenant | chantiers, ventes anciennes, **stock neuf à vendre** |
+| Le carnet — ce qui est déjà autorisé, 12-18 mois | ce qui est engagé | permis, **taux de transformation**, réservations ECLN |
+| Ce qui pilote la suite | les entrées du modèle | taux, demande de crédit, accessibilité |
+| Où va le marché | la sortie du modèle | projection, rénovation, échéance aides |
+
+Les conditions de financement passent **juste avant** la projection : ce sont ses entrées,
+on lit les causes avant le résultat.
+
+**Les deux cartes ajoutées sont les deux ponts qui manquaient**, et toutes deux existaient
+déjà ailleurs sur le site :
+
+* **Taux de transformation permis → chantiers**, 78,0 % contre 84,8 % de moyenne depuis
+  2000. Sans lui, « 376 k permis » se lit comme 376 k chantiers à venir. À taux habituel
+  les permis des douze derniers mois donneraient **319 k chantiers, soit 25 794 logements
+  de plus qu'aujourd'hui**. Il ne prévoit rien (voir `NEUF_GATE` : permis → chantiers a été
+  mesuré puis réfuté), il décrit ce que les promoteurs font de leurs autorisations.
+  `_taux_transformation` est **partagée** par `build_synthese` et `_transformation` : deux
+  calculs séparés du même pont finiraient par ne plus tomber sur la même valeur.
+* **Stock de logements neufs à vendre**, 124 027, et surtout **22 mois pour l'écouler
+  contre 15 en moyenne — 53 % de temps de plus**. ⚠️ `DelaiEcoulement` est publié en
+  **TRIMESTRES** : 7,5 se lit 22 mois, pas 7,5. J'ai fait l'erreur en cours de session et
+  elle change tout le diagnostic (sept mois de stock est sain, vingt-deux ne l'est pas) —
+  les deux surfaces multiplient donc explicitement par 3, avec le commentaire qui le dit.
+  Cette carte se lit **à l'envers des autres** : un stock qui s'écoule lentement est ce qui
+  FAIT reculer les mises en vente, donc les chantiers de demain. Son statut vient du délai
+  comparé à sa moyenne longue, jamais de la variation du stock.
+
+**Le chapeau de la Synthèse est passé de ~350 à ~95 mots.** Il avait absorbé, correctif
+après correctif, toute la justification méthodologique — deux régimes de momentum, le refus
+de moyenner, le niveau, la projection. C'est le bon contenu au mauvais endroit : un
+dirigeant ne lit pas quatre paragraphes de méthode avant de voir un chiffre. Tout est
+conservé dans `how_to_read`, derrière le repli « Comment lire cette page ». Le seuil de
+`test_web_structure.py` (≥ 40 mots statiques) reste largement tenu. Conséquence à ne pas
+oublier : `how_to_read` est une interpolation depuis le JSON, donc **invisible aux robots**
+— raccourcir le chapeau réduit réellement le texte indexé, et c'est un arbitrage assumé en
+faveur du lecteur.
+
 **Reste au backlog, mesuré mais non fait : la SURFACE.** Le fichier SIT@DEL déjà en dépôt
 porte `SDP_AUT` / `SDP_COM` (surface de plancher, m²) et `data_manager.py` ne parse que
 `LOG_AUT` / `LOG_COM`. Or les matériaux suivent les m², pas le nombre de logements. Mesuré

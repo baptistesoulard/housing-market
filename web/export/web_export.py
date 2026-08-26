@@ -121,6 +121,19 @@ def _status_seq(v) -> str:
     return ana._tri(v, ana.SEQ_TOL)
 
 
+def _taux_transformation(flux):
+    """Part des logements autorisés effectivement ouverts en chantier, en cumuls 12 mois.
+
+    UNE seule implémentation, appelée par la Synthèse et par la page « Marché du neuf » :
+    c'est le chiffre qui fait le pont entre les deux cartes « permis » et « chantiers »,
+    et deux calculs séparés du même pont finiraient par ne plus tomber sur la même valeur.
+    `flux` est la frame mensuelle indexée par Date (colonnes Permis / MisesEnChantier).
+    """
+    p12 = flux["Permis"].dropna().rolling(12).sum()
+    m12 = flux["MisesEnChantier"].dropna().rolling(12).sum()
+    return (m12 / p12).dropna()
+
+
 def _level_sub(ctx) -> str:
     """Seconde ligne d'une carte : l'ALTITUDE du niveau, que le momentum ne dit jamais.
 
@@ -352,11 +365,6 @@ def build_synthese(con, frames: dict) -> dict:
 
     # ---------------------- Bloc 1 : Activité -------------------------------------
     cards_act = [
-        {"emoji": _dot(_status_seq(h_permis["value"])), "title": "Permis de construire",
-         "value": _human(k_permis["current_12m"]) + " /12 m",
-         "sub": _momentum_sub(h_permis, trend_12m=k_permis["yoy_12m_pct"],
-                              exact=k_permis["current_12m"]),
-         "level": _level_sub(lvl_permis)},
         {"emoji": _dot(_status_seq(h_mises["value"])), "title": "Mises en chantier",
          "value": _human(k_mises["current_12m"]) + " /12 m",
          "sub": _momentum_sub(h_mises, trend_12m=k_mises["yoy_12m_pct"],
@@ -367,6 +375,57 @@ def build_synthese(con, frames: dict) -> dict:
          "sub": _momentum_sub(h_tx, plateau=plateau_tx, exact=k_tx["current_12m"]),
          "level": _level_sub(lvl_tx)},
     ]
+    # L'ENCOURS ferme le bloc « aujourd'hui » : c'est le stock de logements neufs déjà
+    # construits ou en cours qui attendent un acheteur. Un fournisseur le lit à l'envers
+    # des autres cartes — un stock qui grossit ou qui s'écoule lentement est ce qui FAIT
+    # reculer les mises en vente, donc les chantiers de demain. D'où un statut piloté par
+    # le délai d'écoulement comparé à sa moyenne longue, et non par la variation du stock.
+    if df_ecln_full is not None and not df_ecln_full.empty:
+        sd = df_ecln_full.dropna(subset=["Encours", "DelaiEcoulement"]).sort_values("Date")
+        if len(sd) >= 5:
+            enc = sd["Encours"].astype(float)
+            # Le délai est publié en TRIMESTRES (voir data_manager.py) : 7,5 se lit
+            # 22 mois, pas 7,5. La confusion est facile et change tout le diagnostic.
+            dl_t = sd["DelaiEcoulement"].astype(float)
+            dl_mois, dl_moy = float(dl_t.iloc[-1]) * 3, float(dl_t.mean()) * 3
+            enc_seq = (float(enc.iloc[-1]) / float(enc.iloc[-2]) - 1) * 100
+            d_status = "down" if dl_mois > dl_moy * 1.1 else ("up" if dl_mois < dl_moy * 0.9 else "flat")
+            cards_act.append({
+                "emoji": _dot(d_status), "title": "Stock de logements neufs à vendre",
+                "value": _th(float(enc.iloc[-1])),
+                "sub": (f"{dl_mois:.0f} mois pour l'écouler au rythme actuel · "
+                        f"{_pct_fr(enc_seq)} vs le trimestre précédent"),
+                "level": (f"{dl_moy:.0f} mois en moyenne depuis {sd['Date'].iloc[0].year} — "
+                          f"il faut aujourd'hui {abs(dl_mois / dl_moy - 1) * 100:.0f} % de "
+                          "temps de plus pour écouler le stock")})
+
+    # ------------ Bloc 2 : le carnet — ce qui est déjà autorisé (12-18 mois) ----------
+    cards_carnet = [
+        {"emoji": _dot(_status_seq(h_permis["value"])), "title": "Permis de construire",
+         "value": _human(k_permis["current_12m"]) + " /12 m",
+         "sub": _momentum_sub(h_permis, trend_12m=k_permis["yoy_12m_pct"],
+                              exact=k_permis["current_12m"]),
+         "level": _level_sub(lvl_permis)},
+    ]
+    # Le TAUX DE TRANSFORMATION est le pont entre les deux cartes de permis et de
+    # chantiers, et il manquait : sans lui, « 376 k permis » se lit comme 376 k chantiers
+    # à venir. Il ne prévoit rien — il décrit ce que les promoteurs font réellement de
+    # leurs autorisations, ce qui est déjà de premier ordre pour un fournisseur.
+    taux_tr = _taux_transformation(roll_sit.set_index("Date").sort_index())
+    if not taux_tr.empty:
+        tr_now, tr_moy = float(taux_tr.iloc[-1]) * 100, float(taux_tr.mean()) * 100
+        implied = k_permis["current_12m"] * tr_moy / 100.0
+        ecart = implied - k_mises["current_12m"]
+        tr_status = "down" if tr_now < tr_moy - 2 else ("up" if tr_now > tr_moy + 2 else "flat")
+        cards_carnet.append({
+            "emoji": _dot(tr_status), "title": "Taux de transformation permis → chantiers",
+            "value": f"{tr_now:.1f} %".replace(".", ","),
+            "sub": (f"{tr_moy:.1f} %".replace(".", ",") + " en moyenne depuis "
+                    f"{taux_tr.index[0].year} · part des logements autorisés "
+                    "effectivement ouverts en chantier"),
+            "level": (f"à ce taux habituel, les permis des 12 derniers mois donneraient "
+                      f"{_human(implied)} chantiers — soit {_human(abs(ecart))} logements "
+                      f"{'de plus' if ecart > 0 else 'de moins'} qu'aujourd'hui")})
     # ECLN est elle aussi publiée CVS-CJO (voir data_manager.py) : même raisonnement que
     # pour SIT@DEL, donc même lecture séquentielle — d'un trimestre au précédent, sans
     # repasser par le même trimestre de l'an dernier. La tendance sur quatre trimestres
@@ -377,13 +436,13 @@ def build_synthese(con, frames: dict) -> dict:
             r = se["Reservations"].astype(float)
             e_seq = (float(r.iloc[-1]) / float(r.iloc[-2]) - 1) * 100
             e_trend = (float(r.iloc[-4:].sum()) / float(r.iloc[-8:-4].sum()) - 1) * 100
-            cards_act.append({
+            cards_carnet.append({
                 "emoji": _dot(_status_seq(e_seq)),
                 "title": "Réservations particuliers neuf (ECLN)",
                 "value": _th(float(r.iloc[-1])) + " /trim.",
                 "sub": (_pct_fr(e_seq) + " vs le trimestre précédent · tendance 4 trimestres : "
                         + _pct_fr(e_trend)),
-                "level": ""})
+                "level": "la demande qui décide des mises en vente, donc des chantiers suivants"})
 
     # ---------------------- Bloc 2 : Financement ----------------------------------
     cards_fin = []
@@ -513,14 +572,24 @@ def build_synthese(con, frames: dict) -> dict:
     # vrais liens vers les pages concernées. On exporte le CHEMIN CANONIQUE (« /neuf »),
     # celui de la barre latérale, et non un href : c'est le front qui sait où il se trouve
     # et le résout en relatif. Les libellés restent ceux des onglets, à l'identique.
+    # Les blocs sont rangés par HORIZON, pas par source de données. « Activité /
+    # Financement / Perspective » était le plan mental du producteur — il regroupait ce
+    # qui vient du même fichier. Un lecteur qui décide, lui, va du présent vers l'avenir :
+    # ce qui se consomme maintenant, ce qui est déjà engagé, ce qui pilote la suite, puis
+    # où le modèle voit le marché. Les conditions de financement passent juste AVANT la
+    # projection : ce sont ses entrées, on lit les causes avant le résultat.
     blocks = [
-        {"title": "Activité", "cards": cards_act,
+        {"title": "Aujourd'hui — ce qui se construit et se vend", "cards": cards_act,
          "links": [_page("🏗️", "Marché du neuf", "/neuf"),
                    _page("🏠", "Marché de l'ancien", "/ancien")]},
-        {"title": "Conditions de financement", "cards": cards_fin,
+        {"title": "Le carnet — ce qui est déjà autorisé, pour les 12 à 18 prochains mois",
+         "cards": cards_carnet,
+         "links": [_page("🏗️", "Marché du neuf", "/neuf")]},
+        {"title": "Ce qui pilote la suite — conditions de financement", "cards": cards_fin,
          "links": [_page("🏦", "Environnement & Financement", "/macro"),
                    _page("🏠", "Marché de l'ancien", "/ancien")]},
-        {"title": "Perspective" + (f" — {persp_verdict}" if persp_verdict else ""), "cards": cards_persp,
+        {"title": "Où va le marché" + (f" — {persp_verdict}" if persp_verdict else ""),
+         "cards": cards_persp,
          "links": [_page("📡", "Prévision & Scénarios", "/previsions"),
                    _page("📰", "Actualités & Aides", "/actualites")]},
     ]
@@ -571,6 +640,10 @@ def build_synthese(con, frames: dict) -> dict:
         "freshness": freshness,
         "how_to_read": (
             "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. "
+            "Les blocs sont rangés par horizon et non par source : ce qui se consomme "
+            "aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, "
+            "puis les conditions de crédit — qui sont les entrées du modèle, d'où leur "
+            "place juste avant sa projection. "
             "Chaque carte porte deux horizons : le momentum court terme, puis la tendance "
             "sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les "
             "mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières "
@@ -1292,7 +1365,7 @@ def _transformation(con) -> dict:
     flux = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"]).set_index("Date").sort_index()
     permis, chantiers = flux["Permis"].dropna(), flux["MisesEnChantier"].dropna()
     p12, m12 = permis.rolling(12).sum(), chantiers.rolling(12).sum()
-    taux = (m12 / p12).dropna()
+    taux = _taux_transformation(flux)
     if taux.empty:
         return {}
 

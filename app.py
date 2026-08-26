@@ -841,15 +841,14 @@ with tab_synthese:
             "value. National figures, independent of the sidebar period filter; each "
             "block's detail lives in the dedicated tabs."))
 
-    # --- Block 1: activity (construction, existing-home sales, new-build reservations) ---
-    st.markdown("#### " + _L("Activité", "Activity"))
+    # --- Bloc 1 : aujourd'hui — ce qui se consomme -----------------------------------
+    # Les blocs sont rangés par HORIZON, pas par source de données. « Activité /
+    # Financement / Perspective » était le plan mental du producteur — il regroupait ce
+    # qui vient du même fichier. Un lecteur qui décide, lui, va du présent vers l'avenir.
+    # Même ordre et mêmes cartes que la Synthèse du site (web_export.build_synthese).
+    st.markdown("#### " + _L("Aujourd'hui — ce qui se construit et se vend",
+                             "Today — what is being built and sold"))
     _cards_act = [
-        (_dot(_status_seq(_h_permis["value"])),
-         _L("Permis de construire", "Building permits"),
-         _human(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
-         _momentum_sub(_h_permis, trend_12m=_sy_k_permis["yoy_12m_pct"],
-                       exact=_sy_k_permis["current_12m"]),
-         _level_sub(_lvl_permis)),
         (_dot(_status_seq(_h_mises["value"])),
          _L("Mises en chantier", "Housing starts"),
          _human(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
@@ -862,6 +861,78 @@ with tab_synthese:
          _momentum_sub(_h_tx, plateau=_plateau_tx, exact=_sy_k_tx["current_12m"]),
          _level_sub(_lvl_tx)),
     ]
+    # L'ENCOURS ferme le bloc « aujourd'hui » : le stock de logements neufs qui attendent
+    # un acheteur. Il se lit à l'envers des autres cartes — un stock qui s'écoule lentement
+    # est ce qui FAIT reculer les mises en vente, donc les chantiers de demain. Statut
+    # piloté par le délai d'écoulement contre sa moyenne longue, pas par le stock lui-même.
+    if df_ecln_full is not None and not df_ecln_full.empty:
+        _sd = df_ecln_full.dropna(subset=["Encours", "DelaiEcoulement"]).sort_values("Date")
+        if len(_sd) >= 5:
+            _enc = _sd["Encours"].astype(float)
+            # Le délai est publié en TRIMESTRES (voir data_manager.py) : 7,5 se lit
+            # 22 mois, pas 7,5. La confusion est facile et change tout le diagnostic.
+            _dl_t = _sd["DelaiEcoulement"].astype(float)
+            _dl_mois, _dl_moy = float(_dl_t.iloc[-1]) * 3, float(_dl_t.mean()) * 3
+            _enc_seq = (float(_enc.iloc[-1]) / float(_enc.iloc[-2]) - 1) * 100
+            _d_status = ("down" if _dl_mois > _dl_moy * 1.1
+                         else ("up" if _dl_mois < _dl_moy * 0.9 else "flat"))
+            _cards_act.append((
+                _dot(_d_status),
+                _L("Stock de logements neufs à vendre", "Unsold new-build stock"),
+                _th(float(_enc.iloc[-1])),
+                _L(f"{_dl_mois:.0f} mois pour l'écouler au rythme actuel · ",
+                   f"{_dl_mois:.0f} months to clear at the current pace · ")
+                + _pct_fr(_enc_seq) + _L(" vs le trimestre précédent", " vs the prior quarter"),
+                _L(f"{_dl_moy:.0f} mois en moyenne depuis {_sd['Date'].iloc[0].year} — il faut "
+                   f"aujourd'hui {abs(_dl_mois / _dl_moy - 1) * 100:.0f} % de temps de plus "
+                   "pour écouler le stock",
+                   f"{_dl_moy:.0f} months on average since {_sd['Date'].iloc[0].year} — it now "
+                   f"takes {abs(_dl_mois / _dl_moy - 1) * 100:.0f}% longer to clear the stock")))
+    _render_cards(_cards_act, per_row=3)
+    st.caption(_L("→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »",
+                  "→ detail: '🏗️ New-Build Market' · '🏠 Existing-Home Market'"))
+
+    # --- Bloc 2 : le carnet — ce qui est déjà autorisé (12-18 mois) -------------------
+    st.markdown("#### " + _L("Le carnet — ce qui est déjà autorisé, pour les 12 à 18 prochains mois",
+                             "The order book — already permitted, for the next 12 to 18 months"))
+    _cards_carnet = [
+        (_dot(_status_seq(_h_permis["value"])),
+         _L("Permis de construire", "Building permits"),
+         _human(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
+         _momentum_sub(_h_permis, trend_12m=_sy_k_permis["yoy_12m_pct"],
+                       exact=_sy_k_permis["current_12m"]),
+         _level_sub(_lvl_permis)),
+    ]
+    # Le TAUX DE TRANSFORMATION est le pont entre les cartes « permis » et « chantiers »,
+    # et il manquait : sans lui, « 376 k permis » se lit comme 376 k chantiers à venir. Il
+    # ne prévoit rien — il décrit ce que les promoteurs font de leurs autorisations.
+    _flux_tr = _sy_roll_sit.set_index("Date").sort_index()
+    _taux_tr = (_flux_tr["MisesEnChantier"].dropna().rolling(12).sum()
+                / _flux_tr["Permis"].dropna().rolling(12).sum()).dropna()
+    if not _taux_tr.empty:
+        _tr_now, _tr_moy = float(_taux_tr.iloc[-1]) * 100, float(_taux_tr.mean()) * 100
+        _implied = _sy_k_permis["current_12m"] * _tr_moy / 100.0
+        _tr_ecart = _implied - _sy_k_mises["current_12m"]
+        _tr_status = ("down" if _tr_now < _tr_moy - 2
+                      else ("up" if _tr_now > _tr_moy + 2 else "flat"))
+        _tr_val = f"{_tr_now:.1f} %"
+        _tr_moy_txt = f"{_tr_moy:.1f} %"
+        if lang_code == "FR":
+            _tr_val, _tr_moy_txt = _tr_val.replace(".", ","), _tr_moy_txt.replace(".", ",")
+        _cards_carnet.append((
+            _dot(_tr_status),
+            _L("Taux de transformation permis → chantiers", "Permit-to-start conversion rate"),
+            _tr_val,
+            _L(f"{_tr_moy_txt} en moyenne depuis {_taux_tr.index[0].year} · part des logements "
+               "autorisés effectivement ouverts en chantier",
+               f"{_tr_moy_txt} on average since {_taux_tr.index[0].year} · share of permitted "
+               "dwellings actually started"),
+            _L(f"à ce taux habituel, les permis des 12 derniers mois donneraient "
+               f"{_human(_implied)} chantiers — soit {_human(abs(_tr_ecart))} logements "
+               + ("de plus" if _tr_ecart > 0 else "de moins") + " qu'aujourd'hui",
+               f"at that usual rate, the last 12 months of permits would yield "
+               f"{_human(_implied)} starts — {_human(abs(_tr_ecart))} dwellings "
+               + ("more" if _tr_ecart > 0 else "fewer") + " than today")))
     # New-build reservations (ECLN, quarterly). ECLN est elle aussi publiée CVS-CJO (voir
     # data_manager.py) : même raisonnement que pour SIT@DEL, donc même lecture séquentielle
     # — d'un trimestre au précédent, sans repasser par le même trimestre de l'an dernier.
@@ -872,18 +943,20 @@ with tab_synthese:
             _r = _se["Reservations"].astype(float)
             _e_seq = (float(_r.iloc[-1]) / float(_r.iloc[-2]) - 1) * 100
             _e_trend = (float(_r.iloc[-4:].sum()) / float(_r.iloc[-8:-4].sum()) - 1) * 100
-            _cards_act.append((
+            _cards_carnet.append((
                 _dot(_status_seq(_e_seq)),
                 _L("Réservations particuliers neuf (ECLN)", "New-build private-buyer reservations (ECLN)"),
                 _th(float(_r.iloc[-1])) + _L(" /trim.", " /qtr"),
                 _pct_fr(_e_seq) + _L(" vs le trimestre précédent · tendance 4 trimestres : ",
-                                     " vs the prior quarter · 4-quarter trend: ") + _pct_fr(_e_trend)))
-    _render_cards(_cards_act, per_row=4 if len(_cards_act) == 4 else 3)
-    st.caption(_L("→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »",
-                  "→ detail: '🏗️ New-Build Market' · '🏠 Existing-Home Market'"))
+                                     " vs the prior quarter · 4-quarter trend: ") + _pct_fr(_e_trend),
+                _L("la demande qui décide des mises en vente, donc des chantiers suivants",
+                   "the demand that drives new launches, hence the next starts")))
+    _render_cards(_cards_carnet, per_row=3)
+    st.caption(_L("→ détail : « 🏗️ Marché du neuf »", "→ detail: '🏗️ New-Build Market'"))
 
     # --- Block 2: financing conditions ---
-    st.markdown("#### " + _L("Conditions de financement", "Financing conditions"))
+    st.markdown("#### " + _L("Ce qui pilote la suite — conditions de financement",
+                             "What drives what comes next — financing conditions"))
     _cards_fin = []
     # Credit rate direction (rising rate = headwind → down).
     _r_last, _r_prev = _last_prev("Credit_Logement_Taux_Interet")
@@ -952,7 +1025,7 @@ with tab_synthese:
     if not _sy_tx12.empty:
         _sy_last_tx = float(_sy_tx12.iloc[-1])
         _sy_gap = (_sy_last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
-    _persp_hdr = "#### " + _L("Perspective", "Outlook")
+    _persp_hdr = "#### " + _L("Où va le marché", "Where the market is heading")
     if _sy_gap is not None:
         if _sy_gap > 3:
             _persp_hdr += _L(" — marché au-dessus de la cible BPCE 2026, infléchissement attendu",

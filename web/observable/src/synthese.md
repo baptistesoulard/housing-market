@@ -67,35 +67,15 @@ function card(c) {
 
 # 🧭 Synthèse — vue d'ensemble du marché
 
-Cette page rassemble en une vue l'essentiel du marché immobilier français : où en sont la
-construction neuve, les ventes de logements anciens, les prix et les conditions de crédit.
-Chaque pilier est résumé par une pastille de tendance, puis détaillé sur sa propre page.
+Où en est le marché immobilier français, du présent vers l'avenir : ce qui se construit et
+se vend aujourd'hui, ce qui est déjà autorisé pour les douze à dix-huit prochains mois, les
+conditions de crédit qui pilotent la suite, et où le modèle du site voit le marché à six
+mois.
 
-Chaque chiffre est donné sur **deux horizons** : le momentum des derniers mois, qui dit si
-le rythme est en train de tourner, et la tendance sur douze mois, qui dit d'où l'on vient.
-Les deux ne pointent pas toujours dans le même sens, et c'est précisément quand ils
-divergent qu'ils sont utiles. La fenêtre du momentum dépend de la série : les permis et les
-mises en chantier sont publiés corrigés des variations saisonnières, donc comparés aux mois
-qui précèdent immédiatement ; les ventes de logements anciens, reconstruites à partir d'un
-cumul annuel, sont trop irrégulières d'un mois sur l'autre et se lisent sur douze mois,
-complétées par la date depuis laquelle leur niveau ne bouge plus.
-
-Le pilier de la construction neuve ne moyenne pas ses deux étages. Les permis sont l'amont,
-ce qui alimentera les chantiers douze à dix-huit mois plus tard ; les mises en chantier sont
-l'aval, ce qui consomme des matériaux aujourd'hui. Quand l'un se retourne avant l'autre, la
-pastille le dit au lieu de compenser l'un par l'autre.
-
-Une pente ne dit rien de l'altitude, et les deux mènent à des décisions différentes : un
-marché qui progresse vite depuis un creux profond reste un petit marché. Les chiffres
-d'activité portent donc aussi leur **niveau** — l'écart à une décennie de marché ordinaire,
-et le rang de ce niveau dans toute l'histoire de la série. Enfin, le bloc « Perspective »
-publie la **projection du modèle du site** à six mois plutôt que la cible d'un tiers, avec
-sa fourchette et la part de fois où le sens annoncé s'est avéré juste : les erreurs passées
-de ce modèle, horizon par horizon, sont publiées sur la page « Prévisions passées ».
-
-Les chiffres sont nationaux et proviennent d'organismes publics. Les dates de dernière
-publication diffèrent d'une série à l'autre : chaque producteur a son propre calendrier et
-son propre délai.
+Chaque chiffre porte son rythme récent **et** son niveau, parce qu'une pente ne dit rien de
+l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché.
+Chiffres nationaux, d'organismes publics ; la méthode est détaillée sous « Comment lire
+cette page », et les erreurs passées du modèle sur « Prévisions passées ».
 
 
 <div class="hm-chips">${data.pillars.map(chip)}</div>
@@ -112,7 +92,7 @@ son propre délai.
   <div class="hm-caption">${data.how_to_read}</div>
 </details>
 
-## 📇 Les chiffres du dernier mois publié
+## 📇 Les chiffres, du présent vers l'avenir
 
 ```js
 // --- Les trois blocs de cartes (Activité / Financement / Perspective) --------------
