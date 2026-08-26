@@ -648,6 +648,37 @@ with tab_synthese:
     _lvl_permis = ana.level_context(_sy_roll_sit, "Permis")
     _lvl_mises = ana.level_context(_sy_roll_sit, "MisesEnChantier")
     _lvl_tx = ana.level_context(_sy_roll_va, "Transactions")
+
+    # --- Mesures calculées AVANT les puces, parce qu'elles y montent ------------------
+    # Les puces sont le niveau de lecture le plus cher de la page : trois pastilles pour
+    # un coup d'œil, quatre puces pour trente secondes, douze cartes pour le détail. Un
+    # lecteur qui s'arrête après les puces doit y trouver les faits les plus tranchants.
+    # ⚠️ DelaiEcoulement est publié en TRIMESTRES : 7,5 se lit 22 mois, pas 7,5.
+    _stock = None
+    if df_ecln_full is not None and not df_ecln_full.empty:
+        _sd = df_ecln_full.dropna(subset=["Encours", "DelaiEcoulement"]).sort_values("Date")
+        if len(_sd) >= 5:
+            _enc = _sd["Encours"].astype(float)
+            _dl_t = _sd["DelaiEcoulement"].astype(float)
+            _m, _mm = float(_dl_t.iloc[-1]) * 3, float(_dl_t.mean()) * 3
+            _stock = {
+                "encours": float(_enc.iloc[-1]), "mois": _m, "moy_mois": _mm,
+                "ecart_pct": (_m / _mm - 1) * 100 if _mm else None,
+                "seq": (float(_enc.iloc[-1]) / float(_enc.iloc[-2]) - 1) * 100,
+                "since": int(_sd["Date"].iloc[0].year),
+                "status": "down" if _m > _mm * 1.1 else ("up" if _m < _mm * 0.9 else "flat")}
+    _flux_tr = _sy_roll_sit.set_index("Date").sort_index()
+    _taux_tr = (_flux_tr["MisesEnChantier"].dropna().rolling(12).sum()
+                / _flux_tr["Permis"].dropna().rolling(12).sum()).dropna()
+    _tr = None
+    if not _taux_tr.empty:
+        _tr_now, _tr_moy = float(_taux_tr.iloc[-1]) * 100, float(_taux_tr.mean()) * 100
+        _tr_implied = _sy_k_permis["current_12m"] * _tr_moy / 100.0
+        _tr = {"now": _tr_now, "moy": _tr_moy, "implied": _tr_implied,
+               "ecart": _tr_implied - _sy_k_mises["current_12m"],
+               "since": int(_taux_tr.index[0].year),
+               "status": ("down" if _tr_now < _tr_moy - 2
+                          else ("up" if _tr_now > _tr_moy + 2 else "flat"))}
     # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
     # l'aval (chantiers) divergent, c'est la divergence qui est l'information.
     _pn = ana.pillar_neuf(_sy_m_permis, _sy_m_mises, lang=lang_code)
@@ -687,18 +718,53 @@ with tab_synthese:
         q.monthly(con, "sitadel", ["MisesEnChantier"], windows=(),
                   types=ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
     _lines = []
-    # La puce « Neuf » porte les DEUX horizons et nomme la divergence quand il y en a
-    # une : c'est le seul endroit où le mécanisme (l'aval tourne sur le stock
-    # d'autorisations déjà délivrées) peut être écrit en toutes lettres.
+    # --- Puce 1 : AUJOURD'HUI — l'ancien d'abord, puis le neuf -----------------------
+    # Les deux marchés sont séparés à l'intérieur de la puce plutôt que fondus : ils
+    # n'alimentent pas les mêmes lignes de produits, et ils ne disent pas la même chose
+    # en ce moment — l'ancien est haut mais figé, le neuf est bas et sous stock. Chaque
+    # moitié tient en une phrase ; le détail reste sur les cartes, sinon la marche entre
+    # le résumé et le détail disparaît. Même contenu que la Synthèse du site.
+    def _altitude(ctx):
+        if not ctx:
+            return ""
+        _e = f"{abs(ctx['gap_pct']):.0f} %"
+        if lang_code == "FR":
+            _e = _e.replace(".", ",")
+        return ", " + _e + (_L(" sous", " below") if ctx["gap_pct"] < 0
+                            else _L(" au-dessus de", " above")) \
+            + _L(f" la normale {ctx['ref_label']}", f" the {ctx['ref_label']} norm")
+
+    _anc = (f"**{_L('Ancien', 'Existing homes')}** : {_human(_sy_k_tx['current_12m'])} "
+            + _L("ventes sur 12 mois", "sales over 12 months") + _altitude(_lvl_tx))
+    if _plateau_tx:
+        _anc += _L(f", mais au plateau depuis {format_month_year(_plateau_tx['since'], lang_code)}",
+                   f", but flat since {format_month_year(_plateau_tx['since'], lang_code)}")
+    _neu = (f"**{_L('Neuf', 'New-build')}** : {_human(_sy_k_mises['current_12m'])} "
+            + _L("chantiers", "starts") + _altitude(_lvl_mises))
+    if _stock:
+        _neu += _L(f", sur un stock de {_th(_stock['encours'])} invendus qui met "
+                   f"{_stock['mois']:.0f} mois à s'écouler contre {_stock['moy_mois']:.0f} "
+                   "habituellement",
+                   f", on a stock of {_th(_stock['encours'])} unsold homes taking "
+                   f"{_stock['mois']:.0f} months to clear versus {_stock['moy_mois']:.0f} "
+                   "normally")
+    # Statut de la puce : les deux VOLUMES du présent. Le stock est un avertissement à
+    # l'intérieur de la puce, pas de quoi peindre tout le présent en rouge.
+    _now = {_status_seq(_h_mises["value"]), _pill_ancien}
+    _st_now = "down" if "down" in _now else ("up" if _now == {"up"} else "flat")
+    _lbl_now = _L("Aujourd'hui", "Today")
+    _lines.append(f"{_dot(_st_now)} **{_lbl_now}** — {_anc}. {_neu}.")
+
+    # --- Puce 2 : LE CARNET — ce qui est déjà autorisé -------------------------------
     _p3, _m3 = _pct_fr(_h_permis["value"]), _pct_fr(_h_mises["value"])
     _m12 = _pct_fr(_sy_k_mises["yoy_12m_pct"])
     if _pn["kind"] == "amont_repli":
-        _corps = _L(f"signaux divergents : les permis reculent ({_p3} sur 3 mois) pendant "
-                    f"que les chantiers tiennent encore sur le stock d'autorisations déjà "
-                    f"délivrées ({_m3} sur 3 mois, {_m12} sur 12 mois)",
-                    f"mixed signals: permits are falling ({_p3} over 3 months) while starts "
-                    f"still run on the stock of permits already granted ({_m3} over 3 "
-                    f"months, {_m12} over 12 months)")
+        _corps = _L(f"les permis reculent ({_p3} sur 3 mois) pendant que les chantiers "
+                    f"tiennent sur le stock d'autorisations déjà délivrées "
+                    f"({_m3} sur 3 mois, {_m12} sur 12 mois)",
+                    f"permits are falling ({_p3} over 3 months) while starts still run on "
+                    f"the stock of permits already granted ({_m3} over 3 months, "
+                    f"{_m12} over 12 months)")
     elif _pn["kind"] == "amont_reprise":
         _corps = _L(f"les permis repartent ({_p3} sur 3 mois) avant les chantiers "
                     f"({_m3} sur 3 mois, {_m12} sur 12 mois) — l'effet se verra dans 12 à 18 mois",
@@ -717,31 +783,26 @@ with tab_synthese:
     else:
         _corps = _L(f"permis {_p3} et chantiers {_m3} sur 3 mois ; tendance 12 mois {_m12}",
                     f"permits {_p3} and starts {_m3} over 3 months; 12-month trend {_m12}")
-    _l1 = f"{_dot(_pill_neuf)} **{_L('Neuf', 'New-build')}** — {_corps}"
+    _l2 = f"{_dot(_pn['amont'])} **{_L('Le carnet', 'The order book')}** — {_corps}"
+    if _tr:
+        # Le sens compte plus que le nombre : « 25 794 de plus qu'aujourd'hui » se lit
+        # comme une bonne nouvelle alors que c'est un MANQUE. On énonce donc le déficit.
+        _tr_now_txt, _tr_moy_txt = f"{_tr['now']:.1f} %", f"{_tr['moy']:.1f} %"
+        if lang_code == "FR":
+            _tr_now_txt = _tr_now_txt.replace(".", ",")
+            _tr_moy_txt = _tr_moy_txt.replace(".", ",")
+        _l2 += _L(f". Et seulement {_tr_now_txt} des permis deviennent des chantiers, contre "
+                  f"{_tr_moy_txt} habituellement : {_th(abs(_tr['ecart']))} "
+                  + ("manquent à l'appel" if _tr["ecart"] > 0 else "en plus"),
+                  f". And only {_tr_now_txt} of permits become starts, versus "
+                  f"{_tr_moy_txt} normally: {_th(abs(_tr['ecart']))} "
+                  + ("missing" if _tr["ecart"] > 0 else "extra"))
     _ip3 = _sy_mom_ip.get("last3_seq")
     if _ip3 is not None:
-        _l1 += _L(f". La maison individuelle pure reste le segment porteur : {_pct_fr(_ip3)} "
-                  f"sur 3 mois, {_pct_fr(_sy_mom_ip['roll12_yoy'])} sur 12 mois.",
-                  f". Detached houses remain the driving segment: {_pct_fr(_ip3)} over "
-                  f"3 months, {_pct_fr(_sy_mom_ip['roll12_yoy'])} over 12 months.")
-    else:
-        _l1 += "."
-    _lines.append(_l1)
-
-    # Ancien : le niveau, et depuis quand il ne bouge plus. Un « +5,2 % sur douze mois »
-    # seul laisserait croire à une croissance en cours alors qu'elle s'est arrêtée.
-    _l2 = (f"{_dot(_pill_ancien)} **{_L('Ancien', 'Existing homes')}** — "
-           + _L(f"{_human(_sy_k_tx['current_12m'])} ventes sur 12 mois "
-                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])} sur un an)",
-                f"{_human(_sy_k_tx['current_12m'])} sales over 12 months "
-                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])} year on year)"))
-    if _plateau_tx:
-        _l2 += _L(f", mais le niveau ne bouge plus depuis {_plateau_tx['months']} mois "
-                  f"({format_month_year(_plateau_tx['since'], lang_code)}) : la hausse "
-                  f"annuelle décrit une croissance déjà arrêtée.",
-                  f", but the level has not moved for {_plateau_tx['months']} months "
-                  f"({format_month_year(_plateau_tx['since'], lang_code)}): the annual "
-                  f"rise describes growth that has already stopped.")
+        _l2 += _L(f". La maison individuelle pure reste le segment porteur ({_pct_fr(_ip3)} "
+                  f"sur 3 mois, {_pct_fr(_sy_mom_ip['roll12_yoy'])} sur 12 mois).",
+                  f". Detached houses remain the driving segment ({_pct_fr(_ip3)} over "
+                  f"3 months, {_pct_fr(_sy_mom_ip['roll12_yoy'])} over 12 months).")
     else:
         _l2 += "."
     _lines.append(_l2)
@@ -789,7 +850,7 @@ with tab_synthese:
                                      "déménagements (sécurité & domotique)",
                                      "short-term (~2-month) caution on move-related products "
                                      "(security & home automation)")}[_pill_ancien])
-    _lines.append("🎯 **" + _L("Demande second œuvre", "Second-œuvre demand")
+    _lines.append("🎯 **" + _L("Ce que ça implique", "What it implies")
                   + f"** — {_impl_neuf} ; {_impl_ancien}.")
 
     st.info(_L("**À retenir**", "**Key takeaways**") + "\n\n"
@@ -865,29 +926,19 @@ with tab_synthese:
     # un acheteur. Il se lit à l'envers des autres cartes — un stock qui s'écoule lentement
     # est ce qui FAIT reculer les mises en vente, donc les chantiers de demain. Statut
     # piloté par le délai d'écoulement contre sa moyenne longue, pas par le stock lui-même.
-    if df_ecln_full is not None and not df_ecln_full.empty:
-        _sd = df_ecln_full.dropna(subset=["Encours", "DelaiEcoulement"]).sort_values("Date")
-        if len(_sd) >= 5:
-            _enc = _sd["Encours"].astype(float)
-            # Le délai est publié en TRIMESTRES (voir data_manager.py) : 7,5 se lit
-            # 22 mois, pas 7,5. La confusion est facile et change tout le diagnostic.
-            _dl_t = _sd["DelaiEcoulement"].astype(float)
-            _dl_mois, _dl_moy = float(_dl_t.iloc[-1]) * 3, float(_dl_t.mean()) * 3
-            _enc_seq = (float(_enc.iloc[-1]) / float(_enc.iloc[-2]) - 1) * 100
-            _d_status = ("down" if _dl_mois > _dl_moy * 1.1
-                         else ("up" if _dl_mois < _dl_moy * 0.9 else "flat"))
-            _cards_act.append((
-                _dot(_d_status),
-                _L("Stock de logements neufs à vendre", "Unsold new-build stock"),
-                _th(float(_enc.iloc[-1])),
-                _L(f"{_dl_mois:.0f} mois pour l'écouler au rythme actuel · ",
-                   f"{_dl_mois:.0f} months to clear at the current pace · ")
-                + _pct_fr(_enc_seq) + _L(" vs le trimestre précédent", " vs the prior quarter"),
-                _L(f"{_dl_moy:.0f} mois en moyenne depuis {_sd['Date'].iloc[0].year} — il faut "
-                   f"aujourd'hui {abs(_dl_mois / _dl_moy - 1) * 100:.0f} % de temps de plus "
-                   "pour écouler le stock",
-                   f"{_dl_moy:.0f} months on average since {_sd['Date'].iloc[0].year} — it now "
-                   f"takes {abs(_dl_mois / _dl_moy - 1) * 100:.0f}% longer to clear the stock")))
+    if _stock:
+        _cards_act.append((
+            _dot(_stock["status"]),
+            _L("Stock de logements neufs à vendre", "Unsold new-build stock"),
+            _th(_stock["encours"]),
+            _L(f"{_stock['mois']:.0f} mois pour l'écouler au rythme actuel · ",
+               f"{_stock['mois']:.0f} months to clear at the current pace · ")
+            + _pct_fr(_stock["seq"]) + _L(" vs le trimestre précédent", " vs the prior quarter"),
+            _L(f"{_stock['moy_mois']:.0f} mois en moyenne depuis {_stock['since']} — il faut "
+               f"aujourd'hui {abs(_stock['ecart_pct']):.0f} % de temps de plus pour écouler "
+               "le stock",
+               f"{_stock['moy_mois']:.0f} months on average since {_stock['since']} — it now "
+               f"takes {abs(_stock['ecart_pct']):.0f}% longer to clear the stock")))
     _render_cards(_cards_act, per_row=3)
     st.caption(_L("→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »",
                   "→ detail: '🏗️ New-Build Market' · '🏠 Existing-Home Market'"))
@@ -906,33 +957,30 @@ with tab_synthese:
     # Le TAUX DE TRANSFORMATION est le pont entre les cartes « permis » et « chantiers »,
     # et il manquait : sans lui, « 376 k permis » se lit comme 376 k chantiers à venir. Il
     # ne prévoit rien — il décrit ce que les promoteurs font de leurs autorisations.
-    _flux_tr = _sy_roll_sit.set_index("Date").sort_index()
-    _taux_tr = (_flux_tr["MisesEnChantier"].dropna().rolling(12).sum()
-                / _flux_tr["Permis"].dropna().rolling(12).sum()).dropna()
-    if not _taux_tr.empty:
-        _tr_now, _tr_moy = float(_taux_tr.iloc[-1]) * 100, float(_taux_tr.mean()) * 100
-        _implied = _sy_k_permis["current_12m"] * _tr_moy / 100.0
-        _tr_ecart = _implied - _sy_k_mises["current_12m"]
-        _tr_status = ("down" if _tr_now < _tr_moy - 2
-                      else ("up" if _tr_now > _tr_moy + 2 else "flat"))
-        _tr_val = f"{_tr_now:.1f} %"
-        _tr_moy_txt = f"{_tr_moy:.1f} %"
+    if _tr:
+        # Le sens doit sauter aux yeux. La formulation précédente — « les permis
+        # donneraient 319 k chantiers, soit 25 794 de PLUS qu'aujourd'hui » — se lisait
+        # comme une bonne nouvelle : l'œil accroche « de plus » et comprend croissance,
+        # alors que le fait est un MANQUE causé par un taux de conversion dégradé.
+        _tr_val, _tr_moy_txt = f"{_tr['now']:.1f} %", f"{_tr['moy']:.1f} %"
         if lang_code == "FR":
             _tr_val, _tr_moy_txt = _tr_val.replace(".", ","), _tr_moy_txt.replace(".", ",")
         _cards_carnet.append((
-            _dot(_tr_status),
+            _dot(_tr["status"]),
             _L("Taux de transformation permis → chantiers", "Permit-to-start conversion rate"),
             _tr_val,
-            _L(f"{_tr_moy_txt} en moyenne depuis {_taux_tr.index[0].year} · part des logements "
-               "autorisés effectivement ouverts en chantier",
-               f"{_tr_moy_txt} on average since {_taux_tr.index[0].year} · share of permitted "
-               "dwellings actually started"),
-            _L(f"à ce taux habituel, les permis des 12 derniers mois donneraient "
-               f"{_human(_implied)} chantiers — soit {_human(abs(_tr_ecart))} logements "
-               + ("de plus" if _tr_ecart > 0 else "de moins") + " qu'aujourd'hui",
-               f"at that usual rate, the last 12 months of permits would yield "
-               f"{_human(_implied)} starts — {_human(abs(_tr_ecart))} dwellings "
-               + ("more" if _tr_ecart > 0 else "fewer") + " than today")))
+            _L("part des logements autorisés effectivement ouverts en chantier · contre "
+               f"{_tr_moy_txt} en moyenne depuis {_tr['since']}",
+               "share of permitted dwellings actually started · versus "
+               f"{_tr_moy_txt} on average since {_tr['since']}"),
+            _L(f"au taux habituel, les permis des 12 derniers mois auraient donné "
+               f"{_human(_tr['implied'])} chantiers au lieu de "
+               f"{_human(_sy_k_mises['current_12m'])} : {_th(abs(_tr['ecart']))} "
+               + ("manquent à l'appel" if _tr["ecart"] > 0 else "en plus"),
+               f"at the usual rate, the last 12 months of permits would have given "
+               f"{_human(_tr['implied'])} starts instead of "
+               f"{_human(_sy_k_mises['current_12m'])}: {_th(abs(_tr['ecart']))} "
+               + ("missing" if _tr["ecart"] > 0 else "extra"))))
     # New-build reservations (ECLN, quarterly). ECLN est elle aussi publiée CVS-CJO (voir
     # data_manager.py) : même raisonnement que pour SIT@DEL, donc même lecture séquentielle
     # — d'un trimestre au précédent, sans repasser par le même trimestre de l'an dernier.

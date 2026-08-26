@@ -619,6 +619,43 @@ oublier : `how_to_read` est une interpolation depuis le JSON, donc **invisible a
 — raccourcir le chapeau réduit réellement le texte indexé, et c'est un arbitrage assumé en
 faveur du lecteur.
 
+**Les puces « à retenir » sont le niveau de lecture le plus CHER de la page, et elles
+avaient pris du retard.** Trois pastilles pour un coup d'œil, quatre puces pour trente
+secondes, douze cartes pour le détail : un dirigeant lit les deux premiers niveaux et ne
+descend au troisième que si quelque chose l'accroche. Or le générateur de puces ne lisait
+que neuf variables, toutes antérieures aux correctifs — **quatre familles de faits
+n'atteignaient pas le niveau 2** : le stock (22 mois), le taux de transformation
+(25 794 chantiers manquants), les niveaux (23 % sous la normale) et la projection (−4 %).
+La puce vedette disait « la maison individuelle pure : +8,3 % », vrai mais secondaire, et
+taisait les deux ans de stock invendu.
+
+Les puces suivent désormais les quatre blocs. Deux points de méthode à tenir :
+
+* **La puce 1 sépare l'ancien du neuf** au lieu de les fondre : ils n'alimentent pas les
+  mêmes lignes de produits, et ils ne disent pas la même chose — l'ancien est haut mais
+  figé, le neuf est bas et sous stock. Son statut vient des deux VOLUMES du présent, pas
+  du stock : celui-ci est un avertissement à l'intérieur de la puce, pas de quoi peindre
+  tout le présent en rouge.
+* **Chaque moitié tient en une phrase.** Les puces sont passées de 133 à 169 mots pour
+  quatre familles de faits en plus ; une première version en faisait 209 et annulait la
+  marche entre le résumé et le détail. Ce qui reste sur les cartes : le taux annuel, le
+  percentile, l'explication du plateau, la fourchette de la projection.
+
+**Un chiffre juste peut dire l'inverse de ce qu'il veut dire.** La carte du taux de
+transformation annonçait « les permis donneraient 319 k chantiers, soit 25 794 logements
+**de plus** qu'aujourd'hui ». Arithmétiquement exact, et lu comme une bonne nouvelle :
+l'œil accroche « de plus » et comprend croissance, alors que le fait est un MANQUE causé
+par un taux de conversion dégradé. Elle énonce maintenant le déficit dans le bon ordre —
+« au taux habituel, les permis auraient donné 319 k chantiers **au lieu de** 293 k :
+25 794 manquent à l'appel ». À vérifier sur tout écart publié : le signe arithmétique et
+le signe ressenti doivent pointer dans le même sens.
+
+**Divergence assumée sur la puce 4.** Le site y publie la projection (« ventes anciennes
+projetées en recul d'environ 4 % d'ici décembre 2026 ») ; `app.py` retombe sur l'état des
+transactions, faute de verdict — même raison que pour sa carte de Perspective, documentée
+plus haut. Le code a **une seule forme** (le second membre prend le verdict s'il existe,
+sinon le repli), c'est la donnée qui manque d'un côté, pas la logique.
+
 **Reste au backlog, mesuré mais non fait : la SURFACE.** Le fichier SIT@DEL déjà en dépôt
 porte `SDP_AUT` / `SDP_COM` (surface de plancher, m²) et `data_manager.py` ne parse que
 `LOG_AUT` / `LOG_COM`. Or les matériaux suivent les m², pas le nombre de logements. Mesuré

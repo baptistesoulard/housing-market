@@ -121,6 +121,36 @@ def _status_seq(v) -> str:
     return ana._tri(v, ana.SEQ_TOL)
 
 
+def _stock_neuf(df_ecln):
+    """Stock de logements neufs à vendre, et le temps qu'il met à s'écouler.
+
+    ⚠️ `DelaiEcoulement` est publié en TRIMESTRES (voir data_manager.py) : 7,5 se lit
+    22 mois, pas 7,5. La confusion est facile et retourne le diagnostic — sept mois de
+    stock est sain, vingt-deux ne l'est pas. La conversion est faite ici, une fois, et
+    les deux surfaces lisent le résultat.
+
+    Le statut se lit à l'ENVERS des autres cartes : un stock qui s'écoule lentement est
+    ce qui fait reculer les mises en vente, donc les chantiers de demain. Il vient donc
+    du délai comparé à sa moyenne longue, jamais de la variation du stock lui-même.
+    """
+    if df_ecln is None or df_ecln.empty:
+        return None
+    sd = df_ecln.dropna(subset=["Encours", "DelaiEcoulement"]).sort_values("Date")
+    if len(sd) < 5:
+        return None
+    enc = sd["Encours"].astype(float)
+    dl_t = sd["DelaiEcoulement"].astype(float)
+    mois, moy = float(dl_t.iloc[-1]) * 3, float(dl_t.mean()) * 3
+    return {
+        "encours": float(enc.iloc[-1]),
+        "mois": mois, "moy_mois": moy,
+        "ecart_pct": (mois / moy - 1) * 100 if moy else None,
+        "seq": (float(enc.iloc[-1]) / float(enc.iloc[-2]) - 1) * 100,
+        "since": int(sd["Date"].iloc[0].year),
+        "status": "down" if mois > moy * 1.1 else ("up" if mois < moy * 0.9 else "flat"),
+    }
+
+
 def _taux_transformation(flux):
     """Part des logements autorisés effectivement ouverts en chantier, en cumuls 12 mois.
 
@@ -249,6 +279,24 @@ def build_synthese(con, frames: dict) -> dict:
     lvl_mises = ana.level_context(roll_sit, "MisesEnChantier")
     lvl_tx = ana.level_context(roll_va, "Transactions")
 
+    # --- Mesures calculées AVANT les puces, parce qu'elles y montent ----------------
+    # Les puces sont le niveau de lecture le plus cher de la page : trois pastilles pour
+    # un coup d'œil, quatre puces pour trente secondes, douze cartes pour le détail. Un
+    # lecteur qui s'arrête après les puces doit y trouver les faits les plus tranchants,
+    # pas seulement ceux qui existaient quand ce générateur a été écrit. Le stock, le
+    # taux de transformation et la projection étaient restés cantonnés aux cartes.
+    stock = _stock_neuf(df_ecln_full)
+    taux_tr = _taux_transformation(roll_sit.set_index("Date").sort_index())
+    tr = None
+    if not taux_tr.empty:
+        tr_now, tr_moy = float(taux_tr.iloc[-1]) * 100, float(taux_tr.mean()) * 100
+        implied = k_permis["current_12m"] * tr_moy / 100.0
+        tr = {"now": tr_now, "moy": tr_moy, "implied": implied,
+              "ecart": implied - k_mises["current_12m"],
+              "since": int(taux_tr.index[0].year),
+              "status": "down" if tr_now < tr_moy - 2 else ("up" if tr_now > tr_moy + 2 else "flat")}
+    verdict = _shared_verdict(con)
+
     # ---------------------------- Pastilles par pilier ----------------------------
     # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
     # l'aval (chantiers) divergent, c'est la divergence qui est l'information.
@@ -280,15 +328,43 @@ def build_synthese(con, frames: dict) -> dict:
         q.monthly(con, "sitadel", ["MisesEnChantier"], (12,), types=ana.SITADEL_INDIVIDUEL_PUR),
         "MisesEnChantier")
     takeaways = []
-    # Neuf : la puce doit porter les DEUX horizons, et nommer la divergence quand il y en
-    # a une — c'est le seul endroit où le mécanisme (l'aval tourne sur le stock
-    # d'autorisations déjà délivrées) peut être dit en toutes lettres.
+    # --- Puce 1 : AUJOURD'HUI — l'ancien d'abord, puis le neuf ---------------------
+    # Les deux marchés sont séparés à l'intérieur de la puce plutôt que fondus : ils
+    # n'alimentent pas les mêmes lignes de produits, et ils ne disent pas la même chose
+    # en ce moment — l'ancien est haut mais figé, le neuf est bas et sous stock.
+    # Chaque moitié tient en une phrase : niveau, altitude, et le fait qui pique. Le
+    # détail (taux annuel, percentile, explication du plateau) reste sur les cartes —
+    # une puce qui déborde annule la marche entre le résumé et le détail.
+    def _altitude(ctx):
+        return ("" if not ctx else
+                (", " + f"{abs(ctx['gap_pct']):.0f} %".replace(".", ",")
+                 + (" sous" if ctx["gap_pct"] < 0 else " au-dessus de")
+                 + f" la normale {ctx['ref_label']}"))
+
+    anc = f"**Ancien** : {_human(k_tx['current_12m'])} ventes sur 12 mois" + _altitude(lvl_tx)
+    if plateau_tx:
+        anc += f", mais au plateau depuis {_fmt_month_year(plateau_tx['since'])}"
+    neu = f"**Neuf** : {_human(k_mises['current_12m'])} chantiers" + _altitude(lvl_mises)
+    if stock:
+        neu += (f", sur un stock de {_th(stock['encours'])} invendus qui met "
+                f"{stock['mois']:.0f} mois à s'écouler contre {stock['moy_mois']:.0f} "
+                "habituellement")
+    # Statut de la puce : les deux VOLUMES du présent. Le stock est un avertissement à
+    # l'intérieur de la puce, pas de quoi peindre tout le présent en rouge.
+    _now = {_status_seq(h_mises["value"]), pill_ancien}
+    st_now = "down" if "down" in _now else ("up" if _now == {"up"} else "flat")
+    takeaways.append(f"{_dot(st_now)} **Aujourd'hui** — {anc}. {neu}.")
+
+    # --- Puce 2 : LE CARNET — ce qui est déjà autorisé ------------------------------
+    # Nomme la divergence quand il y en a une : c'est le seul endroit où le mécanisme
+    # (l'aval tourne sur le stock d'autorisations déjà délivrées) peut être écrit en
+    # toutes lettres, puis le taux de conversion qui dit combien s'ouvriront vraiment.
     p3, m3 = _pct_fr(h_permis["value"]), _pct_fr(h_mises["value"])
     m12 = _pct_fr(k_mises["yoy_12m_pct"])
     if pn["kind"] == "amont_repli":
-        corps = (f"signaux divergents : les permis reculent ({p3} sur 3 mois) pendant que "
-                 f"les chantiers tiennent encore sur le stock d'autorisations déjà "
-                 f"délivrées ({m3} sur 3 mois, {m12} sur 12 mois)")
+        corps = (f"les permis reculent ({p3} sur 3 mois) pendant que les chantiers tiennent "
+                 f"sur le stock d'autorisations déjà délivrées ({m3} sur 3 mois, "
+                 f"{m12} sur 12 mois)")
     elif pn["kind"] == "amont_reprise":
         corps = (f"les permis repartent ({p3} sur 3 mois) avant les chantiers "
                  f"({m3} sur 3 mois, {m12} sur 12 mois) — l'effet se verra dans 12 à 18 mois")
@@ -299,24 +375,20 @@ def build_synthese(con, frames: dict) -> dict:
         corps = (f"les deux étages reculent — permis {p3} et chantiers {m3} sur 3 mois "
                  f"({m12} sur 12 mois)")
     else:
-        corps = (f"permis {p3} et chantiers {m3} sur 3 mois ; tendance 12 mois {m12}")
-    l1 = f"{_dot(pill_neuf)} **Neuf** — {corps}"
+        corps = f"permis {p3} et chantiers {m3} sur 3 mois ; tendance 12 mois {m12}"
+    l2 = f"{_dot(pn['amont'])} **Le carnet** — {corps}"
+    if tr:
+        # Le sens compte plus que le nombre : « 25 794 de plus qu'aujourd'hui » se lit
+        # comme une bonne nouvelle alors que c'est un manque. On énonce donc le déficit.
+        manque = "manquent à l'appel" if tr["ecart"] > 0 else "en plus"
+        l2 += (". Et seulement " + f"{tr['now']:.1f} %".replace(".", ",")
+               + " des permis deviennent des chantiers, contre "
+               + f"{tr['moy']:.1f} %".replace(".", ",") + " habituellement : "
+               + f"{_th(abs(tr['ecart']))} {manque}")
     ip3 = mom_ip.get("last3_seq")
     if ip3 is not None:
-        l1 += (f". La maison individuelle pure reste le segment porteur : {_pct_fr(ip3)} "
-               f"sur 3 mois, {_pct_fr(mom_ip['roll12_yoy'])} sur 12 mois.")
-    else:
-        l1 += "."
-    takeaways.append(l1)
-
-    # Ancien : le niveau, et depuis quand il ne bouge plus. Un « +5,2 % sur douze mois »
-    # seul laisserait croire à une croissance en cours alors qu'elle s'est arrêtée.
-    l2 = (f"{_dot(pill_ancien)} **Ancien** — {_human(k_tx['current_12m'])} ventes sur 12 mois "
-          f"({_pct_fr(k_tx['yoy_12m_pct'])} sur un an)")
-    if plateau_tx:
-        l2 += (f", mais le niveau ne bouge plus depuis {plateau_tx['months']} mois "
-               f"({_fmt_month_year(plateau_tx['since'])}) : la hausse annuelle décrit une "
-               f"croissance déjà arrêtée.")
+        l2 += (f". La maison individuelle pure reste le segment porteur "
+               f"({_pct_fr(ip3)} sur 3 mois, {_pct_fr(mom_ip['roll12_yoy'])} sur 12 mois).")
     else:
         l2 += "."
     takeaways.append(l2)
@@ -341,13 +413,24 @@ def build_synthese(con, frames: dict) -> dict:
                        "les permis repartent",
                  "flat": "signal neuf neutre à 12-18 mois : les permis ne bougent pas",
                  "down": "vent contraire à 12-18 mois côté neuf : les permis reculent"}[pn["amont"]]
-    impl_ancien = ("transactions au plateau, pas de relais à court terme" if plateau_tx
-                   else {"up": "soutien à court terme (~2 mois) via les transactions "
-                               "(sécurité & domotique)",
-                         "flat": "transactions neutres à court terme",
-                         "down": "prudence à court terme (~2 mois) sur les produits liés aux "
-                                 "déménagements (sécurité & domotique)"}[pill_ancien])
-    takeaways.append(f"🎯 **Demande second œuvre** — {impl_neuf} ; {impl_ancien}.")
+    # Le second membre porte la PROJECTION quand elle existe : c'est le seul chiffre
+    # prospectif du site, il n'avait aucune raison de rester cantonné aux cartes. Repli
+    # sur l'état des transactions quand le modèle n'est pas calibrable.
+    if verdict:
+        ampleur = f"{abs(verdict['change_pct']):.0f} %".replace(".", ",")
+        mouvement = {"hausse": f"en hausse d'environ {ampleur}",
+                     "baisse": f"en recul d'environ {ampleur}",
+                     "stable": "à peu près stables"}[verdict["direction"]]
+        impl_ancien = (f"ventes anciennes projetées {mouvement} d'ici "
+                       f"{verdict['target_month']}")
+    else:
+        impl_ancien = ("transactions au plateau, pas de relais à court terme" if plateau_tx
+                       else {"up": "soutien à court terme (~2 mois) via les transactions "
+                                   "(sécurité & domotique)",
+                             "flat": "transactions neutres à court terme",
+                             "down": "prudence à court terme (~2 mois) sur les produits liés "
+                                     "aux déménagements (sécurité & domotique)"}[pill_ancien])
+    takeaways.append(f"🎯 **Ce que ça implique** — {impl_neuf} ; {impl_ancien}.")
 
     # ------------------------------ Fraîcheur -------------------------------------
     def _last_valid(df, col):
@@ -380,24 +463,15 @@ def build_synthese(con, frames: dict) -> dict:
     # des autres cartes — un stock qui grossit ou qui s'écoule lentement est ce qui FAIT
     # reculer les mises en vente, donc les chantiers de demain. D'où un statut piloté par
     # le délai d'écoulement comparé à sa moyenne longue, et non par la variation du stock.
-    if df_ecln_full is not None and not df_ecln_full.empty:
-        sd = df_ecln_full.dropna(subset=["Encours", "DelaiEcoulement"]).sort_values("Date")
-        if len(sd) >= 5:
-            enc = sd["Encours"].astype(float)
-            # Le délai est publié en TRIMESTRES (voir data_manager.py) : 7,5 se lit
-            # 22 mois, pas 7,5. La confusion est facile et change tout le diagnostic.
-            dl_t = sd["DelaiEcoulement"].astype(float)
-            dl_mois, dl_moy = float(dl_t.iloc[-1]) * 3, float(dl_t.mean()) * 3
-            enc_seq = (float(enc.iloc[-1]) / float(enc.iloc[-2]) - 1) * 100
-            d_status = "down" if dl_mois > dl_moy * 1.1 else ("up" if dl_mois < dl_moy * 0.9 else "flat")
-            cards_act.append({
-                "emoji": _dot(d_status), "title": "Stock de logements neufs à vendre",
-                "value": _th(float(enc.iloc[-1])),
-                "sub": (f"{dl_mois:.0f} mois pour l'écouler au rythme actuel · "
-                        f"{_pct_fr(enc_seq)} vs le trimestre précédent"),
-                "level": (f"{dl_moy:.0f} mois en moyenne depuis {sd['Date'].iloc[0].year} — "
-                          f"il faut aujourd'hui {abs(dl_mois / dl_moy - 1) * 100:.0f} % de "
-                          "temps de plus pour écouler le stock")})
+    if stock:
+        cards_act.append({
+            "emoji": _dot(stock["status"]), "title": "Stock de logements neufs à vendre",
+            "value": _th(stock["encours"]),
+            "sub": (f"{stock['mois']:.0f} mois pour l'écouler au rythme actuel · "
+                    f"{_pct_fr(stock['seq'])} vs le trimestre précédent"),
+            "level": (f"{stock['moy_mois']:.0f} mois en moyenne depuis {stock['since']} — "
+                      f"il faut aujourd'hui {abs(stock['ecart_pct']):.0f} % de temps de "
+                      "plus pour écouler le stock")})
 
     # ------------ Bloc 2 : le carnet — ce qui est déjà autorisé (12-18 mois) ----------
     cards_carnet = [
@@ -411,21 +485,22 @@ def build_synthese(con, frames: dict) -> dict:
     # chantiers, et il manquait : sans lui, « 376 k permis » se lit comme 376 k chantiers
     # à venir. Il ne prévoit rien — il décrit ce que les promoteurs font réellement de
     # leurs autorisations, ce qui est déjà de premier ordre pour un fournisseur.
-    taux_tr = _taux_transformation(roll_sit.set_index("Date").sort_index())
-    if not taux_tr.empty:
-        tr_now, tr_moy = float(taux_tr.iloc[-1]) * 100, float(taux_tr.mean()) * 100
-        implied = k_permis["current_12m"] * tr_moy / 100.0
-        ecart = implied - k_mises["current_12m"]
-        tr_status = "down" if tr_now < tr_moy - 2 else ("up" if tr_now > tr_moy + 2 else "flat")
+    if tr:
+        # Le sens doit sauter aux yeux. La formulation précédente — « les permis
+        # donneraient 319 k chantiers, soit 25 794 de PLUS qu'aujourd'hui » — se lisait
+        # comme une bonne nouvelle : l'œil accroche « de plus » et comprend croissance,
+        # alors que le fait est un MANQUE causé par un taux de conversion dégradé. On
+        # énonce donc le déficit, et la comparaison de niveaux dans le bon ordre.
+        manque = "manquent à l'appel" if tr["ecart"] > 0 else "en plus"
         cards_carnet.append({
-            "emoji": _dot(tr_status), "title": "Taux de transformation permis → chantiers",
-            "value": f"{tr_now:.1f} %".replace(".", ","),
-            "sub": (f"{tr_moy:.1f} %".replace(".", ",") + " en moyenne depuis "
-                    f"{taux_tr.index[0].year} · part des logements autorisés "
-                    "effectivement ouverts en chantier"),
-            "level": (f"à ce taux habituel, les permis des 12 derniers mois donneraient "
-                      f"{_human(implied)} chantiers — soit {_human(abs(ecart))} logements "
-                      f"{'de plus' if ecart > 0 else 'de moins'} qu'aujourd'hui")})
+            "emoji": _dot(tr["status"]), "title": "Taux de transformation permis → chantiers",
+            "value": f"{tr['now']:.1f} %".replace(".", ","),
+            "sub": ("part des logements autorisés effectivement ouverts en chantier · "
+                    + f"contre {tr['moy']:.1f} %".replace(".", ",")
+                    + f" en moyenne depuis {tr['since']}"),
+            "level": (f"au taux habituel, les permis des 12 derniers mois auraient donné "
+                      f"{_human(tr['implied'])} chantiers au lieu de "
+                      f"{_human(k_mises['current_12m'])} : {_th(abs(tr['ecart']))} {manque}")})
     # ECLN est elle aussi publiée CVS-CJO (voir data_manager.py) : même raisonnement que
     # pour SIT@DEL, donc même lecture séquentielle — d'un trimestre au précédent, sans
     # repasser par le même trimestre de l'an dernier. La tendance sur quatre trimestres
