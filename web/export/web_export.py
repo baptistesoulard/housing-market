@@ -452,11 +452,17 @@ def build_synthese(con, frames: dict) -> dict:
                         f"({rel['n']} millésimes)")
         # Construit depuis les CHAMPS du verdict, jamais par découpe de sa phrase :
         # `sentence` est destinée à être lue, sa forme peut changer.
+        # Le titre NOMME la série projetée. Sans elle il disait « recul d'environ 4 %
+        # attendu d'ici décembre 2026 » — un lecteur du bâtiment y lit « le marché », donc
+        # le sien, alors que le modèle ne projette QUE les ventes de logements anciens.
+        # Il n'existe pas de projection des mises en chantier sur ce site, et c'est
+        # délibéré : le lien permis → chantiers a été mesuré puis réfuté (voir la page
+        # « Marché du neuf »). Un titre ambigu ferait passer une absence pour une réponse.
         ampleur = f"{abs(verdict['change_pct']):.0f} %".replace(".", ",")
         persp_verdict = {
-            "hausse": f"hausse d'environ {ampleur} attendue d'ici {verdict['target_month']}",
-            "baisse": f"recul d'environ {ampleur} attendu d'ici {verdict['target_month']}",
-            "stable": f"marché à peu près stable d'ici {verdict['target_month']}",
+            "hausse": f"ventes anciennes en hausse d'environ {ampleur} d'ici {verdict['target_month']}",
+            "baisse": f"ventes anciennes en recul d'environ {ampleur} d'ici {verdict['target_month']}",
+            "stable": f"ventes anciennes à peu près stables d'ici {verdict['target_month']}",
         }[verdict["direction"]]
         cards_persp.append({
             "emoji": _dot(v_status),
