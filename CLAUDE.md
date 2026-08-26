@@ -462,6 +462,70 @@ régénère à la main (Playwright, hors dépendances du site). Elle vit hors de
 que les fichiers que le framework copie reçoivent un nom haché, incompatible avec l'URL
 absolue qu'annonce `og:image`.
 
+**La fenêtre du momentum dépend de la SÉRIE, pas du goût (2026-08-26).** La Synthèse
+publiait pour ses trois séries le même « X % sur les 3 derniers mois vs les mêmes mois
+n-1 ». C'est le bon outil sur une série brute et le mauvais sur les deux autres.
+
+SIT@DEL est chargée en `NAT_SERIES == "CVS-CJO"` ([data_manager.py:289](data_manager.py:289)) :
+elle est DÉJÀ corrigée des variations saisonnières et des jours ouvrables. Or comparer aux
+mêmes mois de l'an dernier n'a qu'une raison d'être — neutraliser la saisonnalité. Sur une
+série déjà corrigée, la comparaison ne neutralise rien et importe gratuitement une base
+vieille de douze mois, dont le bruit devient tout le signal. Mesuré sur les mises en
+chantier à juin 2026 : l'indicateur affichait **+28,4 %** (dont ~8 points dus au seul creux
+d'avril-juin 2025, base 6 % sous la moyenne de l'année) et venait de perdre **13,8 points
+en un mois** — la sortie du pic de mars 2026 de la fenêtre — pendant que la tendance
+12 mois bougeait de 0,3 point. La même série lue **séquentiellement** disait **−2,0 %** :
+le rythme avait cessé de monter. La page publiait un gros chiffre vert au moment exact où
+la dynamique se retournait.
+
+L'IGEDD est l'inverse : reconstruite en différenciant un cumul 12 mois, ses flux mensuels
+sont très bruités — le séquentiel y saute de **10 points par mois** en moyenne (contre 1,6
+pour le cumul 12 mois). Sa lecture honnête reste le niveau 12 mois, complété par
+`ana.plateau_months`, qui dit depuis quand ce niveau ne bouge plus : « +5,2 % sur un an »
+décrivait une croissance **arrêtée depuis décembre 2025**, ce qu'un taux annuel à base
+basse ne peut pas dire.
+
+D'où deux régimes, portés par `ana.ADJUSTED_SEQUENTIAL` / `ana.RAW_TWELVE_MONTHS` et
+`ana.headline_momentum`. **Le choix vit dans `analysis.py` et non dans les surfaces**,
+précisément pour qu'`app.py` et `web_export.py` ne puissent pas en retenir un chacune.
+`momentum_metrics` renvoie désormais aussi `last3_seq` ; `last3_yoy` reste calculée (les
+onglets Neuf/Ancien l'affichent encore dans `_yoy_kpi`) mais n'est plus publiée par la
+Synthèse. Chaque carte porte les DEUX horizons — momentum, puis tendance 12 mois : publier
+l'un sans l'autre laisse croire qu'un retournement de trimestre efface une année.
+
+**Le pilier « Neuf » ne moyenne plus ses deux étages, et c'est le point porteur.** La règle
+précédente faisait `(permis + chantiers) / 2` sur deux taux de croissance de séries
+d'ampleurs différentes. Au-delà de l'objection arithmétique, elle DÉTRUISAIT l'information
+utile : les permis sont l'amont (ce qui alimente les chantiers 12 à 18 mois plus tard), les
+mises en chantier l'aval (ce qui consomme des matériaux aujourd'hui). En juin 2026 la
+moyenne rendait « +9,7 % → 🟢 en reprise » là où les permis reculaient de 9,8 % et les
+chantiers de 2,0 %. `ana.pillar_neuf` nomme la divergence (« amont en repli ») et la
+`kind` alimente la puce « à retenir », seul endroit où le mécanisme — l'aval tourne sur le
+stock d'autorisations déjà délivrées — peut être écrit en toutes lettres. Corollaire tenu
+dans la foulée : la puce « Demande second œuvre » lit l'**amont** pour son horizon 12-18
+mois, plus le statut agrégé — sinon l'aval, qui décrit le présent, masque le signal du
+futur.
+
+`ana.SEQ_TOL = 2.0` est plus large que le ±1 des taux annuels, et pour une raison mesurée :
+le 3 mois séquentiel saute de 5,2 pt par mois sur les permis et de 3,5 pt sur les chantiers.
+À ±1 la pastille changerait de couleur au bruit. Cinq tests de `tests/test_logic.py`
+verrouillent l'ensemble, dont une **contre-épreuve** explicite : amont −10, aval +30 (la
+moyenne dirait « up ») doit rendre `amont_repli` et jamais `up`.
+
+**Le chapeau statique de la Synthèse porte la méthode, donc il devait bouger aussi.** Il
+annonçait « les trois derniers mois comparés à la même période un an plus tôt » — devenu
+faux. Comme tout chapeau du site il reste sans aucun chiffre (rien ne le régénère) ; il
+décrit les deux horizons, les deux régimes et le refus de moyenner, en toutes lettres.
+
+**Reste au backlog, mesuré mais non fait : la SURFACE.** Le fichier SIT@DEL déjà en dépôt
+porte `SDP_AUT` / `SDP_COM` (surface de plancher, m²) et `data_manager.py` ne parse que
+`LOG_AUT` / `LOG_COM`. Or les matériaux suivent les m², pas le nombre de logements. Mesuré
+à juin 2026 : 293 412 logements commencés pour **22,3 M m²**, soit **−32 % vs la moyenne
+2010-19 en surface contre −23 % en logements** — le logement moyen est passé de 85,2 à
+76,1 m². Neuf points d'écart sur le tonnage adressable, invisibles aujourd'hui. Touche
+`data_manager.py`, le contrat pandera et les tests de parité : à faire dans une passe
+dédiée.
+
 **Neuf et ancien sont des pages JUMELLES : trois sections communes, même intitulé, même
 ordre.** « 🔑 Chiffres Clés », « 📊 Courbes d'évolution du marché », « 📅 Comparaison
 Mensuelle par Année » ouvrent les deux pages ; chacune ajoute ensuite ce qui lui est propre

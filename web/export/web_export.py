@@ -116,11 +116,29 @@ def _status_yoy(v, hi: float = 1.0, lo: float = -1.0) -> str:
     return "up" if v > hi else ("down" if v < lo else "flat")
 
 
-def _delta3m_sub(v, exact=None) -> str:
-    txt = _pct_fr(v) + " vs un an plus tôt (3 derniers mois)"
+def _status_seq(v) -> str:
+    """Statut d'un momentum SÉQUENTIEL, avec sa tolérance propre (voir ana.SEQ_TOL)."""
+    return ana._tri(v, ana.SEQ_TOL)
+
+
+def _momentum_sub(head, trend_12m=None, plateau=None, exact=None) -> str:
+    """Sous-titre de carte : le momentum publié, puis la tendance longue, puis le total.
+
+    Deux horizons sur une ligne, et c'est le but : le momentum dit si le rythme tourne,
+    la tendance 12 mois dit d'où l'on vient. Publier l'un sans l'autre laisse croire
+    qu'un retournement de trimestre efface une année (ou l'inverse) — c'est exactement
+    ce que faisait l'ancien « X % vs un an plus tôt (3 derniers mois) », seul sur la
+    carte et calculé de la façon que `ana.headline_momentum` documente comme fausse sur
+    une série corrigée des variations saisonnières.
+    """
+    parts = [_pct_fr(head["value"]) + " " + head["window"]]
+    if trend_12m is not None and head["key"] != "roll12_yoy":
+        parts.append("tendance 12 mois : " + _pct_fr(trend_12m))
+    if plateau is not None:
+        parts.append(f"au plateau depuis {_fmt_month_year(plateau['since'])}")
     if exact is not None:
-        txt += " · total exact : " + _th(exact)
-    return txt
+        parts.append("total exact : " + _th(exact))
+    return " · ".join(parts)
 
 
 def _borrow_capacity_factor(rate_pct, years):
@@ -188,10 +206,21 @@ def build_synthese(con, frames: dict) -> dict:
             return None, None
         return q.macro_last_and_year_ago(con, col, months)
 
+    # --- Momentum publié : séquentiel sur SIT@DEL (CVS-CJO), 12 mois sur l'IGEDD ---
+    # Le régime dépend de la série, pas du goût : voir analysis.headline_momentum.
+    h_permis = ana.headline_momentum(m_permis, ana.ADJUSTED_SEQUENTIAL)
+    h_mises = ana.headline_momentum(m_mises, ana.ADJUSTED_SEQUENTIAL)
+    h_tx = ana.headline_momentum(m_tx, ana.RAW_TWELVE_MONTHS)
+    plateau_tx = ana.plateau_months(roll_va, "Transactions")
+
     # ---------------------------- Pastilles par pilier ----------------------------
-    neuf_l3 = [v for v in (m_permis.get("last3_yoy"), m_mises.get("last3_yoy")) if v is not None]
-    pill_neuf = _status_yoy(sum(neuf_l3) / len(neuf_l3)) if neuf_l3 else "flat"
-    pill_ancien = _status_yoy(m_tx.get("last3_yoy"))
+    # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
+    # l'aval (chantiers) divergent, c'est la divergence qui est l'information.
+    pn = ana.pillar_neuf(m_permis, m_mises)
+    pill_neuf = pn["status"]
+    # Ancien : un plateau EST un état stable, et il se lit sur le niveau — plus fiable
+    # qu'un taux de croissance annuel dont la base est basse (voir plateau_months).
+    pill_ancien = "flat" if plateau_tx else _status_yoy(h_tx["value"])
     r_now, r_yr = _last_prev("Credit_Logement_Taux_Interet")
     dr_yr = None if (r_now is None or r_yr is None) else r_now - r_yr
     pill_fin = ("flat" if dr_yr is None
@@ -200,11 +229,12 @@ def build_synthese(con, frames: dict) -> dict:
 
     w_market = {"up": "en reprise", "flat": "stable", "down": "en repli"}
     w_fin = {"up": "en amélioration", "flat": "stable", "down": "en durcissement"}
+    w_ancien = f"au plateau depuis {plateau_tx['months']} mois" if plateau_tx else w_market[pill_ancien]
     pillars = [
         {"key": "neuf", "label": "Neuf", "status": pill_neuf,
-         "dot": _dot(pill_neuf), "word": w_market[pill_neuf]},
+         "dot": _dot(pill_neuf), "word": pn["word"]},
         {"key": "ancien", "label": "Ancien", "status": pill_ancien,
-         "dot": _dot(pill_ancien), "word": w_market[pill_ancien]},
+         "dot": _dot(pill_ancien), "word": w_ancien},
         {"key": "fin", "label": "Financement", "status": pill_fin,
          "dot": _dot(pill_fin), "word": w_fin[pill_fin]},
     ]
@@ -214,25 +244,43 @@ def build_synthese(con, frames: dict) -> dict:
         q.monthly(con, "sitadel", ["MisesEnChantier"], (12,), types=ana.SITADEL_INDIVIDUEL_PUR),
         "MisesEnChantier")
     takeaways = []
-    neuf_head = {"up": "la construction accélère", "flat": "la construction est stable",
-                 "down": "la construction recule"}[pill_neuf]
-    l1 = (f"{_dot(pill_neuf)} **Neuf** — {neuf_head} : permis "
-          f"{_pct_fr(k_permis['yoy_12m_pct'])} et mises en chantier "
-          f"{_pct_fr(k_mises['yoy_12m_pct'])} sur 12 mois")
-    if mom_ip.get("last3_yoy") is not None:
-        l1 += f" (maison individuelle pure : {_pct_fr(mom_ip['last3_yoy'])} sur 3 mois)."
+    # Neuf : la puce doit porter les DEUX horizons, et nommer la divergence quand il y en
+    # a une — c'est le seul endroit où le mécanisme (l'aval tourne sur le stock
+    # d'autorisations déjà délivrées) peut être dit en toutes lettres.
+    p3, m3 = _pct_fr(h_permis["value"]), _pct_fr(h_mises["value"])
+    m12 = _pct_fr(k_mises["yoy_12m_pct"])
+    if pn["kind"] == "amont_repli":
+        corps = (f"signaux divergents : les permis reculent ({p3} sur 3 mois) pendant que "
+                 f"les chantiers tiennent encore sur le stock d'autorisations déjà "
+                 f"délivrées ({m3} sur 3 mois, {m12} sur 12 mois)")
+    elif pn["kind"] == "amont_reprise":
+        corps = (f"les permis repartent ({p3} sur 3 mois) avant les chantiers "
+                 f"({m3} sur 3 mois, {m12} sur 12 mois) — l'effet se verra dans 12 à 18 mois")
+    elif pn["kind"] == "reprise":
+        corps = (f"les deux étages accélèrent — permis {p3} et chantiers {m3} sur 3 mois "
+                 f"({m12} sur 12 mois)")
+    elif pn["kind"] == "repli":
+        corps = (f"les deux étages reculent — permis {p3} et chantiers {m3} sur 3 mois "
+                 f"({m12} sur 12 mois)")
+    else:
+        corps = (f"permis {p3} et chantiers {m3} sur 3 mois ; tendance 12 mois {m12}")
+    l1 = f"{_dot(pill_neuf)} **Neuf** — {corps}"
+    ip3 = mom_ip.get("last3_seq")
+    if ip3 is not None:
+        l1 += (f". La maison individuelle pure reste le segment porteur : {_pct_fr(ip3)} "
+               f"sur 3 mois, {_pct_fr(mom_ip['roll12_yoy'])} sur 12 mois.")
     else:
         l1 += "."
     takeaways.append(l1)
 
-    tx_l3 = m_tx.get("last3_yoy")
+    # Ancien : le niveau, et depuis quand il ne bouge plus. Un « +5,2 % sur douze mois »
+    # seul laisserait croire à une croissance en cours alors qu'elle s'est arrêtée.
     l2 = (f"{_dot(pill_ancien)} **Ancien** — {_human(k_tx['current_12m'])} ventes sur 12 mois "
-          f"({_pct_fr(k_tx['yoy_12m_pct'])})")
-    if tx_l3 is not None:
-        if pill_ancien == "down":
-            l2 += f", mais la dynamique ralentit : {_pct_fr(tx_l3)} sur les 3 derniers mois."
-        else:
-            l2 += f" ; {_pct_fr(tx_l3)} sur les 3 derniers mois."
+          f"({_pct_fr(k_tx['yoy_12m_pct'])} sur un an)")
+    if plateau_tx:
+        l2 += (f", mais le niveau ne bouge plus depuis {plateau_tx['months']} mois "
+               f"({_fmt_month_year(plateau_tx['since'])}) : la hausse annuelle décrit une "
+               f"croissance déjà arrêtée.")
     else:
         l2 += "."
     takeaways.append(l2)
@@ -249,13 +297,20 @@ def build_synthese(con, frames: dict) -> dict:
     if l3_parts:
         takeaways.append(f"{_dot(pill_fin)} **Financement** — " + " ; ".join(l3_parts) + ".")
 
-    impl_neuf = {"up": "signal favorable à 12-18 mois via le neuf (fermetures & menuiseries)",
-                 "flat": "signal neuf neutre à 12-18 mois",
-                 "down": "vent contraire à 12-18 mois côté neuf"}[pill_neuf]
-    impl_ancien = {"up": "soutien à court terme (~2 mois) via les transactions (sécurité & domotique)",
-                   "flat": "transactions neutres à court terme",
-                   "down": "prudence à court terme (~2 mois) sur les produits liés aux "
-                           "déménagements (sécurité & domotique)"}[pill_ancien]
+    # L'horizon 12-18 mois est piloté par l'AMONT — les permis —, pas par la pastille du
+    # pilier : c'est l'autorisation d'aujourd'hui qui devient le chantier de l'an
+    # prochain. Lire ici le statut agrégé laisserait l'aval, qui décrit le présent,
+    # masquer le signal du futur — le défaut même que la fin de la moyenne corrige.
+    impl_neuf = {"up": "signal favorable à 12-18 mois via le neuf (fermetures & menuiseries) : "
+                       "les permis repartent",
+                 "flat": "signal neuf neutre à 12-18 mois : les permis ne bougent pas",
+                 "down": "vent contraire à 12-18 mois côté neuf : les permis reculent"}[pn["amont"]]
+    impl_ancien = ("transactions au plateau, pas de relais à court terme" if plateau_tx
+                   else {"up": "soutien à court terme (~2 mois) via les transactions "
+                               "(sécurité & domotique)",
+                         "flat": "transactions neutres à court terme",
+                         "down": "prudence à court terme (~2 mois) sur les produits liés aux "
+                                 "déménagements (sécurité & domotique)"}[pill_ancien])
     takeaways.append(f"🎯 **Demande second œuvre** — {impl_neuf} ; {impl_ancien}.")
 
     # ------------------------------ Fraîcheur -------------------------------------
@@ -274,15 +329,17 @@ def build_synthese(con, frames: dict) -> dict:
 
     # ---------------------- Bloc 1 : Activité -------------------------------------
     cards_act = [
-        {"emoji": _dot(_status_yoy(m_permis.get("last3_yoy"))), "title": "Permis de construire",
+        {"emoji": _dot(_status_seq(h_permis["value"])), "title": "Permis de construire",
          "value": _human(k_permis["current_12m"]) + " /12 m",
-         "sub": _delta3m_sub(m_permis.get("last3_yoy"), exact=k_permis["current_12m"])},
-        {"emoji": _dot(_status_yoy(m_mises.get("last3_yoy"))), "title": "Mises en chantier",
+         "sub": _momentum_sub(h_permis, trend_12m=k_permis["yoy_12m_pct"],
+                              exact=k_permis["current_12m"])},
+        {"emoji": _dot(_status_seq(h_mises["value"])), "title": "Mises en chantier",
          "value": _human(k_mises["current_12m"]) + " /12 m",
-         "sub": _delta3m_sub(m_mises.get("last3_yoy"), exact=k_mises["current_12m"])},
-        {"emoji": _dot(_status_yoy(m_tx.get("last3_yoy"))), "title": "Ventes de logements anciens",
+         "sub": _momentum_sub(h_mises, trend_12m=k_mises["yoy_12m_pct"],
+                              exact=k_mises["current_12m"])},
+        {"emoji": _dot(pill_ancien), "title": "Ventes de logements anciens",
          "value": _human(k_tx["current_12m"]) + " /12 m",
-         "sub": _delta3m_sub(m_tx.get("last3_yoy"), exact=k_tx["current_12m"])},
+         "sub": _momentum_sub(h_tx, plateau=plateau_tx, exact=k_tx["current_12m"])},
     ]
     if df_ecln_full is not None and not df_ecln_full.empty:
         se = df_ecln_full.dropna(subset=["Reservations"]).sort_values("Date")
@@ -439,10 +496,21 @@ def build_synthese(con, frames: dict) -> dict:
         "pillars": pillars,
         "takeaways": takeaways,
         "freshness": freshness,
-        "how_to_read": ("Chaque pastille résume la tendance des 3 derniers mois vs un an plus tôt : "
-                        "🟢 vent favorable · 🟠 stable · 🔴 vent contraire. Pour les taux et "
-                        "l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en "
-                        "baisse), pas une valeur qui monte. Chiffres nationaux."),
+        "how_to_read": (
+            "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. "
+            "Chaque carte porte deux horizons : le momentum court terme, puis la tendance "
+            "sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les "
+            "mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières "
+            "et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux "
+            "3 précédents, sans repasser par une base vieille d'un an qui n'apporterait "
+            "que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à "
+            "partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les "
+            "lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge "
+            "plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis "
+            "(l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en "
+            "chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. "
+            "Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent "
+            "(taux en baisse), pas une valeur qui monte. Chiffres nationaux."),
         "blocks": blocks,
         "chart": chart,
     }

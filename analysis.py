@@ -113,12 +113,14 @@ def momentum_metrics(df, value_col, date_col="Date"):
         par rapport aux 12 mois précédents");
       - last3_yoy: sum of the last 3 months vs the same 3 calendar months a year earlier
         ("+X % sur les 3 derniers mois par rapport aux mêmes mois n-1") — the metric BPCE
-        uses to flag an acceleration or a "coup d'arrêt".
-    Returns {"roll12_yoy": float|None, "last3_yoy": float|None}. Assumes a monthly series.
+        uses to flag an acceleration or a "coup d'arrêt";
+      - last3_seq: sum of the last 3 months vs the 3 months IMMEDIATELY BEFORE — the
+        sequential read, which carries no year-old base (see `headline_momentum`).
+    Returns {"roll12_yoy", "last3_yoy", "last3_seq"}, each float|None. Assumes monthly.
     """
     s = df.dropna(subset=[value_col]).sort_values(date_col)
     vals = s[value_col].values
-    out = {"roll12_yoy": None, "last3_yoy": None}
+    out = {"roll12_yoy": None, "last3_yoy": None, "last3_seq": None}
     if len(vals) >= 24:
         last12, prev12 = vals[-12:].sum(), vals[-24:-12].sum()
         if prev12 > 0:
@@ -127,7 +129,136 @@ def momentum_metrics(df, value_col, date_col="Date"):
         last3, prev3 = vals[-3:].sum(), vals[-15:-12].sum()
         if prev3 > 0:
             out["last3_yoy"] = round((last3 - prev3) / prev3 * 100.0, 1)
+    if len(vals) >= 6:
+        last3, before3 = vals[-3:].sum(), vals[-6:-3].sum()
+        if before3 > 0:
+            out["last3_seq"] = round((last3 - before3) / before3 * 100.0, 1)
     return out
+
+
+# ---------------------------------------------------------------------------------
+# Quelle lecture de momentum pour quelle série — un choix de MESURE, pas de goût
+# ---------------------------------------------------------------------------------
+# SIT@DEL est chargée en `NAT_SERIES == "CVS-CJO"` (data_manager.py) : elle est DÉJÀ
+# corrigée des variations saisonnières et des jours ouvrables. Or comparer « les 3
+# derniers mois aux mêmes mois de l'an dernier » n'a qu'une raison d'être : neutraliser
+# la saisonnalité. Sur une série déjà corrigée, cette comparaison ne neutralise rien et
+# importe gratuitement une base vieille de douze mois — dont le bruit devient tout le
+# signal. Mesuré sur les mises en chantier à juin 2026 : le « 3 mois vs n-1 » affichait
+# +28,4 % (dont ~8 points dus au seul creux d'avril-juin 2025, base 6 % sous la moyenne
+# de l'année) et perdait 13,8 points en un mois — la sortie du pic de mars 2026 de la
+# fenêtre — pendant que la tendance 12 mois bougeait de 0,3 point. La même série lue
+# séquentiellement disait −2,0 % : le rythme avait cessé de monter.
+#
+# L'IGEDD (ventes anciennes) est l'inverse : elle est reconstruite en différenciant un
+# cumul 12 mois, donc ses flux mensuels sont très bruités. Mesuré : le séquentiel y saute
+# de 10 points par mois en moyenne (contre 1,6 pour le cumul 12 mois) — inutilisable.
+# Sa lecture honnête est le niveau 12 mois, complété par `plateau_months` qui dit depuis
+# quand ce niveau ne bouge plus.
+#
+# D'où DEUX régimes, et une fonction qui porte le choix pour les deux surfaces (app.py
+# et web_export.py) afin qu'elles ne puissent pas en retenir un chacune.
+ADJUSTED_SEQUENTIAL = "seq"      # série CVS : lire le séquentiel
+RAW_TWELVE_MONTHS = "roll12"     # série brute ou reconstruite : lire le cumul 12 mois
+
+
+def headline_momentum(mom, regime):
+    """Le momentum à PUBLIER pour une série, selon son régime de mesure.
+
+    `mom` est un dict de `momentum_metrics`, `regime` l'une des deux constantes
+    ci-dessus. Renvoie {"value": float|None, "key": str, "window": str} — `window` étant
+    l'intitulé court de la fenêtre, à afficher tel quel à côté du chiffre.
+    """
+    if regime == ADJUSTED_SEQUENTIAL:
+        return {"value": mom.get("last3_seq"), "key": "last3_seq",
+                "window": "sur 3 mois vs les 3 précédents"}
+    return {"value": mom.get("roll12_yoy"), "key": "roll12_yoy",
+            "window": "sur 12 mois vs les 12 précédents"}
+
+
+def plateau_months(df, value_col, date_col="Date", tol_pct=1.0, window=12):
+    """Depuis combien de mois le cumul `window` mois ne bouge plus.
+
+    Remonte la série tant que le cumul reste dans ±`tol_pct` % de sa valeur actuelle.
+    Répond à la question qu'un taux de croissance annuel ne peut pas poser : « +5,2 %
+    sur douze mois » décrit une croissance qui peut très bien s'être arrêtée il y a six
+    mois, la base étant basse. Le plateau, lui, se voit tout de suite.
+
+    Renvoie {"months": int, "since": Timestamp, "level": float} ou None si la série est
+    trop courte, ou si elle bouge encore (moins de trois mois dans la tolérance).
+    """
+    s = df.dropna(subset=[value_col]).sort_values(date_col)
+    if len(s) < window + 3:
+        return None
+    roll = s[value_col].rolling(window).sum()
+    dates = s[date_col].values
+    valid = roll.notna().values
+    if not valid.any():
+        return None
+    vals = roll.values
+    last_i = len(vals) - 1
+    level = float(vals[last_i])
+    if level <= 0:
+        return None
+    i = last_i
+    while i - 1 >= 0 and valid[i - 1] and abs(vals[i - 1] / level - 1.0) * 100.0 <= tol_pct:
+        i -= 1
+    months = last_i - i
+    if months < 3:
+        return None
+    return {"months": months, "since": pd.Timestamp(dates[i]), "level": level}
+
+
+# Seuil de bascule du momentum séquentiel, en points de %. Plus large que le ±1 utilisé
+# sur les taux annuels, et pour une raison mesurée : le 3 mois séquentiel saute en moyenne
+# de 5,2 pt par mois sur les permis et de 3,5 pt sur les chantiers. À ±1 la pastille
+# changerait de couleur au bruit ; à ±2 elle ne bouge que sur un mouvement qui dépasse la
+# moitié de l'écart mensuel typique.
+SEQ_TOL = 2.0
+
+
+def _tri(v, tol=SEQ_TOL):
+    """Trois états à partir d'un pourcentage (au-dessus / dans / sous la tolérance)."""
+    if v is None:
+        return "flat"
+    return "up" if v > tol else ("down" if v < -tol else "flat")
+
+
+def pillar_neuf(mom_permis, mom_mises, tol=SEQ_TOL, lang="FR"):
+    """Statut du pilier « Neuf » à partir de SES DEUX ÉTAGES, sans les moyenner.
+
+    L'ancienne règle faisait la moyenne arithmétique des deux taux de croissance
+    (`(permis + chantiers) / 2`). Deux objections, et c'est la seconde qui compte :
+    la moyenne de deux pourcentages portant sur des séries d'ampleurs différentes n'a pas
+    de sens arithmétique ; surtout, elle DÉTRUIT l'information utile. Les permis sont
+    l'amont (ce qui alimentera les chantiers de 12 à 18 mois plus tard) et les mises en
+    chantier l'aval (ce qui consomme des matériaux aujourd'hui) : quand les deux
+    divergent, c'est précisément le fait qu'un industriel doit voir. En juin 2026 la
+    moyenne rendait « +9,7 % → en reprise » là où les permis reculaient de 9,8 % et les
+    chantiers de 2,0 %.
+
+    Renvoie {"status", "word", "kind", "amont", "aval"}. Le statut d'une divergence est
+    « flat » : ni vent franchement favorable ni vent franchement contraire — c'est le mot
+    qui porte l'information, et la puce « à retenir » qui en donne le mécanisme.
+    """
+    amont = _tri(mom_permis.get("last3_seq"), tol)
+    aval = _tri(mom_mises.get("last3_seq"), tol)
+    if amont == aval:
+        kind = {"up": "reprise", "flat": "stable", "down": "repli"}[amont]
+        word = {"reprise": ("en reprise", "recovering"),
+                "stable": ("stable", "flat"),
+                "repli": ("en repli", "declining")}[kind]
+        status = amont
+    elif amont == "down":
+        kind, word, status = "amont_repli", ("amont en repli", "upstream declining"), "flat"
+    elif amont == "up":
+        kind, word, status = "amont_reprise", ("amont en reprise", "upstream recovering"), "flat"
+    elif aval == "up":
+        kind, word, status = "aval_hausse", ("chantiers en hausse", "starts rising"), "flat"
+    else:
+        kind, word, status = "aval_repli", ("chantiers en repli", "starts declining"), "flat"
+    return {"status": status, "kind": kind, "amont": amont, "aval": aval,
+            "word": word[0] if lang == "FR" else word[1]}
 
 
 def _trend_phrase(v, lang="FR"):

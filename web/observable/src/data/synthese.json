@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-08-25T18:16:02+00:00",
+  "generated_at": "2026-08-26T18:25:34+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
     {
       "key": "neuf",
       "label": "Neuf",
-      "status": "up",
-      "dot": "🟢",
-      "word": "en reprise"
+      "status": "flat",
+      "dot": "🟠",
+      "word": "amont en repli"
     },
     {
       "key": "ancien",
       "label": "Ancien",
       "status": "flat",
       "dot": "🟠",
-      "word": "stable"
+      "word": "au plateau depuis 6 mois"
     },
     {
       "key": "fin",
@@ -26,17 +26,17 @@
     }
   ],
   "takeaways": [
-    "🟢 **Neuf** — la construction accélère : permis +9,2% et mises en chantier +16,7% sur 12 mois (maison individuelle pure : +40,0% sur 3 mois).",
-    "🟠 **Ancien** — 954 k ventes sur 12 mois (+5,2%) ; +0,8% sur les 3 derniers mois.",
+    "🟠 **Neuf** — signaux divergents : les permis reculent (-9,8% sur 3 mois) pendant que les chantiers tiennent encore sur le stock d'autorisations déjà délivrées (-2,0% sur 3 mois, +16,7% sur 12 mois). La maison individuelle pure reste le segment porteur : +8,3% sur 3 mois, +21,3% sur 12 mois.",
+    "🟠 **Ancien** — 954 k ventes sur 12 mois (+5,2% sur un an), mais le niveau ne bouge plus depuis 6 mois (décembre 2025) : la hausse annuelle décrit une croissance déjà arrêtée.",
     "🔴 **Financement** — taux de crédit à 3,16 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
-    "🎯 **Demande second œuvre** — signal favorable à 12-18 mois via le neuf (fermetures & menuiseries) ; transactions neutres à court terme."
+    "🎯 **Demande second œuvre** — vent contraire à 12-18 mois côté neuf : les permis reculent ; transactions au plateau, pas de relais à court terme."
   ],
   "freshness": [
     "SIT@DEL : juin 2026",
     "IGEDD : juin 2026",
     "ECLN : 2026-T2"
   ],
-  "how_to_read": "Chaque pastille résume la tendance des 3 derniers mois vs un an plus tôt : 🟢 vent favorable · 🟠 stable · 🔴 vent contraire. Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
+  "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Chaque carte porte deux horizons : le momentum court terme, puis la tendance sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux 3 précédents, sans repasser par une base vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
   "blocks": [
     {
       "title": "Activité",
@@ -45,19 +45,19 @@
           "emoji": "🔴",
           "title": "Permis de construire",
           "value": "376 k /12 m",
-          "sub": "-9,0% vs un an plus tôt (3 derniers mois) · total exact : 376 241"
+          "sub": "-9,8% sur 3 mois vs les 3 précédents · tendance 12 mois : +9,2% · total exact : 376 241"
         },
         {
-          "emoji": "🟢",
+          "emoji": "🟠",
           "title": "Mises en chantier",
           "value": "293 k /12 m",
-          "sub": "+28,4% vs un an plus tôt (3 derniers mois) · total exact : 293 412"
+          "sub": "-2,0% sur 3 mois vs les 3 précédents · tendance 12 mois : +16,7% · total exact : 293 412"
         },
         {
           "emoji": "🟠",
           "title": "Ventes de logements anciens",
           "value": "954 k /12 m",
-          "sub": "+0,8% vs un an plus tôt (3 derniers mois) · total exact : 954 000"
+          "sub": "+5,2% sur 12 mois vs les 12 précédents · au plateau depuis décembre 2025 · total exact : 954 000"
         },
         {
           "emoji": "🔴",

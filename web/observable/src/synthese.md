@@ -62,8 +62,21 @@ function card(c) {
 
 Cette page rassemble en une vue l'essentiel du marché immobilier français : où en sont la
 construction neuve, les ventes de logements anciens, les prix et les conditions de crédit.
-Chaque pilier est résumé par une pastille de tendance — les trois derniers mois comparés à
-la même période un an plus tôt — puis détaillé sur sa propre page.
+Chaque pilier est résumé par une pastille de tendance, puis détaillé sur sa propre page.
+
+Chaque chiffre est donné sur **deux horizons** : le momentum des derniers mois, qui dit si
+le rythme est en train de tourner, et la tendance sur douze mois, qui dit d'où l'on vient.
+Les deux ne pointent pas toujours dans le même sens, et c'est précisément quand ils
+divergent qu'ils sont utiles. La fenêtre du momentum dépend de la série : les permis et les
+mises en chantier sont publiés corrigés des variations saisonnières, donc comparés aux mois
+qui précèdent immédiatement ; les ventes de logements anciens, reconstruites à partir d'un
+cumul annuel, sont trop irrégulières d'un mois sur l'autre et se lisent sur douze mois,
+complétées par la date depuis laquelle leur niveau ne bouge plus.
+
+Le pilier de la construction neuve ne moyenne pas ses deux étages. Les permis sont l'amont,
+ce qui alimentera les chantiers douze à dix-huit mois plus tard ; les mises en chantier sont
+l'aval, ce qui consomme des matériaux aujourd'hui. Quand l'un se retourne avant l'autre, la
+pastille le dit au lieu de compenser l'un par l'autre.
 
 Les chiffres sont nationaux et proviennent d'organismes publics. Les dates de dernière
 publication diffèrent d'une série à l'autre : chaque producteur a son propre calendrier et

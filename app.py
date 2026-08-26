@@ -562,14 +562,27 @@ with tab_synthese:
         s = f"{v:+.1f}%"
         return s.replace(".", ",") if lang_code == "FR" else s
 
-    def _delta3m_sub(v, exact=None):
-        """Plain-language momentum caption ('+9,2 % vs un an plus tôt (3 derniers mois)'),
-        with the exact 12-month total appended when the headline value is humanised."""
-        txt = _pct_fr(v) + _L(" vs un an plus tôt (3 derniers mois)",
-                              " vs a year earlier (last 3 months)")
+    def _status_seq(v):
+        """Statut d'un momentum SÉQUENTIEL, avec sa tolérance propre (ana.SEQ_TOL)."""
+        return ana._tri(v, ana.SEQ_TOL)
+
+    def _momentum_sub(head, trend_12m=None, plateau=None, exact=None):
+        """Card caption carrying TWO horizons: the published momentum, then the 12-month
+        trend, then the exact total. The momentum window depends on the series — see
+        ana.headline_momentum, which documents why a seasonally adjusted series must not
+        be read against a year-old base. Mirrors _momentum_sub in web/export/web_export.py."""
+        window = (_L("sur 3 mois vs les 3 précédents", "over 3 months vs the prior 3")
+                  if head["key"] == "last3_seq"
+                  else _L("sur 12 mois vs les 12 précédents", "over 12 months vs the prior 12"))
+        parts = [_pct_fr(head["value"]) + " " + window]
+        if trend_12m is not None and head["key"] != "roll12_yoy":
+            parts.append(_L("tendance 12 mois : ", "12-month trend: ") + _pct_fr(trend_12m))
+        if plateau is not None:
+            parts.append(_L("au plateau depuis ", "flat since ")
+                         + format_month_year(plateau["since"], lang_code))
         if exact is not None:
-            txt += _L(" · total exact : ", " · exact total: ") + _th(exact)
-        return txt
+            parts.append(_L("total exact : ", "exact total: ") + _th(exact))
+        return " · ".join(parts)
 
     def _render_cards(cards, per_row=3):
         """Rows of headline cards: (dot emoji, title, value, sub-caption). Title first,
@@ -599,10 +612,17 @@ with tab_synthese:
     # --- Global market state: one status per pillar, shown as chips before anything
     # else — the "at a glance" a sales director or GM actually needs. Derived from the
     # same momentum metrics as the cards below (no new computation).
-    _neuf_l3 = [v for v in (_sy_m_permis.get("last3_yoy"), _sy_m_mises.get("last3_yoy"))
-                if v is not None]
-    _pill_neuf = _status_yoy(sum(_neuf_l3) / len(_neuf_l3)) if _neuf_l3 else "flat"
-    _pill_ancien = _status_yoy(_sy_m_tx.get("last3_yoy"))
+    # Momentum publié : séquentiel sur SIT@DEL (CVS-CJO), 12 mois sur l'IGEDD. Le régime
+    # dépend de la série et non du goût — voir analysis.headline_momentum.
+    _h_permis = ana.headline_momentum(_sy_m_permis, ana.ADJUSTED_SEQUENTIAL)
+    _h_mises = ana.headline_momentum(_sy_m_mises, ana.ADJUSTED_SEQUENTIAL)
+    _h_tx = ana.headline_momentum(_sy_m_tx, ana.RAW_TWELVE_MONTHS)
+    _plateau_tx = ana.plateau_months(_sy_roll_va, "Transactions")
+    # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
+    # l'aval (chantiers) divergent, c'est la divergence qui est l'information.
+    _pn = ana.pillar_neuf(_sy_m_permis, _sy_m_mises, lang=lang_code)
+    _pill_neuf = _pn["status"]
+    _pill_ancien = "flat" if _plateau_tx else _status_yoy(_h_tx["value"])
     _r_now, _r_yr = _last_prev("Credit_Logement_Taux_Interet")
     _dr_yr = None if (_r_now is None or _r_yr is None) else _r_now - _r_yr
     _pill_fin = ("flat" if _dr_yr is None
@@ -622,9 +642,12 @@ with tab_synthese:
                 f"padding:6px 14px;margin-right:10px;font-weight:600;font-size:1.02rem;"
                 f"display:inline-block;margin-bottom:6px'>{_dot(status)} {label} · {word}</span>")
 
+    _w_ancien = (_L(f"au plateau depuis {_plateau_tx['months']} mois",
+                    f"flat for {_plateau_tx['months']} months") if _plateau_tx
+                 else _w_market[_pill_ancien])
     st.markdown(
-        _chip(_pill_neuf, _L("Neuf", "New-build"), _w_market[_pill_neuf])
-        + _chip(_pill_ancien, _L("Ancien", "Existing homes"), _w_market[_pill_ancien])
+        _chip(_pill_neuf, _L("Neuf", "New-build"), _pn["word"])
+        + _chip(_pill_ancien, _L("Ancien", "Existing homes"), _w_ancien)
         + _chip(_pill_fin, _L("Financement", "Financing"), _w_fin[_pill_fin]),
         unsafe_allow_html=True)
 
@@ -634,34 +657,61 @@ with tab_synthese:
         q.monthly(con, "sitadel", ["MisesEnChantier"], windows=(),
                   types=ana.SITADEL_INDIVIDUEL_PUR), "MisesEnChantier")
     _lines = []
-    _neuf_head = {"up": _L("la construction accélère", "construction is accelerating"),
-                  "flat": _L("la construction est stable", "construction is flat"),
-                  "down": _L("la construction recule", "construction is receding")}[_pill_neuf]
-    _l1 = (f"{_dot(_pill_neuf)} **{_L('Neuf', 'New-build')}** — {_neuf_head} : "
-           + _L(f"permis {_pct_fr(_sy_k_permis['yoy_12m_pct'])} et mises en chantier "
-                f"{_pct_fr(_sy_k_mises['yoy_12m_pct'])} sur 12 mois",
-                f"permits {_pct_fr(_sy_k_permis['yoy_12m_pct'])} and starts "
-                f"{_pct_fr(_sy_k_mises['yoy_12m_pct'])} over 12 months"))
-    if _sy_mom_ip.get("last3_yoy") is not None:
-        _l1 += _L(f" (maison individuelle pure : {_pct_fr(_sy_mom_ip['last3_yoy'])} sur 3 mois).",
-                  f" (detached houses: {_pct_fr(_sy_mom_ip['last3_yoy'])} over 3 months).")
+    # La puce « Neuf » porte les DEUX horizons et nomme la divergence quand il y en a
+    # une : c'est le seul endroit où le mécanisme (l'aval tourne sur le stock
+    # d'autorisations déjà délivrées) peut être écrit en toutes lettres.
+    _p3, _m3 = _pct_fr(_h_permis["value"]), _pct_fr(_h_mises["value"])
+    _m12 = _pct_fr(_sy_k_mises["yoy_12m_pct"])
+    if _pn["kind"] == "amont_repli":
+        _corps = _L(f"signaux divergents : les permis reculent ({_p3} sur 3 mois) pendant "
+                    f"que les chantiers tiennent encore sur le stock d'autorisations déjà "
+                    f"délivrées ({_m3} sur 3 mois, {_m12} sur 12 mois)",
+                    f"mixed signals: permits are falling ({_p3} over 3 months) while starts "
+                    f"still run on the stock of permits already granted ({_m3} over 3 "
+                    f"months, {_m12} over 12 months)")
+    elif _pn["kind"] == "amont_reprise":
+        _corps = _L(f"les permis repartent ({_p3} sur 3 mois) avant les chantiers "
+                    f"({_m3} sur 3 mois, {_m12} sur 12 mois) — l'effet se verra dans 12 à 18 mois",
+                    f"permits are turning up ({_p3} over 3 months) ahead of starts "
+                    f"({_m3} over 3 months, {_m12} over 12 months) — visible in 12 to 18 months")
+    elif _pn["kind"] == "reprise":
+        _corps = _L(f"les deux étages accélèrent — permis {_p3} et chantiers {_m3} sur "
+                    f"3 mois ({_m12} sur 12 mois)",
+                    f"both stages are accelerating — permits {_p3} and starts {_m3} over "
+                    f"3 months ({_m12} over 12 months)")
+    elif _pn["kind"] == "repli":
+        _corps = _L(f"les deux étages reculent — permis {_p3} et chantiers {_m3} sur "
+                    f"3 mois ({_m12} sur 12 mois)",
+                    f"both stages are falling — permits {_p3} and starts {_m3} over "
+                    f"3 months ({_m12} over 12 months)")
+    else:
+        _corps = _L(f"permis {_p3} et chantiers {_m3} sur 3 mois ; tendance 12 mois {_m12}",
+                    f"permits {_p3} and starts {_m3} over 3 months; 12-month trend {_m12}")
+    _l1 = f"{_dot(_pill_neuf)} **{_L('Neuf', 'New-build')}** — {_corps}"
+    _ip3 = _sy_mom_ip.get("last3_seq")
+    if _ip3 is not None:
+        _l1 += _L(f". La maison individuelle pure reste le segment porteur : {_pct_fr(_ip3)} "
+                  f"sur 3 mois, {_pct_fr(_sy_mom_ip['roll12_yoy'])} sur 12 mois.",
+                  f". Detached houses remain the driving segment: {_pct_fr(_ip3)} over "
+                  f"3 months, {_pct_fr(_sy_mom_ip['roll12_yoy'])} over 12 months.")
     else:
         _l1 += "."
     _lines.append(_l1)
 
-    _tx_l3 = _sy_m_tx.get("last3_yoy")
+    # Ancien : le niveau, et depuis quand il ne bouge plus. Un « +5,2 % sur douze mois »
+    # seul laisserait croire à une croissance en cours alors qu'elle s'est arrêtée.
     _l2 = (f"{_dot(_pill_ancien)} **{_L('Ancien', 'Existing homes')}** — "
            + _L(f"{_human(_sy_k_tx['current_12m'])} ventes sur 12 mois "
-                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])})",
+                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])} sur un an)",
                 f"{_human(_sy_k_tx['current_12m'])} sales over 12 months "
-                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])})"))
-    if _tx_l3 is not None:
-        if _pill_ancien == "down":
-            _l2 += _L(f", mais la dynamique ralentit : {_pct_fr(_tx_l3)} sur les 3 derniers mois.",
-                      f", but momentum is fading: {_pct_fr(_tx_l3)} over the last 3 months.")
-        else:
-            _l2 += _L(f" ; {_pct_fr(_tx_l3)} sur les 3 derniers mois.",
-                      f"; {_pct_fr(_tx_l3)} over the last 3 months.")
+                f"({_pct_fr(_sy_k_tx['yoy_12m_pct'])} year on year)"))
+    if _plateau_tx:
+        _l2 += _L(f", mais le niveau ne bouge plus depuis {_plateau_tx['months']} mois "
+                  f"({format_month_year(_plateau_tx['since'], lang_code)}) : la hausse "
+                  f"annuelle décrit une croissance déjà arrêtée.",
+                  f", but the level has not moved for {_plateau_tx['months']} months "
+                  f"({format_month_year(_plateau_tx['since'], lang_code)}): the annual "
+                  f"rise describes growth that has already stopped.")
     else:
         _l2 += "."
     _lines.append(_l2)
@@ -685,22 +735,30 @@ with tab_synthese:
 
     # The "so what" for the business, using the lead-times assumed across the app
     # (new-build → second-œuvre content at ~12-18 months; moves → equipment at ~2 months).
-    _impl_neuf = {"up": _L("signal favorable à 12-18 mois via le neuf (fermetures & menuiseries)",
-                           "favourable 12-18-month signal from new-build (closures & joinery)"),
-                  "flat": _L("signal neuf neutre à 12-18 mois",
-                             "neutral new-build signal at 12-18 months"),
-                  "down": _L("vent contraire à 12-18 mois côté neuf",
-                             "12-18-month headwind from new-build")}[_pill_neuf]
-    _impl_ancien = {"up": _L("soutien à court terme (~2 mois) via les transactions "
-                             "(sécurité & domotique)",
-                             "short-term (~2-month) support from transactions "
-                             "(security & home automation)"),
-                    "flat": _L("transactions neutres à court terme",
-                               "neutral short-term transactions"),
-                    "down": _L("prudence à court terme (~2 mois) sur les produits liés aux "
-                               "déménagements (sécurité & domotique)",
-                               "short-term (~2-month) caution on move-related products "
-                               "(security & home automation)")}[_pill_ancien]
+    # L'horizon 12-18 mois est piloté par l'AMONT — les permis —, pas par la pastille du
+    # pilier : c'est l'autorisation d'aujourd'hui qui devient le chantier de l'an
+    # prochain. Lire ici le statut agrégé laisserait l'aval, qui décrit le présent,
+    # masquer le signal du futur — le défaut même que la fin de la moyenne corrige.
+    _impl_neuf = {"up": _L("signal favorable à 12-18 mois via le neuf (fermetures & "
+                           "menuiseries) : les permis repartent",
+                           "favourable 12-18-month signal from new-build (closures & "
+                           "joinery): permits are turning up"),
+                  "flat": _L("signal neuf neutre à 12-18 mois : les permis ne bougent pas",
+                             "neutral new-build signal at 12-18 months: permits are flat"),
+                  "down": _L("vent contraire à 12-18 mois côté neuf : les permis reculent",
+                             "12-18-month headwind from new-build: permits are falling")}[_pn["amont"]]
+    _impl_ancien = (_L("transactions au plateau, pas de relais à court terme",
+                       "transactions on a plateau, no short-term relay") if _plateau_tx
+                    else {"up": _L("soutien à court terme (~2 mois) via les transactions "
+                                   "(sécurité & domotique)",
+                                   "short-term (~2-month) support from transactions "
+                                   "(security & home automation)"),
+                          "flat": _L("transactions neutres à court terme",
+                                     "neutral short-term transactions"),
+                          "down": _L("prudence à court terme (~2 mois) sur les produits liés aux "
+                                     "déménagements (sécurité & domotique)",
+                                     "short-term (~2-month) caution on move-related products "
+                                     "(security & home automation)")}[_pill_ancien])
     _lines.append("🎯 **" + _L("Demande second œuvre", "Second-œuvre demand")
                   + f"** — {_impl_neuf} ; {_impl_ancien}.")
 
@@ -722,33 +780,54 @@ with tab_synthese:
     st.caption("📅 " + _L("Dernières données — ", "Latest data — ") + " · ".join(_fresh))
     with st.expander("ℹ️ " + _L("Comment lire cette page", "How to read this page")):
         st.markdown(_L(
-            "Chaque pastille résume la tendance des **3 derniers mois vs un an plus tôt** : "
-            "🟢 vent favorable · 🟠 stable · 🔴 vent contraire. Pour les taux et "
-            "l'accessibilité, 🟢 signifie des **conditions qui s'améliorent** (taux en "
-            "baisse), pas une valeur qui monte. Chiffres nationaux, indépendants du filtre "
-            "de période de la barre latérale ; le détail de chaque bloc est dans les "
-            "onglets dédiés (liens sous chaque bloc).",
-            "Each dot summarises the trend of the **last 3 months vs a year earlier**: "
-            "🟢 tailwind · 🟠 flat · 🔴 headwind. For rates and affordability, 🟢 means "
-            "**improving conditions** (falling rates), not a rising value. National "
-            "figures, independent of the sidebar period filter; each block's detail lives "
-            "in the dedicated tabs (links under each block)."))
+            "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. "
+            "Chaque carte porte **deux horizons** : le momentum court terme, puis la "
+            "tendance sur douze mois. La fenêtre du momentum dépend de la série. Les "
+            "permis et les mises en chantier (SIT@DEL) sont publiés **corrigés des "
+            "variations saisonnières** et des jours ouvrables : on les lit donc sur les "
+            "3 derniers mois comparés aux **3 précédents**, sans repasser par une base "
+            "vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes "
+            "(IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées "
+            "d'un mois sur l'autre : on les lit **sur douze mois**, complétées par la date "
+            "depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » **ne moyenne pas** "
+            "ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à "
+            "18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) "
+            "divergent, la pastille le dit. Pour les taux et l'accessibilité, 🟢 signifie "
+            "des **conditions qui s'améliorent** (taux en baisse), pas une valeur qui "
+            "monte. Chiffres nationaux, indépendants du filtre de période de la barre "
+            "latérale ; le détail de chaque bloc est dans les onglets dédiés.",
+            "🟢 tailwind · 🟠 flat or mixed signals · 🔴 headwind. Each card carries **two "
+            "horizons**: the short-term momentum, then the 12-month trend. The momentum "
+            "window depends on the series. Permits and housing starts (SIT@DEL) are "
+            "published **seasonally and working-day adjusted**, so they are read as the "
+            "last 3 months against the **3 before**, without routing through a year-old "
+            "base that would only add its own noise. Existing-home sales (IGEDD) are "
+            "rebuilt from an annual cumulative total, hence too noisy month to month: they "
+            "are read **over 12 months**, plus the date since which the level has stopped "
+            "moving. The 'New-build' pillar **does not average** its two stages: when "
+            "permits (upstream, feeding starts 12 to 18 months later) and starts "
+            "(downstream, consuming today) diverge, the chip says so. For rates and "
+            "affordability, 🟢 means **improving conditions** (falling rates), not a rising "
+            "value. National figures, independent of the sidebar period filter; each "
+            "block's detail lives in the dedicated tabs."))
 
     # --- Block 1: activity (construction, existing-home sales, new-build reservations) ---
     st.markdown("#### " + _L("Activité", "Activity"))
     _cards_act = [
-        (_dot(_status_yoy(_sy_m_permis.get("last3_yoy"))),
+        (_dot(_status_seq(_h_permis["value"])),
          _L("Permis de construire", "Building permits"),
          _human(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
-         _delta3m_sub(_sy_m_permis.get("last3_yoy"), exact=_sy_k_permis["current_12m"])),
-        (_dot(_status_yoy(_sy_m_mises.get("last3_yoy"))),
+         _momentum_sub(_h_permis, trend_12m=_sy_k_permis["yoy_12m_pct"],
+                       exact=_sy_k_permis["current_12m"])),
+        (_dot(_status_seq(_h_mises["value"])),
          _L("Mises en chantier", "Housing starts"),
          _human(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
-         _delta3m_sub(_sy_m_mises.get("last3_yoy"), exact=_sy_k_mises["current_12m"])),
-        (_dot(_status_yoy(_sy_m_tx.get("last3_yoy"))),
+         _momentum_sub(_h_mises, trend_12m=_sy_k_mises["yoy_12m_pct"],
+                       exact=_sy_k_mises["current_12m"])),
+        (_dot(_pill_ancien),
          _L("Ventes de logements anciens", "Existing-home sales"),
          _human(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
-         _delta3m_sub(_sy_m_tx.get("last3_yoy"), exact=_sy_k_tx["current_12m"])),
+         _momentum_sub(_h_tx, plateau=_plateau_tx, exact=_sy_k_tx["current_12m"])),
     ]
     # New-build reservations (ECLN, quarterly): last quarter vs same quarter a year earlier.
     if df_ecln_full is not None and not df_ecln_full.empty:

@@ -67,6 +67,73 @@ def test_momentum_last3_yoy():
     assert m["last3_yoy"] == round((78 - 30) / 30 * 100, 1)
 
 
+def test_momentum_last3_seq_compare_aux_trois_mois_precedents():
+    """Le sequentiel ne regarde QUE les six derniers mois : aucune base d'il y a un an.
+
+    C'est toute la difference avec `last3_yoy`, et la raison d'etre du regime
+    ADJUSTED_SEQUENTIAL : sur une serie deja corrigee des variations saisonnieres, une
+    base vieille de douze mois n'apporte que son propre bruit."""
+    vals = [999] * 20 + [10, 10, 10] + [12, 12, 12]      # 26 mois
+    m = ana.momentum_metrics(_monthly(vals), "V")
+    assert m["last3_seq"] == round((36 - 30) / 30 * 100, 1) == 20.0
+    # les vingt premiers mois peuvent valoir n'importe quoi : le sequentiel les ignore
+    vals2 = [1] * 20 + [10, 10, 10] + [12, 12, 12]
+    assert ana.momentum_metrics(_monthly(vals2), "V")["last3_seq"] == 20.0
+    # ... la ou le "3 mois vs n-1" en depend entierement
+    assert (ana.momentum_metrics(_monthly(vals), "V")["last3_yoy"]
+            != ana.momentum_metrics(_monthly(vals2), "V")["last3_yoy"])
+
+
+def test_headline_momentum_choisit_la_fenetre_selon_le_regime():
+    mom = {"roll12_yoy": 16.7, "last3_yoy": 28.4, "last3_seq": -2.0}
+    seq = ana.headline_momentum(mom, ana.ADJUSTED_SEQUENTIAL)
+    r12 = ana.headline_momentum(mom, ana.RAW_TWELVE_MONTHS)
+    assert (seq["value"], seq["key"]) == (-2.0, "last3_seq")
+    assert (r12["value"], r12["key"]) == (16.7, "roll12_yoy")
+    # le "3 mois vs memes mois n-1" n'est publie par AUCUN des deux regimes : c'est lui
+    # qui affichait +28,4 % le mois ou la dynamique se retournait.
+    assert 28.4 not in (seq["value"], r12["value"])
+
+
+def test_plateau_months_detecte_un_niveau_qui_ne_bouge_plus():
+    """Un cumul 12 mois plat depuis six mois doit etre vu comme tel, meme quand la
+    croissance ANNUELLE reste franchement positive — c'est exactement le cas des ventes
+    anciennes : +5,2 % sur un an, mais stables en niveau depuis decembre."""
+    # Il faut douze mois a 1200 pour que le cumul glissant se stabilise, puis six de plus
+    # pour que le plateau se voie : c'est le cumul qui plafonne, pas le flux.
+    vals = [1000] * 12 + [1200] * 18
+    pl = ana.plateau_months(_monthly(vals), "V")
+    assert pl is not None
+    assert pl["months"] >= 5
+    assert pl["since"] < _monthly(vals)["Date"].iloc[-1]
+
+
+def test_plateau_months_rend_none_sur_une_serie_qui_bouge_encore():
+    hausse = [1000 + 60 * i for i in range(30)]          # cumul 12 m en hausse continue
+    assert ana.plateau_months(_monthly(hausse), "V") is None
+    assert ana.plateau_months(_monthly([100] * 6), "V") is None    # trop courte
+
+
+def test_pillar_neuf_ne_moyenne_pas_ses_deux_etages():
+    """Regression : la regle precedente moyennait les deux taux de croissance, si bien
+    qu'un amont en fort repli et un aval en forte hausse rendaient « en reprise ».
+
+    Valeurs de juin 2026 lues en « 3 mois vs n-1 » : permis -9,0 et chantiers +28,4,
+    moyenne +9,7 -> « up ». La divergence doit desormais etre NOMMEE, pas moyennee."""
+    amont_lache = ana.pillar_neuf({"last3_seq": -10.0}, {"last3_seq": 30.0})
+    assert amont_lache["status"] != "up", "la moyenne rendait un vert trompeur"
+    assert amont_lache["kind"] == "amont_repli"
+    assert (amont_lache["amont"], amont_lache["aval"]) == ("down", "up")
+
+    # Les cas alignes gardent un verdict franc, dans les deux sens.
+    assert ana.pillar_neuf({"last3_seq": 8.0}, {"last3_seq": 6.0})["status"] == "up"
+    assert ana.pillar_neuf({"last3_seq": -8.0}, {"last3_seq": -6.0})["status"] == "down"
+    # Sous la tolerance, rien ne bouge : le sequentiel saute de plusieurs points par mois.
+    assert ana.pillar_neuf({"last3_seq": 1.0}, {"last3_seq": -1.0})["kind"] == "stable"
+    # Le mot existe dans les deux langues (app.py est bilingue, le site ne l'est pas).
+    assert ana.pillar_neuf({"last3_seq": -10.0}, {"last3_seq": 30.0}, lang="EN")["word"]
+
+
 def test_calculate_kpis_yoy_on_rolling():
     # Constant +1000/month; 12m rolling is flat once warmed. Use a step to get a known YoY.
     vals = [1000] * 24 + [1100] * 12  # 36 months
