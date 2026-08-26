@@ -584,17 +584,43 @@ with tab_synthese:
             parts.append(_L("total exact : ", "exact total: ") + _th(exact))
         return " · ".join(parts)
 
+    def _level_sub(ctx):
+        """Seconde légende d'une carte : l'ALTITUDE du niveau, que le momentum ne dit
+        jamais. Miroir de _level_sub dans web/export/web_export.py — voir ana.level_context."""
+        if not ctx:
+            return ""
+        _sens = (_L("sous", "below") if ctx["gap_pct"] < 0
+                 else _L("au-dessus de", "above"))
+        _ecart = f"{abs(ctx['gap_pct']):.0f} %"
+        if lang_code == "FR":
+            _ecart = _ecart.replace(".", ",")
+        if ctx["rank_pct"] < 50:
+            _rang = _L(f"plus bas que {100 - ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}",
+                       f"lower than {100 - ctx['rank_pct']:.0f}% of months since {ctx['since_year']}")
+        else:
+            _rang = _L(f"plus haut que {ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}",
+                       f"higher than {ctx['rank_pct']:.0f}% of months since {ctx['since_year']}")
+        return _L(f"{_ecart} {_sens} la normale {ctx['ref_label']} · {_rang}",
+                  f"{_ecart} {_sens} the {ctx['ref_label']} norm · {_rang}")
+
     def _render_cards(cards, per_row=3):
-        """Rows of headline cards: (dot emoji, title, value, sub-caption). Title first,
-        then the value — the natural reading order (what is it, then how much)."""
+        """Rows of headline cards: (dot emoji, title, value, sub-caption[, level-caption]).
+        Title first, then the value — the natural reading order (what is it, then how
+        much) — then the momentum, then the altitude. The two captions stay SEPARATE on
+        purpose: they answer two questions (is the pace turning / where does this level
+        sit), and merging them would put them on the same plane."""
         for _row_start in range(0, len(cards), per_row):
             _rc = st.columns(per_row)
-            for _c, (_emoji, _title, _val, _sub) in zip(_rc, cards[_row_start:_row_start + per_row]):
+            for _c, _card in zip(_rc, cards[_row_start:_row_start + per_row]):
+                _emoji, _title, _val, _sub = _card[:4]
+                _level = _card[4] if len(_card) > 4 else ""
                 with _c:
                     st.markdown(f"**{_title}**")
                     st.markdown(f"### {_emoji} {_val}")
                     if _sub:
                         st.caption(_sub)
+                    if _level:
+                        st.caption(_level)
 
     _mi = df_macro_full.set_index("Date").sort_index()
 
@@ -618,6 +644,10 @@ with tab_synthese:
     _h_mises = ana.headline_momentum(_sy_m_mises, ana.ADJUSTED_SEQUENTIAL)
     _h_tx = ana.headline_momentum(_sy_m_tx, ana.RAW_TWELVE_MONTHS)
     _plateau_tx = ana.plateau_months(_sy_roll_va, "Transactions")
+    # Altitude du niveau — l'autre moitié de la question (voir ana.level_context).
+    _lvl_permis = ana.level_context(_sy_roll_sit, "Permis")
+    _lvl_mises = ana.level_context(_sy_roll_sit, "MisesEnChantier")
+    _lvl_tx = ana.level_context(_sy_roll_va, "Transactions")
     # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
     # l'aval (chantiers) divergent, c'est la divergence qui est l'information.
     _pn = ana.pillar_neuf(_sy_m_permis, _sy_m_mises, lang=lang_code)
@@ -818,28 +848,36 @@ with tab_synthese:
          _L("Permis de construire", "Building permits"),
          _human(_sy_k_permis["current_12m"]) + _L(" /12 m", " /12m"),
          _momentum_sub(_h_permis, trend_12m=_sy_k_permis["yoy_12m_pct"],
-                       exact=_sy_k_permis["current_12m"])),
+                       exact=_sy_k_permis["current_12m"]),
+         _level_sub(_lvl_permis)),
         (_dot(_status_seq(_h_mises["value"])),
          _L("Mises en chantier", "Housing starts"),
          _human(_sy_k_mises["current_12m"]) + _L(" /12 m", " /12m"),
          _momentum_sub(_h_mises, trend_12m=_sy_k_mises["yoy_12m_pct"],
-                       exact=_sy_k_mises["current_12m"])),
+                       exact=_sy_k_mises["current_12m"]),
+         _level_sub(_lvl_mises)),
         (_dot(_pill_ancien),
          _L("Ventes de logements anciens", "Existing-home sales"),
          _human(_sy_k_tx["current_12m"]) + _L(" /12 m", " /12m"),
-         _momentum_sub(_h_tx, plateau=_plateau_tx, exact=_sy_k_tx["current_12m"])),
+         _momentum_sub(_h_tx, plateau=_plateau_tx, exact=_sy_k_tx["current_12m"]),
+         _level_sub(_lvl_tx)),
     ]
-    # New-build reservations (ECLN, quarterly): last quarter vs same quarter a year earlier.
+    # New-build reservations (ECLN, quarterly). ECLN est elle aussi publiée CVS-CJO (voir
+    # data_manager.py) : même raisonnement que pour SIT@DEL, donc même lecture séquentielle
+    # — d'un trimestre au précédent, sans repasser par le même trimestre de l'an dernier.
+    # La tendance sur quatre trimestres y joue le rôle du cumul 12 mois des séries mensuelles.
     if df_ecln_full is not None and not df_ecln_full.empty:
         _se = df_ecln_full.dropna(subset=["Reservations"]).sort_values("Date")
-        if len(_se) >= 5:
-            _e_yoy = (float(_se["Reservations"].iloc[-1]) / float(_se["Reservations"].iloc[-5]) - 1) * 100
+        if len(_se) >= 8:
+            _r = _se["Reservations"].astype(float)
+            _e_seq = (float(_r.iloc[-1]) / float(_r.iloc[-2]) - 1) * 100
+            _e_trend = (float(_r.iloc[-4:].sum()) / float(_r.iloc[-8:-4].sum()) - 1) * 100
             _cards_act.append((
-                _dot(_status_yoy(_e_yoy)),
+                _dot(_status_seq(_e_seq)),
                 _L("Réservations particuliers neuf (ECLN)", "New-build private-buyer reservations (ECLN)"),
-                _th(float(_se["Reservations"].iloc[-1])) + _L(" /trim.", " /qtr"),
-                _pct_fr(_e_yoy) + _L(" vs même trimestre un an plus tôt",
-                                     " vs same quarter a year earlier")))
+                _th(float(_r.iloc[-1])) + _L(" /trim.", " /qtr"),
+                _pct_fr(_e_seq) + _L(" vs le trimestre précédent · tendance 4 trimestres : ",
+                                     " vs the prior quarter · 4-quarter trend: ") + _pct_fr(_e_trend)))
     _render_cards(_cards_act, per_row=4 if len(_cards_act) == 4 else 3)
     st.caption(_L("→ détail : « 🏗️ Marché du neuf » · « 🏠 Marché de l'ancien »",
                   "→ detail: '🏗️ New-Build Market' · '🏠 Existing-Home Market'"))

@@ -41,10 +41,17 @@ function card(c) {
   // libellé et 28 px de valeur : trois blocs de quatre à cette taille écrasaient le
   // reste de la page. La pastille de statut est ramenée sous la taille du chiffre
   // (voir .hm-card-dot) pour que ce soit le nombre qu'on lise en premier, pas le rond.
+  // Deux sous-lignes, et c'est délibéré : `sub` porte le MOMENTUM (le rythme tourne-t-il),
+  // `level` l'ALTITUDE (où se situe ce niveau dans son histoire). Les fondre en une seule
+  // ligne les mettrait sur le même plan alors qu'elles répondent à deux questions ; les
+  // séparer laisse l'œil s'arrêter à la première et descendre à la seconde s'il veut
+  // dimensionner plutôt que suivre. `level` est absent ou vide sur les cartes qui n'ont
+  // pas d'historique comparable (ECLN, soldes d'opinion, jalons).
   return html`<div class="hm-card hm-card--metric">
     <div class="hm-card-title">${c.title}</div>
     <div class="hm-card-value"><span class="hm-card-dot">${c.emoji}</span> ${c.value}</div>
     ${c.sub ? html`<div class="hm-card-sub">${c.sub}</div>` : ""}
+    ${c.level ? html`<div class="hm-card-sub">${c.level}</div>` : ""}
   </div>`;
 }
 ```
@@ -77,6 +84,14 @@ Le pilier de la construction neuve ne moyenne pas ses deux étages. Les permis s
 ce qui alimentera les chantiers douze à dix-huit mois plus tard ; les mises en chantier sont
 l'aval, ce qui consomme des matériaux aujourd'hui. Quand l'un se retourne avant l'autre, la
 pastille le dit au lieu de compenser l'un par l'autre.
+
+Une pente ne dit rien de l'altitude, et les deux mènent à des décisions différentes : un
+marché qui progresse vite depuis un creux profond reste un petit marché. Les chiffres
+d'activité portent donc aussi leur **niveau** — l'écart à une décennie de marché ordinaire,
+et le rang de ce niveau dans toute l'histoire de la série. Enfin, le bloc « Perspective »
+publie la **projection du modèle du site** à six mois plutôt que la cible d'un tiers, avec
+sa fourchette et la part de fois où le sens annoncé s'est avéré juste : les erreurs passées
+de ce modèle, horizon par horizon, sont publiées sur la page « Prévisions passées ».
 
 Les chiffres sont nationaux et proviennent d'organismes publics. Les dates de dernière
 publication diffèrent d'une série à l'autre : chaque producteur a son propre calendrier et

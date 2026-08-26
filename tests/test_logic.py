@@ -114,6 +114,31 @@ def test_plateau_months_rend_none_sur_une_serie_qui_bouge_encore():
     assert ana.plateau_months(_monthly([100] * 6), "V") is None    # trop courte
 
 
+def test_level_context_situe_le_niveau_et_pas_seulement_sa_pente():
+    """Le meme mouvement peut etre une reprise ou un rebond de creux : seule l'altitude
+    tranche. Serie qui s'effondre puis remonte a mi-chemin — la pente est franchement
+    positive, le niveau reste tres bas, et les deux doivent etre visibles."""
+    # La remontee doit etre EN COURS a la fin, sinon la pente est nulle et le test ne
+    # dit plus rien : c'est precisement la coexistence pente forte / niveau bas qu'on veut.
+    vals = [1000] * 120 + [400] * 12 + [500] * 12 + [600] * 12
+    df = _monthly(vals, start="2010-01-01")
+    ctx = ana.level_context(df, "V", ref=("2010", "2019"))
+    assert ctx is not None
+    assert ctx["gap_pct"] < -30 and ctx["below"] is True    # loin sous la normale
+    assert ctx["rank_pct"] < 50                             # et bas dans son histoire
+    # La pente, elle, est nettement positive sur la meme serie : les deux coexistent.
+    assert ana.momentum_metrics(df, "V")["roll12_yoy"] > 0
+    assert ctx["ref_label"] == "2010-19"
+
+
+def test_level_context_sait_dire_au_dessus_de_la_normale():
+    vals = [1000] * 120 + [1400] * 24
+    ctx = ana.level_context(_monthly(vals, start="2010-01-01"), "V", ref=("2010", "2019"))
+    assert ctx["gap_pct"] > 0 and ctx["below"] is False
+    assert ctx["rank_pct"] >= 50
+    assert ana.level_context(_monthly([1] * 6), "V") is None      # historique trop court
+
+
 def test_pillar_neuf_ne_moyenne_pas_ses_deux_etages():
     """Regression : la regle precedente moyennait les deux taux de croissance, si bien
     qu'un amont en fort repli et un aval en forte hausse rendaient « en reprise ».

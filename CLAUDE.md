@@ -517,6 +517,64 @@ annonçait « les trois derniers mois comparés à la même période un an plus 
 faux. Comme tout chapeau du site il reste sans aucun chiffre (rien ne le régénère) ; il
 décrit les deux horizons, les deux régimes et le refus de moyenner, en toutes lettres.
 
+**Une carte porte le momentum ET l'altitude, sur deux lignes séparées (2026-08-26).**
+Corriger la fenêtre du momentum a rendu la pente juste et laissé le niveau muet — or les
+deux mènent à des décisions différentes. `ana.level_context` situe le cumul 12 mois par
+rapport à une décennie de marché ordinaire et par rapport à toute son histoire. Mesuré :
+les mises en chantier sont **23 % sous la normale 2010-19** et **plus basses que 91 % des
+mois depuis 2000** (9ᵉ percentile — 29 mois sur 307 seulement ont fait moins bien ;
+annualisé, ce serait la 3ᵉ pire année sur 26). La même carte annonce « tendance 12 mois
++16,7 % ». Les deux sont vrais : c'est un rebond de creux, pas une reprise, et seul le
+second fait dimensionne un outil industriel. À l'inverse, les ventes anciennes sont **17 %
+AU-DESSUS** de cette normale alors que leur pastille est orange — le code couleur porte le
+momentum, la seconde ligne porte le niveau, et il fallait les deux.
+
+`ana.LEVEL_REF_YEARS = ("2010", "2019")` est **choisi, pas trouvé** : exclut 2004-2007 (la
+bulle de crédit, dont le pic mettrait une barre que le marché n'a jamais retrouvée) et
+l'après-2020 (Covid puis choc de taux, c'est-à-dire l'anomalie qu'on veut mesurer). Les
+deux lignes restent SÉPARÉES à l'affichage (`sub` et `level` dans le JSON, deux
+`.hm-card-sub` sur le front, deux `st.caption` dans `app.py`) : les fondre les mettrait
+sur le même plan alors qu'elles répondent à deux questions.
+
+**Le bloc « Perspective » publie la prévision DU SITE, plus la cible d'un tiers.** Il
+affichait « ventes 12 m vs cible BPCE 2026 » : le même 954 k que la carte d'activité, en
+**vert** parce qu'il dépasse la cible d'une banque, à un écran de la même valeur en
+**orange**. Un seul nombre, deux jugements. Et « infléchissement attendu » était une chaîne
+codée en dur, déclenchée par le simple dépassement du seuil, adossée à aucune prévision —
+elle coïncidait avec le modèle par hasard. La carte porte désormais la projection à six
+mois, sa fourchette et son taux de bon sens mesuré ; le titre du bloc est construit depuis
+les CHAMPS du verdict, jamais par découpe de sa phrase (`sentence` est faite pour être lue,
+sa forme peut changer). Repli sur la comparaison BPCE si le modèle n'est pas calibrable :
+le bloc ne reste jamais vide.
+
+`_shared_verdict` mémoïse `_verdict` pour la durée du process, parce que **deux pages en
+ont maintenant besoin** — la Synthèse et « Prévision & Scénarios ». Le recalculer de chaque
+côté rejouerait l'ajustement complet pour aboutir au même nombre, et surtout rien ne
+garantirait qu'il le reste. Preuve que la mémoïsation est neutre : `previsions.json` est
+resté **inchangé** au passage de `_verdict(payload["projection"], con)` à
+`_shared_verdict(con)`.
+
+**L'ECLN aussi est CVS-CJO, et elle a suivi.** Le premier correctif n'avait traité que
+SIT@DEL et laissé la carte ECLN en « vs même trimestre un an plus tôt » — le défaut exact
+qu'on venait de retirer, sur une série de même nature. Elle se lit maintenant d'un
+trimestre au précédent (−4,8 % contre −2,1 % publié), avec la tendance sur quatre
+trimestres dans le rôle du cumul 12 mois. **Trois séries corrigées des variations
+saisonnières sur le site : permis, mises en chantier, ECLN. Aucune ne doit être comparée à
+n-1.**
+
+**Ce qui n'a délibérément PAS été mirroré dans `app.py` : le verdict du modèle.** Les
+points « niveau » et « ECLN » y sont (helpers purs, aucun risque) ; la carte de projection
+non, et la Synthèse d'`app.py` garde sa carte BPCE. Raison : `app.py` n'importe pas
+`api.engine`, et l'y importer ajouterait un second moteur de prévision dans un process
+Streamlit multi-sessions — exactement la surface de concurrence que l'invariant « une
+requête = un curseur » documente comme ayant déjà produit un bug de production. **Défaut
+préexistant découvert au passage, à traiter à part** : l'onglet Prévision d'`app.py` appelle
+`fc.forecast_path(...)` **sans `anchor` ni `band`**, là où `api.engine.projection()` passe
+les deux. `app.py` publie donc déjà une projection non recalée et à bande constante, c'est-
+à-dire des chiffres différents de ceux du site. Ce n'est pas une régression introduite ici,
+mais c'est la vraie raison pour laquelle brancher le verdict sur `app.py` demande une passe
+dédiée : il faudrait d'abord aligner son moteur.
+
 **Reste au backlog, mesuré mais non fait : la SURFACE.** Le fichier SIT@DEL déjà en dépôt
 porte `SDP_AUT` / `SDP_COM` (surface de plancher, m²) et `data_manager.py` ne parse que
 `LOG_AUT` / `LOG_COM`. Or les matériaux suivent les m², pas le nombre de logements. Mesuré

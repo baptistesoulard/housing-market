@@ -121,6 +121,25 @@ def _status_seq(v) -> str:
     return ana._tri(v, ana.SEQ_TOL)
 
 
+def _level_sub(ctx) -> str:
+    """Seconde ligne d'une carte : l'ALTITUDE du niveau, que le momentum ne dit jamais.
+
+    « 293 k, tendance 12 mois +16,7 % » se lit comme un marché qui va bien. Ajouter
+    « 23 % sous la normale 2010-19, plus bas que 91 % des mois depuis 2000 » ne change
+    aucun chiffre et change la décision : on passe d'une reprise à un rebond de creux.
+    Voir ana.level_context pour le choix de la décennie de référence.
+    """
+    if not ctx:
+        return ""
+    sens = "sous" if ctx["gap_pct"] < 0 else "au-dessus de"
+    ecart = f"{abs(ctx['gap_pct']):.0f} %".replace(".", ",")
+    if ctx["rank_pct"] < 50:
+        rang = f"plus bas que {100 - ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}"
+    else:
+        rang = f"plus haut que {ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}"
+    return f"{ecart} {sens} la normale {ctx['ref_label']} · {rang}"
+
+
 def _momentum_sub(head, trend_12m=None, plateau=None, exact=None) -> str:
     """Sous-titre de carte : le momentum publié, puis la tendance longue, puis le total.
 
@@ -212,6 +231,10 @@ def build_synthese(con, frames: dict) -> dict:
     h_mises = ana.headline_momentum(m_mises, ana.ADJUSTED_SEQUENTIAL)
     h_tx = ana.headline_momentum(m_tx, ana.RAW_TWELVE_MONTHS)
     plateau_tx = ana.plateau_months(roll_va, "Transactions")
+    # Altitude du niveau — l'autre moitié de la question (voir ana.level_context).
+    lvl_permis = ana.level_context(roll_sit, "Permis")
+    lvl_mises = ana.level_context(roll_sit, "MisesEnChantier")
+    lvl_tx = ana.level_context(roll_va, "Transactions")
 
     # ---------------------------- Pastilles par pilier ----------------------------
     # Le pilier « Neuf » ne moyenne plus ses deux étages : quand l'amont (permis) et
@@ -332,24 +355,35 @@ def build_synthese(con, frames: dict) -> dict:
         {"emoji": _dot(_status_seq(h_permis["value"])), "title": "Permis de construire",
          "value": _human(k_permis["current_12m"]) + " /12 m",
          "sub": _momentum_sub(h_permis, trend_12m=k_permis["yoy_12m_pct"],
-                              exact=k_permis["current_12m"])},
+                              exact=k_permis["current_12m"]),
+         "level": _level_sub(lvl_permis)},
         {"emoji": _dot(_status_seq(h_mises["value"])), "title": "Mises en chantier",
          "value": _human(k_mises["current_12m"]) + " /12 m",
          "sub": _momentum_sub(h_mises, trend_12m=k_mises["yoy_12m_pct"],
-                              exact=k_mises["current_12m"])},
+                              exact=k_mises["current_12m"]),
+         "level": _level_sub(lvl_mises)},
         {"emoji": _dot(pill_ancien), "title": "Ventes de logements anciens",
          "value": _human(k_tx["current_12m"]) + " /12 m",
-         "sub": _momentum_sub(h_tx, plateau=plateau_tx, exact=k_tx["current_12m"])},
+         "sub": _momentum_sub(h_tx, plateau=plateau_tx, exact=k_tx["current_12m"]),
+         "level": _level_sub(lvl_tx)},
     ]
+    # ECLN est elle aussi publiée CVS-CJO (voir data_manager.py) : même raisonnement que
+    # pour SIT@DEL, donc même lecture séquentielle — d'un trimestre au précédent, sans
+    # repasser par le même trimestre de l'an dernier. La tendance sur quatre trimestres
+    # joue ici le rôle que le cumul 12 mois joue sur les séries mensuelles.
     if df_ecln_full is not None and not df_ecln_full.empty:
         se = df_ecln_full.dropna(subset=["Reservations"]).sort_values("Date")
-        if len(se) >= 5:
-            e_yoy = (float(se["Reservations"].iloc[-1]) / float(se["Reservations"].iloc[-5]) - 1) * 100
+        if len(se) >= 8:
+            r = se["Reservations"].astype(float)
+            e_seq = (float(r.iloc[-1]) / float(r.iloc[-2]) - 1) * 100
+            e_trend = (float(r.iloc[-4:].sum()) / float(r.iloc[-8:-4].sum()) - 1) * 100
             cards_act.append({
-                "emoji": _dot(_status_yoy(e_yoy)),
+                "emoji": _dot(_status_seq(e_seq)),
                 "title": "Réservations particuliers neuf (ECLN)",
-                "value": _th(float(se["Reservations"].iloc[-1])) + " /trim.",
-                "sub": _pct_fr(e_yoy) + " vs même trimestre un an plus tôt"})
+                "value": _th(float(r.iloc[-1])) + " /trim.",
+                "sub": (_pct_fr(e_seq) + " vs le trimestre précédent · tendance 4 trimestres : "
+                        + _pct_fr(e_trend)),
+                "level": ""})
 
     # ---------------------- Bloc 2 : Financement ----------------------------------
     cards_fin = []
@@ -394,31 +428,62 @@ def build_synthese(con, frames: dict) -> dict:
                                   "value": f"{a_last:.0f}", "sub": a_sub})
 
     # ---------------------- Bloc 3 : Perspective ----------------------------------
-    tx12 = roll_va.set_index("Date")["Transactions_12M"].dropna()
-    gap = None
-    last_tx = None
-    if not tx12.empty:
-        last_tx = float(tx12.iloc[-1])
-        gap = (last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0
-    if gap is None:
-        persp_verdict = ""
-    elif gap > 3:
-        persp_verdict = "marché au-dessus de la cible BPCE 2026, infléchissement attendu"
-    elif gap >= -3:
-        persp_verdict = "marché aligné sur la cible BPCE 2026"
-    else:
-        persp_verdict = "marché sous la cible BPCE 2026"
-
+    # La première carte porte la PRÉVISION DU SITE, pas la cible d'un tiers.
+    #
+    # Le bloc affichait « ventes 12 m vs cible BPCE 2026 » : le même 954 k que la carte
+    # d'activité, en vert parce qu'il dépasse la cible d'une banque, à un écran de la
+    # même valeur en orange. Un seul nombre, deux jugements — et « infléchissement
+    # attendu » était une chaîne codée en dur, déclenchée par le simple dépassement de
+    # la cible, adossée à aucune prévision. Or le site EN A une, backtestée sur 204
+    # millésimes et publiée sur « Prévisions passées ». Ne pas la montrer ici revenait à
+    # garder son seul actif prospectif hors de sa porte d'entrée.
+    #
+    # Repli si le modèle n'est pas calibrable (macro incomplète) : la comparaison BPCE,
+    # qui ne dépend que de la série publiée. Le bloc ne reste jamais vide.
+    verdict = _shared_verdict(con)
     cards_persp = []
-    if gap is None:
-        cards_persp.append({"emoji": "⚪", "title": "Ventes 12 m vs cible BPCE 2026", "value": "—", "sub": ""})
-    else:
-        f_status = "up" if gap > 3 else ("flat" if gap > -3 else "down")
+    if verdict:
+        v_status = {"hausse": "up", "stable": "flat", "baisse": "down"}[verdict["direction"]]
+        rel = verdict.get("reliability") or {}
+        bits = [f"{_pct_fr(verdict['change_pct'])} vs les 12 derniers mois",
+                f"fourchette {_human(verdict['lo'])} – {_human(verdict['hi'])}"]
+        if rel.get("direction") is not None:
+            bits.append(f"sens juste {rel['direction'] * 100:.0f} % du temps à cet horizon "
+                        f"({rel['n']} millésimes)")
+        # Construit depuis les CHAMPS du verdict, jamais par découpe de sa phrase :
+        # `sentence` est destinée à être lue, sa forme peut changer.
+        ampleur = f"{abs(verdict['change_pct']):.0f} %".replace(".", ",")
+        persp_verdict = {
+            "hausse": f"hausse d'environ {ampleur} attendue d'ici {verdict['target_month']}",
+            "baisse": f"recul d'environ {ampleur} attendu d'ici {verdict['target_month']}",
+            "stable": f"marché à peu près stable d'ici {verdict['target_month']}",
+        }[verdict["direction"]]
         cards_persp.append({
-            "emoji": _dot(f_status), "title": "Ventes 12 m vs cible BPCE 2026",
-            "value": _human(last_tx),
-            "sub": _pct_fr(gap) + (" au-dessus de la cible BPCE 2026 (890 k)" if gap >= 0
-                                   else " sous la cible BPCE 2026 (890 k)")})
+            "emoji": _dot(v_status),
+            "title": f"Ventes anciennes projetées ({verdict['target_month']})",
+            "value": _human(verdict["predicted"]),
+            "sub": " · ".join(bits),
+            "level": "prévision du modèle du site, ajustée sur les taux, les intentions "
+                     "d'achat et le chômage — voir « Prévisions passées » pour ses erreurs"})
+    else:
+        tx12 = roll_va.set_index("Date")["Transactions_12M"].dropna()
+        last_tx = float(tx12.iloc[-1]) if not tx12.empty else None
+        gap = (None if last_tx is None
+               else (last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0)
+        if gap is None:
+            persp_verdict = ""
+            cards_persp.append({"emoji": "⚪", "title": "Ventes 12 m vs cible BPCE 2026",
+                                "value": "—", "sub": "", "level": ""})
+        else:
+            persp_verdict = ("marché au-dessus de la cible BPCE 2026" if gap > 3
+                             else ("marché aligné sur la cible BPCE 2026" if gap >= -3
+                                   else "marché sous la cible BPCE 2026"))
+            cards_persp.append({
+                "emoji": _dot("up" if gap > 3 else ("flat" if gap > -3 else "down")),
+                "title": "Ventes 12 m vs cible BPCE 2026", "value": _human(last_tx),
+                "sub": _pct_fr(gap) + (" au-dessus de la cible BPCE 2026 (890 k)" if gap >= 0
+                                       else " sous la cible BPCE 2026 (890 k)"),
+                "level": "modèle non calibrable à cette publication — repli sur la cible BPCE"})
     if "Reno_Activite_Batiment" in macro_cols:
         rn_last, rn_prev = _last_prev("Reno_Activite_Batiment")
         if rn_last is not None:
@@ -427,14 +492,16 @@ def build_synthese(con, frames: dict) -> dict:
             rn_word = ("activité en baisse" if rn_last < 0
                        else ("activité en hausse" if rn_last > 0 else "activité stable"))
             cards_persp.append({"emoji": _dot(rn_status), "title": "Activité rénovation (second œuvre)",
-                                "value": f"{rn_last:+.0f}", "sub": f"solde d'opinion INSEE — {rn_word}"})
+                                "value": f"{rn_last:+.0f}", "sub": f"solde d'opinion INSEE — {rn_word}",
+                                "level": ""})
     jalons = sorted(
         [(d, it) for it in actu.items_sorted() for d, _lbl, _typ in it.get("jalons", [])
          if d > actu.MAJ], key=lambda t: t[0])
     if jalons:
         j_d, j_it = jalons[0]
         cards_persp.append({"emoji": "🗓️", "title": "Prochaine échéance aides",
-                            "value": pd.Timestamp(j_d).strftime("%m/%Y"), "sub": j_it["court"]["FR"]})
+                            "value": pd.Timestamp(j_d).strftime("%m/%Y"),
+                            "sub": j_it["court"]["FR"], "level": ""})
 
     # `links` remplace l'ancienne phrase « → détail : « X » · « Y » » : le front en fait de
     # vrais liens vers les pages concernées. On exporte le CHEMIN CANONIQUE (« /neuf »),
@@ -509,8 +576,17 @@ def build_synthese(con, frames: dict) -> dict:
             "plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis "
             "(l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en "
             "chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. "
-            "Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent "
-            "(taux en baisse), pas une valeur qui monte. Chiffres nationaux."),
+            "Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire "
+            "l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie "
+            "parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le "
+            "rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de "
+            "l'altitude : un marché qui progresse vite depuis un creux profond reste un "
+            "petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc "
+            "« Perspective » publie la projection du modèle du site à six mois, avec sa "
+            "fourchette et la part de fois où le sens annoncé s'est avéré juste sur les "
+            "millésimes rétro-simulés — ses erreurs détaillées sont sur « Prévisions "
+            "passées ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui "
+            "s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux."),
         "blocks": blocks,
         "chart": chart,
     }
@@ -1369,7 +1445,7 @@ def build_previsions(con, frames: dict) -> dict:
     except engine.EngineUnavailable as e:
         payload = {"available": False, "reason": str(e)}
     if payload["available"]:
-        payload["verdict"] = _verdict(payload["projection"], con)
+        payload["verdict"] = _shared_verdict(con)
         payload["benchmark"] = _benchmark(payload["projection"])
     payload["refutations"] = REFUTATIONS
     payload["benchmark_taux"] = BENCHMARK_TAUX
@@ -1443,6 +1519,28 @@ def _verdict(projection: dict, con) -> dict | None:
                      f"le marché des logements anciens {phrase}."),
         "reliability": reliability,
     }
+
+
+#: Verdict du modèle, calculé UNE fois par exécution et partagé par les deux pages qui en
+#: ont besoin — la Synthèse pour son bloc « Perspective », « Prévision & Scénarios » pour
+#: son bloc de tête. Le recalculer de chaque côté rejouerait l'ajustement complet des deux
+#: étages pour aboutir, par construction, au même nombre ; surtout, rien ne garantirait
+#: qu'il le reste si les deux chemins venaient à diverger. Un seul calcul, un seul chiffre
+#: sur les deux pages — c'est exactement ce que l'axe compute existe pour garantir.
+_VERDICT_CACHE: dict = {}
+
+
+def _shared_verdict(con):
+    """`_verdict` mémoïsé pour la durée du process. None si le modèle n'est pas calibrable."""
+    if "value" not in _VERDICT_CACHE:
+        engine.reset()
+        try:
+            _VERDICT_CACHE["value"] = _verdict(engine.projection(), con)
+        except engine.EngineUnavailable:
+            _VERDICT_CACHE["value"] = None
+        finally:
+            engine.reset()
+    return _VERDICT_CACHE["value"]
 
 
 _BUILDERS = {"synthese": build_synthese, "neuf": build_neuf, "ancien": build_ancien,

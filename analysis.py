@@ -209,6 +209,50 @@ def plateau_months(df, value_col, date_col="Date", tol_pct=1.0, window=12):
     return {"months": months, "since": pd.Timestamp(dates[i]), "level": level}
 
 
+# Décennie de référence pour situer un NIVEAU. Choisie, pas trouvée : elle exclut
+# 2004-2007 (la bulle de crédit, dont le pic mettrait une barre que le marché n'a jamais
+# retrouvée et ne cherche pas à retrouver) et l'après-2020 (Covid puis choc de taux,
+# c'est-à-dire l'anomalie que l'on veut justement mesurer). Reste une décennie de marché
+# ordinaire, qui répond à « qu'est-ce qu'une année normale ».
+LEVEL_REF_YEARS = ("2010", "2019")
+
+
+def level_context(df, value_col, date_col="Date", window=12, ref=LEVEL_REF_YEARS):
+    """Où se situe le NIVEAU actuel — la question que le momentum ne pose jamais.
+
+    Un taux de croissance ne dit rien de l'altitude : « +16,7 % sur douze mois » se lit
+    comme un marché qui va bien, alors que les mises en chantier sont au 9ᵉ percentile de
+    toute leur histoire — 293 412 sur douze mois, soit 23 % sous la normale 2010-19, et un
+    niveau plus bas seulement 29 mois sur 307 depuis 2000. Les deux faits sont vrais en
+    même temps, et c'est le second qui dimensionne un outil industriel. Publier le premier
+    seul, c'est laisser conclure à une reprise là où il y a un rebond de creux.
+
+    Renvoie {"level", "gap_pct", "rank_pct", "below", "ref_label", "since_year"} ou None
+    si l'historique est trop court. `rank_pct` est la part des mois passés STRICTEMENT
+    plus bas que le niveau actuel ; `gap_pct` l'écart à la moyenne de la décennie de
+    référence.
+    """
+    s = df.dropna(subset=[value_col]).sort_values(date_col)
+    if len(s) < window + 1:
+        return None
+    roll = s.set_index(date_col)[value_col].rolling(window).sum().dropna()
+    if roll.empty:
+        return None
+    level = float(roll.iloc[-1])
+    window_ref = roll.loc[ref[0]:ref[1]]
+    if window_ref.empty or window_ref.mean() <= 0:
+        return None
+    gap = (level / float(window_ref.mean()) - 1.0) * 100.0
+    return {
+        "level": level,
+        "gap_pct": round(gap, 1),
+        "rank_pct": round(float((roll < level).mean()) * 100.0, 1),
+        "below": gap < 0,
+        "ref_label": f"{ref[0]}-{ref[1][-2:]}",
+        "since_year": int(roll.index[0].year),
+    }
+
+
 # Seuil de bascule du momentum séquentiel, en points de %. Plus large que le ±1 utilisé
 # sur les taux annuels, et pour une raison mesurée : le 3 mois séquentiel saute en moyenne
 # de 5,2 pt par mois sur les permis et de 3,5 pt sur les chantiers. À ±1 la pastille
