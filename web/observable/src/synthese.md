@@ -47,11 +47,19 @@ function card(c) {
   // séparer laisse l'œil s'arrêter à la première et descendre à la seconde s'il veut
   // dimensionner plutôt que suivre. `level` est absent ou vide sur les cartes qui n'ont
   // pas d'historique comparable (ECLN, soldes d'opinion, jalons).
+  //
+  // Rendues en <ul>/<li> plutôt qu'en deux <div> empilées : chaque ligne est elle-même
+  // une phrase longue à plusieurs faits (jointe par des « · »), qui prend souvent deux
+  // lignes visuelles à elle seule. Deux paragraphes qui wrappent tous les deux devenaient
+  // indiscernables l'un de l'autre — rien ne marquait où « sub » s'arrêtait et où
+  // « level » commençait. Une puce par ligne logique règle ça sans rien inventer : le
+  // bloc « À retenir » de cette même page utilise déjà un <ul>, c'est le même vocabulaire
+  // visuel plutôt qu'un ajout ad hoc.
+  const subs = [c.sub, c.level].filter(Boolean);
   return html`<div class="hm-card hm-card--metric">
     <div class="hm-card-title">${c.title}</div>
     <div class="hm-card-value"><span class="hm-card-dot">${c.emoji}</span> ${c.value}</div>
-    ${c.sub ? html`<div class="hm-card-sub">${c.sub}</div>` : ""}
-    ${c.level ? html`<div class="hm-card-sub">${c.level}</div>` : ""}
+    ${subs.length ? html`<ul class="hm-card-subs">${subs.map((s) => html`<li class="hm-card-sub">${s}</li>`)}</ul>` : ""}
   </div>`;
 }
 ```

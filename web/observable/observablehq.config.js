@@ -135,6 +135,13 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-card-title { font-weight: 600; font-size: 1rem; color: var(--hm-ink); letter-spacing: 0.2px; }
 .hm-card-value { font-size: 1.75rem; font-weight: 600; color: var(--hm-ink); margin: 0.5rem 0 0.4rem; line-height: 1.2; }
 .hm-card-sub { font-size: 0.875rem; color: var(--hm-ink); line-height: 1.6; }
+/* Cartes à sous-lignes multiples (Synthèse : momentum + niveau) — une <li> par ligne
+   logique, pas une <div> nue, sinon deux paragraphes qui wrappent tous deux deviennent
+   indiscernables. Puce discrète (::marker en couleur atténuée) : elle marque la
+   frontière entre les lignes sans concurrencer le chiffre au-dessus. */
+.hm-card-subs { margin: 0.15rem 0 0; padding-left: 1.05rem; }
+.hm-card-subs .hm-card-sub { margin: 0.2rem 0; }
+.hm-card-subs li::marker { color: var(--hm-subtle); }
 /* Cartouches type st.metric (pages Marché / Actualités), via .hm-card--metric.
    Relevé sur st.metric : libellé 14px/400, valeur 24px/700, delta en pastille de 14px à
    rayon plein sur un fond teinté à ~10 %, SUR SA PROPRE LIGNE. C'est ce dernier point qui
