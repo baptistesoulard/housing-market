@@ -1291,6 +1291,30 @@ rigoureuse du site sur le fond, ce qui rendait ses écarts d'autant plus coûteu
    Le champ garde son nom pour la vraie date, et la date d'ajustement s'appelle désormais
    `model_last_fitted_month`.
 
+**La page dit maintenant COMMENT l'utiliser, et sur quel marché (2026-08-27).** Trois
+ajouts qui n'inventent aucun calcul — ils assemblent ce que la page portait déjà à des
+endroits éloignés :
+
+* **Encart des trois régimes, sous le verdict.** Croiser l'horizon de bascule contre la
+  naïve (`crossover_horizon`, 6) et l'horizon informatif (`informative_months`, 10) donne
+  une règle d'usage que ni l'un ni l'autre ne donnait seul : **moins de 6 mois → s'en tenir
+  au dernier chiffre connu** (le modèle y fait moins bien), **6 à 10 mois → la zone utile**,
+  **au-delà de 10 → un niveau d'atterrissage, pas un chemin**. Le premier régime est
+  contre-intuitif pour qui vient chercher une prévision, et c'est précisément pour ça qu'il
+  doit être écrit. `crossover_horizon` reprend la MÊME définition que la page « Prévisions
+  passées » (premier horizon à skill > 0) : deux définitions du même seuil finiraient par
+  donner deux chiffres.
+* **Les mois de taux déjà déterminés passent en PREMIÈRE carte de l'étage 1.** Sept mois de
+  taux de crédit fixés par des OAT déjà publiées, contre **zéro** mois « assuré » côté
+  transactions : c'est le seul chiffre prospectif du site qui ne repose sur aucune
+  hypothèse, et il était présenté après deux cartes techniques comme un sous-produit du
+  modèle explicatif.
+* **Le chapeau statique nomme le périmètre.** « La série projetée est celle des ventes de
+  logements anciens, et elle seule » — ni chantiers, ni rénovation, avec la raison
+  (permis → chantiers mesuré puis écarté ; aucune série de volume pour la rénovation) et la
+  conséquence pour le lecteur du bâtiment : **indicateur de contexte, pas prévision de son
+  carnet**. Sans chiffre, donc pérenne.
+
 **Les chiffres par plage d'horizon ne sont plus écrits en dur.** Le paragraphe qui justifie
 le seuil d'entrée d'un prédicteur affirmait « il perd contre une prévision naïve en deçà de
 six mois et lui prend 40 % d'erreur au-delà d'un an » : exact au jour où c'était tapé,

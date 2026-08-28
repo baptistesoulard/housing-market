@@ -70,6 +70,16 @@ La projection est publiée avec son backtest hors échantillon et sa bande d'inc
 les scénarios permettent d'en manipuler les leviers. Les prévisions déjà publiées, elles,
 sont archivées et confrontées au réalisé sur leur propre page.
 
+**Ce que cette page prévoit, et ce qu'elle ne prévoit pas.** La série projetée est celle des
+**ventes de logements anciens**, et elle seule. Ni les mises en chantier, ni l'activité de
+rénovation ne font l'objet d'une prévision sur ce site, et c'est un choix documenté plutôt
+qu'un oubli : le lien entre les permis de construire et les chantiers a été mesuré puis
+écarté faute d'avance réelle, et aucune série de volume publiée ne permet aujourd'hui de
+modéliser la rénovation. Un lecteur venu pour anticiper une activité de construction doit
+donc lire cette projection comme un **indicateur de contexte** — le marché de l'ancien
+décrit la santé de la demande de logement en général — et non comme une prévision de son
+propre carnet.
+
 <div class="hm-caption">
 Modèle chiffré « indicateurs avancés → transactions », calibré sur les séries réelles.
 Deux étages : (1) le taux de crédit est modélisé à partir de l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans, avec le délai
@@ -118,6 +128,45 @@ if (V) display(html`<div class="hm-takeaways">
       <a href="/previsions-passees">Prévisions passées</a> — y compris les périodes où le
       modèle s'est trompé.</li>
   </ul>
+</div>`);
+```
+
+```js
+// COMMENT UTILISER CETTE PRÉVISION — l'assemblage que la page ne faisait pas.
+//
+// Les deux chiffres qui la déterminent existaient déjà, mais à deux endroits éloignés :
+// l'horizon de bascule contre la prévision naïve (archive, section « Prévisions passées »)
+// et l'horizon informatif de la trajectoire (carte de la section 2 bis). Croisés, ils
+// donnent trois régimes d'usage — et notamment le fait, contre-intuitif pour qui vient
+// chercher une prévision, qu'en deçà de la bascule il vaut mieux recopier le dernier
+// chiffre connu. Le dire ici coûte quatre lignes et évite un contresens de planification.
+if (V && P && P.available && data.crossover_horizon) display(html`<div class="hm-note">
+  <p><strong>Comment lire cette prévision, selon l'horizon.</strong> Le modèle n'est pas
+  utile partout de la même façon, et les deux bornes ci-dessous sont mesurées, pas
+  choisies.</p>
+  <table class="hm-table">
+    <thead><tr><th>Horizon</th><th>Ce qu'il faut retenir</th><th>Pourquoi</th></tr></thead>
+    <tbody>
+      <tr><td><b>Moins de ${data.crossover_horizon} mois</b></td>
+        <td>s'en tenir au dernier chiffre connu
+          (${nf0.format(P.last_observed)} ventes sur douze mois)</td>
+        <td>sur l'archive, le modèle fait <i>moins bien</i> que cette simple prolongation
+          jusqu'à ${data.crossover_horizon} mois</td></tr>
+      <tr><td><b>${data.crossover_horizon} à ${P.informative_months} mois</b></td>
+        <td>la zone où le modèle apporte quelque chose</td>
+        <td>il passe devant la prévision naïve, et sa trajectoire est encore pilotée par
+          des indicateurs déjà publiés</td></tr>
+      <tr><td><b>Au-delà de ${P.informative_months} mois</b></td>
+        <td>lire un <i>niveau d'atterrissage</i> (${nf0.format(P.end_value)}), pas un
+          chemin mois par mois</td>
+        <td>tous les indicateurs sont alors maintenus à leur dernière valeur : la courbe
+          répète ce niveau au lieu de le faire évoluer</td></tr>
+    </tbody>
+  </table>
+  ${R && R.projected && R.projected.length ? html`<p class="hm-caption">À côté de ça, le
+    <b>taux de crédit des ${R.projected.length} prochains mois est déjà déterminé</b> par
+    des taux de marché publiés — c'est la seule projection du site qui ne repose sur
+    aucune hypothèse (section 1).</p>` : ""}
 </div>`);
 ```
 
@@ -246,6 +295,17 @@ if (R) display(html`<div class="hm-panels">
   <div>${tauxPlot()}</div>
   <div>
     ${cardGrid([
+      // Cette carte est le RÉSULTAT de l'étage 1, pas un sous-produit : c'est le seul
+      // chiffre prospectif du site qui ne repose sur aucune hypothèse. Les taux de marché
+      // déjà parus déterminent le barème des banques `R.lag` mois plus tard, donc autant
+      // de mois de taux de crédit sont écrits d'avance. À comparer aux ZÉRO mois assurés
+      // de la projection de transactions. Elle passait après les deux cartes techniques.
+      ...(R.projected && R.projected.length ? [{
+        label: "Taux de crédit déjà déterminé",
+        value: `${R.projected.length} mois`,
+        subs: ["par des taux de marché déjà publiés — aucune hypothèse",
+               `jusqu'à ${fmtMonthFR(new Date(R.projected[R.projected.length - 1].date))}`]
+      }] : []),
       {label: "Délai de répercussion", value: `${R.lag} mois`,
        subs: ["entre le marché et le barème des banques"]},
       {label: "Part du mouvement répercutée",

@@ -9565,6 +9565,7 @@
       "skill_pct": 40.3
     }
   ],
+  "crossover_horizon": 6,
   "refutations": [
     {
       "titre": "Ajouter ce que les banques disent de la demande de crédit",

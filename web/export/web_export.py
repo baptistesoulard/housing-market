@@ -1704,7 +1704,9 @@ def build_previsions(con, frames: dict) -> dict:
         payload["verdict"] = _shared_verdict(con)
         payload["benchmark"] = _benchmark(payload["projection"])
     if payload["available"]:
-        payload["horizon_blocks"] = _horizon_blocks(con)
+        _hb = _horizon_blocks(con)
+        payload["horizon_blocks"] = _hb["blocks"]
+        payload["crossover_horizon"] = _hb["crossover"]
     payload["refutations"] = REFUTATIONS
     payload["benchmark_taux"] = BENCHMARK_TAUX
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
@@ -1804,7 +1806,7 @@ def _horizon_blocks(con) -> list:
     rows = fa.by_horizon(fa.evaluate(
         fa.read().query("kind == 'retro'"), q.transactions_run_rate(con)))
     if rows.empty:
-        return []
+        return {"blocks": [], "crossover": None}
     out = []
     for label, lo, hi in _HORIZON_BLOCS:
         sub = rows[(rows["horizon"] >= lo) & (rows["horizon"] <= hi)]
@@ -1813,7 +1815,12 @@ def _horizon_blocks(con) -> list:
         mape, naive = float(sub["mape"].mean()), float(sub["naive_mape"].mean())
         out.append({"bloc": label, "mape": round(mape, 2), "naive_mape": round(naive, 2),
                     "skill_pct": round((1 - mape / naive) * 100, 1) if naive else None})
-    return out
+    # Premier horizon où le modèle passe devant la prévision naïve. MÊME définition que
+    # `crossover_horizon` de la page « Prévisions passées » (premier skill > 0) : deux
+    # définitions du même seuil finiraient par donner deux chiffres.
+    crossover = next((int(r["horizon"]) for _, r in rows.sort_values("horizon").iterrows()
+                      if r["skill"] is not None and float(r["skill"]) > 0), None)
+    return {"blocks": out, "crossover": crossover}
 
 
 def _shared_verdict(con):
