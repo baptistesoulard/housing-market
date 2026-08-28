@@ -136,9 +136,6 @@ display(html`<div>${items.map(measureCard)}</div>`);
 ```
 
 <style>
-.hm-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
-.hm-table th, .hm-table td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--hm-border-light); }
-.hm-table th { font-weight: 700; color: var(--hm-ink); }
 .hm-measure { border: 1px solid var(--hm-border); border-radius: 8px; margin: 0.5rem 0; padding: 0.2rem 0.9rem; }
 .hm-measure summary { cursor: pointer; padding: 0.55rem 0; font-size: 1rem; }
 .hm-measure-body { padding: 0.2rem 0 0.7rem; }

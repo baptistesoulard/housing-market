@@ -1256,6 +1256,51 @@ Trois conséquences à tenir :
    de faire mieux — et elle coûterait ~68 PDF lus à la main (la Banque de France renvoie 403
    à tout script). Ne pas s'y lancer sans une raison nouvelle.
 
+**Audit de « Prévision & Scénarios » (2026-08-27) — cinq correctifs.** La page est la plus
+rigoureuse du site sur le fond, ce qui rendait ses écarts d'autant plus coûteux.
+
+1. **La légende de la bande décrivait la méthode SUPPRIMÉE.** Elle disait « Bande =
+   ±1,28·RMSE hors échantillon », c'est-à-dire la bande constante remplacée depuis par
+   `band_table()` — quantiles 10/90 de l'erreur SIGNÉE par horizon. Faux deux fois : la
+   méthode, et le `±`, qui annonce une symétrie que la bande n'a pas (à 6 mois : −84 515
+   en bas contre +62 680 en haut, parce que le modèle surestime plus qu'il ne sous-estime).
+2. **La légende renvoyait à un repère qui n'existe pas.** « Jusqu'au repère […] sans
+   hypothèse » : le trait est tracé sur le dernier point `assured`, or `assured_months = 0`
+   et le `Plot.ruleX` reçoit un tableau vide. C'est **structurel** — `kc = 0`, le chômage
+   entre sans décalage, donc il manque toujours au dernier mois. La carte affichait
+   d'ailleurs « dont 0 sans hypothèse » juste au-dessus.
+3. **L'horizon informatif manquait, et il vaut 10 sur 18.** `kr = 10` : au-delà du dixième
+   mois tous les prédicteurs sont reportés à plat et la trajectoire RÉPÈTE sa dernière
+   valeur — h=10 à h=18 valent tous 896 738. La page annonçait « horizon 18 mois » et
+   publiait le point final comme s'il informait. `engine.projection()` expose désormais
+   `informative_months`, **mesuré sur la trajectoire elle-même** (dernier mois où elle
+   bouge encore) et non dérivé des décalages : reste juste si le modèle change de
+   prédicteurs.
+4. **« C'est la preuve que ces indicateurs avancés prévoient réellement » portait sur la
+   fenêtre la plus favorable.** Le backtest de la section 2 part de `FORECAST_SPLIT =
+   2021-12`, donc teste sur 2022-2026 : le choc de taux, l'épisode qu'un modèle piloté par
+   les taux réussit le mieux (4,6 % de MAPE). L'archive, construite pour éviter exactement
+   ce biais, mesure sur 210 millésimes et huit épisodes que le modèle est **battu par la
+   naïve en deçà de six mois** (−75,6 % à 1-3 mois, −5,5 % à 4-6). La légende nomme
+   désormais sa fenêtre et renvoie aux cartes de l'archive juste au-dessus. ⚠️ Deux
+   backtests coexistent sur le site : le court (section 2, illustratif) et le long
+   (archive, qui juge). **Ne jamais présenter le court comme une preuve.**
+5. **`health.transactions_last_month` était mal nommé** : il reportait la dernière ligne de
+   la frame AJUSTÉE (avril 2026, bornée par le chômage BIT trimestriel) et non le dernier
+   mois de l'IGEDD (juin 2026). De quoi conclure que les ventes ont deux mois de retard.
+   Le champ garde son nom pour la vraie date, et la date d'ajustement s'appelle désormais
+   `model_last_fitted_month`.
+
+**Les chiffres par plage d'horizon ne sont plus écrits en dur.** Le paragraphe qui justifie
+le seuil d'entrée d'un prédicteur affirmait « il perd contre une prévision naïve en deçà de
+six mois et lui prend 40 % d'erreur au-delà d'un an » : exact au jour où c'était tapé,
+régénéré par rien. `_horizon_blocks(con)` produit le tableau depuis l'archive, comme le
+verdict, et la page l'affiche.
+
+**`.hm-table` est passée de `actualites.md` au thème global.** Une classe partagée qui vit
+dans le `<style>` d'une seule page se casse en silence le jour où une seconde l'emploie :
+elle rend sans style, et le build ne dit rien.
+
 **Les hypothèses écartées sont PUBLIÉES, dans `REFUTATIONS`.** La page de prévision porte
 une section « Ce qu'on a essayé, et qui ne marche pas » qui liste les trois idées plausibles
 mesurées puis refusées : la demande de crédit BLS, les anticipations de taux du marché, et

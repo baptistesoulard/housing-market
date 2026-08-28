@@ -32,7 +32,8 @@
         "parquet"
       ]
     ],
-    "transactions_last_month": "2026-04-01",
+    "transactions_last_month": "2026-06-01",
+    "model_last_fitted_month": "2026-04-01",
     "macro_last_month": "2026-08-01",
     "forecast_split": "2021-12-01"
   },
@@ -3140,6 +3141,7 @@
   "projection": {
     "available": true,
     "horizon_months": 18,
+    "informative_months": 10,
     "assured_months": 0,
     "sigma": 54660.454796389815,
     "last_observed": 954000.0,
@@ -9537,6 +9539,32 @@
     "dans_la_fourchette": true,
     "ecart_au_milieu_pct": 0.3
   },
+  "horizon_blocks": [
+    {
+      "bloc": "1-3",
+      "mape": 3.94,
+      "naive_mape": 2.24,
+      "skill_pct": -75.6
+    },
+    {
+      "bloc": "4-6",
+      "mape": 5.35,
+      "naive_mape": 5.07,
+      "skill_pct": -5.5
+    },
+    {
+      "bloc": "7-12",
+      "mape": 6.25,
+      "naive_mape": 8.6,
+      "skill_pct": 27.4
+    },
+    {
+      "bloc": "13-18",
+      "mape": 7.11,
+      "naive_mape": 11.91,
+      "skill_pct": 40.3
+    }
+  ],
   "refutations": [
     {
       "titre": "Ajouter ce que les banques disent de la demande de crédit",

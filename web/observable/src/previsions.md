@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {multiLine, cardGrid, kpiCard, withCsvExport, filterYears, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
-import {series, ui} from "./components/theme.js";
+import {series, ui, delta} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 import {computeScenario} from "./components/api.js";
 ```
@@ -423,11 +423,22 @@ if (T) display(multiLine({
 }));
 ```
 
-<div class="hm-caption">
-Le modèle entraîné uniquement sur les données antérieures au découpage reproduit la
-contraction 2022-24 puis la reprise 2025-26 — sans les avoir vues. C'est la preuve que ces
-indicateurs avancés « prévoient » réellement.
-</div>
+```js
+// La légende disait « c'est LA PREUVE que ces indicateurs avancés prévoient réellement ».
+// Deux problèmes : c'est une surinterprétation, et elle porte sur la fenêtre la PLUS
+// FAVORABLE au modèle — le test commence au découpage, donc couvre le choc de taux, soit
+// l'épisode qu'un modèle piloté par les taux réussit le mieux. L'archive, construite pour
+// éviter ce biais, mesure le contraire aux horizons courts. La fenêtre est donc nommée, et
+// les chiffres de l'archive viennent immédiatement après relativiser.
+if (T) display(html`<div class="hm-caption">
+  Entraîné uniquement sur les données antérieures au découpage, le modèle retrouve le
+  mouvement des années suivantes sans les avoir vues. À lire en sachant ce que cette courbe
+  ne montre pas : la fenêtre de test commence en
+  ${fmtMonthFR(new Date(T.backtest.split))} et couvre donc surtout le choc de taux,
+  c'est-à-dire l'épisode qu'un modèle piloté par les taux réussit le mieux. Les cartes
+  ci-dessus donnent la mesure honnête — celle de l'archive, sur huit épisodes de marché.
+</div>`);
+```
 
 ## 🔬 Vérifier les décalages retenus
 
@@ -545,7 +556,8 @@ if (P) display(!P.available
          au-delà du dernier point.</div>`
   : cardGrid([
       {label: "Horizon de projection", value: `${P.horizon_months} mois`,
-       subs: [`dont ${P.assured_months} sans hypothèse`]},
+       subs: [`dont ${P.informative_months} pilotés par des indicateurs déjà publiés`,
+              `au-delà, la courbe répète sa dernière valeur`]},
       {label: "Ventes 12 m projetées (fin)", value: nf0.format(P.end_value),
        delta: (P.end_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(P.end_change_pct)) + " %"}
     ], kpiCard));
@@ -601,11 +613,33 @@ if (B) display(html`<div class="hm-note">
 </div>`);
 ```
 
-<div class="hm-caption">
-Jusqu'au repère, la projection n'utilise que des valeurs d'indicateurs déjà publiées
-(décalées de leurs délais estimés) — sans hypothèse. Au-delà, chaque indicateur manquant
-est maintenu à sa dernière valeur connue. Bande = ±1,28·RMSE hors échantillon.
-</div>
+```js
+// La légende disait deux choses fausses, corrigées ensemble le 2026-08-27 :
+//
+// 1. « Jusqu'au repère [...] sans hypothèse » — le repère n'existe pas. Il est tracé sur
+//    le dernier point `assured`, or aucun point ne l'est : le chômage entre sans décalage
+//    (kc = 0), donc il manque toujours au moins un prédicteur. La carte affiche d'ailleurs
+//    « dont 0 sans hypothèse » juste au-dessus. La phrase envoyait chercher une frontière
+//    introuvable.
+// 2. « Bande = ±1,28·RMSE » — c'est la bande CONSTANTE d'avant, remplacée depuis par une
+//    bande calibrée par horizon sur les quantiles 10/90 de l'erreur signée de l'archive.
+//    Elle est donc asymétrique, et le « ± » annonçait une symétrie qu'elle n'a pas.
+//
+// S'y ajoute l'horizon INFORMATIF (`informative_months`), qui manquait : la trajectoire
+// cesse de bouger dès que tous les prédicteurs sont reportés à plat.
+if (P && P.available) display(html`<div class="hm-caption">
+  La projection est pilotée par des valeurs d'indicateurs déjà publiées, décalées de leurs
+  délais estimés, tant qu'il en reste : au-delà du
+  <strong>${P.informative_months}<sup>e</sup> mois</strong> tous les indicateurs sont
+  maintenus à leur dernière valeur connue et la courbe répète sa dernière valeur — les
+  ${P.horizon_months - P.informative_months} derniers mois n'ajoutent donc pas d'information,
+  seulement de l'incertitude. Aucun mois n'est entièrement « sans hypothèse » : le chômage
+  entre dans le modèle sans décalage, il manque donc toujours au dernier mois.
+  La bande n'est pas symétrique — elle vient des quantiles 10 % / 90 % des erreurs
+  réellement commises par l'archive, horizon par horizon, et le modèle surestime davantage
+  qu'il ne sous-estime.
+</div>`);
+```
 
 ## 3. Panneau de scénarios : macro → marché
 
@@ -749,11 +783,28 @@ des quatre plages d'horizon — 1 à 3 mois, 4 à 6, 7 à 12, et 13 à 18**. Jam
 capacité à coller au passé : c'est exactement ce qui fait entrer des indicateurs inutiles.
 
 Pourquoi quatre plages plutôt qu'une moyenne ? Parce que l'erreur du modèle n'a rien à voir
-d'une plage à l'autre — il perd contre une prévision naïve en deçà de six mois et lui prend
-40 % d'erreur au-delà d'un an. Une moyenne unique laisserait passer un indicateur qui
-n'améliore qu'une plage étroite, ce qui n'est pas un progrès du modèle mais une coïncidence
-localisée. C'est précisément le cas de la première idée ci-dessous : la seule plage qu'elle
-franchit est celle où le modèle est de toute façon battu par le hasard.
+d'une plage à l'autre, comme le montre le tableau ci-dessous. Une moyenne unique laisserait
+passer un indicateur qui n'améliore qu'une plage étroite, ce qui n'est pas un progrès du
+modèle mais une coïncidence localisée. C'est précisément le cas de la première idée
+ci-dessous : la seule plage qu'elle franchit est celle où le modèle est de toute façon
+battu par une simple prolongation du dernier chiffre connu.
+
+```js
+// Ces chiffres étaient ÉCRITS EN DUR dans le paragraphe ci-dessus (« il perd en deçà de six
+// mois et lui prend 40 % d'erreur au-delà d'un an ») : exacts au jour où ils ont été tapés,
+// et régénérés par rien. Ils viennent maintenant de l'archive, comme le verdict.
+if (data.horizon_blocks && data.horizon_blocks.length) display(html`<table class="hm-table">
+  <thead><tr><th>Plage d'horizon</th><th>Erreur du modèle</th>
+    <th>Erreur d'une prévision naïve</th><th>Erreur évitée</th></tr></thead>
+  <tbody>${data.horizon_blocks.map((b) => html`<tr>
+    <td>${b.bloc} mois</td>
+    <td>${nf1.format(b.mape)} %</td>
+    <td>${nf1.format(b.naive_mape)} %</td>
+    <td style=${{color: b.skill_pct >= 0 ? delta.positive : delta.negative, fontWeight: 600}}>
+      ${b.skill_pct >= 0 ? "+" : "−"}${nf1.format(Math.abs(b.skill_pct))} %</td>
+  </tr>`)}</tbody>
+</table>`);
+```
 
 ```js
 // Ces trois entrées sont des CONSTANTES DATÉES côté export (voir REFUTATIONS dans

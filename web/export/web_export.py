@@ -1703,6 +1703,8 @@ def build_previsions(con, frames: dict) -> dict:
     if payload["available"]:
         payload["verdict"] = _shared_verdict(con)
         payload["benchmark"] = _benchmark(payload["projection"])
+    if payload["available"]:
+        payload["horizon_blocks"] = _horizon_blocks(con)
     payload["refutations"] = REFUTATIONS
     payload["benchmark_taux"] = BENCHMARK_TAUX
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
@@ -1784,6 +1786,34 @@ def _verdict(projection: dict, con) -> dict | None:
 #: qu'il le reste si les deux chemins venaient à diverger. Un seul calcul, un seul chiffre
 #: sur les deux pages — c'est exactement ce que l'axe compute existe pour garantir.
 _VERDICT_CACHE: dict = {}
+
+
+#: Plages d'horizon du seuil d'entrée d'un prédicteur (voir REFUTATIONS et la page de
+#: prévision). Les mêmes quatre partout : c'est le découpage sur lequel le seuil est écrit.
+_HORIZON_BLOCS = [("1-3", 1, 3), ("4-6", 4, 6), ("7-12", 7, 12), ("13-18", 13, 18)]
+
+
+def _horizon_blocks(con) -> list:
+    """Erreur du modèle et de la référence naïve, par plage d'horizon, depuis l'archive.
+
+    Ces chiffres étaient ÉCRITS EN DUR dans le texte de la page (« il perd contre une
+    prévision naïve en deçà de six mois et lui prend 40 % d'erreur au-delà d'un an ») :
+    exacts au jour où ils ont été tapés, et régénérés par rien. Ils viennent maintenant de
+    l'archive, comme le verdict — mêmes 210 millésimes, mêmes huit épisodes.
+    """
+    rows = fa.by_horizon(fa.evaluate(
+        fa.read().query("kind == 'retro'"), q.transactions_run_rate(con)))
+    if rows.empty:
+        return []
+    out = []
+    for label, lo, hi in _HORIZON_BLOCS:
+        sub = rows[(rows["horizon"] >= lo) & (rows["horizon"] <= hi)]
+        if sub.empty:
+            continue
+        mape, naive = float(sub["mape"].mean()), float(sub["naive_mape"].mean())
+        out.append({"bloc": label, "mape": round(mape, 2), "naive_mape": round(naive, 2),
+                    "skill_pct": round((1 - mape / naive) * 100, 1) if naive else None})
+    return out
 
 
 def _shared_verdict(con):

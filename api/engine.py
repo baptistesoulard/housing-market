@@ -135,10 +135,16 @@ def health() -> dict:
     try:
         s = _load()
         obs = s["tx"]["frame"]
+        # DEUX dates, et il fallait les distinguer : le champ unique s'appelait
+        # `transactions_last_month` mais reportait la dernière ligne de la frame AJUSTÉE,
+        # bornée par le prédicteur le plus en retard (le chômage BIT, trimestriel, entrant
+        # avec kc=0). Il annonçait donc « avril » quand l'IGEDD publie jusqu'à juin : de
+        # quoi conclure que les ventes ont deux mois de retard, ce qui est faux.
         return {
             "status": "ok",
             "datasets": sorted(DataManager().dataset_sources().items()),
-            "transactions_last_month": _iso(obs["Date"].iloc[-1]),
+            "transactions_last_month": _iso(s["tx12"].dropna().index.max()),
+            "model_last_fitted_month": _iso(obs["Date"].iloc[-1]),
             "macro_last_month": _iso(pd.to_datetime(s["macro"]["Date"]).max()),
             "forecast_split": FORECAST_SPLIT,
         }
@@ -214,9 +220,22 @@ def projection(horizon: int = 18) -> dict:
         row["assured"] = bool(assured)
     last_obs = _num(s["tx12"].dropna().iloc[-1])
     end = _num(path["pred"].iloc[-1])
+    # Horizon réellement INFORMATIF : le dernier mois où la trajectoire bouge encore.
+    # Au-delà, tous les prédicteurs sont reportés à plat et la courbe répète sa dernière
+    # valeur — 8 mois de ligne plate sur 18 dans la configuration actuelle (kr=10). Publier
+    # « horizon 18 mois » sans le dire laisse croire à 18 mois de prévision. Mesuré sur la
+    # trajectoire elle-même plutôt que dérivé des décalages : reste juste si le modèle
+    # change de prédicteurs.
+    vals = [float(v) for v in path["pred"]]
+    informative = 1
+    for i in range(len(vals) - 1, 0, -1):
+        if abs(vals[i] - vals[i - 1]) > 1.0:
+            informative = i + 1
+            break
     return {
         "available": True,
         "horizon_months": len(path),
+        "informative_months": informative,
         "assured_months": int(path["assured"].sum()),
         "sigma": sigma,
         "last_observed": last_obs,

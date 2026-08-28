@@ -129,6 +129,15 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-takeaways ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
 .hm-takeaways li { margin: 0.35rem 0; line-height: 1.5; }
 .hm-meta { color: var(--hm-ink); font-size: 0.875rem; margin: 0.4rem 0 0.2rem; }
+/* Tableau de données simple, partagé — declaré ici et non dans un <style> de page depuis
+   que DEUX pages l'emploient (Actualités, Prévision). Une classe partagée qui vit dans une
+   seule page se casse silencieusement le jour où la seconde l'utilise : elle s'affiche
+   sans style, et le build ne dit rien. */
+.hm-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.hm-table th, .hm-table td { text-align: left; padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--hm-border-light); }
+.hm-table th { font-weight: 700; color: var(--hm-ink); }
+
 .hm-grid { display: grid; gap: 1.8rem 1.6rem; margin: 0.8rem 0 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .hm-card { padding: 0.15rem 0; background: transparent; border: none; }
