@@ -776,6 +776,38 @@ réfutation publiée : la série rénovation est un **solde d'opinion**, pas un 
 test est faible par construction. Il ne montre pas que le lien n'existe pas, il montre
 qu'on ne sait pas le voir avec ce qu'on a.
 
+**Le texte statique ne doit porter ni chiffre NI ÉTAT (2026-08-27).** La règle « aucun
+chiffre dans un chapeau » était connue ; il lui manquait sa moitié. Un chapeau peut geler
+le présent **sans écrire un seul nombre** — et c'est plus difficile à repérer, puisqu'il n'y
+a rien à `grep`. Deux cas trouvés en auditant les trois onglets, tous deux sur `neuf.md` :
+
+* le chapeau de « Individuel vs Collectif » disait « l'individuel pur remonte vite depuis un
+  plancher historique ; le collectif [...] son rythme des trois derniers mois s'est
+  retourné ». Vrai en août 2026, faux dès que le collectif repart — et la page aurait alors
+  affirmé le contraire de ses propres cartes, qui sont régénérées ;
+* le chapeau ECLN disait « le délai d'écoulement — **proche de deux ans** — » : un chiffre
+  écrit en toutes lettres, donc figé au jour où il a été tapé.
+
+Les deux énoncent désormais le **mécanisme** (« une croissance forte sur douze mois décrit
+parfois un rebond depuis un plancher », « le temps qu'il faudrait pour vendre le stock au
+rythme actuel ») et laissent la valeur aux cartes. **Test à faire avant d'écrire une phrase
+statique : serait-elle encore vraie dans un an ?** Si la réponse dépend des données, la
+phrase appartient au générateur, pas au Markdown.
+
+**Ce qui est régénéré, et ce qui ne l'est pas.** Le workflow hebdo enchaîne
+`fetch_new_sources.py` → `forecast_archive.py --record` → `web_export.py` → commit. Donc :
+
+| | régénéré chaque semaine | à maintenir à la main |
+|---|---|---|
+| Valeurs, momentum, niveaux, plateau, pastilles, puces « à retenir », titres de blocs (verdict compris), cartes ECLN, taux de transformation, graphiques | ✅ | |
+| Chapeaux de page et de section, `how_to_read` (chaînes littérales dans `web_export.py`) | | ⚠️ |
+| `NEUF_GATE`, `REFUTATIONS`, `BENCHMARK_FNAIM`, `BENCHMARK_TAUX`, `BPCE_*`, `actualites.NEWS_ITEMS` + `MAJ` | | ⚠️ **datés exprès** |
+
+La troisième ligne est un choix documenté (résultats de méthode, relevés externes), pas un
+oubli — mais elle vieillit : `actualites.MAJ` avait **six semaines de retard** au moment de
+cet audit, et le filtre des échéances compare à `MAJ` plutôt qu'à la date du jour (voir
+plus bas). La deuxième ligne, elle, n'a aucune garde.
+
 **Neuf et ancien sont des pages JUMELLES : trois sections communes, même intitulé, même
 ordre.** « 🔑 Chiffres Clés », « 📊 Courbes d'évolution du marché », « 📅 Comparaison
 Mensuelle par Année » ouvrent les deux pages ; chacune ajoute ensuite ce qui lui est propre

@@ -108,10 +108,10 @@ ${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.me
 ## 🏠 Dynamique Individuel vs Collectif
 
 <div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre (fermetures, menuiseries, sécurité, domotique) qu'un logement collectif : c'est le driver de volume le plus direct.
-Lire chaque segment sur ses deux lignes, parce qu'elles ne disent pas la même chose. La croissance sur douze mois est
-la plus forte là où le niveau est le plus bas : l'individuel pur remonte vite, depuis un plancher historique. Le
-collectif, lui, part d'un niveau bien moins dégradé mais son rythme des trois derniers mois s'est retourné. C'est
-l'écart entre ces deux lectures qui décide d'un arbitrage de lignes de produits, pas le taux annuel seul.</div>
+Lire chaque segment sur ses deux lignes, parce qu'elles peuvent s'inverser : une croissance forte sur douze mois
+décrit parfois un rebond depuis un plancher historique, et le segment le moins dégradé peut être celui dont le rythme
+se retourne le premier. C'est l'écart entre ces deux lectures qui décide d'un arbitrage de lignes de produits, pas le
+taux annuel seul.</div>
 
 ```js
 const ivMetrics = view(Inputs.checkbox(
@@ -165,7 +165,7 @@ const e = neuf.ecln;
 
 ## 🏗️ Commercialisation des logements neufs (ECLN)
 
-<div class="hm-caption">Commercialisation des logements neufs (SDES — ECLN, national, trimestriel CVS-CJO) : encours, mises en vente, délai d'écoulement, prix au m² et réservations par catégorie d'acquéreurs. Le délai d'écoulement — proche de deux ans — est un signal avancé de la demande de second œuvre.</div>
+<div class="hm-caption">Commercialisation des logements neufs (SDES — ECLN, national, trimestriel CVS-CJO) : encours, mises en vente, délai d'écoulement, prix au m² et réservations par catégorie d'acquéreurs. Le délai d'écoulement — le temps qu'il faudrait pour vendre le stock au rythme actuel — est un signal avancé de la demande de second œuvre : il monte quand le stock ne part plus.</div>
 
 ${e ? cardGrid(e.kpis, (k) => kpiCard({label: k.label, value: k.value})) : html`<div class="hm-caption">Données ECLN indisponibles.</div>`}
 
