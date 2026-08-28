@@ -27,10 +27,19 @@ import pytest
 _WEB = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                     "web", "observable", "src")
 
-# Les trois sections du socle commun, dans l'ordre attendu sur les DEUX pages.
+# Les sections du socle commun, dans l'ordre attendu sur les DEUX pages.
+#
+# « 📅 Comparaison Mensuelle par Année » en faisait partie et a été RETIRÉE du socle le
+# 2026-08-27, parce qu'elle ne voulait pas dire la même chose des deux côtés. Mesuré sur
+# 2015-2026 : la série IGEDD (brute) garde 38,6 % d'amplitude saisonnière, que comparer un
+# même mois d'une année à l'autre neutralise — le graphique y fait son travail. Les séries
+# SIT@DEL sont publiées CVS-CJO et n'en gardent que 6,9 % (permis) et 7,8 % (chantiers) :
+# la même vue n'y comparait plus que du bruit résiduel, en invitant à lire une saisonnalité
+# que la source a déjà retirée. La section reste donc sur « ancien » seulement, et son
+# chapeau dit pourquoi. Le socle garantit la symétrie de FORME, pas celle du sens : quand
+# les deux divergent, c'est le sens qui gagne.
 SOCLE = ["🔑 Chiffres Clés",
-         "📊 Courbes d'évolution du marché",
-         "📅 Comparaison Mensuelle par Année"]
+         "📊 Courbes d'évolution du marché"]
 
 JUMELLES = {"neuf": "ancien", "ancien": "neuf"}
 

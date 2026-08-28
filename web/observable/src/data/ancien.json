@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T20:57:58+00:00",
+  "generated_at": "2026-08-28T18:31:48+00:00",
   "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
   "caption": "Le marché des logements anciens au niveau national : volumes de transactions (IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité.",
   "how_to_read": "Le cumul 12 mois glissant reproduit la série publiée par l'IGEDD (« ventes sur un an ») ; les flux mensuels en sont la reconstruction, utile pour la dynamique récente mais plus bruitée. Côté accessibilité, la capacité d'emprunt est calculée à mensualité constante : elle chute donc quand les taux montent, indépendamment des prix. L'indice d'accessibilité rapporte cette capacité aux prix — sous 100, un ménage type achète moins de surface qu'en 2015.",
@@ -8,9 +8,9 @@
     "value": "954 000",
     "delta": "+5,2% YoY",
     "subs": [
-      "Mensuel : 92 500 (+3,4% YoY)",
-      "3 derniers mois vs n-1 : +0,8%",
-      "Dernier mois disponible : juin 2026"
+      "au plateau depuis décembre 2025 (6 mois)",
+      "17 % au-dessus de la normale 2010-19 · plus haut que 74 % des mois depuis 2001",
+      "Dernier mois (juin 2026) : 92 500"
     ]
   },
   "main_series": {

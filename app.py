@@ -276,11 +276,49 @@ def last_valid_month(df, value_col, date_col="Date"):
     valid = df.dropna(subset=[value_col])
     return valid[date_col].max() if not valid.empty else pd.NaT
 
-def _mom_caption(m):
-    """'3 derniers mois vs n-1' momentum line for a KPI card (— if unavailable)."""
-    v = m.get("last3_yoy")
-    txt = "—" if v is None else (f"{v:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{v:+.1f}%")
-    return f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {txt}"
+def _pct_txt(v):
+    """Pourcentage signé, virgule décimale en FR ('—' si absent)."""
+    if v is None:
+        return "—"
+    s = f"{v:+.1f}%"
+    return s.replace(".", ",") if lang_code == "FR" else s
+
+
+def _mom_caption(m, regime=ana.ADJUSTED_SEQUENTIAL):
+    """Ligne de momentum d'une carte KPI, selon le RÉGIME de la série.
+
+    Portait « 3 derniers mois vs n-1 » quelle que soit la série. Sur SIT@DEL et ECLN,
+    publiées corrigées des variations saisonnières, cette comparaison ne neutralise plus
+    rien et importe une base vieille de douze mois : c'est elle qui affichait +28,4 % sur
+    les mises en chantier au moment où le rythme séquentiel valait −2,0 %. Voir
+    analysis.headline_momentum, qui porte le choix pour les deux surfaces."""
+    head = ana.headline_momentum(m, regime)
+    if head["key"] == "roll12_yoy":
+        return _pct_txt(head["value"]) + _L(" sur 12 mois vs les 12 précédents",
+                                            " over 12 months vs the prior 12")
+    return _pct_txt(head["value"]) + _L(" sur 3 mois vs les 3 précédents",
+                                        " over 3 months vs the prior 3")
+
+
+def _level_caption(ctx):
+    """Ligne d'ALTITUDE d'une carte KPI — une pente ne dit rien du niveau.
+
+    Miroir de `_level_sub` dans web/export/web_export.py ; voir ana.level_context pour
+    le choix de la décennie de référence."""
+    if not ctx:
+        return ""
+    _e = f"{abs(ctx['gap_pct']):.0f} %"
+    if lang_code == "FR":
+        _e = _e.replace(".", ",")
+    _sens = (_L(" sous", " below") if ctx["gap_pct"] < 0 else _L(" au-dessus de", " above"))
+    if ctx["rank_pct"] < 50:
+        _rang = _L(f"plus bas que {100 - ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}",
+                   f"lower than {100 - ctx['rank_pct']:.0f}% of months since {ctx['since_year']}")
+    else:
+        _rang = _L(f"plus haut que {ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}",
+                   f"higher than {ctx['rank_pct']:.0f}% of months since {ctx['since_year']}")
+    return _L(f"{_e}{_sens} la normale {ctx['ref_label']} · {_rang}",
+              f"{_e}{_sens} the {ctx['ref_label']} norm · {_rang}")
 
 def _borrow_capacity_factor(rate_pct, years):
     """Present value of a 1-unit monthly instalment over `years` at annual rate
@@ -584,24 +622,10 @@ with tab_synthese:
             parts.append(_L("total exact : ", "exact total: ") + _th(exact))
         return " · ".join(parts)
 
-    def _level_sub(ctx):
-        """Seconde légende d'une carte : l'ALTITUDE du niveau, que le momentum ne dit
-        jamais. Miroir de _level_sub dans web/export/web_export.py — voir ana.level_context."""
-        if not ctx:
-            return ""
-        _sens = (_L("sous", "below") if ctx["gap_pct"] < 0
-                 else _L("au-dessus de", "above"))
-        _ecart = f"{abs(ctx['gap_pct']):.0f} %"
-        if lang_code == "FR":
-            _ecart = _ecart.replace(".", ",")
-        if ctx["rank_pct"] < 50:
-            _rang = _L(f"plus bas que {100 - ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}",
-                       f"lower than {100 - ctx['rank_pct']:.0f}% of months since {ctx['since_year']}")
-        else:
-            _rang = _L(f"plus haut que {ctx['rank_pct']:.0f} % des mois depuis {ctx['since_year']}",
-                       f"higher than {ctx['rank_pct']:.0f}% of months since {ctx['since_year']}")
-        return _L(f"{_ecart} {_sens} la normale {ctx['ref_label']} · {_rang}",
-                  f"{_ecart} {_sens} the {ctx['ref_label']} norm · {_rang}")
+    # La ligne d'altitude est désormais `_level_caption`, au niveau module : les onglets
+    # Neuf et Ancien en ont besoin aussi, et deux copies de la même phrase finiraient par
+    # ne plus dire la même chose.
+    _level_sub = _level_caption
 
     def _render_cards(cards, per_row=3):
         """Rows of headline cards: (dot emoji, title, value, sub-caption[, level-caption]).
@@ -1357,9 +1381,10 @@ with tab_neuf:
             delta=f"{kpi_permis['yoy_12m_pct']}% YoY",
             delta_color="normal"
         )
-        st.caption(f"{T[lang_code]['mensuel']} : {kpi_permis['current_val']:,} ({kpi_permis['yoy_monthly_pct']}% YoY)")
         st.caption(_mom_caption(mom_permis))
-        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_sitadel_month}")
+        st.caption(_level_caption(ana.level_context(rolling_sitadel_total, "Permis")))
+        st.caption(f"{T[lang_code]['kpi_last_month']} ({_kpi_sitadel_month}) : "
+                   + f"{kpi_permis['current_val']:,}".replace(",", " "))
 
     with kpi_cols[1]:
         st.metric(
@@ -1368,9 +1393,10 @@ with tab_neuf:
             delta=f"{kpi_mises['yoy_12m_pct']}% YoY",
             delta_color="normal"
         )
-        st.caption(f"{T[lang_code]['mensuel']} : {kpi_mises['current_val']:,} ({kpi_mises['yoy_monthly_pct']}% YoY)")
         st.caption(_mom_caption(mom_mises))
-        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_sitadel_month}")
+        st.caption(_level_caption(ana.level_context(rolling_sitadel_total, "MisesEnChantier")))
+        st.caption(f"{T[lang_code]['kpi_last_month']} ({_kpi_sitadel_month}) : "
+                   + f"{kpi_mises['current_val']:,}".replace(",", " "))
 
     with kpi_cols[2]:
         # End of the new-build funnel: quarterly ECLN reservations (detailed in the
@@ -1511,9 +1537,12 @@ with tab_neuf:
                 f"{int(_val12.iloc[-1]):,}".replace(",", " ") if not _val12.empty else "—",
                 delta=(f"{_mom_g['roll12_yoy']:+.1f}% " + _L("sur 12 mois", "over 12 months")
                        if _mom_g["roll12_yoy"] is not None else None))
-            _l3 = _mom_g.get("last3_yoy")
-            _l3txt = "—" if _l3 is None else (f"{_l3:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{_l3:+.1f}%")
-            st.caption(f"{_L('3 derniers mois vs n-1', 'Last 3 months vs prior year')} : {_l3txt}")
+            # Deux lignes, parce qu'elles s'inversent : la croissance 12 mois est la plus
+            # forte là où le NIVEAU est le plus bas (l'individuel pur remonte vite depuis
+            # un plancher historique), et le collectif, moins dégradé, vient de se
+            # retourner sur les trois derniers mois. Voir web_export.build_neuf.
+            st.caption(_mom_caption(_mom_g))
+            st.caption(_level_caption(ana.level_context(_full_g, _iv_col)))
 
     # Rolling-12m lines: individual-pur vs collective, in thousands. Computed on the full
     # history then clipped to the selected years (12m window keeps its real look-back).
@@ -1615,9 +1644,15 @@ with tab_ancien:
             delta=f"{kpi_transactions['yoy_12m_pct']}% YoY",
             delta_color="normal"
         )
-        st.caption(f"{T[lang_code]['mensuel']} : {kpi_transactions['current_val']:,} ({kpi_transactions['yoy_monthly_pct']}% YoY)")
-        st.caption(_mom_caption(mom_transactions))
-        st.caption(f"{T[lang_code]['kpi_last_month']} : {_kpi_ventes_ancien_month}")
+        _pl_tx = ana.plateau_months(rolling_ventes_ancien_total, "Transactions")
+        if _pl_tx:
+            st.caption(_L(f"au plateau depuis {format_month_year(_pl_tx['since'], lang_code)} "
+                          f"({_pl_tx['months']} mois)",
+                          f"flat since {format_month_year(_pl_tx['since'], lang_code)} "
+                          f"({_pl_tx['months']} months)"))
+        st.caption(_level_caption(ana.level_context(rolling_ventes_ancien_total, "Transactions")))
+        st.caption(f"{T[lang_code]['kpi_last_month']} ({_kpi_ventes_ancien_month}) : "
+                   + f"{kpi_transactions['current_val']:,}".replace(",", " "))
 
     # --- Chart controls (same three views as the new-build tab, own widget keys) ---
     st.markdown(f"### {T[lang_code]['curves_title']}")

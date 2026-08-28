@@ -705,6 +705,77 @@ porte `SDP_AUT` / `SDP_COM` (surface de plancher, m²) et `data_manager.py` ne p
 `data_manager.py`, le contrat pandera et les tests de parité : à faire dans une passe
 dédiée.
 
+**Les correctifs de la Synthèse ont été propagés aux deux pages de marché (2026-08-27).**
+Ils y étaient restés absents, et c'était le pire endroit pour ça : le **+28,4 %** qui a
+motivé toute la révision de la Synthèse était **toujours publié en carte de tête de
+« Marché du neuf »**, c'est-à-dire sur la page qu'on ouvre pour zoomer. Trois choses ont
+changé sur les deux pages, via `_yoy_kpi` :
+
+* **momentum selon le régime** (`ana.headline_momentum`) — séquentiel sur SIT@DEL et ECLN,
+  12 mois sur l'IGEDD, complété par le plateau ;
+* **le sous-titre « Mensuel : X (Y % YoY) » perd son YoY.** Sur ces séries CVS il saute de
+  **11,2 points par mois** sur les permis et **9,0** sur les chantiers — six dernières
+  valeurs des chantiers : `+21 +19 +49 +32 +46 +12`. Du bruit en carte de tête. Le NIVEAU
+  du dernier mois reste, c'est un fait ;
+* **une ligne de NIVEAU** sur chaque KPI, y compris les 15 sous-ensembles de
+  `kpis_by_type`.
+
+**La section « Individuel vs Collectif » est celle où la correction change le plus une
+décision.** Son chapeau désigne l'individuel comme « le driver de volume le plus direct »
+d'un fabricant de second œuvre, et la page l'affichait à **+40,0 %**. Les deux lectures
+s'inversent :
+
+| Mises en chantier | ancien affichage (3 m vs n-1) | séquentiel | niveau vs 2010-19 |
+|---|---|---|---|
+| Maison individuelle pure | +40,0 % | +8,3 % | **−42 % · 7ᵉ centile** |
+| Individuel total | +32,9 % | +7,1 % | −37 % · 8ᵉ centile |
+| Collectif | +25,8 % | **−6,9 %** | −12 % · 36ᵉ centile |
+
+La croissance la plus forte est sur le segment le plus effondré (rebond de plancher), et
+le segment le moins dégradé est celui qui vient de se retourner. Chaque carte porte donc
+ses deux lignes, et le chapeau de la section dit que c'est l'écart entre elles qui décide
+d'un arbitrage de lignes de produits.
+
+**« 📅 Comparaison Mensuelle par Année » a quitté le socle des jumelles et la page du
+neuf.** Elle ne voulait pas dire la même chose des deux côtés — mesuré sur 2015-2026 :
+
+| série | amplitude saisonnière résiduelle |
+|---|---|
+| Permis (CVS-CJO) | 6,9 % |
+| Chantiers (CVS-CJO) | 7,8 % |
+| Ventes anciennes (brut) | **38,6 %** |
+
+Sur l'ancien, comparer juin à juin neutralise une vraie saisonnalité : le graphique fait
+son travail. Sur le neuf, il comparait des mois **déjà désaisonnalisés** — donc du bruit,
+en invitant à lire une saisonnalité que la source a déjà retirée. `SOCLE` dans
+`tests/test_web_structure.py` passe donc à **deux** sections, le renvoi jumeau
+correspondant disparaît des deux côtés, et le chapeau de la section côté ancien explique
+pourquoi elle n'a pas de jumelle. **Le socle garantit la symétrie de FORME, pas celle du
+sens : quand les deux divergent, c'est le sens qui gagne.** Le payload `monthly` de
+`neuf.json` est parti avec la section (318 lignes de données mortes), ainsi que les
+imports `monthlyByYear` / `MONTHS_FULL` / `MONTHS_SHORT` de `neuf.md`.
+
+**La page de DÉTAIL ne doit jamais en dire moins que la page de survol.** Le délai
+d'écoulement ECLN était affiché « 22 mois » tout court sur « Marché du neuf » pendant que
+la Synthèse disait déjà « 22 mois · 15 en moyenne — 53 % de temps de plus ». Les quatre
+KPI ECLN portent désormais leur momentum séquentiel, et le délai sa référence longue.
+
+**`kpiCard` (`components/hm.js`) rend ses sous-lignes en `<ul>` dès qu'il y en a DEUX**,
+comme les cartes de la Synthèse — empilées en `<div>` nues, deux phrases longues qui
+wrappent toutes les deux deviennent indiscernables. Une seule sous-ligne reste une `<div>` :
+une puce isolée ne sépare rien.
+
+**Ce que l'ancien reste incapable de dire, et c'est structurel.** Pour un industriel des
+matériaux, le marché de l'ancien n'est pas un débouché : c'est censé être le signal amont
+de la **rénovation**, qui n'a pas de page (elle est un bloc de « Environnement &
+Financement »). Or le pont a été mesuré le 2026-08-27 et il ne tient pas : la corrélation
+entre la croissance 12 mois des transactions et le solde d'opinion rénovation monte de
++0,16 à +0,25 entre 0 et 18 mois de décalage puis redescend — **plate, faible, sans pic**,
+le profil même qui a fait réfuter permis → chantiers. ⚠️ Caveat qui interdit d'en faire une
+réfutation publiée : la série rénovation est un **solde d'opinion**, pas un volume, donc le
+test est faible par construction. Il ne montre pas que le lien n'existe pas, il montre
+qu'on ne sait pas le voir avec ce qu'on a.
+
 **Neuf et ancien sont des pages JUMELLES : trois sections communes, même intitulé, même
 ordre.** « 🔑 Chiffres Clés », « 📊 Courbes d'évolution du marché », « 📅 Comparaison
 Mensuelle par Année » ouvrent les deux pages ; chacune ajoute ensuite ce qui lui est propre

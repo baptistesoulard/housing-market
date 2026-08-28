@@ -78,11 +78,19 @@ export function withCsvExport(node, rows, filename) {
 export function kpiCard({label, value, delta, yoy, subs}) {
   const d = delta ?? yoy;
   const neg = d && /^-|−/.test(d.replace("−", "-"));
+  // Deux sous-lignes ou plus -> une <ul>, comme les cartes de la Synthèse. Chacune est
+  // une phrase à plusieurs faits (momentum, puis niveau, puis dernier mois) qui prend
+  // souvent deux lignes visuelles à elle seule : empilées en <div> nues, elles devenaient
+  // indiscernables les unes des autres. Une seule sous-ligne reste une <div> — une puce
+  // isolée ne sépare rien et n'ajoute que du bruit.
+  const s = (subs || []).filter(Boolean);
   return html`<div class="hm-card hm-card--metric">
     <div class="hm-card-title">${label}</div>
     <div class="hm-card-value">${value}</div>
     ${d ? html`<div class="hm-card-delta"><span class="hm-delta ${neg ? "neg" : "pos"}">${d}</span></div>` : ""}
-    ${(subs || []).map((s) => html`<div class="hm-card-sub">${s}</div>`)}
+    ${s.length > 1
+      ? html`<ul class="hm-card-subs">${s.map((x) => html`<li class="hm-card-sub">${x}</li>`)}</ul>`
+      : s.map((x) => html`<div class="hm-card-sub">${x}</div>`)}
   </div>`;
 }
 

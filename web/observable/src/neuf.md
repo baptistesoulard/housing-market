@@ -4,9 +4,9 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, legend, marketChart, multiLine, monthlyByYear,
+import {kpiCard, cardGrid, legend, marketChart, multiLine,
         filterYears, sumByType, withCsvExport,
-        MONTHS_FULL, MONTHS_SHORT, nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
+        nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series, ui} from "./components/theme.js";
 const neuf = await FileAttachment("./data/neuf.json").json();
@@ -105,33 +105,13 @@ ${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.me
 
 <div class="hm-meta">${neuf.main_series.source} · dernier point : ${neuf.main_series.last_month} · segmentation : ${segLabelN} · période affichée : ${Math.min(...rangeN)}–${Math.max(...rangeN)}</div>
 
-## 📅 Comparaison Mensuelle par Année
-
-<div class="hm-caption">Comparez un ou plusieurs mois d'une année à l'autre. Par défaut, les 3 derniers mois disponibles.</div>
-
-<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./ancien#comparaison-mensuelle-par-annee">🏠 la même vue pour l'ancien</a></div>
-
-```js
-const lmN = neuf.monthly.last_month_num;
-const defMonthsN = [0, 1, 2].map((k) => MONTHS_FULL[((lmN - k - 1) + 12) % 12]);
-const mMetricN = view(Inputs.radio(
-  new Map([["Permis de Construire", "permis"], ["Mises en Chantier", "mises"]]),
-  {value: "permis", label: "Indicateur"}));
-const monthsN = view(Inputs.checkbox(MONTHS_FULL, {value: defMonthsN, label: "Mois à comparer"}));
-```
-
-```js
-const monthNumsN = monthsN.map((m) => MONTHS_FULL.indexOf(m) + 1).filter((n) => n > 0);
-display(monthNumsN.length
-  ? monthlyByYear({rows: filterYears(neuf.monthly.rows, rangeN), valueKey: mMetricN, monthNums: monthNumsN, width, filename: "neuf-comparaison-mensuelle-" + mMetricN})
-  : html`<div class="hm-caption">Sélectionnez au moins un mois.</div>`);
-```
-
-<div class="hm-meta">Source : SIT@DEL (SDES)</div>
-
 ## 🏠 Dynamique Individuel vs Collectif
 
-<div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre (fermetures, menuiseries, sécurité, domotique) qu'un logement collectif : c'est le driver de volume le plus direct.</div>
+<div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre (fermetures, menuiseries, sécurité, domotique) qu'un logement collectif : c'est le driver de volume le plus direct.
+Lire chaque segment sur ses deux lignes, parce qu'elles ne disent pas la même chose. La croissance sur douze mois est
+la plus forte là où le niveau est le plus bas : l'individuel pur remonte vite, depuis un plancher historique. Le
+collectif, lui, part d'un niveau bien moins dégradé mais son rythme des trois derniers mois s'est retourné. C'est
+l'écart entre ces deux lectures qui décide d'un arbitrage de lignes de produits, pas le taux annuel seul.</div>
 
 ```js
 const ivMetrics = view(Inputs.checkbox(
@@ -167,7 +147,7 @@ function ivSection() {
   return html`<div>
     ${ivMetrics.map((metric) => html`<div>
       ${ivMulti ? html`<div class="hm-panel-title">${IV_METRIC_LABELS[metric]}</div>` : ""}
-      ${cardGrid(neuf.indiv_collectif[metric].kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: k.roll12_yoy ? k.roll12_yoy + " sur 12 mois" : null, subs: [`3 derniers mois vs n-1 : ${k.last3_yoy}`]}))}
+      ${cardGrid(neuf.indiv_collectif[metric].kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: k.roll12_yoy ? k.roll12_yoy + " sur 12 mois" : null, subs: [`${k.last3_seq} sur 3 mois vs les 3 précédents`, k.niveau]}))}
     </div>`)}
     <div class="hm-panel-title">${ivMulti ? "Mises en Chantier & Permis de Construire" : IV_METRIC_LABELS[ivMetrics[0]]} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
     ${legend(ivMeta, ivActive, toggleIv)}

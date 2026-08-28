@@ -72,9 +72,11 @@ ${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_s
 
 ## 📅 Comparaison Mensuelle par Année
 
-<div class="hm-caption">Comparez un ou plusieurs mois d'une année à l'autre. Par défaut, les 3 derniers mois disponibles.</div>
-
-<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#comparaison-mensuelle-par-annee">🏗️ la même vue pour le neuf</a></div>
+<div class="hm-caption">Comparez un ou plusieurs mois d'une année à l'autre. Par défaut, les 3 derniers mois disponibles.
+Cette vue n'existe que sur l'ancien, et c'est mesuré : les ventes IGEDD sont publiées BRUTES et gardent
+une saisonnalité de près de 40 % d'amplitude, que comparer un même mois d'une année à l'autre neutralise.
+Les séries SIT@DEL du neuf sont, elles, déjà corrigées des variations saisonnières — la même vue n'y
+comparerait que du bruit résiduel (7 à 8 %), c'est pourquoi elle en a été retirée.</div>
 
 ```js
 const lmA = anc.monthly.last_month_num;

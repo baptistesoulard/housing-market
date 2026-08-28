@@ -781,17 +781,42 @@ def build_synthese(con, frames: dict) -> dict:
     }
 
 
-def _yoy_kpi(kpis, mom, label, month_label):
-    """Carte KPI d'un onglet marché (miroir des st.metric d'app.py)."""
+def _yoy_kpi(kpis, mom, label, month_label, regime=ana.ADJUSTED_SEQUENTIAL,
+             level=None, plateau=None):
+    """Carte KPI d'un onglet marché (miroir des st.metric d'app.py).
+
+    Alignée sur la Synthèse, et pour les mêmes raisons mesurées :
+
+    * le momentum suit le RÉGIME de la série (`ana.headline_momentum`). Les cartes
+      portaient « 3 derniers mois vs n-1 » sur SIT@DEL, c'est-à-dire sur une série déjà
+      corrigée des variations saisonnières — le chiffre qui affichait +28,4 % sur les
+      mises en chantier au moment exact où le rythme séquentiel disait −2,0 % ;
+    * le sous-titre « Mensuel : X (Y % YoY) » perd son YoY. Sur ces séries CVS, il saute
+      de 11,2 points par mois sur les permis et de 9,0 sur les chantiers (six dernières
+      valeurs des chantiers : +21 +19 +49 +32 +46 +12) : c'est du bruit affiché en carte
+      de tête. Le NIVEAU du dernier mois, lui, reste un fait et il est conservé ;
+    * une ligne de NIVEAU s'ajoute — une pente ne dit rien de l'altitude. C'est le
+      correctif qui a le plus changé la lecture de la Synthèse et il manquait ici.
+
+    Le badge `delta` garde la croissance 12 mois : quand le régime EST le 12 mois
+    (l'IGEDD), la ligne de momentum est donc omise pour ne pas répéter le badge, et la
+    place revient au plateau — la seule chose que le taux annuel ne peut pas dire.
+    """
+    head = ana.headline_momentum(mom, regime)
+    subs = []
+    if head["key"] != "roll12_yoy" and head["value"] is not None:
+        subs.append(_pct_fr(head["value"]) + " " + head["window"])
+    if plateau:
+        subs.append(f"au plateau depuis {_fmt_month_year(plateau['since'])} "
+                    f"({plateau['months']} mois)")
+    if level:
+        subs.append(_level_sub(level))
+    subs.append(f"Dernier mois ({month_label}) : {_th(kpis['current_val'])}")
     return {
         "label": label,
         "value": _th(kpis["current_12m"]),
         "delta": _pct_fr(kpis["yoy_12m_pct"]) + " YoY",
-        "subs": [
-            f"Mensuel : {_th(kpis['current_val'])} ({_pct_fr(kpis['yoy_monthly_pct'])} YoY)",
-            "3 derniers mois vs n-1 : " + (_pct_fr(mom.get("last3_yoy")) if mom.get("last3_yoy") is not None else "—"),
-            f"Dernier mois disponible : {month_label}",
-        ],
+        "subs": subs,
     }
 
 
@@ -825,20 +850,28 @@ def build_neuf(con, frames: dict) -> dict:
     mom_mises = ana.momentum_metrics(roll, "MisesEnChantier")
     _sit_month = _fmt_month_year(_last_valid_date(roll, "Permis"))
     kpis = [
-        _yoy_kpi(kpi_permis, mom_permis, "Permis de Construire (Cumul 12m glissant)", _sit_month),
-        _yoy_kpi(kpi_mises, mom_mises, "Mises en Chantier (Cumul 12m glissant)", _sit_month),
+        _yoy_kpi(kpi_permis, mom_permis, "Permis de Construire (Cumul 12m glissant)",
+                 _sit_month, level=ana.level_context(roll, "Permis")),
+        _yoy_kpi(kpi_mises, mom_mises, "Mises en Chantier (Cumul 12m glissant)",
+                 _sit_month, level=ana.level_context(roll, "MisesEnChantier")),
     ]
+    # ECLN est publiée CVS-CJO comme SIT@DEL : même régime de lecture, donc séquentiel
+    # d'un trimestre au précédent, et la tendance sur quatre trimestres dans le rôle du
+    # cumul 12 mois. Le « vs même trimestre n-1 » qui figurait ici est le défaut que la
+    # Synthèse a déjà retiré (voir _yoy_kpi).
     if df_ecln is not None and not df_ecln.empty:
         ke = df_ecln.dropna(subset=["Reservations"]).sort_values("Date")
-        if not ke.empty:
-            yoy = ((float(ke["Reservations"].iloc[-1]) / float(ke["Reservations"].iloc[-5]) - 1) * 100
-                   if len(ke) >= 5 else None)
+        if len(ke) >= 8:
+            r = ke["Reservations"].astype(float)
+            e_seq = (float(r.iloc[-1]) / float(r.iloc[-2]) - 1) * 100
+            e_trend = (float(r.iloc[-4:].sum()) / float(r.iloc[-8:-4].sum()) - 1) * 100
             kd = ke["Date"].iloc[-1]
             kpis.append({
                 "label": "Réservations particuliers ECLN (trimestre)",
-                "value": _th(ke["Reservations"].iloc[-1]),
-                "delta": (_pct_fr(yoy) + " YoY") if yoy is not None else "",
-                "subs": ["Trimestre vs même trimestre n-1",
+                "value": _th(r.iloc[-1]),
+                "delta": _pct_fr(e_trend) + " sur 4 trimestres",
+                "subs": [_pct_fr(e_seq) + " vs le trimestre précédent",
+                         "la demande qui décide des mises en vente, donc des chantiers suivants",
                          f"Dernier trimestre disponible : {kd.year}-T{(kd.month - 1) // 3 + 1}"]})
 
     # --- Segmentation par type de logement (parité avec le sélecteur d'app.py) ---------
@@ -878,10 +911,12 @@ def build_neuf(con, frames: dict) -> dict:
             kpis_by_type["+".join(sorted(codes[t] for t in combo))] = [
                 _yoy_kpi(ana.calculate_kpis(roll_c, "Permis"),
                          ana.momentum_metrics(roll_c, "Permis"),
-                         "Permis de Construire (Cumul 12m glissant)", month_c),
+                         "Permis de Construire (Cumul 12m glissant)", month_c,
+                         level=ana.level_context(roll_c, "Permis")),
                 _yoy_kpi(ana.calculate_kpis(roll_c, "MisesEnChantier"),
                          ana.momentum_metrics(roll_c, "MisesEnChantier"),
-                         "Mises en Chantier (Cumul 12m glissant)", month_c)]
+                         "Mises en Chantier (Cumul 12m glissant)", month_c,
+                         level=ana.level_context(roll_c, "MisesEnChantier"))]
 
     # --- Individuel vs collectif -------------------------------------------------------
     iv_groups = [
@@ -899,10 +934,21 @@ def build_neuf(con, frames: dict) -> dict:
             g_roll = ivg[ivg["Groupe"] == lbl].sort_values("Date")
             v12 = g_roll[f"{metric}_12M"].dropna()
             g_mom = ana.momentum_metrics(g_roll, metric)
+            # Le NIVEAU par segment est ici plus décisif que partout ailleurs sur le site.
+            # Mesuré : la maison individuelle pure affichait « +40,0 % sur 3 mois » —
+            # lue comme le segment vedette, et désignée par le chapeau de la section
+            # comme « le driver de volume le plus direct » — alors qu'elle est à 42 %
+            # SOUS sa normale 2010-19, au 7ᵉ centile de son histoire. C'est un rebond de
+            # plancher. Symétriquement, le collectif affichait +25,8 % quand son rythme
+            # séquentiel valait −6,9 % : le segment le moins déprimé (−12 %, 36ᵉ centile)
+            # est aussi celui qui vient de se retourner. Les deux lectures s'inversent,
+            # et c'est un arbitrage de lignes de produits qui se joue dessus.
+            g_lvl = ana.level_context(g_roll, metric)
             g_kpis.append({"label": lbl, "color": clr,
                            "val12": _th(v12.iloc[-1]) if not v12.empty else "—",
                            "roll12_yoy": _pct_fr(g_mom["roll12_yoy"]) if g_mom["roll12_yoy"] is not None else None,
-                           "last3_yoy": _pct_fr(g_mom["last3_yoy"]) if g_mom["last3_yoy"] is not None else "—"})
+                           "last3_seq": _pct_fr(g_mom["last3_seq"]) if g_mom["last3_seq"] is not None else "—",
+                           "niveau": _level_sub(g_lvl)})
             # Courbes : seulement individuel pur + collectif (comme app.py).
             if types in (ana.SITADEL_INDIVIDUEL_PUR, ana.SITADEL_COLLECTIF):
                 # La clé DOIT s'appeler "value" : c'est ce que `multiLine` trace (y: "value").
@@ -914,10 +960,6 @@ def build_neuf(con, frames: dict) -> dict:
                                     "color": clr, "value": round(float(r[f"{metric}_12M"]) / 1000.0, 2)})
         iv[metric] = {"kpis": g_kpis, "lines": g_lines}
 
-    # --- Comparaison mensuelle par année ----------------------------------------------
-    monthly_rows = _rows_from(roll, {"permis": "Permis", "mises": "MisesEnChantier"})
-    last_month_num = int(pd.Timestamp(roll["Date"].max()).month) if not roll.empty else 12
-
     # --- ECLN --------------------------------------------------------------------------
     ecln = None
     if df_ecln is not None and not df_ecln.empty:
@@ -926,13 +968,32 @@ def build_neuf(con, frames: dict) -> dict:
         last = e.iloc[-1]
         lastq = f"{last['Date'].year}-T{(last['Date'].month - 1) // 3 + 1}"
         eb = df_ecln.dropna(subset=["Resa_Sociaux"]).sort_values("Date")
+
+        # Chaque KPI reçoit son momentum SÉQUENTIEL (série CVS-CJO) et, pour le délai,
+        # sa référence longue. La Synthèse dit désormais « 22 mois · 15 en moyenne — 53 %
+        # de temps de plus » quand cette page de DÉTAIL n'affichait que « 22 mois »,
+        # sans repère : la page de zoom en disait moins que la page de survol.
+        def _eseq(col):
+            s = e[col].astype(float)
+            return (float(s.iloc[-1]) / float(s.iloc[-2]) - 1) * 100 if len(s) >= 2 else None
+
+        _dl_moy = float(e["DelaiMois"].mean())
+        _dl_now = float(last["DelaiMois"])
+        _dl_ecart = (_dl_now / _dl_moy - 1) * 100 if _dl_moy else None
         ecln = {
             "last_quarter": lastq,
             "kpis": [
-                {"label": "Réservations particuliers (trim.)", "value": _th(last["Reservations"])},
-                {"label": "Mises en vente (trim.)", "value": _th(last["MisesEnVente"])},
-                {"label": "Encours à la vente", "value": _th(last["Encours"])},
-                {"label": "Délai d'écoulement", "value": f"{last['DelaiMois']:.0f} mois"},
+                {"label": "Réservations particuliers (trim.)", "value": _th(last["Reservations"]),
+                 "subs": [_pct_fr(_eseq("Reservations")) + " vs le trimestre précédent"]},
+                {"label": "Mises en vente (trim.)", "value": _th(last["MisesEnVente"]),
+                 "subs": [_pct_fr(_eseq("MisesEnVente")) + " vs le trimestre précédent"]},
+                {"label": "Encours à la vente", "value": _th(last["Encours"]),
+                 "subs": [_pct_fr(_eseq("Encours")) + " vs le trimestre précédent",
+                          "le stock déjà construit ou en cours qui attend un acheteur"]},
+                {"label": "Délai d'écoulement", "value": f"{_dl_now:.0f} mois",
+                 "subs": [f"{_dl_moy:.0f} mois en moyenne depuis {int(e['Date'].iloc[0].year)}"
+                          + (f" — il faut aujourd'hui {abs(_dl_ecart):.0f} % de temps de plus "
+                             "pour écouler le stock" if _dl_ecart and _dl_ecart > 0 else "")]},
             ],
             "stock_rows": _rows_from(e, {"encours": "Encours", "mises_en_vente": "MisesEnVente"}),
             "delai_rows": _rows_from(e, {"delai_mois": "DelaiMois"}),
@@ -949,8 +1010,10 @@ def build_neuf(con, frames: dict) -> dict:
                     "des logements neufs (ECLN)."),
         "how_to_read": (
             "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier "
-            "6 à 12 mois plus tard, puis un logement commercialisé. Le cumul 12 mois glissant lisse "
-            "la saisonnalité et donne le niveau annuel courant ; la vue brute montre le mois réel, "
+            "6 à 12 mois plus tard, puis un logement commercialisé. SIT@DEL est publiée corrigée des "
+            "variations saisonnières et des jours ouvrables : le momentum se lit donc sur les 3 derniers "
+            "mois comparés aux 3 précédents, jamais aux mêmes mois d'un an plus tôt. Le cumul 12 mois "
+            "glissant donne le niveau annuel courant ; la vue brute montre le mois réel, "
             "beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par "
             "logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le "
             "délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus."),
@@ -964,9 +1027,6 @@ def build_neuf(con, frames: dict) -> dict:
                     "series": by_type_series},
         "kpis_by_type": kpis_by_type,
         "indiv_collectif": iv,
-        "monthly": {"rows": monthly_rows, "last_month_num": last_month_num,
-                    "metrics": [{"key": "permis", "name": "Permis de Construire"},
-                                {"key": "mises", "name": "Mises en Chantier"}]},
         "ecln": ecln,
         "transformation": _transformation(con),
     }
@@ -1051,7 +1111,14 @@ def build_ancien(con, frames: dict) -> dict:
             "bruitée. Côté accessibilité, la capacité d'emprunt est calculée à mensualité constante : "
             "elle chute donc quand les taux montent, indépendamment des prix. L'indice d'accessibilité "
             "rapporte cette capacité aux prix — sous 100, un ménage type achète moins de surface qu'en 2015."),
-        "kpi": _yoy_kpi(kpi_tx, mom_tx, "Ventes anciennes IGEDD (Cumul 12m glissant)", tx_month),
+        # L'IGEDD est reconstruite en différenciant un cumul 12 mois : ses flux mensuels
+        # sont trop bruités pour un momentum séquentiel (10 pt de saut par mois, mesuré).
+        # Régime 12 mois, donc, complété par le plateau — la seule chose qu'un taux
+        # annuel à base basse ne peut pas dire — et par le niveau.
+        "kpi": _yoy_kpi(kpi_tx, mom_tx, "Ventes anciennes IGEDD (Cumul 12m glissant)",
+                        tx_month, regime=ana.RAW_TWELVE_MONTHS,
+                        level=ana.level_context(roll, "Transactions"),
+                        plateau=ana.plateau_months(roll, "Transactions")),
         "main_series": {"meta": [{"key": "tx", "name": "Transactions Ancien", "color": COLOR_GREEN, "dash": None}],
                         "rows": main_rows, "last_month": tx_month, "source": "Source : IGEDD"},
         "monthly": {"rows": monthly_rows, "last_month_num": last_month_num},

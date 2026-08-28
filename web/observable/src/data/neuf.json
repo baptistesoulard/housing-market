@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-08-24T19:57:33+00:00",
+  "generated_at": "2026-08-28T18:33:48+00:00",
   "title": "🏗️ Marché du neuf — de l'autorisation à la vente",
   "caption": "Le tunnel du logement neuf au niveau national : permis de construire et mises en chantier (SIT@DEL), dynamique individuel vs collectif, puis commercialisation des logements neufs (ECLN).",
-  "how_to_read": "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier 6 à 12 mois plus tard, puis un logement commercialisé. Le cumul 12 mois glissant lisse la saisonnalité et donne le niveau annuel courant ; la vue brute montre le mois réel, beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus.",
+  "how_to_read": "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier 6 à 12 mois plus tard, puis un logement commercialisé. SIT@DEL est publiée corrigée des variations saisonnières et des jours ouvrables : le momentum se lit donc sur les 3 derniers mois comparés aux 3 précédents, jamais aux mêmes mois d'un an plus tôt. Le cumul 12 mois glissant donne le niveau annuel courant ; la vue brute montre le mois réel, beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus.",
   "kpis": [
     {
       "label": "Permis de Construire (Cumul 12m glissant)",
       "value": "376 241",
       "delta": "+9,2% YoY",
       "subs": [
-        "Mensuel : 30 906 (-11,8% YoY)",
-        "3 derniers mois vs n-1 : -9,0%",
-        "Dernier mois disponible : juin 2026"
+        "-9,8% sur 3 mois vs les 3 précédents",
+        "16 % sous la normale 2010-19 · plus bas que 86 % des mois depuis 2000",
+        "Dernier mois (juin 2026) : 30 906"
       ]
     },
     {
@@ -19,17 +19,18 @@
       "value": "293 412",
       "delta": "+16,7% YoY",
       "subs": [
-        "Mensuel : 25 666 (+11,8% YoY)",
-        "3 derniers mois vs n-1 : +28,4%",
-        "Dernier mois disponible : juin 2026"
+        "-2,0% sur 3 mois vs les 3 précédents",
+        "23 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+        "Dernier mois (juin 2026) : 25 666"
       ]
     },
     {
       "label": "Réservations particuliers ECLN (trimestre)",
       "value": "16 112",
-      "delta": "-2,1% YoY",
+      "delta": "-4,3% sur 4 trimestres",
       "subs": [
-        "Trimestre vs même trimestre n-1",
+        "-4,8% vs le trimestre précédent",
+        "la demande qui décide des mises en vente, donc des chantiers suivants",
         "Dernier trimestre disponible : 2026-T2"
       ]
     }
@@ -16399,9 +16400,9 @@
         "value": "182 039",
         "delta": "+5,4% YoY",
         "subs": [
-          "Mensuel : 14 336 (-21,1% YoY)",
-          "3 derniers mois vs n-1 : -21,0%",
-          "Dernier mois disponible : juin 2026"
+          "-19,3% sur 3 mois vs les 3 précédents",
+          "18 % sous la normale 2010-19 · plus bas que 75 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 14 336"
         ]
       },
       {
@@ -16409,9 +16410,9 @@
         "value": "142 669",
         "delta": "+11,1% YoY",
         "subs": [
-          "Mensuel : 12 723 (+16,0% YoY)",
-          "3 derniers mois vs n-1 : +24,7%",
-          "Dernier mois disponible : juin 2026"
+          "-7,1% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 76 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 12 723"
         ]
       }
     ],
@@ -16421,9 +16422,9 @@
         "value": "55 483",
         "delta": "+9,0% YoY",
         "subs": [
-          "Mensuel : 4 805 (-16,0% YoY)",
-          "3 derniers mois vs n-1 : -14,2%",
-          "Dernier mois disponible : juin 2026"
+          "-2,8% sur 3 mois vs les 3 précédents",
+          "76 % au-dessus de la normale 2010-19 · plus haut que 99 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 4 805"
         ]
       },
       {
@@ -16431,9 +16432,9 @@
         "value": "43 106",
         "delta": "+34,1% YoY",
         "subs": [
-          "Mensuel : 2 943 (-31,9% YoY)",
-          "3 derniers mois vs n-1 : +29,6%",
-          "Dernier mois disponible : juin 2026"
+          "-6,3% sur 3 mois vs les 3 précédents",
+          "68 % au-dessus de la normale 2010-19 · plus haut que 99 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 2 943"
         ]
       }
     ],
@@ -16443,9 +16444,9 @@
         "value": "42 482",
         "delta": "-2,3% YoY",
         "subs": [
-          "Mensuel : 3 392 (-18,6% YoY)",
-          "3 derniers mois vs n-1 : -9,9%",
-          "Dernier mois disponible : juin 2026"
+          "-4,6% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 96 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 3 392"
         ]
       },
       {
@@ -16453,9 +16454,9 @@
         "value": "34 362",
         "delta": "+12,4% YoY",
         "subs": [
-          "Mensuel : 2 920 (+9,8% YoY)",
-          "3 derniers mois vs n-1 : +19,1%",
-          "Dernier mois disponible : juin 2026"
+          "+4,3% sur 3 mois vs les 3 précédents",
+          "24 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 2 920"
         ]
       }
     ],
@@ -16465,9 +16466,9 @@
         "value": "96 237",
         "delta": "+24,3% YoY",
         "subs": [
-          "Mensuel : 8 373 (+19,5% YoY)",
-          "3 derniers mois vs n-1 : +25,7%",
-          "Dernier mois disponible : juin 2026"
+          "+2,8% sur 3 mois vs les 3 précédents",
+          "31 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 8 373"
         ]
       },
       {
@@ -16475,9 +16476,9 @@
         "value": "73 275",
         "delta": "+21,3% YoY",
         "subs": [
-          "Mensuel : 7 080 (+41,3% YoY)",
-          "3 derniers mois vs n-1 : +40,0%",
-          "Dernier mois disponible : juin 2026"
+          "+8,3% sur 3 mois vs les 3 précédents",
+          "42 % sous la normale 2010-19 · plus bas que 93 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 7 080"
         ]
       }
     ],
@@ -16487,9 +16488,9 @@
         "value": "237 522",
         "delta": "+6,2% YoY",
         "subs": [
-          "Mensuel : 19 141 (-19,8% YoY)",
-          "3 derniers mois vs n-1 : -19,3%",
-          "Dernier mois disponible : juin 2026"
+          "-15,6% sur 3 mois vs les 3 précédents",
+          "6 % sous la normale 2010-19 · plus bas que 54 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 19 141"
         ]
       },
       {
@@ -16497,9 +16498,9 @@
         "value": "185 775",
         "delta": "+15,7% YoY",
         "subs": [
-          "Mensuel : 15 666 (+2,4% YoY)",
-          "3 derniers mois vs n-1 : +25,8%",
-          "Dernier mois disponible : juin 2026"
+          "-6,9% sur 3 mois vs les 3 précédents",
+          "12 % sous la normale 2010-19 · plus bas que 64 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 15 666"
         ]
       }
     ],
@@ -16509,9 +16510,9 @@
         "value": "224 521",
         "delta": "+3,9% YoY",
         "subs": [
-          "Mensuel : 17 728 (-20,6% YoY)",
-          "3 derniers mois vs n-1 : -19,0%",
-          "Dernier mois disponible : juin 2026"
+          "-16,7% sur 3 mois vs les 3 précédents",
+          "19 % sous la normale 2010-19 · plus bas que 78 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 17 728"
         ]
       },
       {
@@ -16519,9 +16520,9 @@
         "value": "177 031",
         "delta": "+11,4% YoY",
         "subs": [
-          "Mensuel : 15 643 (+14,8% YoY)",
-          "3 derniers mois vs n-1 : +23,6%",
-          "Dernier mois disponible : juin 2026"
+          "-5,1% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 78 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 15 643"
         ]
       }
     ],
@@ -16531,9 +16532,9 @@
         "value": "278 276",
         "delta": "+11,3% YoY",
         "subs": [
-          "Mensuel : 22 709 (-9,8% YoY)",
-          "3 derniers mois vs n-1 : -7,6%",
-          "Dernier mois disponible : juin 2026"
+          "-11,9% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 22 709"
         ]
       },
       {
@@ -16541,9 +16542,9 @@
         "value": "215 944",
         "delta": "+14,4% YoY",
         "subs": [
-          "Mensuel : 19 803 (+23,9% YoY)",
-          "3 derniers mois vs n-1 : +29,8%",
-          "Dernier mois disponible : juin 2026"
+          "-2,1% sur 3 mois vs les 3 précédents",
+          "31 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 19 803"
         ]
       }
     ],
@@ -16553,9 +16554,9 @@
         "value": "97 965",
         "delta": "+3,8% YoY",
         "subs": [
-          "Mensuel : 8 197 (-17,1% YoY)",
-          "3 derniers mois vs n-1 : -12,5%",
-          "Dernier mois disponible : juin 2026"
+          "-3,6% sur 3 mois vs les 3 précédents",
+          "13 % au-dessus de la normale 2010-19 · plus haut que 71 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 8 197"
         ]
       },
       {
@@ -16563,9 +16564,9 @@
         "value": "77 468",
         "delta": "+23,5% YoY",
         "subs": [
-          "Mensuel : 5 863 (-16,0% YoY)",
-          "3 derniers mois vs n-1 : +24,5%",
-          "Dernier mois disponible : juin 2026"
+          "-1,7% sur 3 mois vs les 3 précédents",
+          "10 % au-dessus de la normale 2010-19 · plus haut que 80 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 5 863"
         ]
       }
     ],
@@ -16575,9 +16576,9 @@
         "value": "151 720",
         "delta": "+18,2% YoY",
         "subs": [
-          "Mensuel : 13 178 (+3,5% YoY)",
-          "3 derniers mois vs n-1 : +7,8%",
-          "Dernier mois disponible : juin 2026"
+          "+0,7% sur 3 mois vs les 3 précédents",
+          "12 % sous la normale 2010-19 · plus bas que 80 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 13 178"
         ]
       },
       {
@@ -16585,9 +16586,9 @@
         "value": "116 381",
         "delta": "+25,7% YoY",
         "subs": [
-          "Mensuel : 10 023 (+7,4% YoY)",
-          "3 derniers mois vs n-1 : +36,3%",
-          "Dernier mois disponible : juin 2026"
+          "+2,9% sur 3 mois vs les 3 précédents",
+          "24 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 10 023"
         ]
       }
     ],
@@ -16597,9 +16598,9 @@
         "value": "138 719",
         "delta": "+14,7% YoY",
         "subs": [
-          "Mensuel : 11 765 (+5,3% YoY)",
-          "3 derniers mois vs n-1 : +13,0%",
-          "Dernier mois disponible : juin 2026"
+          "+0,6% sur 3 mois vs les 3 précédents",
+          "29 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 11 765"
         ]
       },
       {
@@ -16607,9 +16608,9 @@
         "value": "107 637",
         "delta": "+18,3% YoY",
         "subs": [
-          "Mensuel : 10 000 (+30,4% YoY)",
-          "3 derniers mois vs n-1 : +32,9%",
-          "Dernier mois disponible : juin 2026"
+          "+7,1% sur 3 mois vs les 3 précédents",
+          "37 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 10 000"
         ]
       }
     ],
@@ -16619,9 +16620,9 @@
         "value": "280 004",
         "delta": "+4,8% YoY",
         "subs": [
-          "Mensuel : 22 533 (-19,7% YoY)",
-          "3 derniers mois vs n-1 : -18,0%",
-          "Dernier mois disponible : juin 2026"
+          "-14,0% sur 3 mois vs les 3 précédents",
+          "9 % sous la normale 2010-19 · plus bas que 60 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 22 533"
         ]
       },
       {
@@ -16629,9 +16630,9 @@
         "value": "220 137",
         "delta": "+15,2% YoY",
         "subs": [
-          "Mensuel : 18 586 (+3,5% YoY)",
-          "3 derniers mois vs n-1 : +24,7%",
-          "Dernier mois disponible : juin 2026"
+          "-5,3% sur 3 mois vs les 3 précédents",
+          "14 % sous la normale 2010-19 · plus bas que 70 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 18 586"
         ]
       }
     ],
@@ -16641,9 +16642,9 @@
         "value": "333 759",
         "delta": "+10,9% YoY",
         "subs": [
-          "Mensuel : 27 514 (-10,9% YoY)",
-          "3 derniers mois vs n-1 : -8,9%",
-          "Dernier mois disponible : juin 2026"
+          "-10,5% sur 3 mois vs les 3 précédents",
+          "15 % sous la normale 2010-19 · plus bas que 81 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 27 514"
         ]
       },
       {
@@ -16651,9 +16652,9 @@
         "value": "259 050",
         "delta": "+17,2% YoY",
         "subs": [
-          "Mensuel : 22 746 (+12,0% YoY)",
-          "3 derniers mois vs n-1 : +29,8%",
-          "Dernier mois disponible : juin 2026"
+          "-2,8% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 22 746"
         ]
       }
     ],
@@ -16663,9 +16664,9 @@
         "value": "320 758",
         "delta": "+9,2% YoY",
         "subs": [
-          "Mensuel : 26 101 (-11,0% YoY)",
-          "3 derniers mois vs n-1 : -8,0%",
-          "Dernier mois disponible : juin 2026"
+          "-11,0% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 26 101"
         ]
       },
       {
@@ -16673,9 +16674,9 @@
         "value": "250 306",
         "delta": "+14,1% YoY",
         "subs": [
-          "Mensuel : 22 723 (+21,9% YoY)",
-          "3 derniers mois vs n-1 : +28,2%",
-          "Dernier mois disponible : juin 2026"
+          "-1,3% sur 3 mois vs les 3 précédents",
+          "30 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 22 723"
         ]
       }
     ],
@@ -16685,9 +16686,9 @@
         "value": "194 202",
         "delta": "+13,0% YoY",
         "subs": [
-          "Mensuel : 16 570 (-1,9% YoY)",
-          "3 derniers mois vs n-1 : +3,7%",
-          "Dernier mois disponible : juin 2026"
+          "-0,4% sur 3 mois vs les 3 précédents",
+          "14 % sous la normale 2010-19 · plus bas que 82 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 16 570"
         ]
       },
       {
@@ -16695,9 +16696,9 @@
         "value": "150 743",
         "delta": "+22,4% YoY",
         "subs": [
-          "Mensuel : 12 943 (+7,9% YoY)",
-          "3 derniers mois vs n-1 : +32,0%",
-          "Dernier mois disponible : juin 2026"
+          "+3,2% sur 3 mois vs les 3 précédents",
+          "24 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 12 943"
         ]
       }
     ],
@@ -16707,9 +16708,9 @@
         "value": "376 241",
         "delta": "+9,2% YoY",
         "subs": [
-          "Mensuel : 30 906 (-11,8% YoY)",
-          "3 derniers mois vs n-1 : -9,0%",
-          "Dernier mois disponible : juin 2026"
+          "-9,8% sur 3 mois vs les 3 précédents",
+          "16 % sous la normale 2010-19 · plus bas que 86 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 30 906"
         ]
       },
       {
@@ -16717,9 +16718,9 @@
         "value": "293 412",
         "delta": "+16,7% YoY",
         "subs": [
-          "Mensuel : 25 666 (+11,8% YoY)",
-          "3 derniers mois vs n-1 : +28,4%",
-          "Dernier mois disponible : juin 2026"
+          "-2,0% sur 3 mois vs les 3 précédents",
+          "23 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
+          "Dernier mois (juin 2026) : 25 666"
         ]
       }
     ]
@@ -16732,21 +16733,24 @@
           "color": "#E64A19",
           "val12": "73 275",
           "roll12_yoy": "+21,3%",
-          "last3_yoy": "+40,0%"
+          "last3_seq": "+8,3%",
+          "niveau": "42 % sous la normale 2010-19 · plus bas que 93 % des mois depuis 2000"
         },
         {
           "label": "Individuel total (pur + groupé)",
           "color": "#B07D10",
           "val12": "107 637",
           "roll12_yoy": "+18,3%",
-          "last3_yoy": "+32,9%"
+          "last3_seq": "+7,1%",
+          "niveau": "37 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000"
         },
         {
           "label": "Collectif",
           "color": "#1F78B4",
           "val12": "185 775",
           "roll12_yoy": "+15,7%",
-          "last3_yoy": "+25,8%"
+          "last3_seq": "-6,9%",
+          "niveau": "12 % sous la normale 2010-19 · plus bas que 64 % des mois depuis 2000"
         }
       ],
       "lines": [
@@ -20443,21 +20447,24 @@
           "color": "#E64A19",
           "val12": "96 237",
           "roll12_yoy": "+24,3%",
-          "last3_yoy": "+25,7%"
+          "last3_seq": "+2,8%",
+          "niveau": "31 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000"
         },
         {
           "label": "Individuel total (pur + groupé)",
           "color": "#B07D10",
           "val12": "138 719",
           "roll12_yoy": "+14,7%",
-          "last3_yoy": "+13,0%"
+          "last3_seq": "+0,6%",
+          "niveau": "29 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000"
         },
         {
           "label": "Collectif",
           "color": "#1F78B4",
           "val12": "237 522",
           "roll12_yoy": "+6,2%",
-          "last3_yoy": "-19,3%"
+          "last3_seq": "-15,6%",
+          "niveau": "6 % sous la normale 2010-19 · plus bas que 54 % des mois depuis 2000"
         }
       ],
       "lines": [
@@ -24148,1629 +24155,37 @@
       ]
     }
   },
-  "monthly": {
-    "rows": [
-      {
-        "date": "2000-01-01",
-        "permis": 32234.0,
-        "mises": 26815.0
-      },
-      {
-        "date": "2000-02-01",
-        "permis": 30917.0,
-        "mises": 30008.0
-      },
-      {
-        "date": "2000-03-01",
-        "permis": 32483.0,
-        "mises": 30119.0
-      },
-      {
-        "date": "2000-04-01",
-        "permis": 34352.0,
-        "mises": 26298.0
-      },
-      {
-        "date": "2000-05-01",
-        "permis": 36048.0,
-        "mises": 29397.0
-      },
-      {
-        "date": "2000-06-01",
-        "permis": 32492.0,
-        "mises": 27566.0
-      },
-      {
-        "date": "2000-07-01",
-        "permis": 33804.0,
-        "mises": 26986.0
-      },
-      {
-        "date": "2000-08-01",
-        "permis": 32523.0,
-        "mises": 32045.0
-      },
-      {
-        "date": "2000-09-01",
-        "permis": 31047.0,
-        "mises": 27939.0
-      },
-      {
-        "date": "2000-10-01",
-        "permis": 31311.0,
-        "mises": 27884.0
-      },
-      {
-        "date": "2000-11-01",
-        "permis": 33873.0,
-        "mises": 27668.0
-      },
-      {
-        "date": "2000-12-01",
-        "permis": 31848.0,
-        "mises": 28271.0
-      },
-      {
-        "date": "2001-01-01",
-        "permis": 31168.0,
-        "mises": 28907.0
-      },
-      {
-        "date": "2001-02-01",
-        "permis": 33100.0,
-        "mises": 28020.0
-      },
-      {
-        "date": "2001-03-01",
-        "permis": 33154.0,
-        "mises": 26697.0
-      },
-      {
-        "date": "2001-04-01",
-        "permis": 28572.0,
-        "mises": 29082.0
-      },
-      {
-        "date": "2001-05-01",
-        "permis": 30581.0,
-        "mises": 28660.0
-      },
-      {
-        "date": "2001-06-01",
-        "permis": 31668.0,
-        "mises": 27829.0
-      },
-      {
-        "date": "2001-07-01",
-        "permis": 33297.0,
-        "mises": 27519.0
-      },
-      {
-        "date": "2001-08-01",
-        "permis": 31759.0,
-        "mises": 26935.0
-      },
-      {
-        "date": "2001-09-01",
-        "permis": 30226.0,
-        "mises": 27928.0
-      },
-      {
-        "date": "2001-10-01",
-        "permis": 33852.0,
-        "mises": 29251.0
-      },
-      {
-        "date": "2001-11-01",
-        "permis": 32152.0,
-        "mises": 27167.0
-      },
-      {
-        "date": "2001-12-01",
-        "permis": 30233.0,
-        "mises": 29581.0
-      },
-      {
-        "date": "2002-01-01",
-        "permis": 30654.0,
-        "mises": 28529.0
-      },
-      {
-        "date": "2002-02-01",
-        "permis": 29695.0,
-        "mises": 29283.0
-      },
-      {
-        "date": "2002-03-01",
-        "permis": 30601.0,
-        "mises": 27910.0
-      },
-      {
-        "date": "2002-04-01",
-        "permis": 33784.0,
-        "mises": 29292.0
-      },
-      {
-        "date": "2002-05-01",
-        "permis": 29854.0,
-        "mises": 27339.0
-      },
-      {
-        "date": "2002-06-01",
-        "permis": 30330.0,
-        "mises": 28120.0
-      },
-      {
-        "date": "2002-07-01",
-        "permis": 31440.0,
-        "mises": 29424.0
-      },
-      {
-        "date": "2002-08-01",
-        "permis": 29055.0,
-        "mises": 28688.0
-      },
-      {
-        "date": "2002-09-01",
-        "permis": 33079.0,
-        "mises": 27627.0
-      },
-      {
-        "date": "2002-10-01",
-        "permis": 33008.0,
-        "mises": 28614.0
-      },
-      {
-        "date": "2002-11-01",
-        "permis": 33169.0,
-        "mises": 28098.0
-      },
-      {
-        "date": "2002-12-01",
-        "permis": 31853.0,
-        "mises": 30261.0
-      },
-      {
-        "date": "2003-01-01",
-        "permis": 31267.0,
-        "mises": 27706.0
-      },
-      {
-        "date": "2003-02-01",
-        "permis": 32842.0,
-        "mises": 28945.0
-      },
-      {
-        "date": "2003-03-01",
-        "permis": 32693.0,
-        "mises": 31325.0
-      },
-      {
-        "date": "2003-04-01",
-        "permis": 33480.0,
-        "mises": 29001.0
-      },
-      {
-        "date": "2003-05-01",
-        "permis": 33665.0,
-        "mises": 29278.0
-      },
-      {
-        "date": "2003-06-01",
-        "permis": 32632.0,
-        "mises": 30765.0
-      },
-      {
-        "date": "2003-07-01",
-        "permis": 36464.0,
-        "mises": 31548.0
-      },
-      {
-        "date": "2003-08-01",
-        "permis": 34931.0,
-        "mises": 28005.0
-      },
-      {
-        "date": "2003-09-01",
-        "permis": 37036.0,
-        "mises": 31895.0
-      },
-      {
-        "date": "2003-10-01",
-        "permis": 35449.0,
-        "mises": 30839.0
-      },
-      {
-        "date": "2003-11-01",
-        "permis": 37096.0,
-        "mises": 30908.0
-      },
-      {
-        "date": "2003-12-01",
-        "permis": 37277.0,
-        "mises": 32572.0
-      },
-      {
-        "date": "2004-01-01",
-        "permis": 38362.0,
-        "mises": 32345.0
-      },
-      {
-        "date": "2004-02-01",
-        "permis": 39717.0,
-        "mises": 33932.0
-      },
-      {
-        "date": "2004-03-01",
-        "permis": 37838.0,
-        "mises": 32764.0
-      },
-      {
-        "date": "2004-04-01",
-        "permis": 40294.0,
-        "mises": 34278.0
-      },
-      {
-        "date": "2004-05-01",
-        "permis": 40502.0,
-        "mises": 32612.0
-      },
-      {
-        "date": "2004-06-01",
-        "permis": 42047.0,
-        "mises": 34849.0
-      },
-      {
-        "date": "2004-07-01",
-        "permis": 40867.0,
-        "mises": 34953.0
-      },
-      {
-        "date": "2004-08-01",
-        "permis": 42494.0,
-        "mises": 34680.0
-      },
-      {
-        "date": "2004-09-01",
-        "permis": 42958.0,
-        "mises": 35053.0
-      },
-      {
-        "date": "2004-10-01",
-        "permis": 43623.0,
-        "mises": 34415.0
-      },
-      {
-        "date": "2004-11-01",
-        "permis": 44181.0,
-        "mises": 37992.0
-      },
-      {
-        "date": "2004-12-01",
-        "permis": 43708.0,
-        "mises": 35718.0
-      },
-      {
-        "date": "2005-01-01",
-        "permis": 45405.0,
-        "mises": 38843.0
-      },
-      {
-        "date": "2005-02-01",
-        "permis": 42340.0,
-        "mises": 35955.0
-      },
-      {
-        "date": "2005-03-01",
-        "permis": 42800.0,
-        "mises": 37460.0
-      },
-      {
-        "date": "2005-04-01",
-        "permis": 44822.0,
-        "mises": 36653.0
-      },
-      {
-        "date": "2005-05-01",
-        "permis": 41841.0,
-        "mises": 41004.0
-      },
-      {
-        "date": "2005-06-01",
-        "permis": 49243.0,
-        "mises": 37860.0
-      },
-      {
-        "date": "2005-07-01",
-        "permis": 46218.0,
-        "mises": 37465.0
-      },
-      {
-        "date": "2005-08-01",
-        "permis": 45966.0,
-        "mises": 39983.0
-      },
-      {
-        "date": "2005-09-01",
-        "permis": 47119.0,
-        "mises": 40610.0
-      },
-      {
-        "date": "2005-10-01",
-        "permis": 45046.0,
-        "mises": 38006.0
-      },
-      {
-        "date": "2005-11-01",
-        "permis": 48455.0,
-        "mises": 38122.0
-      },
-      {
-        "date": "2005-12-01",
-        "permis": 52559.0,
-        "mises": 41747.0
-      },
-      {
-        "date": "2006-01-01",
-        "permis": 49296.0,
-        "mises": 39784.0
-      },
-      {
-        "date": "2006-02-01",
-        "permis": 50321.0,
-        "mises": 40415.0
-      },
-      {
-        "date": "2006-03-01",
-        "permis": 50672.0,
-        "mises": 41157.0
-      },
-      {
-        "date": "2006-04-01",
-        "permis": 52397.0,
-        "mises": 42423.0
-      },
-      {
-        "date": "2006-05-01",
-        "permis": 49882.0,
-        "mises": 43440.0
-      },
-      {
-        "date": "2006-06-01",
-        "permis": 52601.0,
-        "mises": 43003.0
-      },
-      {
-        "date": "2006-07-01",
-        "permis": 49699.0,
-        "mises": 38874.0
-      },
-      {
-        "date": "2006-08-01",
-        "permis": 49648.0,
-        "mises": 45011.0
-      },
-      {
-        "date": "2006-09-01",
-        "permis": 46108.0,
-        "mises": 40248.0
-      },
-      {
-        "date": "2006-10-01",
-        "permis": 50372.0,
-        "mises": 40190.0
-      },
-      {
-        "date": "2006-11-01",
-        "permis": 52707.0,
-        "mises": 41685.0
-      },
-      {
-        "date": "2006-12-01",
-        "permis": 51416.0,
-        "mises": 39526.0
-      },
-      {
-        "date": "2007-01-01",
-        "permis": 46822.0,
-        "mises": 40680.0
-      },
-      {
-        "date": "2007-02-01",
-        "permis": 50703.0,
-        "mises": 40682.0
-      },
-      {
-        "date": "2007-03-01",
-        "permis": 52566.0,
-        "mises": 40607.0
-      },
-      {
-        "date": "2007-04-01",
-        "permis": 47796.0,
-        "mises": 41160.0
-      },
-      {
-        "date": "2007-05-01",
-        "permis": 50126.0,
-        "mises": 42648.0
-      },
-      {
-        "date": "2007-06-01",
-        "permis": 48911.0,
-        "mises": 41476.0
-      },
-      {
-        "date": "2007-07-01",
-        "permis": 47799.0,
-        "mises": 43680.0
-      },
-      {
-        "date": "2007-08-01",
-        "permis": 48622.0,
-        "mises": 39195.0
-      },
-      {
-        "date": "2007-09-01",
-        "permis": 45251.0,
-        "mises": 39987.0
-      },
-      {
-        "date": "2007-10-01",
-        "permis": 47167.0,
-        "mises": 42332.0
-      },
-      {
-        "date": "2007-11-01",
-        "permis": 41332.0,
-        "mises": 38138.0
-      },
-      {
-        "date": "2007-12-01",
-        "permis": 45777.0,
-        "mises": 37103.0
-      },
-      {
-        "date": "2008-01-01",
-        "permis": 45984.0,
-        "mises": 40061.0
-      },
-      {
-        "date": "2008-02-01",
-        "permis": 48016.0,
-        "mises": 40536.0
-      },
-      {
-        "date": "2008-03-01",
-        "permis": 46839.0,
-        "mises": 36171.0
-      },
-      {
-        "date": "2008-04-01",
-        "permis": 42441.0,
-        "mises": 35367.0
-      },
-      {
-        "date": "2008-05-01",
-        "permis": 43039.0,
-        "mises": 34806.0
-      },
-      {
-        "date": "2008-06-01",
-        "permis": 39497.0,
-        "mises": 34178.0
-      },
-      {
-        "date": "2008-07-01",
-        "permis": 37070.0,
-        "mises": 31720.0
-      },
-      {
-        "date": "2008-08-01",
-        "permis": 36308.0,
-        "mises": 32676.0
-      },
-      {
-        "date": "2008-09-01",
-        "permis": 35737.0,
-        "mises": 31832.0
-      },
-      {
-        "date": "2008-10-01",
-        "permis": 38132.0,
-        "mises": 30291.0
-      },
-      {
-        "date": "2008-11-01",
-        "permis": 33658.0,
-        "mises": 25535.0
-      },
-      {
-        "date": "2008-12-01",
-        "permis": 31509.0,
-        "mises": 25428.0
-      },
-      {
-        "date": "2009-01-01",
-        "permis": 32665.0,
-        "mises": 27017.0
-      },
-      {
-        "date": "2009-02-01",
-        "permis": 28744.0,
-        "mises": 25689.0
-      },
-      {
-        "date": "2009-03-01",
-        "permis": 30580.0,
-        "mises": 26083.0
-      },
-      {
-        "date": "2009-04-01",
-        "permis": 30515.0,
-        "mises": 28968.0
-      },
-      {
-        "date": "2009-05-01",
-        "permis": 28820.0,
-        "mises": 27286.0
-      },
-      {
-        "date": "2009-06-01",
-        "permis": 29229.0,
-        "mises": 29543.0
-      },
-      {
-        "date": "2009-07-01",
-        "permis": 32977.0,
-        "mises": 32213.0
-      },
-      {
-        "date": "2009-08-01",
-        "permis": 30813.0,
-        "mises": 33806.0
-      },
-      {
-        "date": "2009-09-01",
-        "permis": 32869.0,
-        "mises": 27886.0
-      },
-      {
-        "date": "2009-10-01",
-        "permis": 35148.0,
-        "mises": 28380.0
-      },
-      {
-        "date": "2009-11-01",
-        "permis": 34282.0,
-        "mises": 28640.0
-      },
-      {
-        "date": "2009-12-01",
-        "permis": 34571.0,
-        "mises": 30917.0
-      },
-      {
-        "date": "2010-01-01",
-        "permis": 35827.0,
-        "mises": 28167.0
-      },
-      {
-        "date": "2010-02-01",
-        "permis": 38041.0,
-        "mises": 29013.0
-      },
-      {
-        "date": "2010-03-01",
-        "permis": 41799.0,
-        "mises": 30533.0
-      },
-      {
-        "date": "2010-04-01",
-        "permis": 40773.0,
-        "mises": 31816.0
-      },
-      {
-        "date": "2010-05-01",
-        "permis": 39152.0,
-        "mises": 33273.0
-      },
-      {
-        "date": "2010-06-01",
-        "permis": 40391.0,
-        "mises": 33975.0
-      },
-      {
-        "date": "2010-07-01",
-        "permis": 43628.0,
-        "mises": 35110.0
-      },
-      {
-        "date": "2010-08-01",
-        "permis": 38225.0,
-        "mises": 39744.0
-      },
-      {
-        "date": "2010-09-01",
-        "permis": 40685.0,
-        "mises": 37467.0
-      },
-      {
-        "date": "2010-10-01",
-        "permis": 39246.0,
-        "mises": 39009.0
-      },
-      {
-        "date": "2010-11-01",
-        "permis": 37265.0,
-        "mises": 37847.0
-      },
-      {
-        "date": "2010-12-01",
-        "permis": 39413.0,
-        "mises": 35367.0
-      },
-      {
-        "date": "2011-01-01",
-        "permis": 43062.0,
-        "mises": 34418.0
-      },
-      {
-        "date": "2011-02-01",
-        "permis": 39308.0,
-        "mises": 33340.0
-      },
-      {
-        "date": "2011-03-01",
-        "permis": 38865.0,
-        "mises": 34566.0
-      },
-      {
-        "date": "2011-04-01",
-        "permis": 40778.0,
-        "mises": 34350.0
-      },
-      {
-        "date": "2011-05-01",
-        "permis": 44528.0,
-        "mises": 37026.0
-      },
-      {
-        "date": "2011-06-01",
-        "permis": 43562.0,
-        "mises": 30805.0
-      },
-      {
-        "date": "2011-07-01",
-        "permis": 45424.0,
-        "mises": 34184.0
-      },
-      {
-        "date": "2011-08-01",
-        "permis": 46341.0,
-        "mises": 36907.0
-      },
-      {
-        "date": "2011-09-01",
-        "permis": 46681.0,
-        "mises": 35597.0
-      },
-      {
-        "date": "2011-10-01",
-        "permis": 41984.0,
-        "mises": 35332.0
-      },
-      {
-        "date": "2011-11-01",
-        "permis": 43610.0,
-        "mises": 42699.0
-      },
-      {
-        "date": "2011-12-01",
-        "permis": 45105.0,
-        "mises": 37419.0
-      },
-      {
-        "date": "2012-01-01",
-        "permis": 41382.0,
-        "mises": 32015.0
-      },
-      {
-        "date": "2012-02-01",
-        "permis": 40126.0,
-        "mises": 33390.0
-      },
-      {
-        "date": "2012-03-01",
-        "permis": 39791.0,
-        "mises": 35980.0
-      },
-      {
-        "date": "2012-04-01",
-        "permis": 43226.0,
-        "mises": 27505.0
-      },
-      {
-        "date": "2012-05-01",
-        "permis": 41516.0,
-        "mises": 28996.0
-      },
-      {
-        "date": "2012-06-01",
-        "permis": 40350.0,
-        "mises": 31336.0
-      },
-      {
-        "date": "2012-07-01",
-        "permis": 39829.0,
-        "mises": 30829.0
-      },
-      {
-        "date": "2012-08-01",
-        "permis": 48147.0,
-        "mises": 31573.0
-      },
-      {
-        "date": "2012-09-01",
-        "permis": 38302.0,
-        "mises": 28751.0
-      },
-      {
-        "date": "2012-10-01",
-        "permis": 38370.0,
-        "mises": 32628.0
-      },
-      {
-        "date": "2012-11-01",
-        "permis": 36692.0,
-        "mises": 30448.0
-      },
-      {
-        "date": "2012-12-01",
-        "permis": 38828.0,
-        "mises": 36137.0
-      },
-      {
-        "date": "2013-01-01",
-        "permis": 41610.0,
-        "mises": 30499.0
-      },
-      {
-        "date": "2013-02-01",
-        "permis": 47828.0,
-        "mises": 33624.0
-      },
-      {
-        "date": "2013-03-01",
-        "permis": 40132.0,
-        "mises": 33876.0
-      },
-      {
-        "date": "2013-04-01",
-        "permis": 33826.0,
-        "mises": 29963.0
-      },
-      {
-        "date": "2013-05-01",
-        "permis": 32251.0,
-        "mises": 30586.0
-      },
-      {
-        "date": "2013-06-01",
-        "permis": 32566.0,
-        "mises": 30502.0
-      },
-      {
-        "date": "2013-07-01",
-        "permis": 31244.0,
-        "mises": 29260.0
-      },
-      {
-        "date": "2013-08-01",
-        "permis": 30021.0,
-        "mises": 28965.0
-      },
-      {
-        "date": "2013-09-01",
-        "permis": 29830.0,
-        "mises": 28589.0
-      },
-      {
-        "date": "2013-10-01",
-        "permis": 33684.0,
-        "mises": 28325.0
-      },
-      {
-        "date": "2013-11-01",
-        "permis": 32224.0,
-        "mises": 27528.0
-      },
-      {
-        "date": "2013-12-01",
-        "permis": 31813.0,
-        "mises": 27545.0
-      },
-      {
-        "date": "2014-01-01",
-        "permis": 31989.0,
-        "mises": 29193.0
-      },
-      {
-        "date": "2014-02-01",
-        "permis": 33180.0,
-        "mises": 26161.0
-      },
-      {
-        "date": "2014-03-01",
-        "permis": 36183.0,
-        "mises": 28553.0
-      },
-      {
-        "date": "2014-04-01",
-        "permis": 28326.0,
-        "mises": 29280.0
-      },
-      {
-        "date": "2014-05-01",
-        "permis": 31802.0,
-        "mises": 27643.0
-      },
-      {
-        "date": "2014-06-01",
-        "permis": 31152.0,
-        "mises": 27551.0
-      },
-      {
-        "date": "2014-07-01",
-        "permis": 32822.0,
-        "mises": 29800.0
-      },
-      {
-        "date": "2014-08-01",
-        "permis": 29802.0,
-        "mises": 26306.0
-      },
-      {
-        "date": "2014-09-01",
-        "permis": 29633.0,
-        "mises": 28809.0
-      },
-      {
-        "date": "2014-10-01",
-        "permis": 30347.0,
-        "mises": 27677.0
-      },
-      {
-        "date": "2014-11-01",
-        "permis": 28132.0,
-        "mises": 26901.0
-      },
-      {
-        "date": "2014-12-01",
-        "permis": 30483.0,
-        "mises": 27752.0
-      },
-      {
-        "date": "2015-01-01",
-        "permis": 31681.0,
-        "mises": 27083.0
-      },
-      {
-        "date": "2015-02-01",
-        "permis": 29636.0,
-        "mises": 26576.0
-      },
-      {
-        "date": "2015-03-01",
-        "permis": 31574.0,
-        "mises": 28373.0
-      },
-      {
-        "date": "2015-04-01",
-        "permis": 32777.0,
-        "mises": 25953.0
-      },
-      {
-        "date": "2015-05-01",
-        "permis": 30336.0,
-        "mises": 24915.0
-      },
-      {
-        "date": "2015-06-01",
-        "permis": 34846.0,
-        "mises": 28918.0
-      },
-      {
-        "date": "2015-07-01",
-        "permis": 32756.0,
-        "mises": 28258.0
-      },
-      {
-        "date": "2015-08-01",
-        "permis": 33771.0,
-        "mises": 30634.0
-      },
-      {
-        "date": "2015-09-01",
-        "permis": 32045.0,
-        "mises": 30642.0
-      },
-      {
-        "date": "2015-10-01",
-        "permis": 34308.0,
-        "mises": 28622.0
-      },
-      {
-        "date": "2015-11-01",
-        "permis": 36923.0,
-        "mises": 29693.0
-      },
-      {
-        "date": "2015-12-01",
-        "permis": 35795.0,
-        "mises": 30466.0
-      },
-      {
-        "date": "2016-01-01",
-        "permis": 34336.0,
-        "mises": 27768.0
-      },
-      {
-        "date": "2016-02-01",
-        "permis": 37818.0,
-        "mises": 32101.0
-      },
-      {
-        "date": "2016-03-01",
-        "permis": 33660.0,
-        "mises": 25830.0
-      },
-      {
-        "date": "2016-04-01",
-        "permis": 38784.0,
-        "mises": 29840.0
-      },
-      {
-        "date": "2016-05-01",
-        "permis": 37717.0,
-        "mises": 34030.0
-      },
-      {
-        "date": "2016-06-01",
-        "permis": 37132.0,
-        "mises": 30190.0
-      },
-      {
-        "date": "2016-07-01",
-        "permis": 37926.0,
-        "mises": 29436.0
-      },
-      {
-        "date": "2016-08-01",
-        "permis": 38701.0,
-        "mises": 31544.0
-      },
-      {
-        "date": "2016-09-01",
-        "permis": 41631.0,
-        "mises": 31939.0
-      },
-      {
-        "date": "2016-10-01",
-        "permis": 38719.0,
-        "mises": 32529.0
-      },
-      {
-        "date": "2016-11-01",
-        "permis": 42331.0,
-        "mises": 31776.0
-      },
-      {
-        "date": "2016-12-01",
-        "permis": 41778.0,
-        "mises": 32658.0
-      },
-      {
-        "date": "2017-01-01",
-        "permis": 35821.0,
-        "mises": 34755.0
-      },
-      {
-        "date": "2017-02-01",
-        "permis": 38432.0,
-        "mises": 35192.0
-      },
-      {
-        "date": "2017-03-01",
-        "permis": 43328.0,
-        "mises": 38162.0
-      },
-      {
-        "date": "2017-04-01",
-        "permis": 39364.0,
-        "mises": 34576.0
-      },
-      {
-        "date": "2017-05-01",
-        "permis": 40852.0,
-        "mises": 34483.0
-      },
-      {
-        "date": "2017-06-01",
-        "permis": 41926.0,
-        "mises": 35299.0
-      },
-      {
-        "date": "2017-07-01",
-        "permis": 43304.0,
-        "mises": 35797.0
-      },
-      {
-        "date": "2017-08-01",
-        "permis": 41429.0,
-        "mises": 35754.0
-      },
-      {
-        "date": "2017-09-01",
-        "permis": 43528.0,
-        "mises": 35015.0
-      },
-      {
-        "date": "2017-10-01",
-        "permis": 39315.0,
-        "mises": 35069.0
-      },
-      {
-        "date": "2017-11-01",
-        "permis": 37955.0,
-        "mises": 37298.0
-      },
-      {
-        "date": "2017-12-01",
-        "permis": 41214.0,
-        "mises": 40660.0
-      },
-      {
-        "date": "2018-01-01",
-        "permis": 37805.0,
-        "mises": 32431.0
-      },
-      {
-        "date": "2018-02-01",
-        "permis": 42034.0,
-        "mises": 32775.0
-      },
-      {
-        "date": "2018-03-01",
-        "permis": 39067.0,
-        "mises": 33216.0
-      },
-      {
-        "date": "2018-04-01",
-        "permis": 38984.0,
-        "mises": 34538.0
-      },
-      {
-        "date": "2018-05-01",
-        "permis": 40904.0,
-        "mises": 35597.0
-      },
-      {
-        "date": "2018-06-01",
-        "permis": 36187.0,
-        "mises": 34266.0
-      },
-      {
-        "date": "2018-07-01",
-        "permis": 35546.0,
-        "mises": 32154.0
-      },
-      {
-        "date": "2018-08-01",
-        "permis": 38500.0,
-        "mises": 31314.0
-      },
-      {
-        "date": "2018-09-01",
-        "permis": 39853.0,
-        "mises": 33163.0
-      },
-      {
-        "date": "2018-10-01",
-        "permis": 38445.0,
-        "mises": 36083.0
-      },
-      {
-        "date": "2018-11-01",
-        "permis": 36770.0,
-        "mises": 33179.0
-      },
-      {
-        "date": "2018-12-01",
-        "permis": 35925.0,
-        "mises": 31716.0
-      },
-      {
-        "date": "2019-01-01",
-        "permis": 37650.0,
-        "mises": 33556.0
-      },
-      {
-        "date": "2019-02-01",
-        "permis": 33661.0,
-        "mises": 32653.0
-      },
-      {
-        "date": "2019-03-01",
-        "permis": 37452.0,
-        "mises": 30547.0
-      },
-      {
-        "date": "2019-04-01",
-        "permis": 38923.0,
-        "mises": 33726.0
-      },
-      {
-        "date": "2019-05-01",
-        "permis": 36447.0,
-        "mises": 30974.0
-      },
-      {
-        "date": "2019-06-01",
-        "permis": 36723.0,
-        "mises": 29794.0
-      },
-      {
-        "date": "2019-07-01",
-        "permis": 36187.0,
-        "mises": 33839.0
-      },
-      {
-        "date": "2019-08-01",
-        "permis": 34829.0,
-        "mises": 26812.0
-      },
-      {
-        "date": "2019-09-01",
-        "permis": 34701.0,
-        "mises": 32670.0
-      },
-      {
-        "date": "2019-10-01",
-        "permis": 41197.0,
-        "mises": 32670.0
-      },
-      {
-        "date": "2019-11-01",
-        "permis": 37881.0,
-        "mises": 32642.0
-      },
-      {
-        "date": "2019-12-01",
-        "permis": 41158.0,
-        "mises": 32790.0
-      },
-      {
-        "date": "2020-01-01",
-        "permis": 40467.0,
-        "mises": 34262.0
-      },
-      {
-        "date": "2020-02-01",
-        "permis": 39937.0,
-        "mises": 32652.0
-      },
-      {
-        "date": "2020-03-01",
-        "permis": 35248.0,
-        "mises": 24489.0
-      },
-      {
-        "date": "2020-04-01",
-        "permis": 15991.0,
-        "mises": 16892.0
-      },
-      {
-        "date": "2020-05-01",
-        "permis": 22580.0,
-        "mises": 27310.0
-      },
-      {
-        "date": "2020-06-01",
-        "permis": 30826.0,
-        "mises": 32701.0
-      },
-      {
-        "date": "2020-07-01",
-        "permis": 29364.0,
-        "mises": 35121.0
-      },
-      {
-        "date": "2020-08-01",
-        "permis": 32460.0,
-        "mises": 38487.0
-      },
-      {
-        "date": "2020-09-01",
-        "permis": 34406.0,
-        "mises": 32867.0
-      },
-      {
-        "date": "2020-10-01",
-        "permis": 36272.0,
-        "mises": 33413.0
-      },
-      {
-        "date": "2020-11-01",
-        "permis": 39400.0,
-        "mises": 33069.0
-      },
-      {
-        "date": "2020-12-01",
-        "permis": 37103.0,
-        "mises": 31068.0
-      },
-      {
-        "date": "2021-01-01",
-        "permis": 37677.0,
-        "mises": 32908.0
-      },
-      {
-        "date": "2021-02-01",
-        "permis": 37831.0,
-        "mises": 34628.0
-      },
-      {
-        "date": "2021-03-01",
-        "permis": 37729.0,
-        "mises": 36642.0
-      },
-      {
-        "date": "2021-04-01",
-        "permis": 38999.0,
-        "mises": 35306.0
-      },
-      {
-        "date": "2021-05-01",
-        "permis": 38902.0,
-        "mises": 35636.0
-      },
-      {
-        "date": "2021-06-01",
-        "permis": 38371.0,
-        "mises": 32512.0
-      },
-      {
-        "date": "2021-07-01",
-        "permis": 39674.0,
-        "mises": 33516.0
-      },
-      {
-        "date": "2021-08-01",
-        "permis": 36646.0,
-        "mises": 35255.0
-      },
-      {
-        "date": "2021-09-01",
-        "permis": 42191.0,
-        "mises": 34318.0
-      },
-      {
-        "date": "2021-10-01",
-        "permis": 39082.0,
-        "mises": 37230.0
-      },
-      {
-        "date": "2021-11-01",
-        "permis": 39716.0,
-        "mises": 34204.0
-      },
-      {
-        "date": "2021-12-01",
-        "permis": 39177.0,
-        "mises": 32627.0
-      },
-      {
-        "date": "2022-01-01",
-        "permis": 41001.0,
-        "mises": 35087.0
-      },
-      {
-        "date": "2022-02-01",
-        "permis": 50280.0,
-        "mises": 34392.0
-      },
-      {
-        "date": "2022-03-01",
-        "permis": 49642.0,
-        "mises": 36684.0
-      },
-      {
-        "date": "2022-04-01",
-        "permis": 45349.0,
-        "mises": 31825.0
-      },
-      {
-        "date": "2022-05-01",
-        "permis": 44843.0,
-        "mises": 32314.0
-      },
-      {
-        "date": "2022-06-01",
-        "permis": 41199.0,
-        "mises": 32550.0
-      },
-      {
-        "date": "2022-07-01",
-        "permis": 40703.0,
-        "mises": 30726.0
-      },
-      {
-        "date": "2022-08-01",
-        "permis": 49083.0,
-        "mises": 34614.0
-      },
-      {
-        "date": "2022-09-01",
-        "permis": 34265.0,
-        "mises": 31190.0
-      },
-      {
-        "date": "2022-10-01",
-        "permis": 29799.0,
-        "mises": 30747.0
-      },
-      {
-        "date": "2022-11-01",
-        "permis": 31174.0,
-        "mises": 30641.0
-      },
-      {
-        "date": "2022-12-01",
-        "permis": 31092.0,
-        "mises": 30960.0
-      },
-      {
-        "date": "2023-01-01",
-        "permis": 33061.0,
-        "mises": 30030.0
-      },
-      {
-        "date": "2023-02-01",
-        "permis": 34733.0,
-        "mises": 26871.0
-      },
-      {
-        "date": "2023-03-01",
-        "permis": 31573.0,
-        "mises": 26366.0
-      },
-      {
-        "date": "2023-04-01",
-        "permis": 32522.0,
-        "mises": 26187.0
-      },
-      {
-        "date": "2023-05-01",
-        "permis": 29750.0,
-        "mises": 26711.0
-      },
-      {
-        "date": "2023-06-01",
-        "permis": 33126.0,
-        "mises": 24962.0
-      },
-      {
-        "date": "2023-07-01",
-        "permis": 29917.0,
-        "mises": 24330.0
-      },
-      {
-        "date": "2023-08-01",
-        "permis": 31474.0,
-        "mises": 20734.0
-      },
-      {
-        "date": "2023-09-01",
-        "permis": 27267.0,
-        "mises": 23890.0
-      },
-      {
-        "date": "2023-10-01",
-        "permis": 30943.0,
-        "mises": 22205.0
-      },
-      {
-        "date": "2023-11-01",
-        "permis": 31067.0,
-        "mises": 22275.0
-      },
-      {
-        "date": "2023-12-01",
-        "permis": 30927.0,
-        "mises": 22811.0
-      },
-      {
-        "date": "2024-01-01",
-        "permis": 28312.0,
-        "mises": 20761.0
-      },
-      {
-        "date": "2024-02-01",
-        "permis": 29209.0,
-        "mises": 21455.0
-      },
-      {
-        "date": "2024-03-01",
-        "permis": 26208.0,
-        "mises": 20942.0
-      },
-      {
-        "date": "2024-04-01",
-        "permis": 25895.0,
-        "mises": 21420.0
-      },
-      {
-        "date": "2024-05-01",
-        "permis": 25248.0,
-        "mises": 23669.0
-      },
-      {
-        "date": "2024-06-01",
-        "permis": 25522.0,
-        "mises": 20593.0
-      },
-      {
-        "date": "2024-07-01",
-        "permis": 27111.0,
-        "mises": 22754.0
-      },
-      {
-        "date": "2024-08-01",
-        "permis": 26875.0,
-        "mises": 22449.0
-      },
-      {
-        "date": "2024-09-01",
-        "permis": 25051.0,
-        "mises": 19395.0
-      },
-      {
-        "date": "2024-10-01",
-        "permis": 27213.0,
-        "mises": 21740.0
-      },
-      {
-        "date": "2024-11-01",
-        "permis": 27094.0,
-        "mises": 21276.0
-      },
-      {
-        "date": "2024-12-01",
-        "permis": 26802.0,
-        "mises": 22013.0
-      },
-      {
-        "date": "2025-01-01",
-        "permis": 27059.0,
-        "mises": 21377.0
-      },
-      {
-        "date": "2025-02-01",
-        "permis": 27472.0,
-        "mises": 20166.0
-      },
-      {
-        "date": "2025-03-01",
-        "permis": 29747.0,
-        "mises": 19759.0
-      },
-      {
-        "date": "2025-04-01",
-        "permis": 34828.0,
-        "mises": 20033.0
-      },
-      {
-        "date": "2025-05-01",
-        "permis": 30214.0,
-        "mises": 17587.0
-      },
-      {
-        "date": "2025-06-01",
-        "permis": 35056.0,
-        "mises": 22962.0
-      },
-      {
-        "date": "2025-07-01",
-        "permis": 32040.0,
-        "mises": 22392.0
-      },
-      {
-        "date": "2025-08-01",
-        "permis": 29694.0,
-        "mises": 19448.0
-      },
-      {
-        "date": "2025-09-01",
-        "permis": 31963.0,
-        "mises": 21591.0
-      },
-      {
-        "date": "2025-10-01",
-        "permis": 30191.0,
-        "mises": 23430.0
-      },
-      {
-        "date": "2025-11-01",
-        "permis": 29392.0,
-        "mises": 22843.0
-      },
-      {
-        "date": "2025-12-01",
-        "permis": 30842.0,
-        "mises": 26517.0
-      },
-      {
-        "date": "2026-01-01",
-        "permis": 31395.0,
-        "mises": 25866.0
-      },
-      {
-        "date": "2026-02-01",
-        "permis": 30273.0,
-        "mises": 24043.0
-      },
-      {
-        "date": "2026-03-01",
-        "permis": 39355.0,
-        "mises": 29487.0
-      },
-      {
-        "date": "2026-04-01",
-        "permis": 27742.0,
-        "mises": 26429.0
-      },
-      {
-        "date": "2026-05-01",
-        "permis": 32448.0,
-        "mises": 25700.0
-      },
-      {
-        "date": "2026-06-01",
-        "permis": 30906.0,
-        "mises": 25666.0
-      }
-    ],
-    "last_month_num": 6,
-    "metrics": [
-      {
-        "key": "permis",
-        "name": "Permis de Construire"
-      },
-      {
-        "key": "mises",
-        "name": "Mises en Chantier"
-      }
-    ]
-  },
   "ecln": {
     "last_quarter": "2026-T2",
     "kpis": [
       {
         "label": "Réservations particuliers (trim.)",
-        "value": "16 112"
+        "value": "16 112",
+        "subs": [
+          "-4,8% vs le trimestre précédent"
+        ]
       },
       {
         "label": "Mises en vente (trim.)",
-        "value": "17 499"
+        "value": "17 499",
+        "subs": [
+          "+11,1% vs le trimestre précédent"
+        ]
       },
       {
         "label": "Encours à la vente",
-        "value": "124 027"
+        "value": "124 027",
+        "subs": [
+          "+1,6% vs le trimestre précédent",
+          "le stock déjà construit ou en cours qui attend un acheteur"
+        ]
       },
       {
         "label": "Délai d'écoulement",
-        "value": "22 mois"
+        "value": "22 mois",
+        "subs": [
+          "15 mois en moyenne depuis 2017 — il faut aujourd'hui 53 % de temps de plus pour écouler le stock"
+        ]
       }
     ],
     "stock_rows": [
