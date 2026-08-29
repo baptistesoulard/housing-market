@@ -178,7 +178,7 @@ if (RG && V) {
 //
 // Les deux chiffres qui la déterminent existaient déjà, mais à deux endroits éloignés :
 // l'horizon de bascule contre la prévision naïve (archive, section « Prévisions passées »)
-// et l'horizon informatif de la trajectoire (carte de la section 2 bis). Croisés, ils
+// et l'horizon informatif de la trajectoire (carte de la section 3). Croisés, ils
 // donnent trois régimes d'usage — et notamment le fait, contre-intuitif pour qui vient
 // chercher une prévision, qu'en deçà de la bascule il vaut mieux recopier le dernier
 // chiffre connu. Le dire ici coûte quatre lignes et évite un contresens de planification.
@@ -216,7 +216,7 @@ if (V && P && P.available && data.crossover_horizon) display(html`<div class="hm
 if (data.available) display(html`<hr>`);
 ```
 
-## 1. Modèle de taux de crédit (OAT 10 ans)
+## 1. Le taux de crédit : ce que l'OAT 10 ans détermine d'avance
 
 Le crédit immobilier français est à taux fixe, et les banques publient des barèmes qu'elles
 lissent : leur réaction aux taux de marché n'est pas immédiate. Le modèle **mesure ce délai**
@@ -464,7 +464,7 @@ if (R) display(html`<p>Sans délai, le modèle expliquait <b>83,8 %</b> de la va
 
 </details>
 
-## 2. Modèle des transactions — et sa mise à l'épreuve
+## 2. Les transactions : le modèle, et sa mise à l'épreuve
 
 ```js
 // Le R² a QUITTÉ les cartes de tête, et ce n'est pas un détail de mise en page. Deux
@@ -487,7 +487,7 @@ if (V && V.reliability) display(cardGrid([
    value: `${T.lags.kr} / ${T.lags.ki} / ${T.lags.kc} mois`}
 ], kpiCard));
 else if (T) display(cardGrid([
-  {label: "Erreur hors échantillon (MAPE)", value: nf1.format(T.backtest.mape) + " %"},
+  {label: "Erreur moyenne sur des données non vues", value: nf1.format(T.backtest.mape) + " %"},
   {label: "Décalages (taux / intentions / chômage)",
    value: `${T.lags.kr} / ${T.lags.ki} / ${T.lags.kc} mois`}
 ], kpiCard));
@@ -542,7 +542,7 @@ if (T) display(html`<div class="hm-caption">
 </div>`);
 ```
 
-## 🔬 Vérifier les décalages retenus
+## 🔬 Vérifier les décalages que le modèle a retenus
 
 <div class="hm-caption">
 Déplacez le décalage d'un prédicteur : le modèle est réestimé et son R² bouge. C'est ce
@@ -554,7 +554,7 @@ arrive en une requête, donc le curseur ne provoque aucun aller-retour réseau.
 const predictorLabels = {rate: "Taux de crédit (toutes durées)", intentions: "Intentions d'achat",
                          unemployment: "Taux de chômage"};
 const predictor = view(Inputs.select(Object.keys(predictorLabels), {
-  label: "Prédicteur à inspecter", format: (k) => predictorLabels[k], value: "rate"
+  label: "Indicateur à inspecter", format: (k) => predictorLabels[k], value: "rate"
 }));
 ```
 
@@ -650,7 +650,7 @@ if (sens) display(multiLine({
 }));
 ```
 
-## 2 bis. Projection à horizon (décalages déjà observés)
+## 3. La projection : où va le marché, et jusqu'où s'y fier
 
 ```js
 if (P) display(!P.available
@@ -660,7 +660,7 @@ if (P) display(!P.available
       {label: "Horizon de projection", value: `${P.horizon_months} mois`,
        subs: [`dont ${P.informative_months} pilotés par des indicateurs déjà publiés`,
               `au-delà, la courbe répète sa dernière valeur`]},
-      {label: "Ventes 12 m projetées (fin)", value: nf0.format(P.end_value),
+      {label: "Ventes projetées en fin d'horizon", value: nf0.format(P.end_value),
        delta: (P.end_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(P.end_change_pct)) + " %"}
     ], kpiCard));
 ```
@@ -743,7 +743,7 @@ if (P && P.available) display(html`<div class="hm-caption">
 </div>`);
 ```
 
-## 3. Panneau de scénarios : macro → marché
+## 4. Et si les conditions changeaient ? Le panneau de scénarios
 
 <div class="hm-caption">
 Effet à terme (après les décalages estimés) si ces conditions persistent, appliqué au
@@ -771,12 +771,12 @@ const r1 = (v) => Math.round(v * 10) / 10;
 // cellule qui l'emploie est retirée du build SANS ERREUR. Garder la référence à l'élément
 // est le seul moyen documenté d'y accéder depuis une autre cellule.
 const dTauxInput = base ? Inputs.range([-2.5, 2.5], {
-  label: "Taux de marché (écart, en points)", step: 0.1, value: 0,
+  label: "Taux de marché (0 = inchangé, en points)", step: 0.1, value: 0,
 }) : null;
 const chomInput = base ? Inputs.range([6.5, 11],
   {label: "Taux de chômage (%)", step: 0.1, value: r1(base.unemployment)}) : null;
 const intentZInput = base ? Inputs.range([-2.5, 2.5],
-  {label: "Intentions d'achat (écarts-types)", step: 0.1, value: r1(base.intentions_z)}) : null;
+  {label: "Intentions d'achat (0 = moyenne historique)", step: 0.1, value: r1(base.intentions_z)}) : null;
 
 const dTaux = dTauxInput ? view(dTauxInput) : null;
 const chom = chomInput ? view(chomInput) : null;
@@ -848,11 +848,11 @@ const sc = base
 
 ```js
 if (sc) display(cardGrid([
-  {label: "Taux de crédit implicite (toutes durées)", value: nf1.format(sc.rate) + " %",
+  {label: "Taux de crédit qui en résulterait", value: nf1.format(sc.rate) + " %",
    delta: (sc.rate_change >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.rate_change)) + " pt"},
   {label: "Ventes projetées (12 mois)", value: nf0.format(sc.transactions),
    delta: (sc.transactions_change >= 0 ? "+" : "−") + nf0.format(Math.abs(sc.transactions_change))},
-  {label: "Impact relatif",
+  {label: "Écart vs aujourd'hui",
    value: (sc.transactions_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.transactions_change_pct)) + " %"}
 ], kpiCard));
 ```

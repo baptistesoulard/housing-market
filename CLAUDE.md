@@ -1172,6 +1172,37 @@ curseur portant l'OAT ou l'Euribor seul. Retirer purement et simplement l'Euribo
 l'étage 1 reste une option propre (le R² passe de 0,8378 à 0,8377) mais toucherait les
 textes statiques de plusieurs pages et le tableau des sources ; non fait pour cette raison.
 
+**Passe de vocabulaire sur « Prévision & Scénarios » (2026-08-29).** La page portait le
+niveau de jargon d'une note interne pour une audience de dirigeants et de particuliers.
+Deux trouvailles dépassent la formulation :
+
+* **« Nowcast » était FAUX, pas seulement obscur.** Un nowcast estime le présent avant sa
+  publication officielle. La section 2 montre un modèle entraîné jusqu'en 2021 rejoué sur
+  les années suivantes : elle ne comble aucun trou de publication, et ses valeurs ajustées
+  s'arrêtent même AVANT le dernier chiffre connu (avril contre juin 2026, le chômage
+  trimestriel les bornant). Le mot venait de l'intention d'origine du module — encore
+  inscrite dans la docstring de `forecast.py`, corrigée aussi.
+* **Deux titres d'`app.py` annonçaient des choses supprimées** : l'étage 1 nommait encore
+  l'« Euribor 3 mois » (retiré du modèle le 2026-08-25) et le panneau de scénarios encore
+  « → chiffre d'affaires » (dataset `revenue` supprimé le 2026-08-24). Un titre de section
+  survit aux suppressions parce que personne ne le relit en changeant le calcul.
+
+**La numérotation est redevenue linéaire : 1, 2, 3, 4** (les sections 🔬 et 🧪 restent
+hors numérotation, ce sont un outil d'audit et une annexe). « 2 bis » désignait la
+PROJECTION — la sortie du modèle, donc la section la plus importante de la page — sous le
+numéro le plus apologétique qui soit. Piège rencontré en renumérotant : `app.py` a une
+section de plus que le site (« Permis de construire → vos ventes »), qui portait le 4 et
+s'est retrouvée en doublon avec le panneau de scénarios ; elle est passée en 5. **Vérifier
+les numéros sur les DEUX surfaces après tout déplacement.**
+
+Chaque titre dit désormais ce que le lecteur y trouve plutôt que la méthode employée, et
+les libellés de cartes ont perdu le jargon non expliqué : « MAPE » → « erreur moyenne sur
+des données non vues », « prédicteur » → « indicateur », « taux implicite » → « taux qui en
+résulterait », « impact relatif » → « écart vs aujourd'hui ». Les deux curseurs de scénario
+disent leur point de référence au lieu de nommer la statistique (« 0 = inchangé »,
+« 0 = moyenne historique ») — ils gardent leur unité sans exiger de savoir ce qu'est un
+écart-type.
+
 **Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
 entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
 d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,

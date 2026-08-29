@@ -2501,8 +2501,10 @@ with tab_forecast:
         _b = _tm["beta"]
 
         # ---- 1. Credit-rate model ------------------------------------------------
-        st.markdown("#### " + _L("1. Modèle de taux de crédit (OAT 10 ans + Euribor 3 mois)",
-                                 "1. Credit-rate model (10-year OAT + 3-month Euribor)"))
+        # Le titre nommait encore l'Euribor 3 mois, RETIRÉ de l'étage 1 le 2026-08-25
+        # (colinéaire à l'OAT, dégradait la prévision hors échantillon de 19 %).
+        st.markdown("#### " + _L("1. Le taux de crédit : ce que l'OAT 10 ans détermine d'avance",
+                                 "1. The credit rate: what the 10-year OAT already determines"))
         a1, a2 = st.columns([2, 1])
         with a1:
             fig_rm = go.Figure()
@@ -2539,13 +2541,13 @@ with tab_forecast:
                           "Sources: Banque de France/ECB (rate, OAT, Euribor)."))
 
         # ---- 2. Modèle des transactions + backtest hors échantillon ---------------
-        st.markdown("#### " + _L("2. Modèle des transactions — et sa mise à l'épreuve",
-                                 "2. Transactions model — and how it is tested"))
+        st.markdown("#### " + _L("2. Les transactions : le modèle, et sa mise à l'épreuve",
+                                 "2. Transactions: the model, and how it is tested"))
         m1, m2, m3 = st.columns(3)
         m1.metric(_L("R² (in-sample)", "R² (in-sample)"),
                   f"{_tm['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_tm['r2']:.2f}")
         if "mape" in _bt:
-            m2.metric(_L("Erreur hors échantillon (MAPE, 2022→)", "Out-of-sample error (MAPE, 2022→)"),
+            m2.metric(_L("Erreur moyenne sur des données non vues (2022→)", "Average error on unseen data (2022→)"),
                       (f"{_bt['mape']:.1f}%".replace(".", ",") if lang_code == "FR" else f"{_bt['mape']:.1f}%"))
         m3.metric(_L("Décalages (taux/intentions/chômage)", "Lags (rate/intentions/unemp.)"),
                   f"{_lags['kr']} / {_lags['ki']} / {_lags['kc']} " + _L("mois", "mo"))
@@ -2583,7 +2585,7 @@ with tab_forecast:
         # exploration survives but is now scored with the MODEL's own criterion: refit at the
         # lag you pick and compare. Moving a lag away from the retained one must LOWER R² —
         # that is what makes the grid-search result auditable instead of asserted.
-        with st.expander(_L("🔬 Vérifier les décalages retenus (en déplacer un, voir le R² bouger)",
+        with st.expander(_L("🔬 Vérifier les décalages que le modèle a retenus (en déplacer un, voir le R² bouger)",
                             "🔬 Inspect the retained lags (move one, watch R² move)")):
             _lag_specs = {
                 _L("Taux de crédit (toutes durées)", "Credit rate (all terms)"):
@@ -2595,7 +2597,7 @@ with tab_forecast:
             }
             _pc1, _pc2 = st.columns([1, 2])
             with _pc1:
-                _pick = st.selectbox(_L("Prédicteur à inspecter", "Predictor to inspect"),
+                _pick = st.selectbox(_L("Indicateur à inspecter", "Indicator to inspect"),
                                      list(_lag_specs.keys()), key="fc_lag_probe")
                 _pk, _pcol, _plo, _phi, _payl = _lag_specs[_pick]
                 _kman = st.slider(_L("Décalage appliqué (mois)", "Applied lag (months)"),
@@ -2664,8 +2666,8 @@ with tab_forecast:
         _sigma = float(_bt["rmse"]) if "rmse" in _bt else float(_tm["rmse"])
         _last_tx12_pre = float(_tx12.dropna().iloc[-1])
         _fpath = fc.forecast_path(df_macro_full, _tx12, _lags, _b, _sigma, horizon=18)
-        st.markdown("#### " + _L("2 bis. Projection à horizon (décalages déjà observés)",
-                                 "2b. Projection to horizon (already-observed lags)"))
+        st.markdown("#### " + _L("3. La projection : où va le marché, et jusqu'où s'y fier",
+                                 "3. The projection: where the market is heading"))
         if _fpath is None or _fpath.empty:
             st.info(_L(
                 "Les décalages estimés ne permettent pas de projection au-delà du dernier point "
@@ -2711,7 +2713,7 @@ with tab_forecast:
                        _L(f"dont {_n_assured} sans hypothèse", f"of which {_n_assured} assumption-free"),
                        delta_color="off")
             fh2.metric(_L("Fin d'horizon", "Horizon end"), f"{_h_end:%Y-%m}")
-            fh3.metric(_L("Ventes 12 m projetées (fin)", "Projected 12m sales (end)"),
+            fh3.metric(_L("Ventes projetées en fin d'horizon", "Sales projected at end of horizon"),
                        f"{_v_end:,.0f}".replace(",", " "),
                        f"{(_v_end/_last_tx12_pre-1)*100:+.1f}%".replace(".", ",") if lang_code == "FR"
                        else f"{(_v_end/_last_tx12_pre-1)*100:+.1f}%")
@@ -2754,8 +2756,10 @@ with tab_forecast:
             .replace(",", " "))
 
         # ---- 3. Scenario panel ---------------------------------------------------
-        st.markdown("#### " + _L("3. Panneau de scénarios : macro → marché → chiffre d'affaires",
-                                 "3. Scenario panel: macro → market → revenue"))
+        # « → chiffre d'affaires » désignait le benchmark de CA entreprise, SUPPRIMÉ avec
+        # son dataset le 2026-08-24 : le titre annonçait un troisième étage qui n'existe plus.
+        st.markdown("#### " + _L("4. Et si les conditions changeaient ? Le panneau de scénarios",
+                                 "4. What if conditions changed? The scenario panel"))
         _mi = df_macro_full.set_index("Date").sort_index()
         _oat0 = float(_mi["OAT_10ans"].dropna().iloc[-1])
         _eur0 = float(_mi["Euribor_3M"].dropna().iloc[-1])
@@ -2775,7 +2779,7 @@ with tab_forecast:
             _oat = st.slider(_L("OAT 10 ans (%)", "10-year OAT (%)"), 0.0, 5.5, round(_oat0, 2), 0.1)
             _eur = st.slider(_L("Euribor 3 mois (%)", "3-month Euribor (%)"), -0.5, 4.5, round(_eur0, 2), 0.1)
             _chom = st.slider(_L("Taux de chômage (%)", "Unemployment rate (%)"), 6.5, 11.0, round(_chom0, 1), 0.1)
-            _int_z = st.slider(_L("Intentions d'achat (écarts-types)", "Purchase intentions (std dev)"),
+            _int_z = st.slider(_L("Intentions d'achat (0 = moyenne historique)", "Purchase intentions (0 = historical mean)"),
                                -2.5, 2.5, round(_int0_z, 1), 0.1,
                                help=_L("0 = moyenne de long terme ; +1 = un écart-type au-dessus. "
                                        "Troisième prédicteur du modèle, au même titre que le taux et le chômage.",
@@ -2788,13 +2792,13 @@ with tab_forecast:
                           {"oat": _oat, "euribor": _eur, "intent": _int, "chom": _chom})
         with sc2:
             r1c = st.columns(3)
-            r1c[0].metric(_L("Taux de crédit implicite (toutes durées)", "Implied credit rate (all terms)"),
+            r1c[0].metric(_L("Taux de crédit qui en résulterait", "Resulting credit rate"),
                           (f"{_sc['rate']:.2f}%".replace(".", ",") if lang_code == "FR" else f"{_sc['rate']:.2f}%"),
                           (f"{_sc['d_rate']:+.2f} pt".replace(".", ",") if lang_code == "FR" else f"{_sc['d_rate']:+.2f}pp"))
             r1c[1].metric(_L("Ventes projetées (12 mois)", "Projected sales (12m)"),
                           f"{_sc['tx']:,.0f}".replace(",", " "),
                           f"{_sc['d_tx']:+,.0f}".replace(",", " "))
-            r1c[2].metric(_L("Impact relatif", "Relative impact"),
+            r1c[2].metric(_L("Écart vs aujourd'hui", "Gap vs today"),
                           (f"{_sc['d_tx']/_tx0*100:+.1f}%".replace(".", ",") if lang_code == "FR" else f"{_sc['d_tx']/_tx0*100:+.1f}%"))
             fig_sc = go.Figure()
             fig_sc.add_trace(go.Bar(x=[_L("Actuel", "Current"), _L("Scénario", "Scenario")],
@@ -2934,8 +2938,12 @@ with tab_forecast:
 # ==============================================================================
 with tab_forecast:
     st.markdown("---")
-    st.markdown("#### " + _L("4. Permis de construire → vos ventes (driver amont hors modèle)",
-                             "4. Building permits → your sales (upstream driver outside the model)"))
+    # Renumérotée en 5 : le panneau de scénarios est passé de 3 à 4 quand « 2 bis » est
+    # devenu 3, et deux sections portaient le numéro 4. « driver amont hors modèle » est
+    # remplacé par ce que la parenthèse voulait dire — les permis n'entrent pas dans le
+    # modèle de transactions, ils sont mesurés à part contre les ventes importées.
+    st.markdown("#### " + _L("5. Permis de construire → vos ventes (mesuré à part du modèle)",
+                             "5. Building permits → your sales (measured outside the model)"))
     st.write(_L(
         "L'étage 2 du modèle explique les transactions par le taux, les intentions d'achat et "
         "le chômage — SIT@DEL n'y figure pas. Or, pour une activité de second-œuvre, un permis "
