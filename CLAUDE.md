@@ -1228,6 +1228,35 @@ annonçait, sans avoir vu la suite » plutôt que « Prévision hors échantillo
 légende a été ajoutée au graphique de la section 3, qui portait quatre objets (observé,
 projection, bande, repère FNAIM) sans en nommer aucun.
 
+**Deux exercices différents étaient présentés comme un seul (2026-08-29).** Les cartes de
+tête de la section 2 annonçaient « 72 % de bon sens **sur 204 mois déjà échus** », posées
+juste au-dessus d'un graphique qui couvre **2022-2026**. Un lecteur cherche forcément les
+204 mois dans la courbe, et ne les trouve pas — parce qu'ils n'y sont pas :
+
+| | source | étendue |
+|---|---|---|
+| les trois cartes | l'**archive** : le modèle réajusté chaque mois depuis 2009, confronté à ce qui a suivi | ~204 prévisions à 6 mois échues |
+| le graphique | **un seul** ajustement, arrêté au découpage, prolongé ensuite | 52 mois (2022-2026) |
+
+Les deux sont légitimes et complémentaires — l'un juge, l'autre illustre — mais rien ne les
+distinguait. Les sous-titres des cartes nomment désormais leur source (« rejouées chaque
+mois depuis 2009 — pas sur le graphique ci-dessous ») et le graphique porte un titre qui
+annonce ce qu'il est. **Règle générale : quand deux mesures voisines n'ont pas la même
+étendue, chacune doit dire la sienne — sinon la plus grande est lue comme une propriété de
+la plus petite.**
+
+**La carte des décalages ne rappelait pas la formule.** « 10 / 2 / 0 mois » ne veut rien
+dire seul. Elle porte maintenant la phrase construite depuis `T.lags` : « ventes(mois M)
+expliquées par le taux de M−10, les intentions d'achat de M−2 et le chômage de M (sans
+décalage) ». Le cas `kc = 0` est écrit en toutes lettres — c'est lui qui fait qu'aucun mois
+projeté n'est jamais « sans hypothèse », et un « 0 » nu ne le laisse pas deviner.
+
+**« Huit épisodes » subsistait DEUX FOIS sur la page**, alors que le décompte avait été
+corrigé dans `CLAUDE.md` et dans la docstring de `_by_episode` — l'archive en publie sept.
+Le nombre a été retiré au profit de « depuis 2009 », qui est une constante
+(`BACKFILL_START`) et ne dérivera pas. **Corriger un chiffre dans la doc ne le corrige pas
+sur le site : `grep` la valeur dans `web/observable/src/` aussi.**
+
 **Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
 entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
 d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,

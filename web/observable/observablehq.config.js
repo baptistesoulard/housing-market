@@ -231,7 +231,11 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-scroller { overflow-x: auto; }
 .hm-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
 .hm-chart-title { font-weight: 600; margin: 1rem 0 0; }
-.hm-chart-title .sub { color: var(--hm-subtle); font-weight: 400; }
+/* Le sous-titre passe en BLOC : la classe existait sans aucun utilisateur, et son .sub
+   inline collait un sous-titre d'une ligne et demie derrière le titre. Même forme que
+   .hm-panel-sub, qui est un élément séparé. */
+.hm-chart-title .sub { display: block; color: var(--hm-subtle); font-weight: 400;
+  font-size: 0.875rem; line-height: 1.5; margin-top: 0.15rem; }
 /* --- Export CSV au survol d'un graphique -------------------------------------------
    Le bouton reste invisible tant qu'on n'a pas amené le pointeur (ou le focus clavier)
    sur le graphique : un site de lecture n'a pas à afficher des commandes en permanence.

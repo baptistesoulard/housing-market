@@ -475,21 +475,41 @@ if (R) display(html`<p>Sans délai, le modèle expliquait <b>83,8 %</b> de la va
 // l'explication qui va avec.
 //
 // À la place : les deux mesures issues de l'archive, c'est-à-dire de prévisions
-// réellement confrontées au réel sur 210 millésimes et huit épisodes de marché.
+// réellement confrontées au réel, rejouées chaque mois depuis 2009.
+//
+// ATTENTION — ces cartes et le graphique plus bas mesurent DEUX EXERCICES DIFFÉRENTS, et
+// rien ne le disait. Les cartes viennent de l'archive : le modèle est réajusté à chaque
+// mois depuis 2009 et confronté à ce qui a suivi, d'où les ~200 prévisions déjà échues.
+// Le graphique, lui, montre UN seul ajustement (arrêté au découpage) prolongé sur les
+// années suivantes — quatre ans de courbe. Un lecteur qui voit « 204 » au-dessus d'un
+// graphique qui couvre 2022-2026 cherche forcément 204 mois dedans, et ne les trouve pas.
+//
+// La FORMULE est rappelée sous les décalages : trois nombres « 10 / 2 / 0 » ne veulent
+// rien dire sans elle, et le 0 du chômage mérite d'être lu — c'est lui qui fait qu'aucun
+// mois projeté n'est jamais « sans hypothèse ».
+const LAGS_CARD = (T) => ({
+  label: "Décalages retenus (taux / intentions / chômage)",
+  value: `${T.lags.kr} / ${T.lags.ki} / ${T.lags.kc} mois`,
+  subs: [`ventes(mois M) expliquées par le taux de M−${T.lags.kr}, `
+         + `les intentions d'achat de M−${T.lags.ki} et le chômage de `
+         + (T.lags.kc ? `M−${T.lags.kc}` : "M (sans décalage)"),
+         "chaque décalage est cherché, pas supposé — voir la section suivante"],
+});
+
 if (V && V.reliability) display(cardGrid([
   {label: `Sens du marché annoncé juste (${V.reliability.horizon} mois)`,
    value: nf0.format(V.reliability.direction * 100) + " %",
-   subs: [`sur ${nf0.format(V.reliability.n)} mois déjà échus`]},
+   subs: [`sur ${nf0.format(V.reliability.n)} prévisions à ${V.reliability.horizon} mois déjà échues`,
+          "rejouées chaque mois depuis 2009 — pas sur le graphique ci-dessous"]},
   {label: `Erreur moyenne à ${V.reliability.horizon} mois`,
    value: nf1.format(V.reliability.mape) + " %",
-   subs: [`une prévision naïve se trompe de ${nf1.format(V.reliability.naive_mape)} %`]},
-  {label: "Décalages (taux / intentions / chômage)",
-   value: `${T.lags.kr} / ${T.lags.ki} / ${T.lags.kc} mois`}
+   subs: [`une prévision naïve se trompe de ${nf1.format(V.reliability.naive_mape)} %`,
+          "même source : l'archive des prévisions passées"]},
+  LAGS_CARD(T)
 ], kpiCard));
 else if (T) display(cardGrid([
   {label: "Erreur moyenne sur des données non vues", value: nf1.format(T.backtest.mape) + " %"},
-  {label: "Décalages (taux / intentions / chômage)",
-   value: `${T.lags.kr} / ${T.lags.ki} / ${T.lags.kc} mois`}
+  LAGS_CARD(T)
 ], kpiCard));
 ```
 
@@ -512,6 +532,14 @@ if (T) display(html`<p>Le R² de ce modèle vaut <b>${pct(T.r2)}</b>, et ce chif
 </details>
 
 ```js
+// Un titre au-dessus du graphique, parce que les cartes juste au-dessus parlent d'un
+// AUTRE exercice (l'archive, ~200 prévisions depuis 2009). Sans ce rappel, le « 204 »
+// des cartes se lit comme une propriété de cette courbe-ci, qui n'en couvre que quatre ans.
+if (T) display(html`<div class="hm-chart-title">Une illustration sur une seule fenêtre
+  <span class="sub">un ajustement arrêté en ${fmtMonthFR(new Date(T.backtest.split))},
+  prolongé sur les ${T.backtest.n_test} mois suivants — à ne pas confondre avec l'archive
+  des cartes ci-dessus</span></div>`);
+
 // Deux courbes sans légende, et une courbe bleue qui démarrait en plein graphique sans
 // que rien ne dise pourquoi : impossible de voir que tout ce qui est à DROITE du trait a
 // été produit sans avoir vu la suite. C'est aussi ce qui faisait chercher le futur ici —
@@ -548,7 +576,8 @@ if (T) display(html`<div class="hm-caption">
   ne montre pas : la fenêtre de test commence en
   ${fmtMonthFR(new Date(T.backtest.split))} et couvre donc surtout le choc de taux,
   c'est-à-dire l'épisode qu'un modèle piloté par les taux réussit le mieux. Les cartes
-  ci-dessus donnent la mesure honnête — celle de l'archive, sur huit épisodes de marché.
+  ci-dessus donnent la mesure honnête — celle de l'archive, sur tous les épisodes de
+  marché depuis 2009.
 </div>`);
 ```
 
