@@ -839,6 +839,14 @@ if (T && T.coefficients) display(html`<div class="hm-formula">
     × intentions d'achat(<i>t</i> − ${T.lags.ki} mois)
   ${T.coefficients.unemployment < 0 ? "−" : "+"} ${nf0.format(Math.abs(T.coefficients.unemployment))}
     × taux de chômage(<i>t</i>${T.lags.kc ? ` − ${T.lags.kc} mois` : ""})
+  ${T.fit ? html`<div class="hm-caption" style="margin-top:0.5rem">
+    Ajustée sur <b>${T.fit.n} mois</b>, de ${fmtMonthFR(new Date(T.fit.start))} à
+    ${fmtMonthFR(new Date(T.fit.end))}. Chaque coefficient est donné avec son incertitude
+    à un écart-type, corrigée de l'autocorrélation des résidus (Newey-West,
+    ${T.fit.nw_lags} mois) : ${["rate", "intentions", "unemployment"].map((k, i) => html`${
+      i ? ", " : ""}${["taux", "intentions", "chômage"][i]} ±
+      ${nf0.format(T.fit.se_nw[k])}`)}.
+  </div>` : ""}
   <div class="hm-caption" style="margin-top:0.5rem">
     Chaque coefficient se lit tel quel, en ventes annuelles : un point de taux de crédit en
     plus coûte <b>${nf0.format(Math.abs(T.coefficients.rate))}</b> ventes,
@@ -873,6 +881,43 @@ if (T) display(html`<p>Le R² de ce modèle vaut <b>${pct(T.r2)}</b>, et ce chif
   rejouée sur les données du moment, puis confrontée à ce qui s'est passé. C'est ce que
   mesurent les deux cartes ci-dessus, et c'est le sujet entier de la page
   <a href="/previsions-passees">Prévisions passées</a>.</p>`);
+```
+
+```js
+// LES RÉSIDUS, MONTRÉS. Le paragraphe ci-dessus dit depuis longtemps qu'ils « ne sont pas
+// du bruit, ce sont des vagues » — sans jamais les tracer. C'est pourtant le premier
+// graphique qu'un analyste veut voir, et le seul qui rende l'aveu vérifiable.
+if (T && T.fit && T.fit.residuals && T.fit.residuals.length) {
+  display(html`<div class="hm-chart-title">Résidus de l'ajustement
+    <span class="sub">observé moins ajusté, en ventes sur 12 mois. Un modèle sain donnerait
+    un nuage sans forme autour de zéro ; celui-ci dessine des vagues de plusieurs années —
+    c'est exactement ce que mesure l'autocorrélation de 0,88.</span></div>`);
+  display(multiLine({
+    rows: T.fit.residuals.map((d) => ({date: d.date, value: d.resid, series: "Résidu"})),
+    meta: [{name: "Résidu", color: series.brick}],
+    yLabel: "Écart (ventes sur 12 mois)", baseline: 0, lastLabels: false,
+    valueFmt: (v) => nf0.format(v), height: 200, width,
+    filename: "previsions-residus-etage-2"
+  }));
+}
+```
+
+```js
+// Le rapport entre les deux jeux d'écarts-types EST le résultat : la correction les
+// multiplie par deux à trois. Publier l'un sans l'autre laisserait croire le modèle plus
+// précis qu'il n'est — ou, si l'on ne publiait que le corrigé, cacherait l'ampleur de la
+// correction.
+const RATIOS_SE = T && T.fit
+  ? Object.keys(T.fit.se_nw).map((k) => T.fit.se_nw[k] / T.fit.se_ols[k]) : [];
+if (T && T.fit && RATIOS_SE.length) display(html`<p>Conséquence sur l'incertitude des
+  coefficients : corriger l'autocorrélation <b>multiplie les écarts-types par
+  ${nf1.format(Math.min(...RATIOS_SE))} à ${nf1.format(Math.max(...RATIOS_SE))}</b>
+  selon le coefficient.
+  Les trois restent nettement distinguables de zéro après correction — le lien existe —
+  mais toute lecture de précision fondée sur les écarts-types ordinaires serait fausse d'un
+  facteur trois. Et même corrigés, ils restent une <b>borne basse</b> : sur deux séries
+  tendancielles régressées en niveau, aucune correction d'écart-type ne dit si une part du
+  lien est fortuite. Seul le backtest le dit.</p>`);
 ```
 
 </details>

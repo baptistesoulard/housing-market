@@ -183,12 +183,31 @@ def transactions_model() -> dict:
     s = _load()
     tm, bt = s["tx"], s["tx"]["backtest"]
     b = [float(x) for x in tm["beta"]]
+    # PROVENANCE et INCERTITUDE de l'équation. Elle était publiée en coefficients nus :
+    # ni la période d'ajustement, ni le nombre d'observations, ni le moindre écart-type —
+    # donc présentée comme un fait alors que c'est une estimation. Les deux jeux
+    # d'écarts-types sont renvoyés parce que leur ÉCART est l'information (voir
+    # `forecast.ols_se`) : la correction d'autocorrélation les multiplie par 2 à 3.
+    d = fc._design(fc._macro_indexed(s["macro"]), s["tx12"], **s["lags"])
+    se = fc.ols_se(d[["rate", "intent", "chom"]].values, d["tx12"].values, tm["beta"])
+    keys = ["intercept", "rate", "intentions", "unemployment"]
     return {
         "r2": _num(tm["r2"]),
         "rmse": _num(tm["rmse"]),
         "lags": {k: int(v) for k, v in s["lags"].items()},
         "coefficients": {"intercept": b[0], "rate": b[1], "intentions": b[2],
                          "unemployment": b[3]},
+        "fit": {
+            "n": int(len(d)),
+            "start": _iso(d.index[0]),
+            "end": _iso(d.index[-1]),
+            "se_ols": {k: _num(v) for k, v in zip(keys, se["ols"])},
+            "se_nw": {k: _num(v) for k, v in zip(keys, se["nw"])},
+            "nw_lags": se["nw_lags"],
+            "residuals": _series(
+                tm["frame"].assign(resid=tm["frame"]["obs"] - tm["frame"]["fit"]),
+                "Date", {"resid": "resid"}),
+        },
         "backtest": {
             "split": bt["split"],
             "n_test": int(bt["n_test"]),

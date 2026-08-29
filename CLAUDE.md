@@ -1352,6 +1352,31 @@ interpolation depuis le JSON et donc INVISIBLE aux robots, ce repli-ci est du **
 statique** : son contenu reste dans le HTML livré (vérifié). Aucun texte indexé n'est perdu
 — c'est la bonne façon de raccourcir un chapeau.
 
+**L'équation est publiée comme une ESTIMATION, plus comme un fait (2026-08-29).** Elle
+sortait en coefficients nus : ni période d'ajustement, ni nombre d'observations, ni le
+moindre écart-type — sur une page qui admettait par ailleurs que ses résidus sont
+autocorrélés à 0,88. Trois manques comblés :
+
+* **Provenance** : « ajustée sur 270 mois, de novembre 2003 à avril 2026 ». Elle n'était
+  visible nulle part dans le HTML livré (vérifié : ni « 2003 », ni « 270 »).
+* **Incertitude, en DEUX jeux.** `forecast.ols_se` renvoie les écarts-types OLS *et* ceux
+  corrigés de l'autocorrélation (Newey-West, noyau de Bartlett). Leur écart EST le
+  résultat : la correction les **multiplie par 2,2 à 3,2**. Les trois coefficients restent
+  nettement distinguables de zéro (|t| de 4,5 à 11,8) — le lien existe — mais toute lecture
+  de précision fondée sur les écarts-types ordinaires serait fausse d'un facteur trois.
+  `NW_LAGS = 12` et non la règle usuelle (≈ 4 ici) : celle-ci est calibrée pour des résidus
+  faiblement dépendants, ce qui est exactement ce que ce modèle n'a pas. Le choix est DIT
+  sur la page.
+* **Les résidus sont MONTRÉS.** Le repli « pourquoi le R² n'est pas en tête » affirmait
+  depuis longtemps qu'ils « ne sont pas du bruit, ce sont des vagues » sans jamais les
+  tracer. C'est le premier graphique qu'un analyste veut voir, et le seul qui rende l'aveu
+  vérifiable.
+
+⚠️ **Même corrigés, ces écarts-types restent une BORNE BASSE**, et la page le dit : sur deux
+séries tendancielles régressées en niveau, une part du lien peut être fortuite et aucune
+correction d'écart-type ne répare ça. C'est le backtest qui tranche. Ne jamais présenter les
+Newey-West comme la mesure finale de l'incertitude de ce modèle.
+
 **Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
 entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
 d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,

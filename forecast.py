@@ -32,6 +32,53 @@ def ols(X, y):
     return beta, r2, rmse, pred
 
 
+#: Fenêtre de la correction de Newey-West. Avec une autocorrélation des résidus de 0,88 au
+#: premier retard, la règle usuelle (≈ 4 sur 270 points) sous-corrige massivement : elle est
+#: calibrée pour des résidus faiblement dépendants. Douze mois — un cycle annuel complet —
+#: est le choix conservateur, et il est DIT sur la page plutôt que caché.
+NW_LAGS = 12
+
+
+def ols_se(X, y, beta, nw_lags=NW_LAGS):
+    """Écarts-types des coefficients : naïfs (OLS) ET corrigés de l'autocorrélation.
+
+    Publier une équation sans incertitude, c'est la présenter comme un fait alors que c'est
+    une estimation. Les deux sont renvoyés à dessein, parce que leur ÉCART est
+    l'information : les écarts-types OLS supposent des résidus indépendants, hypothèse que
+    ce modèle viole ouvertement (autocorrélation 0,88, Durbin-Watson 0,24). Montrer les
+    deux dit d'un coup l'ampleur du problème.
+
+    Correction de Newey-West (HAC, noyau de Bartlett) : sandwich A⁻¹ S A⁻¹ avec
+    A = X'X et S = Σ u²xx' + Σ_j w_j Σ (u_t u_{t−j})(x_t x'_{t−j} + x_{t−j} x'_t),
+    w_j = 1 − j/(L+1).
+
+    ⚠️ Même corrigés, ces écarts-types restent une BORNE BASSE de l'incertitude réelle :
+    sur deux séries tendancielles régressées en niveau, une part du lien peut être fortuite,
+    et aucune correction d'écart-type ne répare ça. C'est le backtest qui tranche, pas eux.
+
+    Renvoie {"ols": [...], "nw": [...], "nw_lags": L}, intercept en premier.
+    """
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    X1 = np.column_stack([np.ones(len(X)), X])
+    n, k = X1.shape
+    u = y - X1 @ np.asarray(beta, dtype=float)
+    A_inv = np.linalg.pinv(X1.T @ X1)
+
+    sigma2 = float((u ** 2).sum()) / max(n - k, 1)
+    se_ols = np.sqrt(np.diag(A_inv * sigma2))
+
+    S = (X1 * (u ** 2)[:, None]).T @ X1
+    for j in range(1, min(int(nw_lags), n - 1) + 1):
+        w = 1.0 - j / (nw_lags + 1.0)
+        Xt, Xl, ut, ul = X1[j:], X1[:-j], u[j:], u[:-j]
+        G = (Xt * (ut * ul)[:, None]).T @ Xl
+        S = S + w * (G + G.T)
+    se_nw = np.sqrt(np.abs(np.diag(A_inv @ S @ A_inv)))
+    return {"ols": [float(x) for x in se_ols], "nw": [float(x) for x in se_nw],
+            "nw_lags": int(nw_lags)}
+
+
 def build_target(df_ventes_ancien):
     """12-month rolling sum of national existing-home transactions (IGEDD), indexed by
     Date. Reproduces the published 'ventes sur un an' series.
