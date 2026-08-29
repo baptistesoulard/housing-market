@@ -1375,6 +1375,57 @@ verdict, et la page l'affiche.
 dans le `<style>` d'une seule page se casse en silence le jour où une seconde l'emploie :
 elle rend sans style, et le build ne dit rien.
 
+**La fiabilité est désormais publiée CONDITIONNELLE AU RÉGIME DE TAUX (2026-08-29).**
+C'est la suite directe de la mesure sur la fenêtre d'entraînement. La page publiait deux
+ventilations de sa performance — par horizon, par épisode — et les deux décrivent le passé.
+Aucune ne disait ce que vaut le chiffre qu'on lit AUJOURD'HUI.
+
+Or la performance dépend massivement d'une seule chose : le taux de crédit bouge-t-il ?
+Corrélation de rang entre l'erreur évitée et l'amplitude du mouvement de taux sur douze
+mois, sur 209 millésimes : **+0,52**. Par tercile, en agrégeant les erreurs :
+
+| régime | erreur modèle | erreur naïve | erreur évitée | sens juste à 6 mois |
+|---|---|---|---|---|
+| taux quasi stables | 6,38 % | 5,96 % | **−6,9 %** | **55,2 %** |
+| mouvement modéré | 5,53 % | 6,52 % | +15,2 % | 62,3 % |
+| fort mouvement | 6,00 % | 11,32 % | **+47,0 %** | **97,1 %** |
+| *toutes conditions (ce qui était seul publié)* | 5,97 % | 7,96 % | +25,0 % | 71,6 % |
+
+Le « 72 % de bon sens » affiché à côté du verdict est la moyenne de deux mondes — exacte,
+et trompeuse dans les deux sens. `_regime_reliability` publie donc le régime courant et la
+fiabilité mesurée dans ce régime, avec un avertissement quand l'avantage est faible.
+
+Trois points de méthode à tenir :
+
+* **Ce n'est pas un réglage.** Le mécanisme était posé AVANT la mesure — l'étage 2 n'a
+  qu'un canal, le coût du crédit — et la relation est monotone sur trois terciles de
+  ~1 200 points chacun.
+* **Agréger les erreurs, jamais moyenner des ratios.** Le premier calcul de cette mesure
+  moyennait des skills par millésime et rendait **−110 %** : en régime calme la référence
+  naïve est minuscule, donc chaque ratio explose. Le chiffre juste est −6,9 %.
+* **Publier le CENTILE à côté du libellé.** Au moment de la mise en place, le mouvement
+  courant (0,15 pt) tombait à **0,02 point** de la borne calme/intermédiaire. Une étiquette
+  seule cacherait cette fragilité.
+
+**Et le correctif qui semblait en découler a été mesuré puis REJETÉ.** Si le modèle perd en
+régime calme et écrase en régime agité, mélanger les deux prévisions selon le régime devrait
+battre les deux. Testé hors échantillon (bornes de tercile recalculées en expansion, donc
+jamais choisies sur les données qui les jugent), 161 millésimes, 2 745 points :
+
+| | 1-3 | 4-6 | 7-12 | 13-18 | **7-18 (zone utile)** | sens juste |
+|---|---|---|---|---|---|---|
+| seuil franc | +23,9 % | +8,5 % | −2,1 % | −12,7 % | **−8,0 %** | **45,8 %** |
+| poids continu | +37,2 % | +20,1 % | +7,7 % | −9,3 % | **−1,8 %** | 72,7 % |
+
+Le poids continu franchit 3 plages sur 4 — donc la lettre de la porte — mais **uniquement
+sur 1 à 6 mois, la zone où le site dit déjà de s'en tenir au dernier chiffre connu**. Au-delà
+de six mois il fait moins bien, et sa dégradation **s'aggrave avec le temps** : +7,4 % sur
+les millésimes 2013-16, −6,3 % sur 2017-20, **−23,0 % sur 2021-25**. Une relation qui
+s'inverse ainsi n'en est pas une. Le seuil franc, lui, effondre le sens du marché annoncé
+(45,8 % contre 73,3 %) : en régime calme il recopie la naïve, qui par construction n'annonce
+aucun sens. **Même leçon que le candidat BLS : un gain concentré là où le modèle n'est pas
+consulté n'est pas un gain.** Publié dans `REFUTATIONS`, ne pas re-tester sans raison neuve.
+
 **Les hypothèses écartées sont PUBLIÉES, dans `REFUTATIONS`.** La page de prévision porte
 une section « Ce qu'on a essayé, et qui ne marche pas » qui liste les trois idées plausibles
 mesurées puis refusées : la demande de crédit BLS, les anticipations de taux du marché, et

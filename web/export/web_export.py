@@ -1592,6 +1592,27 @@ def _transformation(con) -> dict:
 #: échantillon sur au moins 3 des 4 plages d'horizon (1-3, 4-6, 7-12 et 13-18 mois).
 REFUTATIONS = [
     {
+        "titre": "Basculer vers la prévision naïve quand les taux sont calmes",
+        "idee": ("Ce modèle n'a qu'un moteur, le coût du crédit, et sa performance en "
+                 "dépend : mesuré sur 209 millésimes, il évite 47 % de l'erreur naïve "
+                 "quand les taux bougent fort et en perd 7 % quand ils sont stables. "
+                 "Puisqu'on sait reconnaître le régime, autant mélanger les deux "
+                 "prévisions en donnant plus de poids à la naïve quand les taux dorment."),
+        "mesure": "−1,8 % d'erreur ÉVITÉE au-delà de 6 mois — la zone où le modèle sert",
+        "lecon": ("Le mélange progressif franchit bien 3 plages d'horizon sur 4, mais "
+                  "uniquement sur 1 à 6 mois : la zone où le site dit déjà de s'en tenir "
+                  "au dernier chiffre connu. Au-delà de six mois, là où l'on consulte "
+                  "vraiment le modèle, il fait 1,8 % de MOINS bien — et sa dégradation "
+                  "s'aggrave avec le temps : +7 % sur les millésimes 2013-16, −6 % sur "
+                  "2017-20, −23 % sur 2021-25. Une relation qui s'inverse ainsi n'en est "
+                  "pas une. La variante à seuil franc, elle, effondre en plus le sens du "
+                  "marché annoncé, de 73 % à 46 % : en régime calme elle recopie la "
+                  "naïve, donc n'annonce plus aucun sens. Ce que la mesure justifie n'est "
+                  "pas de corriger la prévision, c'est de DIRE dans quel régime elle est "
+                  "publiée — ce que fait désormais l'encart en tête de page."),
+        "mesure_le": "2026-08-29",
+    },
+    {
         "titre": "Ajouter ce que les banques disent de la demande de crédit",
         "idee": ("Chaque trimestre, les banques déclarent à la Banque de France si la "
                  "demande de prêts au logement monte ou baisse. Cette enquête paraît AVANT "
@@ -1713,6 +1734,7 @@ def build_previsions(con, frames: dict) -> dict:
         _hb = _horizon_blocks(con)
         payload["horizon_blocks"] = _hb["blocks"]
         payload["crossover_horizon"] = _hb["crossover"]
+        payload["regime"] = _regime_reliability(con)
     payload["refutations"] = REFUTATIONS
     payload["benchmark_taux"] = BENCHMARK_TAUX
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
@@ -1827,6 +1849,94 @@ def _horizon_blocks(con) -> list:
     crossover = next((int(r["horizon"]) for _, r in rows.sort_values("horizon").iterrows()
                       if r["skill"] is not None and float(r["skill"]) > 0), None)
     return {"blocks": out, "crossover": crossover}
+
+
+#: Fenêtre sur laquelle on mesure si le taux de crédit BOUGE. Douze mois : c'est l'échelle
+#: à laquelle la transmission du taux au marché se joue (le décalage estimé vaut 10 mois),
+#: et c'est aussi la fenêtre du cumul que le modèle prédit.
+_REGIME_WINDOW_M = 12
+_REGIME_LABELS = {"calme": "taux quasi stables", "inter": "taux en mouvement modéré",
+                  "agite": "taux en fort mouvement"}
+
+
+def _regime_reliability(con, horizon: int = _VERDICT_HORIZON) -> dict | None:
+    """Fiabilité du modèle DANS LE RÉGIME DE TAUX COURANT — la ventilation qui manquait.
+
+    La page publie deux ventilations de sa performance : par horizon et par épisode. Les
+    deux décrivent le passé. Aucune ne dit ce que vaut le chiffre qu'on lit AUJOURD'HUI.
+
+    Or la performance du modèle dépend massivement d'une seule chose : le taux de crédit
+    bouge-t-il ? Mesuré sur 209 millésimes, corrélation de rang entre l'erreur évitée et
+    l'amplitude du mouvement du taux sur douze mois : **+0,52**. Découpé en terciles, le
+    modèle passe de −6,9 % d'erreur évitée (taux quasi stables) à +47,0 % (fort mouvement),
+    et son taux de bon sens à six mois de 55 % à 97 %. Le « 72 % » affiché à côté du verdict
+    est une moyenne de ces deux mondes — exacte, et trompeuse dans les deux sens.
+
+    Ce n'est pas un réglage : le mécanisme était posé avant la mesure (l'étage 2 n'a qu'un
+    canal, le coût du crédit) et la relation est monotone sur trois terciles de ~1 200
+    points chacun.
+
+    Le `percentile` est publié à CÔTÉ du libellé, et ce n'est pas décoratif : à la dernière
+    mesure le mouvement courant tombait à 0,02 point de la borne calme/intermédiaire. Une
+    étiquette seule cacherait cette fragilité ; le centile la montre.
+    """
+    pts = q.macro_series(con, "Credit_Logement_Taux_Interet")
+    if not pts:
+        return None
+    taux = pd.Series({pd.Timestamp(p["date"]): p["value"] for p in pts}).sort_index()
+    if len(taux) < _REGIME_WINDOW_M + 1:
+        return None
+
+    def _mouvement(d):
+        av = taux.index[taux.index <= d - pd.DateOffset(months=_REGIME_WINDOW_M)]
+        return None if len(av) == 0 else abs(float(taux.asof(d)) - float(taux.loc[av[-1]]))
+
+    ev = fa.evaluate(fa.read().query("kind == 'retro'"), q.transactions_run_rate(con))
+    if ev.empty:
+        return None
+    ev = ev.copy()
+    ev["_v"] = pd.to_datetime(ev["data_vintage"])
+    ev["_mv"] = ev["_v"].map(_mouvement)
+    ev = ev.dropna(subset=["_mv"])
+    if ev.empty:
+        return None
+
+    par_millesime = ev.groupby("_v")["_mv"].first()
+    t1, t2 = par_millesime.quantile([1 / 3, 2 / 3])
+    now = _mouvement(taux.index[-1])
+    if now is None:
+        return None
+    kind = "calme" if now <= t1 else ("inter" if now <= t2 else "agite")
+
+    sel = ev[ev["_mv"] <= t1] if kind == "calme" else (
+        ev[ev["_mv"] > t2] if kind == "agite" else ev[(ev["_mv"] > t1) & (ev["_mv"] <= t2)])
+    if sel.empty:
+        return None
+    # Erreurs AGRÉGÉES, jamais une moyenne de ratios : quand la référence naïve est
+    # minuscule (ce qui arrive précisément en régime calme), un ratio par point explose et
+    # sa moyenne devient ininterprétable — le premier calcul de cette mesure rendait
+    # −110 % pour cette raison.
+    mape, naive = float(sel["ape"].mean()), float(sel["naive_ape"].mean())
+    hit = (np.sign(sel["predicted"] - sel["naive"])
+           == np.sign(sel["realized"] - sel["naive"])).astype(float)
+    h = sel[sel["horizon"] == horizon]
+    hit_h = (np.sign(h["predicted"] - h["naive"])
+             == np.sign(h["realized"] - h["naive"])).astype(float) if not h.empty else None
+    return {
+        "kind": kind,
+        "label": _REGIME_LABELS[kind],
+        "mouvement_pt": round(float(now), 2),
+        "percentile": round(float((par_millesime <= now).mean()) * 100),
+        "fenetre_mois": _REGIME_WINDOW_M,
+        "n": int(len(sel)),
+        "mape": round(mape, 2),
+        "naive_mape": round(naive, 2),
+        "skill_pct": round((1 - mape / naive) * 100, 1) if naive else None,
+        "direction": round(float(hit.mean()), 3),
+        "direction_horizon": (None if hit_h is None or hit_h.empty
+                              else round(float(hit_h.mean()), 3)),
+        "horizon": horizon,
+    }
 
 
 def _shared_verdict(con):

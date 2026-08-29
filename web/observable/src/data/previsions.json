@@ -9566,7 +9566,28 @@
     }
   ],
   "crossover_horizon": 6,
+  "regime": {
+    "kind": "calme",
+    "label": "taux quasi stables",
+    "mouvement_pt": 0.15,
+    "percentile": 32,
+    "fenetre_mois": 12,
+    "n": 1162,
+    "mape": 6.47,
+    "naive_mape": 6.05,
+    "skill_pct": -7.0,
+    "direction": 0.552,
+    "direction_horizon": 0.554,
+    "horizon": 6
+  },
   "refutations": [
+    {
+      "titre": "Basculer vers la prévision naïve quand les taux sont calmes",
+      "idee": "Ce modèle n'a qu'un moteur, le coût du crédit, et sa performance en dépend : mesuré sur 209 millésimes, il évite 47 % de l'erreur naïve quand les taux bougent fort et en perd 7 % quand ils sont stables. Puisqu'on sait reconnaître le régime, autant mélanger les deux prévisions en donnant plus de poids à la naïve quand les taux dorment.",
+      "mesure": "−1,8 % d'erreur ÉVITÉE au-delà de 6 mois — la zone où le modèle sert",
+      "lecon": "Le mélange progressif franchit bien 3 plages d'horizon sur 4, mais uniquement sur 1 à 6 mois : la zone où le site dit déjà de s'en tenir au dernier chiffre connu. Au-delà de six mois, là où l'on consulte vraiment le modèle, il fait 1,8 % de MOINS bien — et sa dégradation s'aggrave avec le temps : +7 % sur les millésimes 2013-16, −6 % sur 2017-20, −23 % sur 2021-25. Une relation qui s'inverse ainsi n'en est pas une. La variante à seuil franc, elle, effondre en plus le sens du marché annoncé, de 73 % à 46 % : en régime calme elle recopie la naïve, donc n'annonce plus aucun sens. Ce que la mesure justifie n'est pas de corriger la prévision, c'est de DIRE dans quel régime elle est publiée — ce que fait désormais l'encart en tête de page.",
+      "mesure_le": "2026-08-29"
+    },
     {
       "titre": "Ajouter ce que les banques disent de la demande de crédit",
       "idee": "Chaque trimestre, les banques déclarent à la Banque de France si la demande de prêts au logement monte ou baisse. Cette enquête paraît AVANT les chiffres de transactions : elle devrait donc les annoncer.",

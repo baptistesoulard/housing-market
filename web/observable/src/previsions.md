@@ -24,6 +24,7 @@ const T = data.available ? data.transactions : null;
 const P = data.available ? data.projection : null;
 const V = data.available ? data.verdict : null;
 const B = data.available ? data.benchmark : null;
+const RG = data.available ? (data.regime ?? null) : null;
 const B2 = data.available ? data.benchmark_taux : null;
 const pct = (v) => nf1.format(v * 100) + " %";
 ```
@@ -129,6 +130,47 @@ if (V) display(html`<div class="hm-takeaways">
       modèle s'est trompé.</li>
   </ul>
 </div>`);
+```
+
+```js
+// LE RÉGIME COURANT — la ventilation qui manquait, et la seule qui porte sur AUJOURD'HUI.
+//
+// La page publie déjà sa performance par horizon et par épisode : deux descriptions du
+// passé. Aucune ne dit ce que vaut le chiffre qu'on est en train de lire. Or la
+// performance du modèle dépend massivement d'une chose — le taux de crédit bouge-t-il ? —
+// et le « 72 % de bon sens » affiché à côté du verdict est la moyenne de deux mondes :
+// 97 % quand les taux bougent fort, 55 % quand ils sont calmes.
+//
+// Affiché en `hm-note` et non en `hm-takeaways` : c'est un avertissement sur le chiffre
+// du dessus, pas un second verdict. Le ton suit le régime — inutile d'alarmer quand le
+// modèle est dans sa zone de confort.
+if (RG && V) {
+  const faible = RG.skill_pct !== null && RG.skill_pct < 5;
+  const dir = RG.direction_horizon ?? RG.direction;
+  display(html`<div class="hm-note">
+    <p><strong>Dans quel régime cette prévision est-elle publiée ?</strong>
+    Le taux de crédit a bougé de <b>${RG.mouvement_pt.toLocaleString("fr-FR",
+      {minimumFractionDigits: 2, maximumFractionDigits: 2})} point</b> sur
+    ${RG.fenetre_mois} mois — ${RG.label}, au ${RG.percentile}<sup>e</sup> centile des
+    millésimes archivés.</p>
+    <p>Le modèle n'a qu'un moteur, le coût du crédit, et sa valeur en dépend
+    entièrement. Dans des conditions comparables, sur ${nf0.format(RG.n)} points archivés,
+    il a annoncé le bon sens <strong>${nf0.format(dir * 100)} %</strong> du temps et fait
+    ${RG.skill_pct >= 0
+      ? html`<strong>${nf1.format(RG.skill_pct)} % de mieux</strong>`
+      : html`<strong>${nf1.format(Math.abs(RG.skill_pct))} % de moins bien</strong>`}
+    qu'une simple prolongation du dernier chiffre — contre
+    ${V.reliability ? html`${nf0.format(V.reliability.direction * 100)} %` : "—"} toutes
+    conditions confondues.
+    ${faible
+      ? html`<b>La projection ci-dessus est donc à prendre avec prudence : le régime
+             actuel est celui où ce modèle a historiquement le moins d'avantage.</b>`
+      : html`Le régime actuel est favorable à ce modèle.`}</p>
+    <p class="hm-caption">Régimes définis par terciles de l'amplitude du mouvement de taux
+    sur ${RG.fenetre_mois} mois, mesurés sur les millésimes archivés. Le centile est donné
+    à côté du libellé parce qu'un régime peut être proche d'une frontière.</p>
+  </div>`);
+}
 ```
 
 ```js
