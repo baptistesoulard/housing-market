@@ -2450,7 +2450,7 @@ with tab_neuf:
 
 
 # ==============================================================================
-# TAB 4: PRÉVISION & SCÉNARIOS (nowcast transactions + backtest + scénarios)
+# TAB 4: PRÉVISION & SCÉNARIOS (modèle de transactions + backtest + scénarios)
 # ==============================================================================
 # Train/test split for the transactions model: the lag search AND the backtest train use
 # data ≤ this date, so the out-of-sample MAPE is measured on a period the lags never saw.
@@ -2538,9 +2538,9 @@ with tab_forecast:
             st.caption(_L("Sources : Banque de France/BCE (taux, OAT, Euribor).",
                           "Sources: Banque de France/ECB (rate, OAT, Euribor)."))
 
-        # ---- 2. Transactions nowcast + out-of-sample backtest --------------------
-        st.markdown("#### " + _L("2. Nowcast des transactions & backtest hors échantillon",
-                                 "2. Transactions nowcast & out-of-sample backtest"))
+        # ---- 2. Modèle des transactions + backtest hors échantillon ---------------
+        st.markdown("#### " + _L("2. Modèle des transactions — et sa mise à l'épreuve",
+                                 "2. Transactions model — and how it is tested"))
         m1, m2, m3 = st.columns(3)
         m1.metric(_L("R² (in-sample)", "R² (in-sample)"),
                   f"{_tm['r2']:.2f}".replace(".", ",") if lang_code == "FR" else f"{_tm['r2']:.2f}")

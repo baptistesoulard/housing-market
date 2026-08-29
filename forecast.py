@@ -1,6 +1,6 @@
 """
 Prospective module: turn the app's real leading indicators into a small, transparent
-"nowcast → forecast" of existing-home transactions, plus a scenario engine.
+two-stage model of existing-home transactions, plus a scenario engine.
 
 Two-stage econometrics (plain OLS via numpy — no extra dependency):
   Stage 1  credit rate  ~ OAT 10y + Euribor 3M               (scenario lever on financing)

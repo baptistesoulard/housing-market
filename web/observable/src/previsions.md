@@ -464,7 +464,7 @@ if (R) display(html`<p>Sans délai, le modèle expliquait <b>83,8 %</b> de la va
 
 </details>
 
-## 2. Nowcast des transactions & backtest hors échantillon
+## 2. Modèle des transactions — et sa mise à l'épreuve
 
 ```js
 // Le R² a QUITTÉ les cartes de tête, et ce n'est pas un détail de mise en page. Deux
