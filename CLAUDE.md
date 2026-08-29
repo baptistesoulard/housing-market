@@ -1291,6 +1291,17 @@ n'est. `engine._predictor_horizons` publie le détail, la page le rend en tablea
 C'est aussi l'explication complète de `assured_months = 0` : le repère « sans hypothèse »
 ne pouvait jamais apparaître puisque le chômage manque dès le premier mois.
 
+**Le report à plat doit être dit LÀ OÙ LE MODÈLE EST PRÉSENTÉ, pas seulement là où il
+s'applique.** Il ne figurait que dans la section 3 (la projection). Un lecteur qui
+découvrait le modèle au chapeau puis à son équation en ressortait avec trois indicateurs
+vivants en tête, et ne croisait la convention que bien plus bas — s'il descendait jusque-là.
+Elle est donc énoncée trois fois, à trois niveaux de profondeur : le **chapeau statique**
+(sans chiffre, donc pérenne : « chacun n'est publié que jusqu'à un certain mois, et au-delà
+la projection le maintient à sa dernière valeur connue »), la **légende de l'équation de
+l'étage 2** (« cette équation décrit le passé, où les trois entrées sont observées »), puis
+le **tableau chiffré** de la section 3. Règle générale : une hypothèse de calcul se déclare
+au premier endroit où le lecteur se forme une idée du modèle, pas au dernier où elle joue.
+
 ⚠️ **Le piège de l'accent grave ne concerne pas que `observablehq.config.js`.** Un
 commentaire HTML placé DANS un littéral gabarit est du texte de chaîne comme le reste : y
 citer un identifiant entre accents graves **referme la chaîne**, la cellule devient

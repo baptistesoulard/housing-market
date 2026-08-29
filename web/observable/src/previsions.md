@@ -67,6 +67,13 @@ crédit immobilier (toutes durées confondues) par l'OAT 10 ans ; le second expl
 anciens par ce taux de crédit, les intentions d'achat des ménages et le chômage, chacun
 pris avec son propre décalage.
 
+Ces trois indicateurs ne sont pas connus à l'avance. Chacun n'est publié que jusqu'à un
+certain mois, et au-delà la projection le **maintient à sa dernière valeur connue** — c'est
+l'hypothèse la plus simple, et la seule qui n'invente rien. Ils ne s'épuisent pas ensemble :
+celui qui a le plus long décalage nourrit encore la trajectoire bien après que les deux
+autres sont figés, et la page publie pour chacun jusqu'à quel mois il reste une valeur
+réellement observée.
+
 La projection est publiée avec son backtest hors échantillon et sa bande d'incertitude, et
 les scénarios permettent d'en manipuler les leviers. Les prévisions déjà publiées, elles,
 sont archivées et confrontées au réalisé sur leur propre page.
@@ -536,6 +543,14 @@ if (T && T.coefficients) display(html`<div class="hm-formula">
     <b>${nf0.format(Math.abs(T.coefficients.intentions))}</b>. Le chômage entre
     ${T.lags.kc ? `avec ${T.lags.kc} mois de décalage` : "sans décalage"} — c'est ce qui
     fait qu'aucun mois projeté n'est jamais entièrement « sans hypothèse ».
+  </div>
+  <div class="hm-caption" style="margin-top:0.5rem">
+    <b>Cette équation décrit le passé, où les trois entrées sont observées.</b> Pour
+    projeter, il faut leurs valeurs futures — qui n'existent pas. Chacune est alors
+    maintenue à sa dernière valeur connue, et elles ne s'épuisent pas au même moment : le
+    tableau de la section 3 donne, pour chaque entrée, jusqu'à quel mois projeté elle reste
+    une valeur réellement observée. C'est là que se joue la portée réelle de la prévision,
+    bien plus que dans les coefficients ci-dessus.
   </div>
 </div>`);
 ```
