@@ -1430,9 +1430,15 @@ def _by_episode(evaluated: pd.DataFrame) -> list[dict]:
     """Erreur du modèle contre la naïve, épisode par épisode.
 
     C'est la ventilation qui manquait le plus : mesuré sur la seule fenêtre 2022-2024, le
-    modèle évite près de la moitié de l'erreur naïve ; sur les huit épisodes, moins d'un
-    cinquième, et il PERD dans trois d'entre eux. Montrer où il perd est le propos de la
-    page, pas un aveu — c'est ce qui distingue une prévision publiée d'une opinion.
+    modèle évite près de la moitié de l'erreur naïve ; sur l'ensemble des épisodes, bien
+    moins, et il PERD dans certains. Montrer où il perd est le propos de la page, pas un
+    aveu — c'est ce qui distingue une prévision publiée d'une opinion.
+
+    Volontairement sans décompte ni exemple nommé ici : ces skills bougent à chaque
+    rafraîchissement. La version précédente de cette phrase citait « trois épisodes sur
+    huit : 2008-2009, 2012-2015 et le Covid » ; relue le 2026-08-29, elle était fausse sur
+    les trois points (sept épisodes, 2009 gagne, 2012-15 est nul) et ignorait 2025-26, qui
+    perd. Le tableau est là pour être lu, pas raconté.
     """
     if evaluated.empty:
         return []

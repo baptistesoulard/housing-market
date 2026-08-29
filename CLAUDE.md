@@ -912,11 +912,21 @@ propos, pas un aveu.
 `BACKFILL_START = "2009-01-01"`. La fenêtre courte d'origine (2022-07) ne couvre qu'UN
 épisode — le choc de taux de 2022-2024 — c'est-à-dire précisément celui qu'un modèle piloté
 par les taux réussit le mieux : il y évite 49 % de l'erreur naïve et annonce le bon sens
-neuf fois sur dix. Mesuré sur 2009-2026 (210 millésimes, huit épisodes), l'écart évité tombe
-à 18 %, le taux de bon sens à 74 %, et le modèle **perd contre la naïve dans trois épisodes
-sur huit** : la crise financière de 2008-2009, le creux long de 2012-2015 et le Covid — à
-chaque fois quand le moteur du marché n'était pas le coût du crédit. Choisir la fenêtre
-courte, c'est choisir son résultat. Avant 2009 la recherche de décalages manque
+neuf fois sur dix. Mesuré sur 2009-2026 (210 millésimes, **sept** épisodes), l'écart évité
+tombe à 18 % et le taux de bon sens à 74 % — et surtout la performance devient très
+DISPERSÉE d'un épisode à l'autre, de **−4 % à +56 %** d'erreur évitée : le modèle excelle
+quand le coût du crédit pilote le marché et ne sert à rien sinon. Choisir la fenêtre
+courte, c'est choisir son résultat.
+
+⚠️ **Le décompte nominatif a dérivé et a été recalé le 2026-08-29.** Cette phrase disait
+« perd dans trois épisodes sur huit : la crise financière de 2008-2009, le creux long de
+2012-2015 et le Covid » — juste à la rédaction, jamais revérifié. Sur les chiffres publiés
+aujourd'hui : `_EPISODES` en compte **sept**, pas huit ; **2009 GAGNE** (+15,9 %) alors que
+la phrase le donnait perdant ; **2012-15 est nul** (+0,3 %), pas perdant ; le Covid perd
+bien (−3,6 %) ; et **2025-26 perd aussi** (−4,0 %), épisode qui n'existait pas à la
+rédaction. Le fond tenait, les exemples nommés étaient faux. **Ne jamais nommer un épisode
+gagnant ou perdant sans relire le tableau** : ces skills bougent à chaque rafraîchissement,
+et c'est exactement pourquoi la page les AFFICHE au lieu de les raconter. Avant 2009 la recherche de décalages manque
 d'historique et retombe sur ses valeurs de repli : ces millésimes ne prouveraient rien.
 
 Corollaire mesuré, à connaître avant de toucher à l'un des deux : **allonger la fenêtre sans
@@ -966,6 +976,46 @@ n'était simplement plus signalée. `limit_area="inside"` la laisse manquante, d
 Conséquence attendue et voulue : le repère « sans hypothèse » recule, et il dira la vérité —
 avec `kc=0`, cette fenêtre est de toute façon structurellement nulle (0 des 864 points
 rétro-simulés était assuré).
+
+**La fenêtre d'entraînement LONGUE est la bonne, et c'est mesuré (2026-08-29).**
+Objection légitime et récurrente : `fit_tx_model` estime `beta` sur TOUT l'échantillon
+(270 mois, novembre 2003 → avril 2026), donc une seule relation linéaire traverse la crise
+de 2008, le creux de la dette, l'expansion 2016-19, le Covid et le choc de taux — des
+régimes dont les moteurs n'ont rien à voir. Faut-il glisser la fenêtre ?
+
+Testé au protocole exact de la production (troncature macro ET transactions, décalages
+recherchés à chaque millésime, ancrage), 54 millésimes trimestriels de 2012 à 2025,
+967 points évalués. Erreur évitée contre la prévision naïve :
+
+| fenêtre | 1-3 mois | 4-6 | 7-12 | 13-18 | sens juste |
+|---|---|---|---|---|---|
+| **extensible (production)** | −40,1 % | **+4,5 %** | **+26,3 %** | **+32,9 %** | 77,3 % |
+| 15 ans | −40,2 % | −3,7 % | +15,8 % | +28,4 % | 77,0 % |
+| 12 ans | −30,2 % | −0,0 % | +11,2 % | +22,1 % | 76,4 % |
+| 10 ans | −15,4 % | −3,1 % | +7,1 % | +20,1 % | 75,8 % |
+| 8 ans | **−1,3 %** | **+11,3 %** | +16,7 % | +21,5 % | **80,0 %** |
+
+Trois lectures, et la troisième interdit de « régler » ce paramètre au jugé :
+
+1. **La fenêtre longue gagne là où le modèle sert.** Sur 7-18 mois — la seule zone où la
+   page dit de le lire — elle évite **+29,6 %** d'erreur en moyenne contre +19,1 % au mieux
+   pour une glissante. L'histoire longue est ce qui permet d'estimer une élasticité aux
+   taux qui tienne à travers les cycles ; huit ans n'en voient qu'un.
+2. **La fenêtre courte gagne là où le modèle ne sert pas.** Ses avantages (1-3 et 4-6 mois)
+   tombent entièrement dans la zone où le site recommande déjà de recopier le dernier
+   chiffre connu. Un gain dans une zone qu'on n'utilise pas n'est pas un gain.
+3. **Le milieu est le pire des deux extrêmes** — 10, 12 et 15 ans font moins bien que
+   l'extensible ET que 8 ans presque partout. Trop court pour la relation structurelle,
+   trop long pour coller au régime courant. Non-monotonicité franche.
+
+**Et l'adaptation au régime est déjà là, au bon endroit.** `anchor_of` + `FADE_MONTHS`
+recale le modèle sur son dernier point observé : c'est exactement ce qu'une fenêtre
+glissante apporterait, mais appliqué à l'ORDONNÉE À L'ORIGINE seule, en gardant la pente
+estimée sur l'histoire longue. Gain déjà mesuré : −42 % d'erreur sur les horizons 1-3. La
+bonne réponse à l'hétérogénéité des cycles n'est donc pas de raccourcir la fenêtre, c'est
+ce découpage-là — et pour aller plus loin, **des prédicteurs couvrant les canaux qui
+dominent dans les épisodes perdants** (confiance, offre), pas une réestimation sur moins de
+données. Ne pas re-tester la fenêtre glissante sans raison nouvelle.
 
 **Un prédicteur n'entre dans l'étage 2 que s'il gagne HORS ÉCHANTILLON, sur la fenêtre
 longue.** Critère : ≥ 5 % d'erreur évitée sur ≥ 3 des 4 blocs d'horizon (1-3, 4-6, 7-12,
