@@ -61,40 +61,51 @@ const depuis = (rows, field = "date") => {
   texte. Raison de plus pour qu'il dise ce que la page fait.
 -->
 
-Prévoir des transactions immobilières revient à prévoir une demande, et ce site le fait
-avec les méthodes de la planification, en deux étages. Le premier explique le taux du
-crédit immobilier (toutes durées confondues) par l'OAT 10 ans ; le second explique les ventes de logements
-anciens par ce taux de crédit, les intentions d'achat des ménages et le chômage, chacun
-pris avec son propre décalage.
+Cette page projette les **ventes de logements anciens**, et elle seule. Le modèle a deux
+étages : le taux de crédit est expliqué par l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans, puis
+les ventes par ce taux, les intentions d'achat des ménages et le chômage — chacun pris avec
+son propre décalage.
 
-Ces trois indicateurs ne sont pas connus à l'avance. Chacun n'est publié que jusqu'à un
-certain mois, et au-delà la projection le **maintient à sa dernière valeur connue** — c'est
-l'hypothèse la plus simple, et la seule qui n'invente rien. Ils ne s'épuisent pas ensemble :
-celui qui a le plus long décalage nourrit encore la trajectoire bien après que les deux
-autres sont figés, et la page publie pour chacun jusqu'à quel mois il reste une valeur
-réellement observée.
+Trois choses à savoir avant de lire un chiffre. Les indicateurs qui alimentent le modèle ne
+sont pas connus à l'avance : au-delà de leur dernière publication, chacun est **maintenu à
+sa dernière valeur connue**, et ils ne s'épuisent pas au même moment. La prévision n'est pas
+utile à tous les horizons, et la page dit lesquels. Enfin, ni les mises en chantier ni
+l'activité de rénovation ne sont prévues ici : un lecteur venu anticiper une activité de
+construction doit lire cette projection comme un **indicateur de contexte**, pas comme son
+carnet de commandes.
 
-La projection est publiée avec son backtest hors échantillon et sa bande d'incertitude, et
-les scénarios permettent d'en manipuler les leviers. Les prévisions déjà publiées, elles,
-sont archivées et confrontées au réalisé sur leur propre page.
+<details class="hm-howto">
+  <summary>ℹ️ La méthode, en détail</summary>
+  <div class="hm-caption">
 
-**Ce que cette page prévoit, et ce qu'elle ne prévoit pas.** La série projetée est celle des
-**ventes de logements anciens**, et elle seule. Ni les mises en chantier, ni l'activité de
-rénovation ne font l'objet d'une prévision sur ce site, et c'est un choix documenté plutôt
-qu'un oubli : le lien entre les permis de construire et les chantiers a été mesuré puis
-écarté faute d'avance réelle, et aucune série de volume publiée ne permet aujourd'hui de
-modéliser la rénovation. Un lecteur venu pour anticiper une activité de construction doit
-donc lire cette projection comme un **indicateur de contexte** — le marché de l'ancien
-décrit la santé de la demande de logement en général — et non comme une prévision de son
-propre carnet.
+Prévoir des transactions immobilières revient à prévoir une demande, et ce site le fait avec
+les méthodes de la planification. Le premier étage explique le taux du crédit immobilier
+(toutes durées confondues) par l'OAT 10 ans, avec le délai que les banques mettent à le
+répercuter ; le second explique les ventes de logements anciens (en cumul 12 mois) par ce
+taux de crédit, les intentions d'achat et le chômage, chacun décalé. Un
+<abbr title="Test du modèle sur des données qu'il n'a pas vues à l'entraînement">backtest</abbr>
+hors échantillon mesure la valeur prédictive, et la projection est publiée avec sa bande
+d'incertitude.
 
-<div class="hm-caption">
-Modèle chiffré « indicateurs avancés → transactions », calibré sur les séries réelles.
-Deux étages : (1) le taux de crédit est modélisé à partir de l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr> 10 ans, avec le délai
-que les banques mettent à répercuter ; (2) les ventes de logements anciens (cumul 12 mois) sont expliquées par le taux
-de crédit, les intentions d'achat et le chômage, chacun décalé. Un <abbr title="Test du modèle sur des données qu'il n'a pas vues à l'entraînement">backtest</abbr> hors
-échantillon mesure la valeur prédictive.
-</div>
+**Le report à plat des indicateurs.** Chacun n'est publié que jusqu'à un certain mois ;
+au-delà, la projection le maintient à sa dernière valeur connue. C'est l'hypothèse la plus
+simple, et la seule qui n'invente rien — la substituer par les anticipations de marché a été
+mesuré, puis écarté (voir la dernière section). Les trois ne s'épuisent pas ensemble : celui
+qui a le plus long décalage nourrit encore la trajectoire bien après que les autres sont
+figés, et la page publie pour chacun jusqu'à quel mois il reste une valeur réellement
+observée.
+
+**Pourquoi ni le neuf ni la rénovation.** Le lien entre les permis de construire et les
+mises en chantier a été mesuré puis écarté faute d'avance réelle, et aucune série de volume
+publiée ne permet aujourd'hui de modéliser la rénovation. Le marché de l'ancien décrit la
+santé de la demande de logement en général : c'est à ce titre qu'il éclaire les autres, pas
+comme un substitut.
+
+**Les prévisions déjà publiées** sont archivées et confrontées au réel sur leur propre page,
+horizon par horizon et épisode par épisode.
+
+  </div>
+</details>
 
 ```js
 // `available: false` ne peut venir que d'un macro incomplet au moment de la publication
@@ -223,7 +234,300 @@ if (V && P && P.available && data.crossover_horizon) display(html`<div class="hm
 if (data.available) display(html`<hr>`);
 ```
 
-## 1. Le taux de crédit : ce que l'OAT 10 ans détermine d'avance
+## 1. La projection : où va le marché, et jusqu'où s'y fier
+
+```js
+if (P) display(!P.available
+  ? html`<div class="hm-caption">Les décalages estimés ne permettent pas de projection
+         au-delà du dernier point.</div>`
+  : cardGrid([
+      {label: "Horizon de projection", value: `${P.horizon_months} mois`,
+       subs: [`dont ${P.informative_months} pilotés par des indicateurs déjà publiés`,
+              `au-delà, la courbe répète sa dernière valeur`]},
+      {label: "Ventes projetées en fin d'horizon", value: nf0.format(P.end_value),
+       delta: (P.end_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(P.end_change_pct)) + " %"}
+    ], kpiCard));
+```
+
+```js
+// CE QUE LA PROJECTION AJOUTE À L'ÉQUATION. Le modèle est une régression de NIVEAU : il
+// reconstruit la série depuis la macro sans jamais regarder où elle se trouve réellement,
+// et son erreur au premier mois projeté valait donc son résidu d'ajustement (~4,2 %) là
+// où recopier le dernier chiffre connu n'en coûte que 1,2 %. D'où le recalage. Il n'était
+// écrit nulle part : un lecteur qui reprenait l'équation de la section 2 trouvait un écart
+// sans comprendre d'où il venait.
+if (P && P.available && P.anchor != null) display(html`<div class="hm-formula">
+  <b>Projection du mois <i>t</i></b> = équation du modèle (détaillée en section 4)
+  + ${nf0.format(Math.round(P.anchor))} × poids(<i>t</i>)
+  <div class="hm-caption" style="margin-top:0.5rem">
+    L'équation reconstruit un niveau à partir de la macro, sans regarder où la série se
+    trouve vraiment : au dernier mois ajusté elle se trompait de
+    <b>${nf0.format(Math.abs(Math.round(P.anchor)))}</b> ventes. La projection part donc du
+    dernier chiffre réellement observé (${nf0.format(P.last_observed)}) et rejoint sa propre
+    trajectoire progressivement — le poids vaut 1 au premier mois projeté et décroît
+    linéairement pour s'annuler au <b>${P.fade_months + 1}<sup>e</sup></b>. Gain mesuré sur
+    l'archive : 11 % d'erreur en moins au total, 42 % sur les trois premiers mois. La durée
+    n'est pas un réglage ajusté : toutes les valeurs entre 6 et 12 mois donnent le même
+    résultat à 0,1 point près.
+  </div>
+  <div class="hm-caption" style="margin-top:0.5rem">
+    <b>Une précision sans laquelle le calcul ne se refait pas :</b> dans l'équation, un
+    indicateur dont le mois demandé n'est pas encore publié est remplacé par sa dernière
+    valeur connue. Avec cette convention, l'équation et le recalage redonnent exactement
+    la valeur publiée — nous l'avons vérifié.
+  </div>
+</div>`);
+```
+
+```js
+// QUELLE ENTRÉE TIENT COMBIEN DE TEMPS. `informative_months` (10) est piloté par le
+// prédicteur qui dure le plus longtemps — le taux. Les trois ne s'épuisent pas ensemble,
+// et l'écart est large : le chômage entrant sans décalage et publié avec deux mois de
+// retard sur les ventes, il est figé DÈS LE PREMIER mois projeté. Annoncer « 10 mois
+// pilotés par des indicateurs déjà publiés » sans ce détail laisse croire les trois
+// entrées vivantes pendant dix mois, alors qu'il n'en reste qu'une à partir du quatrième.
+if (P && P.available && P.predictors && P.predictors.length) display(html`<div>
+  <div class="hm-chart-title">Jusqu'où chaque entrée est-elle encore une valeur observée ?
+    <span class="sub">au-delà, elle est maintenue à sa dernière valeur connue — c'est
+    l'hypothèse la plus simple, et la seule qui n'invente rien</span></div>
+  <table class="hm-table">
+    <thead><tr><th>Entrée du modèle</th><th>Décalage</th><th>Dernier mois publié</th>
+      <th>Observée jusqu'au…</th><th>Puis figée à</th></tr></thead>
+    <tbody>${P.predictors.map((x) => html`<tr>
+      <td>${x.label}</td>
+      <td>${x.lag ? `${x.lag} mois` : "aucun"}</td>
+      <td>${fmtMonthFR(new Date(x.last_observed))}</td>
+      <td>${x.observed_months
+            ? html`${x.observed_months}<sup>e</sup> mois projeté`
+            : html`<b>aucun</b> — figée dès le 1<sup>er</sup>`}</td>
+      <!-- Les trois valeurs n'ont pas la même précision : un taux se lit à deux
+           décimales (3,16), un solde d'opinion est entier (−82) ; nf1 rendait 3,2.
+           NE PAS mettre d'accents graves ici : ce commentaire est DANS un littéral
+           gabarit, un backtick le refermerait et la cellule serait retirée du build. -->
+      <td>${x.held_value.toLocaleString("fr-FR", {maximumFractionDigits: 2})}</td>
+    </tr>`)}</tbody>
+  </table>
+</div>`);
+```
+
+```js
+// Même manque qu'en section 2 : quatre objets sur ce graphique (l'observé, la trajectoire
+// projetée, sa bande, le repère FNAIM) et rien qui les nomme. La légende est statique —
+// aucune de ces séries ne se masque.
+if (P && P.available) display(legendStatic([
+  {name: "Ventes réellement observées", color: series.brick},
+  {name: "Projection du modèle", color: series.blue, dash: true},
+  ...(B ? [{name: `Fourchette ${B.source} ${B.annee} (décembre seulement)`, color: series.violet}] : []),
+]));
+```
+
+```js
+if (P && P.available) display(withCsvExport(Plot.plot({
+  width, height: 360, marginLeft: 66, marginBottom: 34,
+  x: {type: "utc", label: null},
+  y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
+  marks: [
+    // La bande et la trajectoire projetées ne reçoivent que la borne basse : elles sont
+    // postérieures au dernier mois publié, donc au maximum de la frise.
+    Plot.areaY(depuis(P.series), {x: (d) => new Date(d.date), y1: "lo", y2: "hi",
+                          fill: series.brick, fillOpacity: 0.12}),
+    Plot.lineY(histo(T.series), {x: (d) => new Date(d.date), y: "observed",
+                          stroke: series.brick, strokeWidth: 2.2}),
+    Plot.lineY(depuis(P.series), {x: (d) => new Date(d.date), y: "predicted",
+                          stroke: series.blue, strokeWidth: 2.2, strokeDasharray: "4 3"}),
+    // Frontière entre la partie sans hypothèse et le report des indicateurs manquants.
+    Plot.ruleX(P.series.filter((d) => d.assured).slice(-1),
+               {x: (d) => new Date(d.date), stroke: ui.subtle, strokeDasharray: "3 3"}),
+    // Le repère FNAIM : un SEGMENT VERTICAL sur décembre, jamais une courbe. Leur chiffre
+    // est un total d'année, comparable au nôtre uniquement à ce mois-là ; le tracer en
+    // continu suggérerait une prévision mensuelle qu'ils ne publient pas.
+    B ? Plot.ruleX([B], {x: (d) => new Date(d.date), y1: "lo", y2: "hi",
+                         stroke: series.violet, strokeWidth: 6, strokeOpacity: 0.35}) : null,
+    B ? Plot.text([B], {x: (d) => new Date(d.date), y: "hi", dy: -12,
+                        text: () => `fourchette ${B.source} ${B.annee}`,
+                        fill: series.violet, fontWeight: 600, textAnchor: "end", dx: -6}) : null
+  ]
+}), P.series, "previsions-projection"));
+```
+
+```js
+// LE SEUL REPÈRE EXTERNE DISPONIBLE. Personne ne publie de prévision mensuelle de volumes
+// en France — les Notaires, qui disposent pourtant des avant-contrats, ne s'en servent que
+// pour projeter les prix. La fourchette annuelle de la FNAIM est donc notre unique point
+// de contrôle, et il ne vaut qu'en décembre : leur chiffre est un total d'année, le nôtre
+// un cumul 12 mois glissants.
+if (B) display(html`<div class="hm-note">
+  <p><strong>Face à la seule autre prévision chiffrée du marché.</strong> Pour
+  ${B.annee}, la <a href=${B.url}>${B.source}</a> annonçait
+  <strong>${nf0.format(B.lo)} à ${nf0.format(B.hi)}</strong> ventes. Notre modèle projette
+  <strong>${nf0.format(B.notre_prevision)}</strong> —
+  ${B.dans_la_fourchette
+    ? html`<b>dans leur fourchette</b>, à ${nf1.format(Math.abs(B.ecart_au_milieu_pct))} %
+           de son milieu`
+    : html`<b>en dehors</b>, à ${nf1.format(Math.abs(B.ecart_au_milieu_pct))} % de son
+           milieu`}. Les deux estimations sont indépendantes : la leur vient de leur réseau
+  d'agences, la nôtre de trois indicateurs macro publics.</p>
+  <p class="hm-caption">${B.note} Fourchette relevée le ${B.releve_le}.</p>
+</div>`);
+```
+
+```js
+// La légende disait deux choses fausses, corrigées ensemble le 2026-08-27 :
+//
+// 1. « Jusqu'au repère [...] sans hypothèse » — le repère n'existe pas. Il est tracé sur
+//    le dernier point `assured`, or aucun point ne l'est : le chômage entre sans décalage
+//    (kc = 0), donc il manque toujours au moins un prédicteur. La carte affiche d'ailleurs
+//    « dont 0 sans hypothèse » juste au-dessus. La phrase envoyait chercher une frontière
+//    introuvable.
+// 2. « Bande = ±1,28·RMSE » — c'est la bande CONSTANTE d'avant, remplacée depuis par une
+//    bande calibrée par horizon sur les quantiles 10/90 de l'erreur signée de l'archive.
+//    Elle est donc asymétrique, et le « ± » annonçait une symétrie qu'elle n'a pas.
+//
+// S'y ajoute l'horizon INFORMATIF (`informative_months`), qui manquait : la trajectoire
+// cesse de bouger dès que tous les prédicteurs sont reportés à plat.
+if (P && P.available) display(html`<div class="hm-caption">
+  La projection est pilotée par des valeurs d'indicateurs déjà publiées, décalées de leurs
+  délais estimés, tant qu'il en reste : au-delà du
+  <strong>${P.informative_months}<sup>e</sup> mois</strong> tous les indicateurs sont
+  maintenus à leur dernière valeur connue et la courbe répète sa dernière valeur — les
+  ${P.horizon_months - P.informative_months} derniers mois n'ajoutent donc pas d'information,
+  seulement de l'incertitude. Aucun mois n'est entièrement « sans hypothèse » : le chômage
+  entre dans le modèle sans décalage, il manque donc toujours au dernier mois.
+  La bande n'est pas symétrique — elle vient des quantiles 10 % / 90 % des erreurs
+  réellement commises par l'archive, horizon par horizon, et le modèle surestime davantage
+  qu'il ne sous-estime.
+</div>`);
+```
+
+## 2. Et si les conditions changeaient ? Le panneau de scénarios
+
+<div class="hm-caption">
+Effet à terme (après les décalages estimés) si ces conditions persistent, appliqué au
+niveau actuel réel — approche en écart, robuste au biais de niveau du modèle de taux.
+</div>
+
+```js
+const base = data.available ? data.scenario_baseline : null;
+const r1 = (v) => Math.round(v * 10) / 10;
+```
+
+```js
+// UN SEUL curseur de financement, et c'est un correctif, pas une simplification.
+// L'OAT 10 ans et l'Euribor 3 mois sont corrélés à +0,83 : l'OLS de l'étage 1 ne peut pas
+// les séparer et attribue tout au premier (0,707 contre 0,013). Exposés séparément, le
+// curseur Euribor était donc INERTE — balayé sur toute sa course, cinq points de taux, il
+// déplaçait la prévision de 0,3 %, contre 11 à 24 % pour les trois autres. Un levier
+// affiché qui ne lève rien est pire qu'un levier absent : le visiteur en conclut que le
+// taux interbancaire n'agit pas sur le marché immobilier, ce qui est faux.
+// Les deux bougent ensemble, comme dans la réalité, et la sensibilité affichée est leur
+// somme. `computeScenario` est inchangée — elle reçoit toujours les deux valeurs.
+// Les trois entrées sont gardées dans des CONSTANTES avant d'être passées à `view()`.
+// C'est ce qui permet aux boutons de scénario plus bas de leur écrire une valeur : dans
+// Observable Framework, `viewof x` n'existe pas — c'est de la syntaxe notebook, et une
+// cellule qui l'emploie est retirée du build SANS ERREUR. Garder la référence à l'élément
+// est le seul moyen documenté d'y accéder depuis une autre cellule.
+const dTauxInput = base ? Inputs.range([-2.5, 2.5], {
+  label: "Taux de marché (0 = inchangé, en points)", step: 0.1, value: 0,
+}) : null;
+const chomInput = base ? Inputs.range([6.5, 11],
+  {label: "Taux de chômage (%)", step: 0.1, value: r1(base.unemployment)}) : null;
+const intentZInput = base ? Inputs.range([-2.5, 2.5],
+  {label: "Intentions d'achat (0 = moyenne historique)", step: 0.1, value: r1(base.intentions_z)}) : null;
+
+const dTaux = dTauxInput ? view(dTauxInput) : null;
+const chom = chomInput ? view(chomInput) : null;
+const intentZ = intentZInput ? view(intentZInput) : null;
+```
+
+```js
+// SCÉNARIOS NOMMÉS. Les curseurs restent la source de vérité — ces boutons ne font que
+// leur écrire une valeur puis émettre l'événement "input" qui réveille les cellules qui
+// en dépendent. C'est le patron documenté d'Observable Inputs, et il a l'avantage que le
+// curseur BOUGE : le lecteur voit à quelles hypothèses correspond le scénario qu'il a
+// choisi, au lieu d'un résultat sorti d'une boîte.
+//
+// Pourquoi ils existent : « OAT 10 ans » et « Euribor 3 mois » ne veulent rien dire pour
+// un particulier, alors que « si la BCE baisse ses taux d'un demi-point » lui parle
+// immédiatement. Aucun calcul nouveau — les mêmes valeurs, poussées dans les mêmes
+// curseurs.
+const SCENARIOS = [
+  {nom: "Aujourd'hui", dTaux: 0, chom: base?.unemployment, z: base?.intentions_z,
+   aide: "Les conditions actuelles, prolongées."},
+  {nom: "Détente du crédit", dTaux: -0.5, chom: base?.unemployment, z: (base?.intentions_z ?? 0) + 0.5,
+   aide: "La BCE baisse d'un demi-point et les ménages reprennent confiance."},
+  {nom: "Remontée des taux", dTaux: 1, chom: base?.unemployment, z: (base?.intentions_z ?? 0) - 0.5,
+   aide: "Un point de taux de marché en plus, et l'envie d'acheter recule."},
+  {nom: "Choc sur l'emploi", dTaux: 0, chom: 9.5, z: (base?.intentions_z ?? 0) - 1,
+   aide: "Le chômage monte à 9,5 %, sans mouvement de taux."},
+];
+
+function appliquer(sc) {
+  const set = (el, v) => {
+    if (el && v != null) { el.value = v; el.dispatchEvent(new Event("input", {bubbles: true})); }
+  };
+  set(dTauxInput, sc.dTaux);
+  set(chomInput, sc.chom);
+  set(intentZInput, sc.z);
+}
+
+if (base) display(html`<div class="hm-shortcuts">
+  <span class="lead">Scénarios prêts :</span>
+  ${SCENARIOS.map((sc) => {
+    const b = html`<button class="hm-shortcut" type="button" title=${sc.aide}>${sc.nom}</button>`;
+    b.onclick = () => appliquer(sc);
+    return b;
+  })}
+</div>`);
+```
+
+```js
+const oat = base ? base.oat + dTaux : null;
+```
+
+```js
+if (base) display(html`<div class="hm-caption">Le curseur déplace l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr>
+  10 ans, seul taux de marché que le modèle retient : c'est lui qui tarife un crédit à taux
+  fixe adossé à du financement long. Position actuelle
+  <b>${nf1.format(oat)} %</b>, soit <b>${nf1.format(R.coefficients.oat)} pt</b> de taux de
+  crédit par point d'OAT, au bout de ${R.lag} mois.</div>`);
+```
+
+```js
+// Huit multiplications, en JS — computeScenario reproduit forecast.scenario terme à
+// terme (voir components/api.js) sur les coefficients exportés. Pas de quoi justifier un
+// aller-retour réseau à chaque déplacement de curseur, contrairement au POST que l'API
+// exposait pour cette même route.
+const sc = base
+  ? computeScenario(R.coefficients, T.coefficients, base, {oat, chom, intentZ})
+  : null;
+```
+
+```js
+if (sc) display(cardGrid([
+  {label: "Taux de crédit qui en résulterait", value: nf1.format(sc.rate) + " %",
+   delta: (sc.rate_change >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.rate_change)) + " pt"},
+  {label: "Ventes projetées (12 mois)", value: nf0.format(sc.transactions),
+   delta: (sc.transactions_change >= 0 ? "+" : "−") + nf0.format(Math.abs(sc.transactions_change))},
+  {label: "Écart vs aujourd'hui",
+   value: (sc.transactions_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.transactions_change_pct)) + " %"}
+], kpiCard));
+```
+
+```js
+if (sc) display(Plot.plot({
+  width, height: 230, marginLeft: 72, marginBottom: 30,
+  x: {label: null}, y: {label: "Ventes 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
+  marks: [
+    Plot.barY([{k: "Actuel", v: sc.baseline.tx_now}, {k: "Scénario", v: sc.transactions}],
+              {x: "k", y: "v", fill: (d) => d.k === "Actuel" ? ui.subtle : series.brick}),
+    Plot.text([{k: "Actuel", v: sc.baseline.tx_now}, {k: "Scénario", v: sc.transactions}],
+              {x: "k", y: "v", text: (d) => nf0.format(d.v), dy: -8, fontWeight: 700}),
+    Plot.ruleY([0], {stroke: ui.border})
+  ]
+}));
+```
+
+## 3. Le taux de crédit : ce que l'OAT 10 ans détermine d'avance
 
 Le crédit immobilier français est à taux fixe, et les banques publient des barèmes qu'elles
 lissent : leur réaction aux taux de marché n'est pas immédiate. Le modèle **mesure ce délai**
@@ -471,7 +775,7 @@ if (R) display(html`<p>Sans délai, le modèle expliquait <b>83,8 %</b> de la va
 
 </details>
 
-## 2. Les transactions : le modèle, et sa mise à l'épreuve
+## 4. Les transactions : le modèle, et sa mise à l'épreuve
 
 ```js
 // Le R² a QUITTÉ les cartes de tête, et ce n'est pas un détail de mise en page. Deux
@@ -548,7 +852,7 @@ if (T && T.coefficients) display(html`<div class="hm-formula">
     <b>Cette équation décrit le passé, où les trois entrées sont observées.</b> Pour
     projeter, il faut leurs valeurs futures — qui n'existent pas. Chacune est alors
     maintenue à sa dernière valeur connue, et elles ne s'épuisent pas au même moment : le
-    tableau de la section 3 donne, pour chaque entrée, jusqu'à quel mois projeté elle reste
+    tableau de la section 1 donne, pour chaque entrée, jusqu'à quel mois projeté elle reste
     une valeur réellement observée. C'est là que se joue la portée réelle de la prévision,
     bien plus que dans les coefficients ci-dessus.
   </div>
@@ -728,299 +1032,6 @@ if (sens) display(multiLine({
   yLabel: "Écarts-types (séries centrées-réduites)", height: 320,
   yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
   filename: "previsions-alignement-" + predictor
-}));
-```
-
-## 3. La projection : où va le marché, et jusqu'où s'y fier
-
-```js
-if (P) display(!P.available
-  ? html`<div class="hm-caption">Les décalages estimés ne permettent pas de projection
-         au-delà du dernier point.</div>`
-  : cardGrid([
-      {label: "Horizon de projection", value: `${P.horizon_months} mois`,
-       subs: [`dont ${P.informative_months} pilotés par des indicateurs déjà publiés`,
-              `au-delà, la courbe répète sa dernière valeur`]},
-      {label: "Ventes projetées en fin d'horizon", value: nf0.format(P.end_value),
-       delta: (P.end_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(P.end_change_pct)) + " %"}
-    ], kpiCard));
-```
-
-```js
-// CE QUE LA PROJECTION AJOUTE À L'ÉQUATION. Le modèle est une régression de NIVEAU : il
-// reconstruit la série depuis la macro sans jamais regarder où elle se trouve réellement,
-// et son erreur au premier mois projeté valait donc son résidu d'ajustement (~4,2 %) là
-// où recopier le dernier chiffre connu n'en coûte que 1,2 %. D'où le recalage. Il n'était
-// écrit nulle part : un lecteur qui reprenait l'équation de la section 2 trouvait un écart
-// sans comprendre d'où il venait.
-if (P && P.available && P.anchor != null) display(html`<div class="hm-formula">
-  <b>Projection du mois <i>t</i></b> = équation de la section 2
-  + ${nf0.format(Math.round(P.anchor))} × poids(<i>t</i>)
-  <div class="hm-caption" style="margin-top:0.5rem">
-    L'équation reconstruit un niveau à partir de la macro, sans regarder où la série se
-    trouve vraiment : au dernier mois ajusté elle se trompait de
-    <b>${nf0.format(Math.abs(Math.round(P.anchor)))}</b> ventes. La projection part donc du
-    dernier chiffre réellement observé (${nf0.format(P.last_observed)}) et rejoint sa propre
-    trajectoire progressivement — le poids vaut 1 au premier mois projeté et décroît
-    linéairement pour s'annuler au <b>${P.fade_months + 1}<sup>e</sup></b>. Gain mesuré sur
-    l'archive : 11 % d'erreur en moins au total, 42 % sur les trois premiers mois. La durée
-    n'est pas un réglage ajusté : toutes les valeurs entre 6 et 12 mois donnent le même
-    résultat à 0,1 point près.
-  </div>
-  <div class="hm-caption" style="margin-top:0.5rem">
-    <b>Une précision sans laquelle le calcul ne se refait pas :</b> dans l'équation, un
-    indicateur dont le mois demandé n'est pas encore publié est remplacé par sa dernière
-    valeur connue. Avec cette convention, l'équation et le recalage redonnent exactement
-    la valeur publiée — nous l'avons vérifié.
-  </div>
-</div>`);
-```
-
-```js
-// QUELLE ENTRÉE TIENT COMBIEN DE TEMPS. `informative_months` (10) est piloté par le
-// prédicteur qui dure le plus longtemps — le taux. Les trois ne s'épuisent pas ensemble,
-// et l'écart est large : le chômage entrant sans décalage et publié avec deux mois de
-// retard sur les ventes, il est figé DÈS LE PREMIER mois projeté. Annoncer « 10 mois
-// pilotés par des indicateurs déjà publiés » sans ce détail laisse croire les trois
-// entrées vivantes pendant dix mois, alors qu'il n'en reste qu'une à partir du quatrième.
-if (P && P.available && P.predictors && P.predictors.length) display(html`<div>
-  <div class="hm-chart-title">Jusqu'où chaque entrée est-elle encore une valeur observée ?
-    <span class="sub">au-delà, elle est maintenue à sa dernière valeur connue — c'est
-    l'hypothèse la plus simple, et la seule qui n'invente rien</span></div>
-  <table class="hm-table">
-    <thead><tr><th>Entrée du modèle</th><th>Décalage</th><th>Dernier mois publié</th>
-      <th>Observée jusqu'au…</th><th>Puis figée à</th></tr></thead>
-    <tbody>${P.predictors.map((x) => html`<tr>
-      <td>${x.label}</td>
-      <td>${x.lag ? `${x.lag} mois` : "aucun"}</td>
-      <td>${fmtMonthFR(new Date(x.last_observed))}</td>
-      <td>${x.observed_months
-            ? html`${x.observed_months}<sup>e</sup> mois projeté`
-            : html`<b>aucun</b> — figée dès le 1<sup>er</sup>`}</td>
-      <!-- Les trois valeurs n'ont pas la même précision : un taux se lit à deux
-           décimales (3,16), un solde d'opinion est entier (−82) ; nf1 rendait 3,2.
-           NE PAS mettre d'accents graves ici : ce commentaire est DANS un littéral
-           gabarit, un backtick le refermerait et la cellule serait retirée du build. -->
-      <td>${x.held_value.toLocaleString("fr-FR", {maximumFractionDigits: 2})}</td>
-    </tr>`)}</tbody>
-  </table>
-</div>`);
-```
-
-```js
-// Même manque qu'en section 2 : quatre objets sur ce graphique (l'observé, la trajectoire
-// projetée, sa bande, le repère FNAIM) et rien qui les nomme. La légende est statique —
-// aucune de ces séries ne se masque.
-if (P && P.available) display(legendStatic([
-  {name: "Ventes réellement observées", color: series.brick},
-  {name: "Projection du modèle", color: series.blue, dash: true},
-  ...(B ? [{name: `Fourchette ${B.source} ${B.annee} (décembre seulement)`, color: series.violet}] : []),
-]));
-```
-
-```js
-if (P && P.available) display(withCsvExport(Plot.plot({
-  width, height: 360, marginLeft: 66, marginBottom: 34,
-  x: {type: "utc", label: null},
-  y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
-  marks: [
-    // La bande et la trajectoire projetées ne reçoivent que la borne basse : elles sont
-    // postérieures au dernier mois publié, donc au maximum de la frise.
-    Plot.areaY(depuis(P.series), {x: (d) => new Date(d.date), y1: "lo", y2: "hi",
-                          fill: series.brick, fillOpacity: 0.12}),
-    Plot.lineY(histo(T.series), {x: (d) => new Date(d.date), y: "observed",
-                          stroke: series.brick, strokeWidth: 2.2}),
-    Plot.lineY(depuis(P.series), {x: (d) => new Date(d.date), y: "predicted",
-                          stroke: series.blue, strokeWidth: 2.2, strokeDasharray: "4 3"}),
-    // Frontière entre la partie sans hypothèse et le report des indicateurs manquants.
-    Plot.ruleX(P.series.filter((d) => d.assured).slice(-1),
-               {x: (d) => new Date(d.date), stroke: ui.subtle, strokeDasharray: "3 3"}),
-    // Le repère FNAIM : un SEGMENT VERTICAL sur décembre, jamais une courbe. Leur chiffre
-    // est un total d'année, comparable au nôtre uniquement à ce mois-là ; le tracer en
-    // continu suggérerait une prévision mensuelle qu'ils ne publient pas.
-    B ? Plot.ruleX([B], {x: (d) => new Date(d.date), y1: "lo", y2: "hi",
-                         stroke: series.violet, strokeWidth: 6, strokeOpacity: 0.35}) : null,
-    B ? Plot.text([B], {x: (d) => new Date(d.date), y: "hi", dy: -12,
-                        text: () => `fourchette ${B.source} ${B.annee}`,
-                        fill: series.violet, fontWeight: 600, textAnchor: "end", dx: -6}) : null
-  ]
-}), P.series, "previsions-projection"));
-```
-
-```js
-// LE SEUL REPÈRE EXTERNE DISPONIBLE. Personne ne publie de prévision mensuelle de volumes
-// en France — les Notaires, qui disposent pourtant des avant-contrats, ne s'en servent que
-// pour projeter les prix. La fourchette annuelle de la FNAIM est donc notre unique point
-// de contrôle, et il ne vaut qu'en décembre : leur chiffre est un total d'année, le nôtre
-// un cumul 12 mois glissants.
-if (B) display(html`<div class="hm-note">
-  <p><strong>Face à la seule autre prévision chiffrée du marché.</strong> Pour
-  ${B.annee}, la <a href=${B.url}>${B.source}</a> annonçait
-  <strong>${nf0.format(B.lo)} à ${nf0.format(B.hi)}</strong> ventes. Notre modèle projette
-  <strong>${nf0.format(B.notre_prevision)}</strong> —
-  ${B.dans_la_fourchette
-    ? html`<b>dans leur fourchette</b>, à ${nf1.format(Math.abs(B.ecart_au_milieu_pct))} %
-           de son milieu`
-    : html`<b>en dehors</b>, à ${nf1.format(Math.abs(B.ecart_au_milieu_pct))} % de son
-           milieu`}. Les deux estimations sont indépendantes : la leur vient de leur réseau
-  d'agences, la nôtre de trois indicateurs macro publics.</p>
-  <p class="hm-caption">${B.note} Fourchette relevée le ${B.releve_le}.</p>
-</div>`);
-```
-
-```js
-// La légende disait deux choses fausses, corrigées ensemble le 2026-08-27 :
-//
-// 1. « Jusqu'au repère [...] sans hypothèse » — le repère n'existe pas. Il est tracé sur
-//    le dernier point `assured`, or aucun point ne l'est : le chômage entre sans décalage
-//    (kc = 0), donc il manque toujours au moins un prédicteur. La carte affiche d'ailleurs
-//    « dont 0 sans hypothèse » juste au-dessus. La phrase envoyait chercher une frontière
-//    introuvable.
-// 2. « Bande = ±1,28·RMSE » — c'est la bande CONSTANTE d'avant, remplacée depuis par une
-//    bande calibrée par horizon sur les quantiles 10/90 de l'erreur signée de l'archive.
-//    Elle est donc asymétrique, et le « ± » annonçait une symétrie qu'elle n'a pas.
-//
-// S'y ajoute l'horizon INFORMATIF (`informative_months`), qui manquait : la trajectoire
-// cesse de bouger dès que tous les prédicteurs sont reportés à plat.
-if (P && P.available) display(html`<div class="hm-caption">
-  La projection est pilotée par des valeurs d'indicateurs déjà publiées, décalées de leurs
-  délais estimés, tant qu'il en reste : au-delà du
-  <strong>${P.informative_months}<sup>e</sup> mois</strong> tous les indicateurs sont
-  maintenus à leur dernière valeur connue et la courbe répète sa dernière valeur — les
-  ${P.horizon_months - P.informative_months} derniers mois n'ajoutent donc pas d'information,
-  seulement de l'incertitude. Aucun mois n'est entièrement « sans hypothèse » : le chômage
-  entre dans le modèle sans décalage, il manque donc toujours au dernier mois.
-  La bande n'est pas symétrique — elle vient des quantiles 10 % / 90 % des erreurs
-  réellement commises par l'archive, horizon par horizon, et le modèle surestime davantage
-  qu'il ne sous-estime.
-</div>`);
-```
-
-## 4. Et si les conditions changeaient ? Le panneau de scénarios
-
-<div class="hm-caption">
-Effet à terme (après les décalages estimés) si ces conditions persistent, appliqué au
-niveau actuel réel — approche en écart, robuste au biais de niveau du modèle de taux.
-</div>
-
-```js
-const base = data.available ? data.scenario_baseline : null;
-const r1 = (v) => Math.round(v * 10) / 10;
-```
-
-```js
-// UN SEUL curseur de financement, et c'est un correctif, pas une simplification.
-// L'OAT 10 ans et l'Euribor 3 mois sont corrélés à +0,83 : l'OLS de l'étage 1 ne peut pas
-// les séparer et attribue tout au premier (0,707 contre 0,013). Exposés séparément, le
-// curseur Euribor était donc INERTE — balayé sur toute sa course, cinq points de taux, il
-// déplaçait la prévision de 0,3 %, contre 11 à 24 % pour les trois autres. Un levier
-// affiché qui ne lève rien est pire qu'un levier absent : le visiteur en conclut que le
-// taux interbancaire n'agit pas sur le marché immobilier, ce qui est faux.
-// Les deux bougent ensemble, comme dans la réalité, et la sensibilité affichée est leur
-// somme. `computeScenario` est inchangée — elle reçoit toujours les deux valeurs.
-// Les trois entrées sont gardées dans des CONSTANTES avant d'être passées à `view()`.
-// C'est ce qui permet aux boutons de scénario plus bas de leur écrire une valeur : dans
-// Observable Framework, `viewof x` n'existe pas — c'est de la syntaxe notebook, et une
-// cellule qui l'emploie est retirée du build SANS ERREUR. Garder la référence à l'élément
-// est le seul moyen documenté d'y accéder depuis une autre cellule.
-const dTauxInput = base ? Inputs.range([-2.5, 2.5], {
-  label: "Taux de marché (0 = inchangé, en points)", step: 0.1, value: 0,
-}) : null;
-const chomInput = base ? Inputs.range([6.5, 11],
-  {label: "Taux de chômage (%)", step: 0.1, value: r1(base.unemployment)}) : null;
-const intentZInput = base ? Inputs.range([-2.5, 2.5],
-  {label: "Intentions d'achat (0 = moyenne historique)", step: 0.1, value: r1(base.intentions_z)}) : null;
-
-const dTaux = dTauxInput ? view(dTauxInput) : null;
-const chom = chomInput ? view(chomInput) : null;
-const intentZ = intentZInput ? view(intentZInput) : null;
-```
-
-```js
-// SCÉNARIOS NOMMÉS. Les curseurs restent la source de vérité — ces boutons ne font que
-// leur écrire une valeur puis émettre l'événement "input" qui réveille les cellules qui
-// en dépendent. C'est le patron documenté d'Observable Inputs, et il a l'avantage que le
-// curseur BOUGE : le lecteur voit à quelles hypothèses correspond le scénario qu'il a
-// choisi, au lieu d'un résultat sorti d'une boîte.
-//
-// Pourquoi ils existent : « OAT 10 ans » et « Euribor 3 mois » ne veulent rien dire pour
-// un particulier, alors que « si la BCE baisse ses taux d'un demi-point » lui parle
-// immédiatement. Aucun calcul nouveau — les mêmes valeurs, poussées dans les mêmes
-// curseurs.
-const SCENARIOS = [
-  {nom: "Aujourd'hui", dTaux: 0, chom: base?.unemployment, z: base?.intentions_z,
-   aide: "Les conditions actuelles, prolongées."},
-  {nom: "Détente du crédit", dTaux: -0.5, chom: base?.unemployment, z: (base?.intentions_z ?? 0) + 0.5,
-   aide: "La BCE baisse d'un demi-point et les ménages reprennent confiance."},
-  {nom: "Remontée des taux", dTaux: 1, chom: base?.unemployment, z: (base?.intentions_z ?? 0) - 0.5,
-   aide: "Un point de taux de marché en plus, et l'envie d'acheter recule."},
-  {nom: "Choc sur l'emploi", dTaux: 0, chom: 9.5, z: (base?.intentions_z ?? 0) - 1,
-   aide: "Le chômage monte à 9,5 %, sans mouvement de taux."},
-];
-
-function appliquer(sc) {
-  const set = (el, v) => {
-    if (el && v != null) { el.value = v; el.dispatchEvent(new Event("input", {bubbles: true})); }
-  };
-  set(dTauxInput, sc.dTaux);
-  set(chomInput, sc.chom);
-  set(intentZInput, sc.z);
-}
-
-if (base) display(html`<div class="hm-shortcuts">
-  <span class="lead">Scénarios prêts :</span>
-  ${SCENARIOS.map((sc) => {
-    const b = html`<button class="hm-shortcut" type="button" title=${sc.aide}>${sc.nom}</button>`;
-    b.onclick = () => appliquer(sc);
-    return b;
-  })}
-</div>`);
-```
-
-```js
-const oat = base ? base.oat + dTaux : null;
-```
-
-```js
-if (base) display(html`<div class="hm-caption">Le curseur déplace l'<abbr title="Obligation d'État française à 10 ans, référence du coût du crédit à long terme">OAT</abbr>
-  10 ans, seul taux de marché que le modèle retient : c'est lui qui tarife un crédit à taux
-  fixe adossé à du financement long. Position actuelle
-  <b>${nf1.format(oat)} %</b>, soit <b>${nf1.format(R.coefficients.oat)} pt</b> de taux de
-  crédit par point d'OAT, au bout de ${R.lag} mois.</div>`);
-```
-
-```js
-// Huit multiplications, en JS — computeScenario reproduit forecast.scenario terme à
-// terme (voir components/api.js) sur les coefficients exportés. Pas de quoi justifier un
-// aller-retour réseau à chaque déplacement de curseur, contrairement au POST que l'API
-// exposait pour cette même route.
-const sc = base
-  ? computeScenario(R.coefficients, T.coefficients, base, {oat, chom, intentZ})
-  : null;
-```
-
-```js
-if (sc) display(cardGrid([
-  {label: "Taux de crédit qui en résulterait", value: nf1.format(sc.rate) + " %",
-   delta: (sc.rate_change >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.rate_change)) + " pt"},
-  {label: "Ventes projetées (12 mois)", value: nf0.format(sc.transactions),
-   delta: (sc.transactions_change >= 0 ? "+" : "−") + nf0.format(Math.abs(sc.transactions_change))},
-  {label: "Écart vs aujourd'hui",
-   value: (sc.transactions_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(sc.transactions_change_pct)) + " %"}
-], kpiCard));
-```
-
-```js
-if (sc) display(Plot.plot({
-  width, height: 230, marginLeft: 72, marginBottom: 30,
-  x: {label: null}, y: {label: "Ventes 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
-  marks: [
-    Plot.barY([{k: "Actuel", v: sc.baseline.tx_now}, {k: "Scénario", v: sc.transactions}],
-              {x: "k", y: "v", fill: (d) => d.k === "Actuel" ? ui.subtle : series.brick}),
-    Plot.text([{k: "Actuel", v: sc.baseline.tx_now}, {k: "Scénario", v: sc.transactions}],
-              {x: "k", y: "v", text: (d) => nf0.format(d.v), dy: -8, fontWeight: 700}),
-    Plot.ruleY([0], {stroke: ui.border})
-  ]
 }));
 ```
 

@@ -1323,6 +1323,35 @@ le cas du chômage dès le premier mois, puisqu'il entre sans décalage. Cette c
 figurait dans la légende du graphique, pas dans le bloc de formule ; elle y est maintenant.
 **Une formule publiée sans ses conventions n'est pas reproductible, elle est décorative.**
 
+**La page de prévision est rangée par BESOIN DU LECTEUR, plus par architecture du modèle
+(2026-08-29).** L'ordre était celui de la construction : verdict, puis étage 1 (taux),
+étage 2 (transactions), outil d'audit des décalages, PUIS la projection, puis les
+scénarios. **La sortie du modèle arrivait en quatrième position**, après deux sections de
+machinerie — un dirigeant traversait la fabrique pour atteindre le produit. Nouvel ordre :
+
+| | section |
+|---|---|
+| 1 | La projection : où va le marché, et jusqu'où s'y fier |
+| 2 | Et si les conditions changeaient ? Le panneau de scénarios |
+| 3 | Le taux de crédit : ce que l'OAT 10 ans détermine d'avance |
+| 4 | Les transactions : le modèle, et sa mise à l'épreuve |
+| — | 🔬 audit des décalages, 🧪 ce qui a échoué |
+
+Aucun calcul ne change : le runtime d'Observable résout les cellules par **flot de données**,
+pas par ordre dans le document, donc déplacer des sections de Markdown ne casse rien — les
+tests de cellules le confirment. **Ce qui casse, ce sont les renvois écrits en dur** : « =
+équation de la section 2 » pointait désormais vers une section placée APRÈS (devenu
+« détaillée en section 4 »), et « le tableau de la section 3 » désignait un tableau remonté
+en section 1. `grep` « section N », « ci-dessus », « plus bas » après tout réordonnancement.
+
+**Le chapeau était remonté à 704 mots** — presque le double des 370 qui avaient été jugés
+inacceptables sur la Synthèse. Il avait absorbé, correctif après correctif, le périmètre,
+le report à plat et la méthode. Ramené à **148 mots** ; le reste vit dans un repli
+« ℹ️ La méthode, en détail ». ⚠️ Contrairement au `how_to_read` de la Synthèse, qui est une
+interpolation depuis le JSON et donc INVISIBLE aux robots, ce repli-ci est du **Markdown
+statique** : son contenu reste dans le HTML livré (vérifié). Aucun texte indexé n'est perdu
+— c'est la bonne façon de raccourcir un chapeau.
+
 **Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
 entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
 d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,
