@@ -244,12 +244,54 @@ def projection(horizon: int = 18) -> dict:
         "assured_months": int(path["assured"].sum()),
         "anchor": _num(fc.anchor_of(s["tx"], s["tx12"])),
         "fade_months": int(fc.FADE_MONTHS),
+        "predictors": _predictor_horizons(s, path),
         "sigma": sigma,
         "last_observed": last_obs,
         "end_value": end,
         "end_change_pct": (end / last_obs - 1) * 100 if last_obs else None,
         "series": rows,
     }
+
+
+#: Libellés des trois entrées de l'étage 2, dans l'ordre où elles apparaissent dans
+#: l'équation publiée. Colonne macro -> (libellé, clé du décalage).
+_TX_INPUTS = [("Credit_Logement_Taux_Interet", "taux de crédit", "kr"),
+              ("Intentions_Achat_Logement", "intentions d'achat", "ki"),
+              ("Taux_Chomage_BIT", "taux de chômage", "kc")]
+
+
+def _predictor_horizons(s, path) -> list[dict]:
+    """Jusqu'à quel mois projeté CHAQUE entrée est encore une valeur observée.
+
+    `informative_months` dit quand la trajectoire cesse de bouger ; il est piloté par le
+    prédicteur qui tient le plus longtemps — le taux, avec ses dix mois d'avance. Mais les
+    trois entrées ne s'épuisent pas ensemble, et l'écart est large : avec `kc = 0`, le
+    chômage est reporté à plat DÈS LE PREMIER mois projeté (il a déjà deux mois de retard
+    sur les ventes), et les intentions tiennent trois mois. Autrement dit le modèle tourne
+    sur une entrée vivante sur trois à partir du quatrième mois — un fait que « 10 mois
+    pilotés par des indicateurs déjà publiés » laisse croire meilleur qu'il n'est.
+    """
+    m = fc._macro_indexed(s["macro"])
+    out = []
+    for col, label, key in _TX_INPUTS:
+        obs = m[col].dropna()
+        if obs.empty:
+            continue
+        lag = int(s["lags"][key])
+        derniers = 0                       # nb de mois projetés encore adossés à l'observé
+        for h, t in enumerate(path["Date"], start=1):
+            v = m[col].get(pd.Timestamp(t) - pd.DateOffset(months=lag))
+            if v is None or pd.isna(v):
+                break
+            derniers = h
+        out.append({
+            "label": label,
+            "lag": lag,
+            "last_observed": _iso(obs.index[-1]),
+            "observed_months": derniers,
+            "held_value": _num(obs.iloc[-1]),
+        })
+    return out
 
 
 def lag_sensitivity(predictor: str) -> dict:

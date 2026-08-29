@@ -3145,6 +3145,29 @@
     "assured_months": 0,
     "anchor": 23359.48622985673,
     "fade_months": 9,
+    "predictors": [
+      {
+        "label": "taux de crédit",
+        "lag": 10,
+        "last_observed": "2026-06-01",
+        "observed_months": 10,
+        "held_value": 3.16
+      },
+      {
+        "label": "intentions d'achat",
+        "lag": 2,
+        "last_observed": "2026-07-01",
+        "observed_months": 3,
+        "held_value": -82.0
+      },
+      {
+        "label": "taux de chômage",
+        "lag": 0,
+        "last_observed": "2026-04-01",
+        "observed_months": 0,
+        "held_value": 8.3
+      }
+    ],
     "sigma": 54660.454796389815,
     "last_observed": 954000.0,
     "end_value": 896738.3469568393,

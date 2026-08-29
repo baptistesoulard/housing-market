@@ -755,10 +755,38 @@ if (P && P.available && P.anchor != null) display(html`<div class="hm-formula">
   <div class="hm-caption" style="margin-top:0.5rem">
     <b>Une précision sans laquelle le calcul ne se refait pas :</b> dans l'équation, un
     indicateur dont le mois demandé n'est pas encore publié est remplacé par sa dernière
-    valeur connue. C'est le cas du chômage dès le premier mois projeté, puisqu'il entre
-    sans décalage. Avec cette convention, l'équation et le recalage redonnent exactement
+    valeur connue. Avec cette convention, l'équation et le recalage redonnent exactement
     la valeur publiée — nous l'avons vérifié.
   </div>
+</div>`);
+```
+
+```js
+// QUELLE ENTRÉE TIENT COMBIEN DE TEMPS. `informative_months` (10) est piloté par le
+// prédicteur qui dure le plus longtemps — le taux. Les trois ne s'épuisent pas ensemble,
+// et l'écart est large : le chômage entrant sans décalage et publié avec deux mois de
+// retard sur les ventes, il est figé DÈS LE PREMIER mois projeté. Annoncer « 10 mois
+// pilotés par des indicateurs déjà publiés » sans ce détail laisse croire les trois
+// entrées vivantes pendant dix mois, alors qu'il n'en reste qu'une à partir du quatrième.
+if (P && P.available && P.predictors && P.predictors.length) display(html`<div>
+  <div class="hm-chart-title">Jusqu'où chaque entrée est-elle encore une valeur observée ?
+    <span class="sub">au-delà, elle est maintenue à sa dernière valeur connue — c'est
+    l'hypothèse la plus simple, et la seule qui n'invente rien</span></div>
+  <table class="hm-table">
+    <thead><tr><th>Entrée du modèle</th><th>Décalage</th><th>Dernier mois publié</th>
+      <th>Observée jusqu'au…</th><th>Puis figée à</th></tr></thead>
+    <tbody>${P.predictors.map((x) => html`<tr>
+      <td>${x.label}</td>
+      <td>${x.lag ? `${x.lag} mois` : "aucun"}</td>
+      <td>${fmtMonthFR(new Date(x.last_observed))}</td>
+      <td>${x.observed_months
+            ? html`${x.observed_months}<sup>e</sup> mois projeté`
+            : html`<b>aucun</b> — figée dès le 1<sup>er</sup>`}</td>
+      <!-- Les trois valeurs n'ont pas la même précision : un taux se lit à deux
+           décimales (3,16), un solde d'opinion est entier (−82). `nf1` rendait « 3,2 ». -->
+      <td>${x.held_value.toLocaleString("fr-FR", {maximumFractionDigits: 2})}</td>
+    </tr>`)}</tbody>
+  </table>
 </div>`);
 ```
 
