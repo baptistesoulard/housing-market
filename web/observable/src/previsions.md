@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {multiLine, cardGrid, kpiCard, withCsvExport, filterYears, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {multiLine, cardGrid, kpiCard, legendStatic, withCsvExport, filterYears, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui, delta} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 import {computeScenario} from "./components/api.js";
@@ -512,17 +512,27 @@ if (T) display(html`<p>Le R² de ce modèle vaut <b>${pct(T.r2)}</b>, et ce chif
 </details>
 
 ```js
-if (T) display(multiLine({
-  rows: [
-    ...histo(T.series).map((d) => ({date: d.date, value: d.observed, series: "Observé (IGEDD)"})),
-    ...histo(T.backtest.series).map((d) => ({date: d.date, value: d.predicted,
-                                             series: "Prévision hors échantillon"}))
-  ],
-  meta: [{name: "Observé (IGEDD)", color: series.brick},
-         {name: "Prévision hors échantillon", color: series.blue, dash: true}],
-  yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), width,
-  filename: "previsions-backtest-transactions"
-}));
+// Deux courbes sans légende, et une courbe bleue qui démarrait en plein graphique sans
+// que rien ne dise pourquoi : impossible de voir que tout ce qui est à DROITE du trait a
+// été produit sans avoir vu la suite. C'est aussi ce qui faisait chercher le futur ici —
+// un graphique qui ne montre pas sa frontière ressemble à une prévision inachevée.
+const META_BT = [{name: "Ventes réellement observées (IGEDD)", color: series.brick},
+                 {name: "Ce que le modèle annonçait, sans avoir vu la suite",
+                  color: series.blue, dash: true}];
+if (T) {
+  display(legendStatic(META_BT));
+  display(multiLine({
+    rows: [
+      ...histo(T.series).map((d) => ({date: d.date, value: d.observed, series: META_BT[0].name})),
+      ...histo(T.backtest.series).map((d) => ({date: d.date, value: d.predicted,
+                                               series: META_BT[1].name}))
+    ],
+    meta: META_BT,
+    splitAt: {date: T.backtest.split, label: "← entraînement | test →"},
+    yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), width,
+    filename: "previsions-backtest-transactions"
+  }));
+}
 ```
 
 ```js
@@ -663,6 +673,17 @@ if (P) display(!P.available
       {label: "Ventes projetées en fin d'horizon", value: nf0.format(P.end_value),
        delta: (P.end_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(P.end_change_pct)) + " %"}
     ], kpiCard));
+```
+
+```js
+// Même manque qu'en section 2 : quatre objets sur ce graphique (l'observé, la trajectoire
+// projetée, sa bande, le repère FNAIM) et rien qui les nomme. La légende est statique —
+// aucune de ces séries ne se masque.
+if (P && P.available) display(legendStatic([
+  {name: "Ventes réellement observées", color: series.brick},
+  {name: "Projection du modèle", color: series.blue, dash: true},
+  ...(B ? [{name: `Fourchette ${B.source} ${B.annee} (décembre seulement)`, color: series.violet}] : []),
+]));
 ```
 
 ```js

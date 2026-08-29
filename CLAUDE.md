@@ -1203,6 +1203,31 @@ disent leur point de référence au lieu de nommer la statistique (« 0 = inchan
 « 0 = moyenne historique ») — ils gardent leur unité sans exiger de savoir ce qu'est un
 écart-type.
 
+**La section 2 ne contient PAS le futur, et c'est sa définition — mais le graphique ne le
+montrait pas (2026-08-29).** Un backtest confronte ce que le modèle DISAIT à ce qui s'est
+réellement passé : au-delà du dernier mois observé il n'y a plus rien à confronter, donc la
+comparaison s'arrête là par construction. Le futur est le sujet de la section 3. Les fondre
+détruirait le sens du test — une projection n'a pas de réalisé en face.
+
+Deux manques faisaient chercher le futur là où il n'a rien à faire, et ils étaient dans le
+graphique :
+
+* **Aucune légende.** `multiLine` ne posait pas `legend: true` et aucun de ses 20 appelants
+  n'en fournissait : deux courbes, rien qui les nomme, hors survol. `legendStatic()`
+  (nouveau) rend la même chose que `legend()` sans interrupteur — sur un graphique dont
+  rien ne se masque, un `<button>` promettrait une action inexistante. Le pointillé est
+  reproduit dans la pastille : deux séries distinguées par la seule couleur ne se
+  distinguent pas pour tout le monde.
+* **Aucun repère à la frontière.** La courbe du modèle démarrait en plein graphique sans
+  que rien ne dise pourquoi. `multiLine` accepte désormais `splitAt: {date, label}`, qui
+  trace la limite entraînement / test. C'est ce trait qui rend le graphique lisible : tout
+  ce qui est à sa DROITE a été produit sans avoir vu la suite.
+
+Les libellés de séries disent maintenant le rôle et non la source — « Ce que le modèle
+annonçait, sans avoir vu la suite » plutôt que « Prévision hors échantillon ». La même
+légende a été ajoutée au graphique de la section 3, qui portait quatre objets (observé,
+projection, bande, repère FNAIM) sans en nommer aucun.
+
 **Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
 entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
 d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,

@@ -115,11 +115,25 @@ export function legend(meta, active, onToggle) {
   })}</div>`;
 }
 
+// Légende STATIQUE — même apparence que `legend()`, sans interrupteur. `legend()` rend des
+// <button aria-pressed> parce qu'elle pilote l'affichage des séries ; sur un graphique dont
+// rien ne se masque, un bouton promettrait une action qui n'existe pas. Le trait pointillé
+// est reproduit dans la pastille : deux séries qui ne se distinguent que par la couleur
+// sont indistinguables pour qui ne perçoit pas cette différence.
+export function legendStatic(meta) {
+  return html`<div class="hm-legend">${meta.map((m) => {
+    const sw = m.dash
+      ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
+      : {background: m.color};
+    return html`<span class="hm-legend-item"><span class="hm-swatch" style=${sw}></span>${m.name}</span>`;
+  })}</div>`;
+}
+
 // --- Graphique multi-séries générique (lignes) -------------------------------------
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
                            baseline = null, lastLabels = true, tipUnit = "", yPct = false,
-                           width = undefined, filename = null}) {
+                           width = undefined, filename = null, splitAt = null}) {
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const shown = active ? parsed.filter((d) => active.has(d.series)) : parsed;
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
@@ -140,6 +154,12 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
     marks: [
       baseline != null ? Plot.ruleY([baseline], {stroke: ui.rule, strokeDasharray: "3,3"}) : null,
       yPct ? Plot.ruleY([0], {stroke: ui.rule, strokeDasharray: "3,3"}) : null,
+      // `splitAt` : la frontière entraînement / test d'un backtest. Sans elle, la courbe
+      // du modèle démarre en plein graphique sans que rien ne dise pourquoi — le lecteur
+      // ne peut pas voir que tout ce qui est à droite a été produit SANS avoir vu la suite.
+      splitAt ? Plot.ruleX([new Date(splitAt.date)], {stroke: ui.subtle, strokeDasharray: "3,3"}) : null,
+      splitAt ? Plot.text([{d: new Date(splitAt.date)}], {x: "d", frameAnchor: "top", dy: 4, dx: 4,
+        text: () => splitAt.label, fill: ui.subtle, textAnchor: "start", fontSize: 12}) : null,
       Plot.lineY(shown.filter((d) => !dashed.has(d.series)), {x: "_x", y: "value", stroke: "series", strokeWidth: 2.4}),
       Plot.lineY(shown.filter((d) => dashed.has(d.series)), {x: "_x", y: "value", stroke: "series", strokeWidth: 2.4, strokeDasharray: "6,4"}),
       lastLabels ? Plot.text(last, {x: "_x", y: "value", text: (d) => fmt(d.value),
