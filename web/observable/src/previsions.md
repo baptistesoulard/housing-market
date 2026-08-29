@@ -513,6 +513,33 @@ else if (T) display(cardGrid([
 ], kpiCard));
 ```
 
+```js
+// L'ÉQUATION DE L'ÉTAGE 2. L'étage 1 publie la sienne en clair depuis toujours ; celui-ci
+// n'affichait que ses décalages, donc QUELLES variables entrent — jamais ce que le modèle
+// en fait. Un lecteur ne pouvait pas refaire le calcul, ni voir combien coûte un point de
+// taux. Même dispositif (.hm-formula) que l'étage 1 et que le taux de transformation de
+// « Marché du neuf » : les calculs du site se présentent tous de la même façon.
+if (T && T.coefficients) display(html`<div class="hm-formula">
+  <b>Ventes de logements anciens sur 12 mois, au mois <i>t</i></b> =
+  ${nf0.format(T.coefficients.intercept)}
+  ${T.coefficients.rate < 0 ? "−" : "+"} ${nf0.format(Math.abs(T.coefficients.rate))}
+    × taux de crédit(<i>t</i> − ${T.lags.kr} mois)
+  ${T.coefficients.intentions < 0 ? "−" : "+"} ${nf0.format(Math.abs(T.coefficients.intentions))}
+    × intentions d'achat(<i>t</i> − ${T.lags.ki} mois)
+  ${T.coefficients.unemployment < 0 ? "−" : "+"} ${nf0.format(Math.abs(T.coefficients.unemployment))}
+    × taux de chômage(<i>t</i>${T.lags.kc ? ` − ${T.lags.kc} mois` : ""})
+  <div class="hm-caption" style="margin-top:0.5rem">
+    Chaque coefficient se lit tel quel, en ventes annuelles : un point de taux de crédit en
+    plus coûte <b>${nf0.format(Math.abs(T.coefficients.rate))}</b> ventes,
+    un point de chômage en plus <b>${nf0.format(Math.abs(T.coefficients.unemployment))}</b>,
+    et un point de solde d'opinion sur les intentions d'achat en rapporte
+    <b>${nf0.format(Math.abs(T.coefficients.intentions))}</b>. Le chômage entre
+    ${T.lags.kc ? `avec ${T.lags.kc} mois de décalage` : "sans décalage"} — c'est ce qui
+    fait qu'aucun mois projeté n'est jamais entièrement « sans hypothèse ».
+  </div>
+</div>`);
+```
+
 <details class="hm-howto">
   <summary>Pourquoi le R² n'est pas en tête de page</summary>
 
@@ -702,6 +729,37 @@ if (P) display(!P.available
       {label: "Ventes projetées en fin d'horizon", value: nf0.format(P.end_value),
        delta: (P.end_change_pct >= 0 ? "+" : "−") + nf1.format(Math.abs(P.end_change_pct)) + " %"}
     ], kpiCard));
+```
+
+```js
+// CE QUE LA PROJECTION AJOUTE À L'ÉQUATION. Le modèle est une régression de NIVEAU : il
+// reconstruit la série depuis la macro sans jamais regarder où elle se trouve réellement,
+// et son erreur au premier mois projeté valait donc son résidu d'ajustement (~4,2 %) là
+// où recopier le dernier chiffre connu n'en coûte que 1,2 %. D'où le recalage. Il n'était
+// écrit nulle part : un lecteur qui reprenait l'équation de la section 2 trouvait un écart
+// sans comprendre d'où il venait.
+if (P && P.available && P.anchor != null) display(html`<div class="hm-formula">
+  <b>Projection du mois <i>t</i></b> = équation de la section 2
+  + ${nf0.format(Math.round(P.anchor))} × poids(<i>t</i>)
+  <div class="hm-caption" style="margin-top:0.5rem">
+    L'équation reconstruit un niveau à partir de la macro, sans regarder où la série se
+    trouve vraiment : au dernier mois ajusté elle se trompait de
+    <b>${nf0.format(Math.abs(Math.round(P.anchor)))}</b> ventes. La projection part donc du
+    dernier chiffre réellement observé (${nf0.format(P.last_observed)}) et rejoint sa propre
+    trajectoire progressivement — le poids vaut 1 au premier mois projeté et décroît
+    linéairement pour s'annuler au <b>${P.fade_months + 1}<sup>e</sup></b>. Gain mesuré sur
+    l'archive : 11 % d'erreur en moins au total, 42 % sur les trois premiers mois. La durée
+    n'est pas un réglage ajusté : toutes les valeurs entre 6 et 12 mois donnent le même
+    résultat à 0,1 point près.
+  </div>
+  <div class="hm-caption" style="margin-top:0.5rem">
+    <b>Une précision sans laquelle le calcul ne se refait pas :</b> dans l'équation, un
+    indicateur dont le mois demandé n'est pas encore publié est remplacé par sa dernière
+    valeur connue. C'est le cas du chômage dès le premier mois projeté, puisqu'il entre
+    sans décalage. Avec cette convention, l'équation et le recalage redonnent exactement
+    la valeur publiée — nous l'avons vérifié.
+  </div>
+</div>`);
 ```
 
 ```js

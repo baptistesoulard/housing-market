@@ -3143,6 +3143,8 @@
     "horizon_months": 18,
     "informative_months": 10,
     "assured_months": 0,
+    "anchor": 23359.48622985673,
+    "fade_months": 9,
     "sigma": 54660.454796389815,
     "last_observed": 954000.0,
     "end_value": 896738.3469568393,

@@ -1257,6 +1257,29 @@ Le nombre a été retiré au profit de « depuis 2009 », qui est une constante
 (`BACKFILL_START`) et ne dérivera pas. **Corriger un chiffre dans la doc ne le corrige pas
 sur le site : `grep` la valeur dans `web/observable/src/` aussi.**
 
+**La formule de l'étage 2 et celle de la PROJECTION sont publiées (2026-08-29).** L'étage 1
+affichait la sienne en clair (`.hm-formula`) depuis toujours ; l'étage 2 ne montrait que ses
+décalages — donc QUELLES variables entrent, jamais ce que le modèle en fait. Deux blocs
+comblent le trou, et le second était le plus manquant :
+
+* **L'équation** : `2 680 053 − 91 637 × taux(t−10) + 13 157 × intentions(t−2) −
+  49 987 × chômage(t)`. Les coefficients se lisent tels quels, en ventes annuelles — un
+  point de taux de crédit coûte ~92 000 ventes, un point de chômage ~50 000. C'est aussi ce
+  qui rend le modèle vérifiable par un tiers.
+* **Le RECALAGE**, qui n'était écrit nulle part : la projection n'est pas la sortie brute de
+  l'équation, on lui ajoute l'écart observé−ajusté du dernier mois (`anchor_of`) avec un
+  poids qui vaut 1 au premier mois projeté et s'annule au 10ᵉ (`FADE_MONTHS = 9`). Un
+  lecteur qui reprenait l'équation seule trouvait un écart de 23 359 ventes sans pouvoir
+  comprendre d'où il venait. `engine.projection()` expose donc `anchor` et `fade_months`.
+
+**Reproductibilité vérifiée, et une convention indispensable pour l'obtenir.** Refait à la
+main sur le premier mois projeté : équation (925 473) + recalage (23 359) = **948 833**,
+soit exactement la valeur publiée, à 0,00 près. Mais il a fallu savoir qu'**un indicateur
+dont le mois demandé n'est pas encore publié est remplacé par sa dernière valeur connue** —
+le cas du chômage dès le premier mois, puisqu'il entre sans décalage. Cette convention
+figurait dans la légende du graphique, pas dans le bloc de formule ; elle y est maintenant.
+**Une formule publiée sans ses conventions n'est pas reproductible, elle est décorative.**
+
 **Le verdict de tête est GÉNÉRÉ, jamais écrit.** « Prévision & Scénarios » publiait les
 entrailles du modèle — un R², une MAPE, trois coefficients OLS, un z-score d'intentions
 d'achat — et nulle part sa conclusion. `web_export._verdict` produit la phrase (sens,

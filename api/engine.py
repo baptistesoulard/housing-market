@@ -232,11 +232,18 @@ def projection(horizon: int = 18) -> dict:
         if abs(vals[i] - vals[i - 1]) > 1.0:
             informative = i + 1
             break
+    # `anchor` et `fade_months` sont EXPOSÉS parce que la projection n'est pas la sortie
+    # brute de l'étage 2 : on lui ajoute l'écart observé−ajusté du dernier mois, avec un
+    # poids qui s'éteint linéairement. Sans ces deux nombres, la formule publiée sur la
+    # page ne permet PAS de refaire le calcul — et un lecteur qui la vérifierait trouverait
+    # un écart sans comprendre d'où il vient.
     return {
         "available": True,
         "horizon_months": len(path),
         "informative_months": informative,
         "assured_months": int(path["assured"].sum()),
+        "anchor": _num(fc.anchor_of(s["tx"], s["tx12"])),
+        "fade_months": int(fc.FADE_MONTHS),
         "sigma": sigma,
         "last_observed": last_obs,
         "end_value": end,
