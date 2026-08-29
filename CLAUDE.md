@@ -1272,6 +1272,38 @@ comblent le trou, et le second était le plus manquant :
   lecteur qui reprenait l'équation seule trouvait un écart de 23 359 ventes sans pouvoir
   comprendre d'où il venait. `engine.projection()` expose donc `anchor` et `fade_months`.
 
+**Les trois entrées ne s'épuisent PAS ensemble, et l'écart est large (2026-08-29).**
+`informative_months` (10) est piloté par le prédicteur qui tient le plus longtemps — le
+taux, avec ses dix mois d'avance. Mesuré entrée par entrée :
+
+| entrée | décalage | dernier mois publié | observée jusqu'au | puis figée à |
+|---|---|---|---|---|
+| taux de crédit | 10 mois | juin 2026 | **10ᵉ** mois projeté | 3,16 % |
+| intentions d'achat | 2 mois | juillet 2026 | **3ᵉ** mois projeté | −82 |
+| taux de chômage | **aucun** | avril 2026 | **aucun — figé dès le 1ᵉʳ** | 8,3 % |
+
+Le chômage entre sans décalage ET accuse deux mois de retard sur les ventes : il est donc
+reporté à plat depuis le tout premier mois projeté. Les intentions tiennent trois mois.
+**À partir du quatrième mois, le modèle tourne sur une entrée vivante sur trois** — ce que
+« 10 mois pilotés par des indicateurs déjà publiés » laissait croire bien meilleur qu'il
+n'est. `engine._predictor_horizons` publie le détail, la page le rend en tableau.
+
+C'est aussi l'explication complète de `assured_months = 0` : le repère « sans hypothèse »
+ne pouvait jamais apparaître puisque le chômage manque dès le premier mois.
+
+⚠️ **Le piège de l'accent grave ne concerne pas que `observablehq.config.js`.** Un
+commentaire HTML placé DANS un littéral gabarit est du texte de chaîne comme le reste : y
+citer un identifiant entre accents graves **referme la chaîne**, la cellule devient
+invalide, et le build la retire SANS RIEN DIRE. Rencontré en écrivant le tableau ci-dessus,
+et attrapé par `test_chaque_cellule_js_est_syntaxiquement_valide` — c'est exactement ce
+pour quoi ce test existe.
+
+⚠️ **Et une leçon de méthode, apprise deux fois de suite le même jour :** un `cd` en tête
+de commande composée PERSISTE pour les commandes suivantes. Deux commits sont partis avec
+`pytest` exécuté depuis `web/observable` (« no tests ran », pris pour un succès) et une
+mise à jour de `CLAUDE.md` échouée sur `FileNotFoundError` — `git` ayant, lui, fonctionné
+depuis n'importe où dans le dépôt. **Chemins absolus pour tout ce qui n'est pas git.**
+
 **Reproductibilité vérifiée, et une convention indispensable pour l'obtenir.** Refait à la
 main sur le premier mois projeté : équation (925 473) + recalage (23 359) = **948 833**,
 soit exactement la valeur publiée, à 0,00 près. Mais il a fallu savoir qu'**un indicateur
