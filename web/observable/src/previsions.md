@@ -783,7 +783,9 @@ if (P && P.available && P.predictors && P.predictors.length) display(html`<div>
             ? html`${x.observed_months}<sup>e</sup> mois projeté`
             : html`<b>aucun</b> — figée dès le 1<sup>er</sup>`}</td>
       <!-- Les trois valeurs n'ont pas la même précision : un taux se lit à deux
-           décimales (3,16), un solde d'opinion est entier (−82). `nf1` rendait « 3,2 ». -->
+           décimales (3,16), un solde d'opinion est entier (−82) ; nf1 rendait 3,2.
+           NE PAS mettre d'accents graves ici : ce commentaire est DANS un littéral
+           gabarit, un backtick le refermerait et la cellule serait retirée du build. -->
       <td>${x.held_value.toLocaleString("fr-FR", {maximumFractionDigits: 2})}</td>
     </tr>`)}</tbody>
   </table>
