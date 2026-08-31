@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T17:28:24+00:00",
+  "generated_at": "2026-08-31T12:33:59+00:00",
   "title": "🎯 Prévisions passées — ce que nous annoncions",
   "caption": "Toutes les prévisions de transactions produites par le modèle, face à ce qui s'est réellement passé. Une prévision publiée sans son historique n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre en défaut.",
   "how_to_read": "Deux natures de prévisions cohabitent ici et ne se valent pas. Les prévisions PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — personne ne peut les retoucher. Les prévisions RÉTRO-SIMULÉES ont été recalculées après coup en tronquant les données au mois visé : elles montrent que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles restent séparées partout. Leur limite : les transactions sont révisées, donc une rétro-simulation voit des données un peu meilleures que celles de l'époque.",
@@ -101,7 +101,7 @@
   ],
   "kinds": {
     "archive": {
-      "n_rows": 36,
+      "n_rows": 54,
       "n_vintages": 1,
       "n_evaluated": 0,
       "first_vintage": "2026-06-01",
@@ -120,12 +120,20 @@
               925797
             ],
             [
+              "2026-07-01",
+              935815
+            ],
+            [
               "2026-08-01",
               912790
             ],
             [
               "2026-08-01",
               912790
+            ],
+            [
+              "2026-08-01",
+              933192
             ],
             [
               "2026-09-01",
@@ -136,12 +144,20 @@
               911874
             ],
             [
+              "2026-09-01",
+              916633
+            ],
+            [
               "2026-10-01",
               912790
             ],
             [
               "2026-10-01",
               912790
+            ],
+            [
+              "2026-10-01",
+              901908
             ],
             [
               "2026-11-01",
@@ -152,12 +168,20 @@
               907293
             ],
             [
+              "2026-11-01",
+              893785
+            ],
+            [
               "2026-12-01",
               902712
             ],
             [
               "2026-12-01",
               902712
+            ],
+            [
+              "2026-12-01",
+              886579
             ],
             [
               "2027-01-01",
@@ -168,12 +192,20 @@
               902712
             ],
             [
+              "2027-01-01",
+              883955
+            ],
+            [
               "2027-02-01",
               901796
             ],
             [
               "2027-02-01",
               901796
+            ],
+            [
+              "2027-02-01",
+              880415
             ],
             [
               "2027-03-01",
@@ -184,12 +216,20 @@
               902712
             ],
             [
+              "2027-03-01",
+              878708
+            ],
+            [
               "2027-04-01",
               897215
             ],
             [
               "2027-04-01",
               897215
+            ],
+            [
+              "2027-04-01",
+              870585
             ],
             [
               "2027-05-01",
@@ -200,12 +240,20 @@
               897215
             ],
             [
+              "2027-05-01",
+              870585
+            ],
+            [
               "2027-06-01",
               897215
             ],
             [
               "2027-06-01",
               897215
+            ],
+            [
+              "2027-06-01",
+              870585
             ],
             [
               "2027-07-01",
@@ -216,12 +264,20 @@
               897215
             ],
             [
+              "2027-07-01",
+              870585
+            ],
+            [
               "2027-08-01",
               897215
             ],
             [
               "2027-08-01",
               897215
+            ],
+            [
+              "2027-08-01",
+              870585
             ],
             [
               "2027-09-01",
@@ -232,12 +288,20 @@
               897215
             ],
             [
+              "2027-09-01",
+              870585
+            ],
+            [
               "2027-10-01",
               897215
             ],
             [
               "2027-10-01",
               897215
+            ],
+            [
+              "2027-10-01",
+              870585
             ],
             [
               "2027-11-01",
@@ -248,12 +312,20 @@
               897215
             ],
             [
+              "2027-11-01",
+              870585
+            ],
+            [
               "2027-12-01",
               897215
             ],
             [
               "2027-12-01",
               897215
+            ],
+            [
+              "2027-12-01",
+              870585
             ]
           ]
         }
@@ -16606,133 +16678,133 @@
   "current": {
     "vintage": "2026-06-01",
     "vintage_label": "juin 2026",
-    "run_date": "2026-08-24",
-    "r2": 0.914,
+    "run_date": "2026-08-31",
+    "r2": 0.915,
     "points": [
       {
         "date": "2026-07-01",
-        "predicted": 925797,
-        "lo": 854593,
-        "hi": 997001,
-        "assured": true
+        "predicted": 935815,
+        "lo": 884699,
+        "hi": 971454,
+        "assured": false
       },
       {
         "date": "2026-08-01",
-        "predicted": 912790,
-        "lo": 841587,
-        "hi": 983994,
-        "assured": true
+        "predicted": 933192,
+        "lo": 871262,
+        "hi": 978073,
+        "assured": false
       },
       {
         "date": "2026-09-01",
-        "predicted": 911874,
-        "lo": 840670,
-        "hi": 983078,
+        "predicted": 916633,
+        "lo": 851032,
+        "hi": 966875,
         "assured": false
       },
       {
         "date": "2026-10-01",
-        "predicted": 912790,
-        "lo": 841587,
-        "hi": 983994,
+        "predicted": 901908,
+        "lo": 833330,
+        "hi": 953179,
         "assured": false
       },
       {
         "date": "2026-11-01",
-        "predicted": 907293,
-        "lo": 836090,
-        "hi": 978497,
+        "predicted": 893785,
+        "lo": 815241,
+        "hi": 949125,
         "assured": false
       },
       {
         "date": "2026-12-01",
-        "predicted": 902712,
-        "lo": 831509,
-        "hi": 973916,
+        "predicted": 886579,
+        "lo": 802064,
+        "hi": 949259,
         "assured": false
       },
       {
         "date": "2027-01-01",
-        "predicted": 902712,
-        "lo": 831509,
-        "hi": 973916,
+        "predicted": 883955,
+        "lo": 797819,
+        "hi": 954062,
         "assured": false
       },
       {
         "date": "2027-02-01",
-        "predicted": 901796,
-        "lo": 830593,
-        "hi": 973000,
+        "predicted": 880415,
+        "lo": 797181,
+        "hi": 957475,
         "assured": false
       },
       {
         "date": "2027-03-01",
-        "predicted": 902712,
-        "lo": 831509,
-        "hi": 973916,
+        "predicted": 878708,
+        "lo": 796355,
+        "hi": 962652,
         "assured": false
       },
       {
         "date": "2027-04-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 785873,
+        "hi": 954407,
         "assured": false
       },
       {
         "date": "2027-05-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 781593,
+        "hi": 947245,
         "assured": false
       },
       {
         "date": "2027-06-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 782305,
+        "hi": 947825,
         "assured": false
       },
       {
         "date": "2027-07-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 774825,
+        "hi": 952432,
         "assured": false
       },
       {
         "date": "2027-08-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 768905,
+        "hi": 962664,
         "assured": false
       },
       {
         "date": "2027-09-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 764334,
+        "hi": 968715,
         "assured": false
       },
       {
         "date": "2027-10-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 759998,
+        "hi": 969163,
         "assured": false
       },
       {
         "date": "2027-11-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 758346,
+        "hi": 971825,
         "assured": false
       },
       {
         "date": "2027-12-01",
-        "predicted": 897215,
-        "lo": 826012,
-        "hi": 968419,
+        "predicted": 870585,
+        "lo": 752662,
+        "hi": 980521,
         "assured": false
       }
     ]
