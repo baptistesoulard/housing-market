@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T20:37:55+00:00",
+  "generated_at": "2026-09-02T21:38:12+00:00",
   "title": "📰 Actualités — aides & plans de relance logement",
   "caption": "Veille sur les grands dispositifs publics français et européens qui soutiennent (ou freinent) le marché du logement, avec pour chaque mesure : statut, jalons, montants et impact potentiel sur les trois piliers du modèle (neuf, ancien, rénovation).",
   "how_to_read": "Cette page est une grille de lecture qualitative, pas une sortie de modèle. Chaque mesure est notée de ⬇⬇ à ⬆⬆ sur les trois piliers selon le sens et l'intensité de son effet attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé. Le statut distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion — seules les mesures en vigueur agissent déjà sur les séries des autres onglets.",
@@ -19,9 +19,9 @@
     },
     {
       "label": "Prochaine échéance",
-      "value": "09/2026",
+      "value": "12/2026",
       "subs": [
-        "MaPrimeRénov' 2026"
+        "Citizens Energy Package"
       ]
     }
   ],

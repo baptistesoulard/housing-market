@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T12:33:59+00:00",
+  "generated_at": "2026-09-02T21:38:12+00:00",
   "title": "🏦 Contexte Macroéconomique et Financement",
   "caption": "Indicateurs de contexte macroéconomique et de conditions de financement : confiance des ménages (INSEE), taux du crédit habitat (BdF/BCE), Euribor 3 mois et OAT 10 ans (BCE), intentions d'achat de logement et taux de chômage BIT (INSEE).",
   "how_to_read": "Ces indicateurs expliquent le marché plus qu'ils ne le décrivent, et la plupart le précèdent. Les soldes d'opinion (confiance, intentions, rénovation, BLS) se lisent en écart à leur repère — le zéro ou la moyenne de longue période — pas en niveau absolu. La demande de crédits (BLS) est l'indicateur le plus avancé de la page : les banques la constatent avant que les transactions ne bougent. Sur les volumes, les renégociations sont isolées car elles ne déclenchent ni transaction ni chantier.",
@@ -2650,6 +2650,11 @@
         "value": 3.16
       },
       {
+        "date": "2026-07-01",
+        "series": "Taux Crédit Habitat (toutes durées)",
+        "value": 3.18
+      },
+      {
         "date": "2001-01-01",
         "series": "Euribor 3 mois",
         "value": 4.7707
@@ -4183,6 +4188,11 @@
         "date": "2026-07-01",
         "series": "Euribor 3 mois",
         "value": 2.4254
+      },
+      {
+        "date": "2026-08-01",
+        "series": "Euribor 3 mois",
+        "value": 2.5131
       },
       {
         "date": "2001-01-01",
@@ -7791,6 +7801,11 @@
         "date": "2026-06-01",
         "pure": 15.653,
         "renego": 2.335
+      },
+      {
+        "date": "2026-07-01",
+        "pure": 15.298,
+        "renego": 2.311
       }
     ],
     "cum": [
@@ -9148,6 +9163,11 @@
         "date": "2026-06-01",
         "total": 187.01299999999998,
         "pure": 159.496
+      },
+      {
+        "date": "2026-07-01",
+        "total": 185.205,
+        "pure": 157.931
       }
     ]
   },

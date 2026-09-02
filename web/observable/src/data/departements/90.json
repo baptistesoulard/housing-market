@@ -525,7 +525,7 @@
     "cinq_ans": 1.7
   },
   "capacite": {
-    "m2_aujourdhui": 123.3,
+    "m2_aujourdhui": 123.0,
     "prix_m2": 1442,
     "mensualite": 1000,
     "duree_ans": 20,
@@ -537,5 +537,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-08-20T17:25:01+00:00"
+  "generated_at": "2026-09-02T21:38:46+00:00"
 }

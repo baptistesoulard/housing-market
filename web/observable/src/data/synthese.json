@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T12:33:58+00:00",
+  "generated_at": "2026-09-02T21:38:11+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -28,7 +28,7 @@
   "takeaways": [
     "🟠 **Aujourd'hui** — **Ancien** : 954 k ventes sur 12 mois, 17 % au-dessus de la normale 2010-19, mais au plateau depuis décembre 2025. **Neuf** : 296 k chantiers, 23 % sous la normale 2010-19, sur un stock de 124 027 invendus qui met 22 mois à s'écouler contre 15 habituellement.",
     "🔴 **Le carnet** — les permis reculent (-3,6% sur 3 mois) plus vite que les chantiers, qui marquent le pas après une forte année (-0,5% sur 3 mois, +17,9% sur 12 mois). Et seulement 80 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+8,3% sur 3 mois, +22,8% sur 12 mois).",
-    "🔴 **Financement** — taux de crédit à 3,16 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
+    "🔴 **Financement** — taux de crédit à 3,18 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
     "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 7 % d'ici décembre 2026."
   ],
   "freshness": [
@@ -115,7 +115,7 @@
         {
           "emoji": "🔴",
           "title": "Taux de crédit habitat",
-          "value": "3,16 %",
+          "value": "3,18 %",
           "sub": "toutes durées confondues · sur un an : +0,2 pt"
         },
         {
@@ -164,8 +164,8 @@
         {
           "emoji": "🗓️",
           "title": "Prochaine échéance aides",
-          "value": "09/2026",
-          "sub": "MaPrimeRénov' 2026",
+          "value": "12/2026",
+          "sub": "Citizens Energy Package",
           "level": ""
         }
       ],

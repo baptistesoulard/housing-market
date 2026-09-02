@@ -94,9 +94,9 @@ l'autre, donc ces dates ne s'alignent pas, et c'est normal.
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001616794">Intentions d'achat de logement</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">août 2026</td></tr>
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001688527">Taux de chômage au sens du BIT</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T2 2026</td></tr>
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001586954">Activité du second œuvre (rénovation)</a></td><td>INSEE — enquête de conjoncture</td><td>API SDMX (BDM)</td><td class="hm-when">août 2026</td></tr>
-    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/MIR">Taux et volume des crédits nouveaux à l'habitat</a></td><td>Banque de France / BCE</td><td>API SDMX (MIR)</td><td class="hm-when">juin 2026</td></tr>
+    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/MIR">Taux et volume des crédits nouveaux à l'habitat</a></td><td>Banque de France / BCE</td><td>API SDMX (MIR)</td><td class="hm-when">juillet 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/BLS">Demande de crédits habitat (enquête BLS)</a></td><td>BCE / Banque de France</td><td>API SDMX (BLS)</td><td class="hm-when">T3 2026</td></tr>
-    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/FM">Euribor 3 mois</a></td><td>BCE</td><td>API SDMX (FM)</td><td class="hm-when">juillet 2026</td></tr>
+    <tr><td><a href="https://data.ecb.europa.eu/data/datasets/FM">Euribor 3 mois</a></td><td>BCE</td><td>API SDMX (FM)</td><td class="hm-when">août 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/IRS">OAT 10 ans</a></td><td>BCE</td><td>API SDMX (IRS)</td><td class="hm-when">juillet 2026</td></tr>
     <!-- hm:sources:fin -->
   </tbody>
