@@ -12,6 +12,12 @@ import simulation as sim
 import forecast as fc
 import actualites as actu
 
+# Horloge des jalons de la veille (« prochaine échéance »). `actu.MAJ` dit quand la veille
+# a été RELUE, pas quel jour on est : s'y comparer laissait annoncer comme « prochaine »
+# une échéance déjà passée entre la dernière relecture et l'affichage. Miroir de
+# `web_export._jalons_a_venir` — les deux surfaces doivent dire la même date.
+_AUJOURDHUI = pd.Timestamp.today().strftime("%Y-%m-%d")
+
 # --- Brand palette (see "Color theme.txt") ---
 # Centralised so the CSS block and every Plotly trace draw from the same colours.
 # Structure
@@ -1157,7 +1163,7 @@ with tab_synthese:
     # Next policy milestone from the curated watchlist (Actualités & Aides).
     _sy_jalons = sorted(
         [(d, it) for it in actu.items_sorted() for d, _lbl, _typ in it.get("jalons", [])
-         if d > actu.MAJ],
+         if d > _AUJOURDHUI],
         key=lambda t: t[0])
     if _sy_jalons:
         _j_d, _j_it = _sy_jalons[0]
@@ -2050,7 +2056,7 @@ with tab_actus:
     _n_vigueur = sum(1 for it in _items_all if it["statut"] == "vigueur")
     _next_jalons = sorted(
         [(d, it) for it in _items_all for d, _lbl, _typ in it.get("jalons", [])
-         if d > actu.MAJ],
+         if d > _AUJOURDHUI],
         key=lambda t: t[0])
     ka = st.columns(4)
     ka[0].metric(_L("Dispositifs suivis", "Tracked measures"), len(_items_all))
@@ -2124,11 +2130,11 @@ with tab_actus:
                 text=sub["Jalon"],
                 hovertemplate="%{y} — %{x|%d/%m/%Y}<br>%{text}<extra></extra>"))
         # Ligne « aujourd'hui » (add_shape : compatible axes dates, contrairement à add_vline)
-        _today = pd.Timestamp(actu.MAJ)
-        fig_tl.add_shape(type="line", x0=_today, x1=_today, y0=0, y1=1, yref="paper",
+        _revue = pd.Timestamp(actu.MAJ)
+        fig_tl.add_shape(type="line", x0=_revue, x1=_revue, y0=0, y1=1, yref="paper",
                          line=dict(color=COLOR_SUBTLE, width=1, dash="dash"))
-        fig_tl.add_annotation(x=_today, y=1.04, yref="paper", showarrow=False,
-                              text=_L("Aujourd'hui", "Today"),
+        fig_tl.add_annotation(x=_revue, y=1.04, yref="paper", showarrow=False,
+                              text=_L("Dernière revue", "Last review"),
                               font=dict(color=COLOR_SUBTLE, size=11))
         apply_macro_chart_layout(fig_tl, "")
         fig_tl.update_layout(

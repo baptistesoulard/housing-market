@@ -805,8 +805,23 @@ phrase appartient au générateur, pas au Markdown.
 
 La troisième ligne est un choix documenté (résultats de méthode, relevés externes), pas un
 oubli — mais elle vieillit : `actualites.MAJ` avait **six semaines de retard** au moment de
-cet audit, et le filtre des échéances compare à `MAJ` plutôt qu'à la date du jour (voir
-plus bas). La deuxième ligne, elle, n'a aucune garde.
+cet audit, et sept au 2026-09-02. La deuxième ligne, elle, n'a aucune garde.
+
+**`MAJ` n'est plus l'horloge des échéances (corrigé le 2026-09-02).** Le filtre des jalons
+comparait à `actu.MAJ` — la date de dernière RELECTURE de la veille — et non au jour de la
+publication. Conséquence mécanique : toute échéance tombant entre les deux restait annoncée
+comme « prochaine » alors qu'elle était passée. Constaté en publiant le 2026-09-02, avec
+« Prochaine échéance : 09/2026 — suppression des forfaits monogestes », datée du 1ᵉʳ. Le
+site publiait donc du passé au futur, sur la seule carte de la Synthèse qui regarde devant.
+
+`web_export._jalons_a_venir` porte désormais le filtre pour les deux surfaces qu'il
+alimente (Synthèse et Actualités), et `app.py` a le même dans `_AUJOURDHUI` — les deux
+doivent dire la même date, c'est la règle habituelle des surfaces jumelles. **`MAJ` reste
+inchangée et reste affichée** : elle dit quand un humain a relu la veille, ce qui est une
+information réelle et distincte ; elle n'avait simplement pas à servir d'horloge. Dans la
+foulée, le chronogramme d'`app.py` traçait sa ligne sur `MAJ` en l'annotant
+« Aujourd'hui », pendant que sa propre légende disait « date de la dernière revue » — la
+ligne reste où elle est, l'annotation dit maintenant « Dernière revue ».
 
 **Neuf et ancien sont des pages JUMELLES : trois sections communes, même intitulé, même
 ordre.** « 🔑 Chiffres Clés », « 📊 Courbes d'évolution du marché », « 📅 Comparaison
@@ -1807,7 +1822,7 @@ interrogeant la source : `files.data.gouv.fr/geo-dvf/` ne porte qu'un seul mill�
 
 | Période | Source | Rafraîchie par | Commitée |
 |---|---|---|---|
-| 2021-2025 | `files.data.gouv.fr/geo-dvf/latest/` (officielle, LOv2) | `fetch_new_sources.build_dvf`, chaque semaine | `data_manual_input/dvf-recent.csv` |
+| 2021-2025 | `files.data.gouv.fr/geo-dvf/latest/` (officielle, LOv2) | `fetch_new_sources.build_dvf`, **à la main** (voir ci-dessous) | `data_manual_input/dvf-recent.csv` |
 | 2014-2020 | miroir `data.cquest.org/dgfip_dvf/` (millésimes archivés) | `dvf_backfill.py`, à la main, **jamais en CI** | `data_manual_input/dvf-historique-2014-2020.csv` |
 
 `DataManager.ensure_dvf` recolle les deux en `data/dvf.csv` (la moitié récente l'emporte en
@@ -1819,6 +1834,19 @@ officielle, mais l'écart mesuré sur la médiane PUBLIÉE est de +0,00 % (Lozè
 (Paris), mesuré sur des données où les deux sources coexistent. Sur les 97 départements, la
 soudure donne −0,60 % d'écart médian, contre +0,78 % pour un passage de trimestre
 ordinaire.
+
+**⚠️ `build_dvf` n'est PAS dans `BUILDERS`** — constaté le 2026-09-02, cette page disait
+« chaque semaine » et c'était faux. Le builder existe, il marche, mais `refresh_all` ne
+l'appelle pas : le workflow hebdomadaire ne rafraîchit donc jamais DVF, et les pages
+départementales avancent au rythme des exécutions manuelles. Ce n'est pas urgent — la
+source est publiée deux fois par an, et un `HEAD` sur un fichier de millésime donne sa date
+(`Last-Modified` = 2026-05-18 au 2026-09-02, soit ANTÉRIEURE à notre dernier build du
+2026-08-20 : rien à reprendre). Mais c'est un choix à faire explicitement, pas à subir :
+l'ajouter à `BUILDERS` ferait télécharger ~500 Mo à chaque lundi pour un fichier qui change
+deux fois l'an. La bonne forme serait un builder CONDITIONNEL, qui compare le
+`Last-Modified` de la source à la date de `dvf-recent.csv` avant de télécharger quoi que ce
+soit. En attendant, vérifier DVF fait partie de toute passe « les données sont-elles à
+jour ? », et ce contrôle coûte une requête `HEAD`.
 
 **Ne jamais commiter les fichiers DVF bruts** : ~500 Mo pour la fenêtre glissante, 1,1 Go
 pour l'historique. `build_dvf` les télécharge, les nettoie et les JETTE.

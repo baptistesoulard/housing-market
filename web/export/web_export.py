@@ -49,6 +49,22 @@ from api import engine                          # noqa: E402  (moteur de prévis
 # Cible BPCE 2026 (miroir des constantes d'app.py, bloc Perspective).
 BPCE_TX_ANCIEN_2026 = 890_000
 
+
+def _jalons_a_venir(items):
+    """Les jalons encore à venir, triés — comparés à AUJOURD'HUI, pas à `actu.MAJ`.
+
+    La veille d'`actualites.py` est curatée à la main : `MAJ` dit quand elle a été relue,
+    et c'est à ce repère que le filtre se comparait. Un jalon tombant entre `MAJ` et le
+    jour de la publication restait donc annoncé comme « prochaine échéance » alors qu'il
+    était déjà passé — le cas s'est produit avec la suppression des forfaits monogestes
+    (2026-09-01) publiée le 2026-09-02. `MAJ` reste ce qu'elle est, la date de dernière
+    relecture affichée sur la page ; elle n'a simplement pas à servir d'horloge.
+    """
+    aujourdhui = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    return sorted([(d, it) for it in items for d, _lbl, _typ in it.get("jalons", [])
+                   if d > aujourdhui], key=lambda t: t[0])
+
+
 # Palette : sourcée depuis le thème partagé (web/theme.json via theme.py), rampe de séries.
 COLOR_TEXT = theme.S_VIOLET     # slot 4 (série) — mises en chantier, taux crédit, encours
 COLOR_BRICK = theme.S_BRICK     # slot 1 — permis, prix ensemble, particuliers…
@@ -669,9 +685,7 @@ def build_synthese(con, frames: dict) -> dict:
             cards_persp.append({"emoji": _dot(rn_status), "title": "Activité rénovation (second œuvre)",
                                 "value": f"{rn_last:+.0f}", "sub": f"solde d'opinion INSEE — {rn_word}",
                                 "level": ""})
-    jalons = sorted(
-        [(d, it) for it in actu.items_sorted() for d, _lbl, _typ in it.get("jalons", [])
-         if d > actu.MAJ], key=lambda t: t[0])
+    jalons = _jalons_a_venir(actu.items_sorted())
     if jalons:
         j_d, j_it = jalons[0]
         cards_persp.append({"emoji": "🗓️", "title": "Prochaine échéance aides",
@@ -1235,8 +1249,7 @@ def build_actualites(con, frames: dict) -> dict:
 
     items = [item_dict(it) for it in items_all]
     n_vigueur = sum(1 for it in items_all if it["statut"] == "vigueur")
-    next_jalons = sorted([(d, it) for it in items_all
-                          for d, _lbl, _typ in it.get("jalons", []) if d > actu.MAJ], key=lambda t: t[0])
+    next_jalons = _jalons_a_venir(items_all)
     kpis = [
         {"label": "Dispositifs suivis", "value": str(len(items_all))},
         {"label": "En vigueur", "value": str(n_vigueur)},
