@@ -120,8 +120,15 @@ export function legend(meta, active, onToggle) {
 // rien ne se masque, un bouton promettrait une action qui n'existe pas. Le trait pointillé
 // est reproduit dans la pastille : deux séries qui ne se distinguent que par la couleur
 // sont indistinguables pour qui ne perçoit pas cette différence.
+// Le modificateur `hm-legend--static` porte `cursor: default`. Il était appliqué sur la
+// copie manuscrite de l'accueil, et OUBLIÉ ici, dans le helper partagé : les légendes
+// statiques de « Prévision & Scénarios » héritaient donc du `cursor: pointer` de
+// `.hm-legend-item` et promettaient un clic qui n'existe pas — précisément ce que le
+// commentaire de ce sélecteur, dans observablehq.config.js, dit vouloir éviter. C'est le
+// mode de panne ordinaire d'un composant recopié : la version dupliquée est juste, la
+// partagée ne l'est pas, et rien ne les confronte. L'accueil emploie celui-ci désormais.
 export function legendStatic(meta) {
-  return html`<div class="hm-legend">${meta.map((m) => {
+  return html`<div class="hm-legend hm-legend--static">${meta.map((m) => {
     const sw = m.dash
       ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
       : {background: m.color};
@@ -133,7 +140,8 @@ export function legendStatic(meta) {
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
                            baseline = null, lastLabels = true, tipUnit = "", yPct = false,
-                           width = undefined, filename = null, splitAt = null}) {
+                           width = undefined, filename = null, splitAt = null,
+                           legend = "auto"}) {
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const shown = active ? parsed.filter((d) => active.has(d.series)) : parsed;
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
@@ -169,7 +177,23 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
         title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${fmt(d.value)}${tipUnit}`})),
     ].filter(Boolean),
   });
-  return withCsvExport(plot, shown.map(({_x, ...r}) => r), filename || meta.map((m) => m.name).join(" "));
+  const carte = withCsvExport(plot, shown.map(({_x, ...r}) => r), filename || meta.map((m) => m.name).join(" "));
+
+  // LÉGENDE PAR DÉFAUT, et c'est le point de ce paramètre. `multiLine` n'en posait aucune
+  // et il fallait que chaque appelant y pense : sur une vingtaine d'appels, treize
+  // traçaient deux ou trois courbes sans que rien ne les nomme hors survol — prix
+  // Ensemble/Appartements/Maisons, encours vs mises en vente, activité passée vs prévue,
+  // département vs France… Un défaut qu'on ne corrige qu'au cas par cas se réintroduit au
+  // graphique suivant ; on le corrige donc ici, où l'oubli n'est plus possible.
+  //
+  //   "auto" (défaut) : légende statique dès qu'il y a DEUX séries ou plus.
+  //   false           : rien — pour un appelant qui pose déjà la sienne autrement.
+  //
+  // `active` non nul signifie que l'appelant pilote l'affichage avec `legend()`, la
+  // version cliquable : en poser une seconde, inerte, à côté d'elle serait absurde.
+  const auto = legend === "auto" && active == null && meta.length >= 2;
+  if (!auto) return carte;
+  return html`<div>${legendStatic(meta)}${carte}</div>`;
 }
 
 // --- Graphique « marché » : bascule cumul 12m / 6m / 3m / brut (+ moyennes mobiles) -

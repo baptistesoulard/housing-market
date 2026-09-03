@@ -162,19 +162,10 @@ const accrocheRows = filterYears(
   [Math.max(data.period.min, data.period.max - 12), data.period.max],
 ).map((d) => ({date: d.date, series: d.series, value: d.index_100}))
  .filter((d) => d.value != null);
-
-// Légende NON interactive : sur cette page il n'y a rien à masquer. Des pastilles qui
-// changent d'apparence au survol promettraient un contrôle qui n'existe pas (voir
-// .hm-legend--static dans le thème).
-const accrocheLegend = html`<div class="hm-legend hm-legend--static">${
-  data.chart.series_meta.map((m) => html`<span class="hm-legend-item">
-    <span class="hm-swatch" style=${{background: m.color}}></span>${m.name}</span>`)
-}</div>`;
 ```
 
 <div class="hm-accroche">
   <div class="hm-panel-title">Activité du logement — base 100 = ${data.chart.base_label}</div>
-  ${accrocheLegend}
   ${multiLine({
     rows: accrocheRows,
     meta: data.chart.series_meta,

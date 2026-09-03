@@ -240,6 +240,48 @@ feuille de style grossirait le texte dans une boîte restée petite, et le rogne
 pages plus `hm.js` la déclarent — un nouveau graphique qui l'oublie se voit à sa vignette
 deux fois plus petite que ses voisines.
 
+**Une légende n'est pas une option de l'appelant : `multiLine` en pose une (2026-09-03).**
+Le helper n'en posait aucune et il fallait que chaque appelant y pense. Sur une vingtaine
+d'appels, **treize traçaient deux ou trois courbes sans que rien ne les nomme hors survol** :
+prix Ensemble/Appartements/Maisons (×2 sur « Marché de l'ancien »), capacité d'emprunt vs
+prix, neuf vs ancien (×2), encours vs mises en vente sur « Marché du neuf », production de
+crédits cumulée, demande BLS et activité rénovation sur « Environnement & Financement »,
+département vs France sur les 101 pages départementales, et le graphique d'alignement de
+« Prévision & Scénarios ». Le survol donnait le nom d'une courbe à la fois — donc à
+personne qui regarde la page sans la toucher, et à personne sur un imprimé.
+
+`multiLine` prend désormais `legend = "auto"` : légende statique dès **deux séries**, sauf
+si l'appelant passe `active` (il pilote alors sa propre `legend()` cliquable, et une
+seconde légende inerte à côté serait absurde). `legend: false` reste pour un appelant qui
+pose la sienne autrement. **Le correctif est dans le helper et non aux appels, exprès** :
+un défaut qu'on ne corrige qu'au cas par cas se réintroduit au graphique suivant, et c'est
+exactement ce qui s'est passé entre le 2026-08-29 (un seul graphique traité) et cette date.
+
+Deux copies redondantes sont tombées avec : la légende manuscrite de l'accueil et le
+`display(legendStatic(META_BT))` de la page de prévision.
+
+**Un graphique à UNE série n'en reçoit pas**, et c'est voulu : le titre du panneau et
+l'étiquette d'axe le nomment déjà, une légende à une entrée n'ajoute rien. Même chose pour
+une droite de référence, qui porte son étiquette **dans** le graphique (« ≈ 2 ans »,
+« moyenne 84,8 % ») — mieux placée là qu'en légende.
+
+**`legendStatic()` oubliait `hm-legend--static`, et l'accueil ne l'oubliait pas.** Le
+modificateur (`cursor: default`) était appliqué sur la copie manuscrite de l'accueil et
+absent du helper partagé : les légendes statiques de « Prévision & Scénarios » affichaient
+donc un curseur en main, promettant un clic inexistant — ce que le commentaire de ce
+sélecteur dit précisément vouloir éviter. C'est le mode de panne ordinaire d'un composant
+recopié : **la copie est juste, le partagé ne l'est pas, et rien ne les confronte.**
+`tests/test_web_structure.py` vérifie maintenant les deux bouts du contrat (hm.js pose la
+classe, le thème la déclare) — un test de nom de classe entre JS et CSS, parce qu'une
+classe absente n'est pas une erreur de build, juste un style qui ne s'applique pas.
+
+⚠️ **Rien ne teste le RENDU.** Les graphiques sont construits dans le navigateur, donc le
+HTML livré ne les contient pas : aucun test Python ne peut compter les courbes d'un
+graphique. Les deux tests ajoutés protègent le défaut du paramètre et le nom de la classe,
+pas le résultat à l'écran. La vérification reste l'ouverture des pages dans un navigateur,
+sur le site CONSTRUIT — c'est ainsi que les treize graphiques ont été recensés, puis
+recomptés après correction.
+
 ## Onglets retirés (2026-08-20) — ne pas les restaurer par réflexe
 
 L'app est passée de **8 à 7 onglets**. Deux surfaces ont été supprimées ; les deux
@@ -1278,7 +1320,9 @@ graphique :
   (nouveau) rend la même chose que `legend()` sans interrupteur — sur un graphique dont
   rien ne se masque, un `<button>` promettrait une action inexistante. Le pointillé est
   reproduit dans la pastille : deux séries distinguées par la seule couleur ne se
-  distinguent pas pour tout le monde.
+  distinguent pas pour tout le monde. ⚠️ Ce correctif-ci n'a traité QUE ce graphique, en
+  posant la légende à l'appel ; les douze autres graphiques muets du site sont restés
+  muets jusqu'au 2026-09-03 — voir « Une légende n'est pas une option » plus bas.
 * **Aucun repère à la frontière.** La courbe du modèle démarrait en plein graphique sans
   que rien ne dise pourquoi. `multiLine` accepte désormais `splitAt: {date, label}`, qui
   trace la limite entraînement / test. C'est ce trait qui rend le graphique lisible : tout

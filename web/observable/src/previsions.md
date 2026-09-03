@@ -939,7 +939,6 @@ const META_BT = [{name: "Ventes réellement observées (IGEDD)", color: series.b
                  {name: "Ce que le modèle annonçait, sans avoir vu la suite",
                   color: series.blue, dash: true}];
 if (T) {
-  display(legendStatic(META_BT));
   display(multiLine({
     rows: [
       ...histo(T.series).map((d) => ({date: d.date, value: d.observed, series: META_BT[0].name})),

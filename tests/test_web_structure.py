@@ -464,3 +464,52 @@ def test_chaque_cellule_js_est_syntaxiquement_valide():
     assert not fautifs, (
         "cellule(s) JavaScript invalide(s) — le build les retirerait SANS RIEN DIRE :\n"
         + "\n".join(fautifs))
+
+
+# --- Le contrat de classes entre hm.js et le thème -------------------------------------
+# Mode de panne rencontré le 2026-09-03 : `.hm-legend--static` (cursor: default) était
+# déclaré dans le thème ET appliqué sur la légende MANUSCRITE de l'accueil, mais oublié
+# dans `legendStatic()`, le helper partagé. Les légendes statiques de « Prévision &
+# Scénarios » affichaient donc un curseur en main, promettant un clic inexistant — soit
+# exactement ce que le commentaire de ce sélecteur dit vouloir éviter.
+#
+# C'est le mode de panne ordinaire d'un composant recopié : la copie est juste, le partagé
+# ne l'est pas, et rien ne les confronte. Le build ne dit rien — une classe absente n'est
+# pas une erreur, juste un style qui ne s'applique pas.
+
+_HM_JS = os.path.join(_WEB, "components", "hm.js")
+_THEME = os.path.join(os.path.dirname(_WEB), "observablehq.config.js")
+
+
+def test_legend_statique_porte_la_classe_que_le_theme_declare():
+    with open(_HM_JS, encoding="utf-8") as f:
+        hm = f.read()
+    with open(_THEME, encoding="utf-8") as f:
+        theme = f.read()
+
+    corps = hm[hm.index("export function legendStatic"):]
+    corps = corps[:corps.index("\n}")]
+    assert "hm-legend--static" in corps, (
+        "legendStatic() doit poser hm-legend--static : sans elle, la légende hérite du "
+        "cursor: pointer de .hm-legend-item et promet un clic qui n'existe pas")
+    assert ".hm-legend--static" in theme, (
+        "hm.js pose hm-legend--static mais le thème ne la déclare plus — la classe ne "
+        "fait alors plus rien, et le défaut est invisible au build")
+
+
+def test_multiline_pose_une_legende_des_deux_series():
+    """Treize graphiques traçaient 2 ou 3 courbes sans que rien ne les nomme hors survol.
+
+    Le correctif est dans `multiLine` et pas aux appels, précisément pour qu'un nouveau
+    graphique ne puisse plus naître muet. Ce test protège le DÉFAUT du paramètre : le
+    remettre à `false` rendrait le silence à nouveau possible sans que rien ne le signale.
+    """
+    with open(_HM_JS, encoding="utf-8") as f:
+        hm = f.read()
+    signature = hm[hm.index("export function multiLine"):]
+    signature = signature[:signature.index(") {")]
+    assert re.search(r"legend\s*=\s*[\"']auto[\"']", signature), (
+        "multiLine doit garder `legend = \"auto\"` par défaut")
+    corps = hm[hm.index("export function multiLine"):]
+    assert re.search(r"meta\.length\s*>=\s*2", corps), (
+        "la légende automatique doit se déclencher à partir de deux séries")
