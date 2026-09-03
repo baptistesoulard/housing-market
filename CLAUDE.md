@@ -805,7 +805,15 @@ phrase appartient au générateur, pas au Markdown.
 
 La troisième ligne est un choix documenté (résultats de méthode, relevés externes), pas un
 oubli — mais elle vieillit : `actualites.MAJ` avait **six semaines de retard** au moment de
-cet audit, et sept au 2026-09-02. La deuxième ligne, elle, n'a aucune garde.
+cet audit, et sept au 2026-09-02. La deuxième ligne, elle, n'a toujours aucune garde.
+
+**La troisième en a une depuis le 2026-09-03**, dans `tests/test_actualites.py` :
+`test_la_veille_n_est_pas_perimee` échoue au-delà de `MAJ_MAX_JOURS = 120`, et
+`test_il_reste_une_echeance_a_venir` refuse une veille dont tous les jalons sont passés.
+Ces deux tests échouent **par le seul passage du temps** — inhabituel, et assumé : c'est
+précisément le mode de panne qu'on veut attraper, et rien d'autre ne peut le signaler. Le
+second est la contrepartie du correctif du filtre : depuis qu'il se compare au jour courant,
+une veille entièrement échue ne produit plus de carte du tout, sans erreur ni trou visible.
 
 **`MAJ` n'est plus l'horloge des échéances (corrigé le 2026-09-02).** Le filtre des jalons
 comparait à `actu.MAJ` — la date de dernière RELECTURE de la veille — et non au jour de la
@@ -1835,18 +1843,34 @@ officielle, mais l'écart mesuré sur la médiane PUBLIÉE est de +0,00 % (Lozè
 soudure donne −0,60 % d'écart médian, contre +0,78 % pour un passage de trimestre
 ordinaire.
 
-**⚠️ `build_dvf` n'est PAS dans `BUILDERS`** — constaté le 2026-09-02, cette page disait
-« chaque semaine » et c'était faux. Le builder existe, il marche, mais `refresh_all` ne
-l'appelle pas : le workflow hebdomadaire ne rafraîchit donc jamais DVF, et les pages
-départementales avancent au rythme des exécutions manuelles. Ce n'est pas urgent — la
-source est publiée deux fois par an, et un `HEAD` sur un fichier de millésime donne sa date
-(`Last-Modified` = 2026-05-18 au 2026-09-02, soit ANTÉRIEURE à notre dernier build du
-2026-08-20 : rien à reprendre). Mais c'est un choix à faire explicitement, pas à subir :
-l'ajouter à `BUILDERS` ferait télécharger ~500 Mo à chaque lundi pour un fichier qui change
-deux fois l'an. La bonne forme serait un builder CONDITIONNEL, qui compare le
-`Last-Modified` de la source à la date de `dvf-recent.csv` avant de télécharger quoi que ce
-soit. En attendant, vérifier DVF fait partie de toute passe « les données sont-elles à
-jour ? », et ce contrôle coûte une requête `HEAD`.
+**`build_dvf` est dans `BUILDERS` depuis le 2026-09-03, et il est CONDITIONNEL.** Il n'y
+était pas : le builder existait, marchait, et n'était jamais exécuté automatiquement — les
+pages départementales avançaient au rythme des lancements à la main, pendant que cette page
+affirmait « chaque semaine ». Le câbler tel quel aurait fait descendre ~500 Mo tous les
+lundis pour un fichier que la DGFiP republie **deux fois par an**, ce qui était la vraie
+raison de son absence.
+
+D'où la garde : `_dvf_publication()` interroge le `Last-Modified` d'**un fichier par année
+publiée** (5 requêtes `HEAD`, quelques octets) et le compare à une empreinte stockée. Si
+rien n'a bougé, le builder rend la main en ~2 s au lieu de plusieurs minutes.
+
+Deux points de conception à ne pas défaire :
+
+* **L'empreinte est un fichier VERSIONNÉ** (`data_manual_input/dvf-recent.lastmod.txt`), pas
+  le `mtime` de `dvf-recent.csv`. Un `git clone` — ou le checkout d'un runner CI — horodate
+  les fichiers à l'instant du checkout : le CSV paraîtrait donc toujours plus récent que la
+  source, et la garde sauterait **toujours**, sur la machine même où elle compte le plus.
+  C'est le symétrique exact du piège que la garde de fraîcheur de `warehouse.resolve()`
+  traite côté poste de travail.
+* **Les en-têtes HTTP sont parsés avant d'être comparés.** `max()` sur des chaînes
+  `Last-Modified` trie sur le nom du jour : « Mon, 18 May 2026 » passerait après
+  « Tue, 02 Jun 2025 ». Le retour est une chaîne ISO-8601 UTC, comparable telle quelle et
+  lisible dans le fichier versionné. J'ai écrit le bug avant de le corriger ; il ne se voit
+  qu'au moment d'une republication, c'est-à-dire deux fois par an.
+
+Toute réponse manquante (`Last-Modified` absent, HEAD en échec) rend `None` et **déclenche
+le téléchargement** : ne jamais inverser ce défaut — mieux vaut descendre un demi-giga pour
+rien que rater une publication en silence. `force=True` court-circuite la garde.
 
 **Ne jamais commiter les fichiers DVF bruts** : ~500 Mo pour la fenêtre glissante, 1,1 Go
 pour l'historique. `build_dvf` les télécharge, les nettoie et les JETTE.

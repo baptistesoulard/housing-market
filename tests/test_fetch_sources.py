@@ -11,8 +11,23 @@ import tempfile
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import pytest
+
 import data_manager as dmod
 import fetch_new_sources as fns
+
+
+class _Compteur:
+    """Compte les téléchargements tentés. Une sentinelle qui LÈVE ne conviendrait pas :
+    `build_dvf` attrape toute exception par fichier — un département peut légitimement
+    manquer une année — donc l'exception serait avalée et ne prouverait rien."""
+
+    def __init__(self):
+        self.appels = 0
+
+    def __call__(self, *_a, **_k):
+        self.appels += 1
+        raise OSError("reseau coupe pendant le test")
 
 
 def test_macro_core_files_match_data_manager_paths():
@@ -94,10 +109,75 @@ def test_read_url_retries_then_succeeds(monkeypatch):
 
 
 def test_builders_registry_covers_every_source():
-    """The parallel runner iterates BUILDERS — it must list all nine acquisition builders."""
+    """The parallel runner iterates BUILDERS — it must list all ten acquisition builders.
+
+    `build_dvf` joined on 2026-09-03. It had been left out because DVF is republished
+    twice a year and a weekly ~500 MB download would be absurd — with the side effect
+    that it never ran automatically at all. It is now guarded by a publication-date probe
+    (see `_dvf_publication`), which is what makes it cheap enough to belong here."""
     names = {b.__name__ for b in fns.BUILDERS}
     assert names == {
-        "build_sitadel", "build_igedd", "build_macro_core", "build_prices",
+        "build_sitadel", "build_dvf", "build_igedd", "build_macro_core", "build_prices",
         "build_neuf_price", "build_credit_volume", "build_credit_demand_bls",
         "build_ecln", "build_renovation",
     }
+
+
+# --- La garde de publication de DVF ----------------------------------------------------
+# C'est elle qui décide si le job hebdomadaire télécharge un demi-giga ou rend la main en
+# deux secondes. Les deux sens sont testés : sauter quand rien n'a bougé, ET redescendre
+# le corpus dès qu'on n'est pas SÛR du contraire.
+
+def _dvf_sans_reseau(monkeypatch, publiee, *, stamp, tmpdir):
+    """Neutralise le réseau : années/départements figés, `Last-Modified` contrôlé."""
+    monkeypatch.setattr(fns, "_dvf_annees", lambda: ["2024", "2025"])
+    monkeypatch.setattr(fns, "_dvf_departements", lambda: ["01", "02"])
+    monkeypatch.setattr(fns, "_last_modified", lambda _url, **_kw: publiee)
+    monkeypatch.setattr(fns, "OUT_DIR", tmpdir)
+    monkeypatch.setattr(fns, "DVF_STAMP", os.path.join(tmpdir, "dvf-recent.lastmod.txt"))
+    open(os.path.join(tmpdir, "dvf-recent.csv"), "w").close()   # l'agrégat existe déjà
+    if stamp is not None:
+        with open(os.path.join(tmpdir, "dvf-recent.lastmod.txt"), "w") as f:
+            f.write(stamp + "\n")
+
+
+def test_dvf_saute_le_telechargement_quand_la_source_n_a_pas_bouge(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmp:
+        _dvf_sans_reseau(monkeypatch, "Mon, 18 May 2026 13:14:11 GMT",
+                         stamp="2026-05-18T13:14:11Z", tmpdir=tmp)
+        reseau = _Compteur()
+        monkeypatch.setattr(fns, "_read_url", reseau)
+        fns.build_dvf()
+        assert reseau.appels == 0, "la garde a laisse passer un telechargement inutile"
+
+
+def test_dvf_retelecharge_quand_la_source_a_ete_republiee(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmp:
+        _dvf_sans_reseau(monkeypatch, "Tue, 03 Nov 2026 08:00:00 GMT",
+                         stamp="2026-05-18T13:14:11Z", tmpdir=tmp)
+        reseau = _Compteur()
+        monkeypatch.setattr(fns, "_read_url", reseau)
+        with pytest.raises(ValueError):          # le reseau est coupe : aucune vente
+            fns.build_dvf()
+        assert reseau.appels > 0, "une republication doit relancer le telechargement"
+
+
+def test_dvf_retelecharge_quand_la_date_de_publication_est_inconnue(monkeypatch):
+    """`Last-Modified` absent = « je ne sais pas », donc on descend. Ne jamais inverser :
+    sauter par defaut ferait rater une publication en silence, deux fois par an."""
+    with tempfile.TemporaryDirectory() as tmp:
+        _dvf_sans_reseau(monkeypatch, None, stamp="2026-05-18T13:14:11Z", tmpdir=tmp)
+        reseau = _Compteur()
+        monkeypatch.setattr(fns, "_read_url", reseau)
+        with pytest.raises(ValueError):
+            fns.build_dvf()
+        assert reseau.appels > 0, "sans date de publication, on doit retelecharger"
+
+
+def test_les_dates_http_sont_comparees_en_chronologie_pas_en_texte(monkeypatch):
+    """« Mon, 18 May 2026 » est APRÈS « Tue, 02 Jun 2025 » dans l'ordre lexicographique,
+    et avant dans l'ordre du temps. Trier ces en-têtes comme du texte ferait manquer une
+    republication — le défaut ne se verrait que le jour où elle arrive."""
+    entetes = iter(["Tue, 02 Jun 2025 10:00:00 GMT", "Mon, 18 May 2026 13:14:11 GMT"])
+    monkeypatch.setattr(fns, "_last_modified", lambda _url, **_kw: next(entetes))
+    assert fns._dvf_publication(["2024", "2025"], ["01"]) == "2026-05-18T13:14:11Z"

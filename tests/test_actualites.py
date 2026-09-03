@@ -67,3 +67,37 @@ def test_frames_build(lang):
     # Une colonne par pilier
     for col in actu.PILIERS[lang].values():
         assert col in mx.columns
+
+
+# --- Fraîcheur de la veille -----------------------------------------------------------
+# CLAUDE.md range NEWS_ITEMS + MAJ dans la colonne « à maintenir à la main », et note que
+# cette ligne « vieillit » sans aucune garde. Ces deux tests SONT cette garde. Ils échouent
+# par le seul passage du temps, ce qui est inhabituel et assumé : c'est exactement le mode
+# de panne qu'on veut attraper, et aucune autre mécanique ne peut le signaler.
+
+#: Au-delà, la veille n'est plus une veille. Le seuil est large exprès — il attrape
+#: l'abandon, pas le retard de quelques semaines.
+MAJ_MAX_JOURS = 120
+
+
+def test_la_veille_n_est_pas_perimee():
+    age = (pd.Timestamp.today().normalize() - pd.Timestamp(actu.MAJ)).days
+    assert age <= MAJ_MAX_JOURS, (
+        f"la veille date du {actu.MAJ}, soit {age} jours : relire NEWS_ITEMS "
+        f"(statuts, jalons, montants) puis remonter MAJ. La page AFFICHE cette date, "
+        f"donc un lecteur la voit vieillir avant nous.")
+
+
+def test_il_reste_une_echeance_a_venir():
+    """Sinon la carte « Prochaine échéance aides » disparaît des DEUX surfaces, en silence.
+
+    Depuis que le filtre se compare au jour courant et non à `MAJ` (web_export
+    `_jalons_a_venir`, app.py `_AUJOURDHUI`), une veille dont tous les jalons sont passés
+    ne produit plus de carte du tout — pas d'erreur, pas de trou visible, juste un bloc
+    qui a une carte de moins. C'est le prix de la correction, et voici sa contrepartie."""
+    aujourdhui = pd.Timestamp.today().normalize().strftime("%Y-%m-%d")
+    a_venir = [d for it in actu.NEWS_ITEMS
+               for d, _lbl, _typ in it.get("jalons", []) if d > aujourdhui]
+    assert a_venir, (
+        "plus aucun jalon dans le futur : la carte « Prochaine échéance aides » ne "
+        "s'affichera plus. Ajouter les échéances connues des dispositifs suivis.")

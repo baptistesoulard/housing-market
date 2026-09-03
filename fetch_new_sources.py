@@ -43,6 +43,7 @@ import hashlib
 import threading
 import urllib.request
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 import gzip
 from concurrent.futures import ThreadPoolExecutor
 
@@ -91,6 +92,22 @@ def _read_url(url, accept="application/xml", *, tries=3, backoff=2.0, timeout=12
 
 def _get(url, **kw):
     return _read_url(url, "application/xml", **kw)
+
+
+def _last_modified(url, *, timeout=30):
+    """Le `Last-Modified` d'une URL, en HEAD — sans telecharger le corps.
+
+    Sert la garde de `build_dvf` : cinq requetes de quelques octets remplacent 485
+    telechargements de fichiers quand la source n'a pas bouge. Rend None si l'en-tete
+    manque ou si la requete echoue : l'appelant traite l'absence de reponse comme
+    « je ne sais pas », donc comme une raison de retelecharger, jamais de sauter."""
+    req = urllib.request.Request(url, method="HEAD",
+                                 headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=CTX) as r:
+            return r.headers.get("Last-Modified")
+    except Exception:
+        return None
 
 
 def _write_if_changed(path, content, *, rows=None, last=None, label=None):
@@ -453,7 +470,43 @@ def _dvf_annees():
     return sorted(set(re.findall(r'href="[^"]*/([0-9]{4})/"', html)))
 
 
-def build_dvf():
+#: Empreinte de publication de la source DVF, COMMITEE a cote du CSV qu'elle date.
+#: Pourquoi un fichier plutot que le mtime de dvf-recent.csv : un `git clone` (ou le
+#: checkout d'un runner CI) horodate les fichiers a l'instant du checkout, donc le CSV
+#: paraitrait TOUJOURS plus recent que la source et la garde sauterait toujours. Une
+#: valeur versionnee, elle, voyage avec le CSV et dit la verite partout.
+DVF_STAMP = os.path.join(OUT_DIR, "dvf-recent.lastmod.txt")
+
+
+def _dvf_publication(annees, deps):
+    """La date de publication de la source : le `Last-Modified` le plus recent parmi UN
+    fichier par annee publiee.
+
+    DVF republie un millesime entier d'un coup, donc un fichier par annee suffit a
+    detecter une republication -- 5 HEAD au lieu de 485 GET. Rend None des qu'une annee
+    ne repond pas : mieux vaut retelecharger pour rien que sauter une publication.
+
+    Les en-tetes HTTP sont PARSES avant d'etre compares, jamais tries comme du texte :
+    l'ordre lexicographique de « Mon, 18 May 2026 » et « Tue, 02 Jun 2026 » commence par
+    le nom du jour, donc il n'a rien a voir avec la chronologie. Le retour est une chaine
+    ISO-8601 en UTC -- comparable caractere par caractere, celle-la, et lisible dans le
+    fichier versionne."""
+    temoin = deps[0]
+    dates = []
+    for annee in annees:
+        lm = _last_modified(f"{GEO_DVF}/{annee}/departements/{temoin}.csv.gz")
+        if lm is None:
+            return None
+        try:
+            dates.append(parsedate_to_datetime(lm))
+        except (TypeError, ValueError):              # en-tete illisible : on ne sait pas
+            return None
+    if not dates:
+        return None
+    return max(dates).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def build_dvf(force=False):
     """Agrege DVF en medianes trimestrielles par departement, sur la fenetre officielle.
 
     485 fichiers (97 departements x 5 annees, ~500 Mo) telecharges puis JETES : seul
@@ -465,6 +518,27 @@ def build_dvf():
     """
     annees = _dvf_annees()
     deps = _dvf_departements()
+    sortie = os.path.join(OUT_DIR, "dvf-recent.csv")
+
+    # GARDE. DVF publie DEUX FOIS PAR AN : descendre un demi-giga chaque lundi pour
+    # retrouver le meme agregat serait absurde, et c'est la raison pour laquelle ce
+    # builder etait reste hors de BUILDERS -- donc jamais execute automatiquement, donc
+    # les pages departementales vieillissaient en silence. On interroge la date de
+    # publication (5 HEAD) et on ne descend le corpus que si elle a bouge.
+    publiee = _dvf_publication(annees, deps)
+    connue = None
+    if os.path.exists(DVF_STAMP):
+        with open(DVF_STAMP, encoding="utf-8") as f:
+            connue = f.read().strip() or None
+    if not force and publiee and connue == publiee and os.path.exists(sortie):
+        with _LOCK:
+            _MANIFEST["dvf-recent.csv"] = {
+                "status": "ok", "changed": False, "rows": None, "last_obs": None,
+                "sha256": None, "fetched_at": _now_iso(),
+            }
+        print(f"dvf -> dvf-recent.csv [inchange] (source publiee le {publiee})")
+        return
+
     morceaux = []
 
     def un_fichier(args):
@@ -491,13 +565,18 @@ def build_dvf():
         raise ValueError("DVF : aucune vente retenue")
     agg = dvf_clean.aggregate(pd.concat(morceaux, ignore_index=True))
     agg["Date"] = agg["Date"].dt.strftime("%Y-%m-%d")
-    path = os.path.join(OUT_DIR, "dvf-recent.csv")
-    _write_if_changed(path, agg.to_csv(index=False), rows=len(agg),
+    _write_if_changed(sortie, agg.to_csv(index=False), rows=len(agg),
                       last=agg["Date"].iloc[-1], label="dvf")
+    # L'empreinte n'est ecrite qu'APRES un agregat complet : si le telechargement casse a
+    # mi-course, la garde ne doit pas croire le corpus a jour et sauter le prochain essai.
+    if publiee:
+        _write_if_changed(DVF_STAMP, publiee + "\n", label="dvf (date de publication)")
 
 
 BUILDERS = [
     build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
+    build_dvf,              # DVF (DGFiP) - CONDITIONNEL : ne descend le corpus que si la
+                            #   source a ete republiee (voir la garde dans le builder)
     build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)
     build_macro_core,       # confiance, taux crédit, Euribor, OAT, intentions, chômage
     build_prices,           # indices Notaires-INSEE (ancien)
