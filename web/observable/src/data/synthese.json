@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T21:38:11+00:00",
+  "generated_at": "2026-09-03T11:25:43+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -29,7 +29,7 @@
     "🟠 **Aujourd'hui** — **Ancien** : 954 k ventes sur 12 mois, 17 % au-dessus de la normale 2010-19, mais au plateau depuis décembre 2025. **Neuf** : 296 k chantiers, 23 % sous la normale 2010-19, sur un stock de 124 027 invendus qui met 22 mois à s'écouler contre 15 habituellement.",
     "🔴 **Le carnet** — les permis reculent (-3,6% sur 3 mois) plus vite que les chantiers, qui marquent le pas après une forte année (-0,5% sur 3 mois, +17,9% sur 12 mois). Et seulement 80 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+8,3% sur 3 mois, +22,8% sur 12 mois).",
     "🔴 **Financement** — taux de crédit à 3,18 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
-    "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 7 % d'ici décembre 2026."
+    "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 8 % d'ici mars 2027."
   ],
   "freshness": [
     "SIT@DEL : juillet 2026",
@@ -145,13 +145,13 @@
       ]
     },
     {
-      "title": "Où va le marché — ventes anciennes en recul d'environ 7 % d'ici décembre 2026",
+      "title": "Où va le marché — ventes anciennes en recul d'environ 8 % d'ici mars 2027",
       "cards": [
         {
           "emoji": "🔴",
-          "title": "Ventes anciennes projetées (décembre 2026)",
-          "value": "887 k",
-          "sub": "-7,1% vs les 12 derniers mois · fourchette 802 k – 949 k · sens juste 72 % du temps à cet horizon (204 millésimes)",
+          "title": "Ventes anciennes projetées (mars 2027)",
+          "value": "879 k",
+          "sub": "-7,9% vs les 12 derniers mois · fourchette 796 k – 963 k · sens juste 75 % du temps à cet horizon (201 millésimes)",
           "level": "prévision du modèle du site, ajustée sur les taux, les intentions d'achat et le chômage — voir « Prévisions passées » pour ses erreurs"
         },
         {

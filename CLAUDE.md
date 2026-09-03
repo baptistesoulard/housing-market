@@ -1492,6 +1492,53 @@ particulier raisonne, et le premier auquel le modèle bat la naïve. Le seuil de
 en deçà duquel il dit « stable » n'est pas cosmétique : l'erreur à six mois vaut 5,7 %,
 donc annoncer une variation plus petite reviendrait à commenter son propre bruit.
 
+**L'horizon du verdict est celui du LECTEUR, pas du millésime (corrigé le 2026-09-03).**
+`_VERDICT_HORIZON = 6` désignait le 6ᵉ rang de la série projetée. Or celle-ci démarre au
+dernier mois **observé**, et l'IGEDD publie avec environ trois mois de retard : en
+septembre 2026, le « verdict à six mois » visait **décembre 2026, soit trois mois devant le
+lecteur**. La page annonçait donc un horizon qu'elle ne tenait pas.
+
+Le remplacement (`_VERDICT_MOIS_DEVANT = 6` + `_verdict_horizon()`) vise le premier mois
+situé à six mois de la **publication**, entre deux bornes qui peuvent se contredire :
+
+* **plancher** `_VERDICT_HORIZON_MIN = 6` — en deçà, recopier le dernier chiffre connu fait
+  mieux (voir `crossover_horizon`), donc publier le modèle là le dessert ;
+* **plafond** `informative_months` — au-delà, tous les prédicteurs sont reportés à plat et
+  la trajectoire RÉPÈTE sa dernière valeur. Aujourd'hui 11, et la série est effectivement
+  plate à 868 752 de mai 2027 à décembre 2027. Publier un mois au-delà donnerait un nombre
+  que le modèle n'a pas calculé, seulement recopié.
+
+Si le plafond passe sous le plancher, `_verdict_horizon()` rend `None` et l'appelant
+retombe sur son repli — il n'y a alors pas d'horizon honnête à publier.
+
+⚠️ **Allonger l'horizon AMÉLIORE mécaniquement la fiabilité affichée**, et il ne faut
+jamais présenter le changement ainsi : à l'horizon 6 le modèle n'évite que **+4,2 %** de
+l'erreur naïve, contre **+24,2 %** à 9 et **+34,4 %** à 11. La raison du correctif est que
+« six mois » doit vouloir dire six mois pour qui lit ; le gain de score est une
+conséquence, pas un motif. Ce qui empêche ce réglage d'être une sélection d'horizon
+flatteuse : la page publie toujours la table complète par horizon, rangs 1 à 5 compris, où
+le modèle PERD.
+
+**Trois corollaires tenus dans la foulée :**
+
+* **`_regime_reliability` prend l'horizon du verdict en paramètre.** C'est un avertissement
+  sur le chiffre de tête, pas une statistique indépendante : deux horizons différents
+  feraient dire à l'un ce que l'autre ne dit pas.
+* **La phrase du verdict porte le TRAJET, plus la seule variation.** « Reculer d'environ
+  7 % » n'avait pas de point de départ — le lecteur devait le chercher dans une autre puce.
+  Elle dit maintenant « en passant de 954 000 à 879 000 ventes sur douze mois », arrondi au
+  millier, et le nombre de mois est écrit en toutes lettres.
+* **La fiabilité s'annonce « à cet horizon », sans chiffre.** Écrire « à 9 mois » à côté de
+  « dans six mois » ferait cohabiter les deux conventions dans la même phrase. Le rang et
+  le décalage de publication sont expliqués une seule fois, dans l'encart des trois
+  régimes — dont les bornes se comptent, elles, depuis le dernier mois publié.
+
+⚠️ **Deux conventions coexistent donc sur le site, et chacune doit dire la sienne.**
+L'accueil et « Prévisions passées » parlent en horizons **du millésime** (« erreur moyenne
+à 6 mois : 5,7 % ») parce que c'est le cadre de l'archive ; le verdict parle en mois **du
+lecteur**. C'est la règle générale déjà écrite plus haut — quand deux mesures voisines n'ont
+pas la même étendue, chacune doit nommer la sienne.
+
 **Le R² a quitté les cartes de tête, et ne doit pas y revenir.** Autocorrélation des
 résidus 0,88, Durbin-Watson 0,24 : sur deux séries tendancielles régressées en niveau, un
 R² de 91 % est mécanique et ne prouve rien. Il vit désormais dans un repli avec cette

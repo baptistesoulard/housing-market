@@ -135,10 +135,9 @@ else display(html`<div class="hm-api-offline">
 if (V) display(html`<div class="hm-takeaways">
   <strong>Ce que dit le modèle aujourd'hui</strong>
   <ul>
-    <li>${V.sentence} La projection centrale est de
-      <strong>${nf0.format(V.predicted)}</strong> ventes sur douze mois
-      (fourchette ${nf0.format(V.lo)} – ${nf0.format(V.hi)}).</li>
-    ${V.reliability ? html`<li>À ${V.reliability.horizon} mois, le modèle a annoncé le
+    <li><strong>${V.sentence}</strong> Fourchette
+      ${nf0.format(V.lo)} – ${nf0.format(V.hi)}.</li>
+    ${V.reliability ? html`<li><strong>À cet horizon</strong>, le modèle a annoncé le
       <strong>bon sens ${nf0.format(V.reliability.direction * 100)} %</strong> du temps sur
       les ${nf0.format(V.reliability.n)} mois déjà jugés, avec une erreur moyenne de
       ${nf1.format(V.reliability.mape)} % contre ${nf1.format(V.reliability.naive_mape)} %
@@ -204,6 +203,12 @@ if (V && P && P.available && data.crossover_horizon) display(html`<div class="hm
   <p><strong>Comment lire cette prévision, selon l'horizon.</strong> Le modèle n'est pas
   utile partout de la même façon, et les deux bornes ci-dessous sont mesurées, pas
   choisies.</p>
+  <p>⚠️ Ces horizons se comptent à partir du <strong>dernier mois publié</strong>
+  (${fmtMonthFR(new Date(data.health.transactions_last_month + "T00:00:00Z"))}), et non
+  d'aujourd'hui : les ventes de logements anciens paraissent avec quelques mois de
+  décalage. C'est pourquoi le verdict ci-dessus, qui vise
+  ${V.months_ahead} mois devant <em>vous</em>, se lit au ${V.horizon}<sup>e</sup> rang de
+  la trajectoire.</p>
   <table class="hm-table">
     <thead><tr><th>Horizon</th><th>Ce qu'il faut retenir</th><th>Pourquoi</th></tr></thead>
     <tbody>

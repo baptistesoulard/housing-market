@@ -10648,20 +10648,23 @@
     "tx_now": 954000.0
   },
   "verdict": {
-    "horizon": 6,
-    "target_month": "décembre 2026",
+    "horizon": 9,
+    "months_ahead": 6,
+    "target_month": "mars 2027",
+    "target_date": "2027-03-01",
     "direction": "baisse",
-    "change_pct": -7.1,
-    "predicted": 886579,
-    "lo": 802064,
-    "hi": 949259,
-    "sentence": "D'ici décembre 2026, le marché des logements anciens devrait reculer d'environ 7 %.",
+    "change_pct": -7.9,
+    "from_value": 954000,
+    "predicted": 878708,
+    "lo": 796355,
+    "hi": 962652,
+    "sentence": "D'ici mars 2027, dans six mois, le marché des logements anciens devrait reculer d'environ 8 %, en passant de 954 000 à 879 000 ventes sur douze mois.",
     "reliability": {
-      "horizon": 6,
-      "direction": 0.716,
-      "mape": 5.68,
-      "naive_mape": 5.93,
-      "n": 204
+      "horizon": 9,
+      "direction": 0.751,
+      "mape": 6.3,
+      "naive_mape": 8.31,
+      "n": 201
     }
   },
   "benchmark": {
@@ -10715,8 +10718,8 @@
     "naive_mape": 6.37,
     "skill_pct": 13.7,
     "direction": 0.689,
-    "direction_horizon": 0.609,
-    "horizon": 6
+    "direction_horizon": 0.721,
+    "horizon": 9
   },
   "refutations": [
     {

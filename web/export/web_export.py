@@ -1747,18 +1747,66 @@ def build_previsions(con, frames: dict) -> dict:
         _hb = _horizon_blocks(con)
         payload["horizon_blocks"] = _hb["blocks"]
         payload["crossover_horizon"] = _hb["crossover"]
-        payload["regime"] = _regime_reliability(con)
+        # Au MÊME horizon que le verdict : ce bloc est un avertissement sur le chiffre
+        # de tête, pas une statistique indépendante. Deux horizons différents
+        # feraient dire à l'un ce que l'autre ne dit pas.
+        _v = payload.get("verdict") or {}
+        payload["regime"] = _regime_reliability(con, _v.get("horizon", _VERDICT_HORIZON_MIN))
     payload["refutations"] = REFUTATIONS
     payload["benchmark_taux"] = BENCHMARK_TAUX
     engine.reset()  # ne laisse pas la connexion ouverte pour le reste du script
     return payload
 
 
-#: Horizon du verdict de tête. Six mois : c'est l'horizon auquel un particulier raisonne
-#: (« j'achète maintenant ou au printemps ? ») et le premier auquel le modèle bat la
-#: référence naïve. Plus court, il ne sait rien dire que « demain ressemblera à
-#: aujourd'hui » ne dise mieux ; plus long, le lecteur décroche.
-_VERDICT_HORIZON = 6
+#: Le verdict vise un mois situé à six mois du LECTEUR — pas du millésime de données.
+#:
+#: C'est un correctif du 2026-09-03, et il compte. L'horizon était figé à 6 rangs de la
+#: série projetée, or celle-ci démarre au dernier mois OBSERVÉ, et l'IGEDD publie avec
+#: environ trois mois de retard : en septembre 2026, le « verdict à six mois » visait
+#: décembre 2026, soit trois mois devant le lecteur. Deux conséquences, toutes deux
+#: mauvaises — la page annonçait un horizon qu'elle ne tenait pas, et elle le prenait là
+#: où le modèle est le plus faible (+4,2 % d'erreur évitée à l'horizon 6, contre +24,2 %
+#: à 9 et +34,4 % à 11).
+#:
+#: ⚠️ Allonger l'horizon AMÉLIORE mécaniquement la fiabilité affichée. Ce n'est pas la
+#: raison du changement et il ne faut pas le présenter ainsi : la raison est que « six
+#: mois » doit vouloir dire six mois pour qui lit. La page continue de publier la table
+#: complète par horizon, y compris les rangs 1 à 5 où le modèle PERD contre une simple
+#: reconduction — c'est ce qui empêche ce réglage d'être une sélection d'horizon flatteuse.
+_VERDICT_MOIS_DEVANT = 6
+
+#: Plancher : jamais un horizon où le modèle est battu par la reconduction du dernier
+#: chiffre connu (voir `crossover_horizon`, publié par la page « Prévisions passées »).
+_VERDICT_HORIZON_MIN = 6
+
+
+def _verdict_horizon(projection: dict) -> int | None:
+    """Le rang de la série projetée que le verdict doit viser.
+
+    Deux bornes, et elles peuvent se contredire :
+      * le PLANCHER (`_VERDICT_HORIZON_MIN`) — en deçà, recopier le dernier chiffre connu
+        fait mieux, donc publier le modèle là serait le desservir ;
+      * le PLAFOND (`informative_months`) — au-delà, tous les prédicteurs sont reportés à
+        plat et la trajectoire RÉPÈTE sa dernière valeur. Publier un mois au-delà
+        donnerait un nombre que le modèle n'a pas calculé, seulement recopié.
+
+    Entre les deux, on prend le premier mois situé à `_VERDICT_MOIS_DEVANT` du jour de
+    publication. Si le plafond est sous le plancher, il n'y a pas d'horizon honnête à
+    publier et on rend None — l'appelant retombe sur son repli.
+    """
+    series = projection.get("series") or []
+    if not series:
+        return None
+    plafond = min(len(series), int(projection.get("informative_months") or len(series)))
+    if plafond < _VERDICT_HORIZON_MIN:
+        return None
+    cible = (pd.Timestamp.today().normalize().replace(day=1)
+             + pd.DateOffset(months=_VERDICT_MOIS_DEVANT))
+    rang = next((i for i, pt in enumerate(series, 1)
+                 if pd.Timestamp(pt["date"]) >= cible), None)
+    if rang is None:                       # la cible dépasse la série : dernier mois utile
+        rang = plafond
+    return max(_VERDICT_HORIZON_MIN, min(rang, plafond))
 
 _MOIS_FR = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
             "septembre", "octobre", "novembre", "décembre")
@@ -1777,9 +1825,10 @@ def _verdict(projection: dict, con) -> dict | None:
     qui interdisait de mettre ce verdict dans le chapeau statique de la page.
     """
     series = projection.get("series") or []
-    if len(series) < _VERDICT_HORIZON:
+    horizon = _verdict_horizon(projection)
+    if horizon is None:
         return None
-    point = series[_VERDICT_HORIZON - 1]
+    point = series[horizon - 1]
     base = projection.get("last_observed")
     if not base:
         return None
@@ -1787,9 +1836,9 @@ def _verdict(projection: dict, con) -> dict | None:
 
     horizons = fa.by_horizon(fa.evaluate(
         fa.read().query("kind == 'retro'"), q.transactions_run_rate(con)))
-    row = horizons[horizons["horizon"] == _VERDICT_HORIZON]
+    row = horizons[horizons["horizon"] == horizon]
     reliability = None if row.empty else {
-        "horizon": _VERDICT_HORIZON,
+        "horizon": horizon,
         "direction": round(float(row["direction"].iloc[0]), 3),
         "mape": round(float(row["mape"].iloc[0]), 2),
         "naive_mape": round(float(row["naive_mape"].iloc[0]), 2),
@@ -1808,16 +1857,39 @@ def _verdict(projection: dict, con) -> dict | None:
         sens, phrase = "baisse", f"devrait reculer d'environ {abs(change):.0f} %"
 
     target = pd.Timestamp(point["date"])
+    mois_cible = f"{_MOIS_FR[target.month - 1]} {target.year}"
+    # Combien de mois séparent le LECTEUR de la cible : c'est ce nombre-là qui rend la
+    # phrase honnête, pas le rang dans la série projetée.
+    aujourdhui = pd.Timestamp.today().normalize().replace(day=1)
+    devant = max(1, (target.year - aujourdhui.year) * 12 + target.month - aujourdhui.month)
+
+    # La tendance était énoncée en VARIATION seule (« reculer d'environ 7 % »), sans son
+    # point de départ : le lecteur devait aller chercher le niveau actuel dans une autre
+    # puce pour savoir de quoi on parlait. Un « de X à Y » se lit d'un trait et porte la
+    # direction dans sa forme même.
+    depart, arrivee = _arrondi_millier(base), _arrondi_millier(point["predicted"])
+    ent = lambda v: f"{int(v):,}".replace(",", " ")      # 878 708 -> « 879 000 », pas « 879 k »
+    trajet = f"de {ent(depart)} à {ent(arrivee)} ventes sur douze mois"
+    corps = (f"devrait rester à peu près stable, autour de {ent(arrivee)} ventes sur "
+             f"douze mois" if sens == "stable" else f"{phrase}, en passant {trajet}")
+    # Un nombre en chiffres au milieu d'une phrase de prose se lit mal quand il est petit.
+    _LETTRES = ("", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf",
+                "dix", "onze", "douze")
+    devant_txt = _LETTRES[devant] if devant < len(_LETTRES) else str(devant)
+
     return {
-        "horizon": _VERDICT_HORIZON,
-        "target_month": f"{_MOIS_FR[target.month - 1]} {target.year}",
+        "horizon": horizon,
+        "months_ahead": devant,
+        "target_month": mois_cible,
+        "target_date": target.strftime("%Y-%m-%d"),
         "direction": sens,
         "change_pct": round(change, 1),
+        "from_value": int(round(base)),
         "predicted": int(round(point["predicted"])),
         "lo": int(round(point["lo"])),
         "hi": int(round(point["hi"])),
-        "sentence": (f"D'ici {_MOIS_FR[target.month - 1]} {target.year}, "
-                     f"le marché des logements anciens {phrase}."),
+        "sentence": (f"D'ici {mois_cible}, dans {devant_txt} mois, le marché des "
+                     f"logements anciens {corps}."),
         "reliability": reliability,
     }
 
@@ -1872,7 +1944,7 @@ _REGIME_LABELS = {"calme": "taux quasi stables", "inter": "taux en mouvement mod
                   "agite": "taux en fort mouvement"}
 
 
-def _regime_reliability(con, horizon: int = _VERDICT_HORIZON) -> dict | None:
+def _regime_reliability(con, horizon: int = _VERDICT_HORIZON_MIN) -> dict | None:
     """Fiabilité du modèle DANS LE RÉGIME DE TAUX COURANT — la ventilation qui manquait.
 
     La page publie deux ventilations de sa performance : par horizon et par épisode. Les
