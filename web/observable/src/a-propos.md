@@ -103,10 +103,12 @@ l'autre, donc ces dates ne s'alignent pas, et c'est normal.
 </table>
 </div>
 
-Ces données sont réutilisées au titre de la
-[Licence ouverte / Etalab](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). Les
-producteurs cités ne sont ni auteurs ni relecteurs de ce site : les erreurs d'assemblage,
-d'interprétation ou de calcul n'engagent que lui.
+Les séries françaises sont réutilisées au titre de la
+[Licence ouverte / Etalab](https://www.etalab.gouv.fr/licence-ouverte-open-licence/),
+celles de la Banque centrale européenne sous ses propres conditions — le détail est sur la
+page [mentions légales](/mentions-legales). Les producteurs cités ne sont ni auteurs ni
+relecteurs de ce site : les erreurs d'assemblage, d'interprétation ou de calcul n'engagent
+que lui.
 
 ## Le vocabulaire
 
@@ -313,9 +315,11 @@ l'adresse que vous indiquez.
     <p class="hm-form-status" role="status" aria-live="polite"></p>
   </div>
   <p class="hm-form-legal">Votre nom, votre adresse et votre message me sont transmis par
-  courriel pour que je puisse vous répondre : ils ne sont ni enregistrés dans une base, ni
-  utilisés à d'autres fins, ni transmis à qui que ce soit. Pour les faire effacer, il
-  suffit de le demander en réponse.</p>
+  courriel pour que je puisse vous répondre, et pour rien d'autre : aucune base de données
+  n'est constituée. L'envoi passe par deux prestataires, Cloudflare (qui héberge le site)
+  et Resend (qui achemine le courriel), tous deux établis aux États-Unis. Pour faire
+  effacer vos données, il suffit de le demander en réponse — le détail est sur la page
+  <a href="/mentions-legales">mentions légales</a>.</p>
   <noscript><p class="hm-form-legal">Ce formulaire a besoin de JavaScript pour partir.
   Sans lui, passez par les
   <a href="https://github.com/baptistesoulard/housing-market/issues">signalements sur

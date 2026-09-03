@@ -422,6 +422,44 @@ adresse différente du repli et vérifie que tout suit — c'est ce qui empêche
 figer dans le code. Une adresse fausse ne casse aucune page : elle casse silencieusement
 l'aperçu au partage et le référencement.
 
+**La page `/mentions-legales` existe depuis le 2026-09-03, et elle est hors barre
+latérale.** `nav: false` dans `site.config.js` : servie, indexée, présente au sitemap, mais
+absente de la navigation de contenu — on cherche des mentions légales en pied de page, et
+`FOOTER` (dans `observablehq.config.js`) porte le lien. Comme l'accueil et À propos, elle
+est **entièrement statique** : une page qui engage l'éditeur ne doit pas dépendre d'un
+runtime pour exister.
+
+Ce qu'elle a corrigé au passage, et qui comptait plus que la page elle-même :
+
+* **L'encart du formulaire affirmait que les messages n'étaient « ni transmis à qui que ce
+  soit ».** Faux : ils transitent par Cloudflare (qui exécute la fonction) et par Resend
+  (qui achemine le courriel), tous deux aux États-Unis. Sur un site dont tout l'argument est
+  « je dis exactement ce que je fais », c'était la phrase la plus coûteuse du dépôt. Les
+  deux sous-traitants sont désormais nommés, sur la page ET sous le formulaire.
+* **Toutes les sources n'étaient pas sous Licence ouverte / Etalab.** Les séries de la BCE
+  relèvent de ses propres conditions. Corrigé dans le pied de page, sur À propos et sur la
+  page de mentions légales.
+* **Le chapeau de « Données & Sources » promettait un état de fraîcheur série par série que
+  la page n'a jamais porté** — le tableau vit sur À propos, où `sources_table.py` réécrit
+  ses dates. Le chapeau y renvoie maintenant. On ne duplique PAS le tableau : deux tableaux
+  de fraîcheur finiraient par ne plus dire la même date.
+
+⚠️ **Les coordonnées de l'hébergeur sont la seule information de ce dépôt que rien ne peut
+vérifier automatiquement.** Elles sont recopiées à la main depuis Cloudflare et signalées
+comme telles par un commentaire en tête de la page. À revérifier si Cloudflare déménage.
+
+**Pas de `seoTitle` sur cette page, et c'est mesuré :** le gabarit ajoute déjà
+« | Baromètre du Logement » à `og:title`, si bien qu'un `seoTitle` reprenant le nom du site
+le sortait DEUX FOIS. Un `seoTitle` ne se justifie que quand le libellé de navigation est
+muet hors contexte — c'est le cas d'« À propos », pas de « Mentions légales ».
+
+**Le dépôt porte un `LICENSE` MIT depuis le 2026-09-03.** Il n'en avait aucun, alors que la
+vignette de partage et la description de l'auteur annonçaient « code ouvert » : un dépôt
+public sans licence est juridiquement « tous droits réservés », donc la mention était
+inexacte sur la surface vue par le plus de monde. La licence couvre le **code** ; les
+données restent sous les conditions de leurs producteurs, et les textes rédigés du site
+restent à leur auteur — la page de mentions légales le dit explicitement.
+
 **Le formulaire de contact est le SEUL code serveur du site.**
 `web/observable/functions/api/contact.js` est une Cloudflare Pages Function, exécutée
 parce qu'elle est dans `functions/` à la racine du projet Pages — tout le reste de `dist/`

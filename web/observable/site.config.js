@@ -180,9 +180,10 @@ export const NAV = [
   {icon: "📰", name: "Actualités & Aides", path: "/actualites",
    description: "Veille des dispositifs d'aide au logement en France et en Europe : " +
      "MaPrimeRénov', PTZ, DPE, CEE — impacts par pilier et échéancier des mesures."},
-  // Les deux pages suivantes n'ont PAS de JSON statique : elles appellent l'API HTTP
-  // (voir src/components/api.js). Sans instance désignée, elles affichent un encart qui
-  // explique où en lancer une — le reste du site continue de fonctionner seul.
+  // Ces deux pages appelaient l'API HTTP jusqu'au 2026-08-23 ; elles lisent depuis un
+  // JSON statique comme les autres (previsions.json, ou des séries dérivées d'ancien.json
+  // et neuf.json). L'encart .hm-api-offline qui subsiste ne se déclenche plus que si le
+  // modèle n'a pas pu être calibré à la dernière publication.
   {icon: "📡", name: "Prévision & Scénarios", path: "/previsions",
    description: "Prévision des transactions de logements à 12-18 mois : modèle à deux " +
      "étages, backtest hors échantillon et scénarios à quatre leviers."},
@@ -196,6 +197,13 @@ export const NAV = [
    seoTitle: "À propos — Baptiste Soulard",
    description: "Baptiste Soulard publie ce baromètre du marché du logement : " +
      "sources publiques, méthode, limites et calculs reproductibles."},
+  // Hors barre latérale (nav: false) mais servie et indexée : une page de mentions
+  // légales se cherche en pied de page, pas dans une navigation de contenu.
+  // Pas de `seoTitle` : le gabarit ajoute déjà « | Baromètre du Logement », et un
+  // seoTitle qui répète le nom du site le fait sortir DEUX FOIS dans og:title.
+  {icon: "§", name: "Mentions légales", path: "/mentions-legales", nav: false,
+   description: "Éditeur, hébergeur, traitement des données du formulaire de contact, " +
+     "licences des sources publiques et limites d'usage de ce baromètre."},
 ];
 
 // --- Les pages départementales -------------------------------------------------------

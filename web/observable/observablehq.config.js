@@ -719,11 +719,13 @@ function META({path}) {
 const FOOTER = `<nav>
   <a href="/a-propos">À propos & méthode</a>
   <a href="/donnees">Sources & fraîcheur</a>
+  <a href="/mentions-legales">Mentions légales</a>
   <a href="${SITE.repo}">Code source</a>
 </nav>
-<p>Données publiques : INSEE, SDES (SIT@DEL, ECLN), IGEDD, Banque de France, BCE —
-réutilisées sous Licence ouverte / Etalab. ${esc(SITE.name)} est un travail
-d'analyse indépendant, sans lien avec ces organismes.</p>
+<p>Données publiques : INSEE, SDES (SIT@DEL, ECLN), IGEDD, DGFiP, Banque de France, BCE —
+les séries françaises sous Licence ouverte / Etalab, celles de la BCE sous ses propres
+conditions. ${esc(SITE.name)} est un travail d'analyse indépendant, sans lien avec ces
+organismes.</p>
 <p>Les chiffres publiés ici sont des estimations et des projections : ils ne constituent
 pas un conseil en investissement.</p>`;
 

@@ -24,13 +24,16 @@ const neufData = await FileAttachment("./data/neuf.json").json();
   CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Le chapeau des pages de données ».
 -->
 
-Toutes les séries utilisées sur ce site sont publiques et officielles, citées avec leur
-producteur, leur voie d'accès et la date de leur dernière publication. Cette page en donne
-l'état de fraîcheur, série par série.
+Toutes les séries utilisées sur ce site sont publiques et officielles. La date de dernière
+publication de chacune est tenue à jour dans le
+[tableau des sources de la page À propos](/a-propos#d-ou-viennent-les-donnees), qu'un
+script réécrit à chaque rafraîchissement — c'est là qu'il faut regarder pour savoir jusqu'à
+quel mois va une série.
 
-Elle permet aussi de charger un fichier de ventes mensuelles pour le confronter aux
-indicateurs amont du marché du logement. Ce fichier est lu dans le navigateur : il n'est
-envoyé ni à l'hébergeur ni à aucun service, et rien n'en est conservé.
+Cette page-ci sert à autre chose : charger un fichier de ventes mensuelles et le confronter
+aux indicateurs amont du marché du logement, pour voir lequel explique le mieux votre
+activité. Le fichier est lu dans le navigateur ; il n'est envoyé ni à l'hébergeur ni à
+aucun service, et rien n'en est conservé.
 
 <div class="hm-caption">
 Les jeux de données de marché (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier">SIT@DEL</abbr>, <abbr title="Inspection Générale de l'Environnement et du Développement Durable, suivi mensuel des ventes de logements anciens">IGEDD</abbr>, macro, <abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>…) sont rafraîchis hors
