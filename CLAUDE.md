@@ -2211,18 +2211,28 @@ Streamlit exécute le corps de **tous** les onglets, pas seulement celui affich�
 
 ## État des branches
 
-| Branche | Devant `main` | Note |
-|---|---|---|
-| `main` | — | porte les DEUX axes de refactor, le site public, l'archive des prévisions ET les 101 pages départementales |
-| `refactor/duckdb-storage` | 0 | axe stockage, fusionné par la PR #3 |
-| `refactor/duckdb-engine` | 0 | axe compute, fusionné par la PR #2 |
-| `fix/web-lisibilite` | 0 | correctifs de lisibilité du front web, fusionnés |
-| `claude/code-audit-ocw25x` | 0 | reliquat, rien que `main` n'ait déjà |
-| `claude/website-seo-accessibility-alr8mw` | 0 | site public : accueil rédigée, page À propos, métadonnées de partage/référencement, corrections d'accessibilité (voir « Le site public ») ; entrée dans `main` le 2026-08-20, portée par la fusion de `feat/pages-departementales` |
-| `feat/pages-departementales` | 0 | prix au m² par département (DVF) : nettoyage testé, dataset `dvf`, 101 pages + sélecteur (voir « Les pages départementales ») ; fusionnée dans `main` en fast-forward le 2026-08-20 |
-| `refactor/fusion-timelag-previsions` | 0 | fusion Time-Lag → Prévision, retrait Atelier + export SAP IBP (voir « Onglets retirés ») ; fusionnée dans `main` en fast-forward le 2026-08-20 |
+**Il n'y a plus qu'une branche : `main` (2026-09-03).** Les neuf branches distantes qui
+subsistaient ont été supprimées, ainsi que la dernière copie locale
+(`feat/accueil-bandeau`). Elles étaient toutes **ancêtres de `main`** — vérifié une à une
+par `git merge-base --is-ancestor` avant suppression — donc aucun commit n'a été perdu :
+supprimer une référence ne supprime pas ce qu'elle désignait quand `main` y mène déjà.
 
-Les six branches ci-dessus sont **entièrement contenues dans `main`** (`git merge-base
---is-ancestor` vérifié) : leurs copies locales ont été supprimées, il ne reste que les
-copies distantes, à supprimer d'un `git push origin --delete`. `claude/duckdb-parquet-
-refactor-p2-tvs0b2`, qui figurait ici, n'existe plus ni en local ni sur le distant.
+Ce qu'elles portaient, et qui vit désormais dans `main` : les deux axes de refactor
+DuckDB (`refactor/duckdb-storage` par la PR #3, `refactor/duckdb-engine` par la PR #2),
+la lisibilité du front (`fix/web-lisibilite`), le site public et son référencement
+(`claude/website-seo-accessibility-alr8mw`, `claude/seo-immobilier-france-visibility-ke5t2g`),
+les 101 pages départementales (`feat/pages-departementales`), le bandeau d'accueil
+(`feat/accueil-bandeau`), la fusion Time-Lag → Prévision (`refactor/fusion-timelag-previsions`)
+et un reliquat d'audit (`claude/code-audit-ocw25x`).
+
+⚠️ **Cette section avait dérivé, et c'est le mode de panne à connaître :** elle n'en
+listait que six alors qu'il en existait neuf, et affirmait que « les copies locales ont
+été supprimées » alors que `feat/accueil-bandeau` traînait encore en local. Une table de
+branches écrite à la main vieillit toujours dans le même sens — elle oublie ce qui a été
+créé depuis. **Se fier à `git branch -r` et à `git rev-list --left-right --count`, jamais
+à cette page**, et la réécrire quand la topologie change.
+
+Corollaire pratique : un `git diff main..<branche>` sur une branche en retard affiche un
+écart énorme qui n'est PAS du travail à récupérer — c'est ce que `main` a ajouté depuis,
+vu à l'envers. Le seul test qui répond à « reste-t-il quelque chose à fusionner ? » est le
+compte de commits en avance, ou `merge-base --is-ancestor`.
