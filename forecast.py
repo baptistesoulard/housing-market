@@ -518,9 +518,9 @@ def fit_sales_two_factor(df_series, tx12, reno, value_col="Sales",
         sales(t) ≈ a + b_tx·tx12(t − l₁) + b_reno·reno(t − l₂)
 
     Renovation adds the STOCK-driven second-œuvre demand channel that existing-home
-    transactions (move-driven) miss — the third driver for a Somfy-type actor, and the path
-    that eventually replaces the synthetic sales series. Grid-searches both lags for the best
-    in-sample R². `tx12` and `reno` are Date-indexed monthly Series. Returns
+    transactions (move-driven) miss — the third driver for a building-products maker, and
+    the path that eventually replaces the synthetic sales series. Grid-searches both lags
+    for the best in-sample R². `tx12` and `reno` are Date-indexed monthly Series. Returns
     {beta:[a, b_tx, b_reno], r2, tx_lag, reno_lag, n} or None (too few overlapping months
     or reno unavailable).
     """

@@ -77,7 +77,7 @@ Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond 
 - **Registre de sources unique** : centraliser `série → {fichier, colonne, fréquence, clé SDMX}` dans un seul dict partagé par `fetch_new_sources.py` et `data_manager.py` (aujourd'hui dupliqué → risque de dérive). ✅ Premier pas (2026-07-18) : `MACRO_CORE_SERIES` dans `fetch_new_sources.py`, alignement verrouillé par `tests/test_fetch_sources.py`.
 - **Stockage macro en format long** (`[Date, série, valeur, fréquence]`) : `macro.csv` est aujourd'hui un format large ~35 % NaN (séries trimestrielles réindexées en mensuel).
 - **Versionnement des données** : snapshots horodatés avant écrasement, plutôt qu'une réécriture en place.
-- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). ✅ **Pilier rénovation actif (2026-07-16)** : 2 séries INSEE réelles (activité passée/prévue du second œuvre, idbanks 001586954/001586886) branchées comme 2ᵉ facteur du modèle de ventes — le mécanisme de remplacement du synthétique est en place ; reste à disposer de vraies ventes Somfy pour retirer `build_sales`.
+- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). ✅ **Pilier rénovation actif (2026-07-16)** : 2 séries INSEE réelles (activité passée/prévue du second œuvre, idbanks 001586954/001586886) branchées comme 2ᵉ facteur du modèle de ventes — le mécanisme de remplacement du synthétique est en place ; reste à disposer de vraies ventes société pour retirer `build_sales`.
 
 ### Réalisés le 2026-07-16 (première vague)
 

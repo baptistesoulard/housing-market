@@ -44,7 +44,7 @@ Code Hex : #64B5F6
 
 Usage idéal : Liens hypertexte textuels, boutons secondaires ou illustrations.
 
-Vert Émeraude (Inspiré de la végétation et des volets)
+Vert Émeraude (Inspiré de la végétation)
 
 Code Hex : #388E3C
 

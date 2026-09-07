@@ -410,8 +410,8 @@ def _write_single_series(series, column, filename, label):
 
 def build_renovation():
     """Renovation-pillar sources — the SECOND-ŒUVRE / renovation demand that new construction
-    and existing-home transactions don't capture (a large share of Somfy-type product demand
-    comes from the installed stock, not moves). Two real, national, monthly INSEE series from
+    and existing-home transactions don't capture (much of that demand comes from the
+    installed stock, not from moves). Two real, national, monthly INSEE series from
     the building-industry business survey (Enquête mensuelle de conjoncture dans l'industrie
     du bâtiment), CVS, both verified on bdm.insee.fr:
 

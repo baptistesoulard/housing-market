@@ -1977,8 +1977,8 @@ with tab_macro:
             "production (BPCE p.23)."))
 
     # --- Renovation pillar — the second-œuvre demand that neither new construction nor
-    # existing-home transactions capture (a large share of Somfy-type product demand comes
-    # from the installed stock, not moves). Real, national; NaN until fetch_new_sources.py
+    # existing-home transactions capture (much of that demand comes from the installed
+    # stock, not from moves). Real, national; NaN until fetch_new_sources.py
     # produces the CSVs, in which case a hint replaces the charts.
     st.markdown("---")
     st.markdown("#### " + _L("Rénovation & second œuvre (pilier complémentaire)",
