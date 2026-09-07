@@ -2047,6 +2047,50 @@ def _payload_without_timestamp(payload):
     return {k: v for k, v in payload.items() if k != "generated_at"}
 
 
+#: Précision d'écriture des flottants, en CHIFFRES SIGNIFICATIFS (et non en décimales).
+#:
+#: Le payload mêle des comptes de ventes (~9,5 × 10⁵) et des coefficients (~10⁻³) : un
+#: nombre de décimales fixe écraserait les seconds ou laisserait les premiers bruités.
+#:
+#: Pourquoi 9 plutôt que 12 ou 15 : la dérive à absorber vit au 16ᵉ chiffre, donc n'importe
+#: quelle troncature la couvre. Ce qui départage, c'est le risque qu'une valeur tombe
+#: exactement sur une frontière d'arrondi et bascule quand même d'une machine à l'autre —
+#: il vaut environ 10^(N−17) par valeur. À 12 chiffres c'est ~10⁻⁵, soit une occurrence
+#: attendue sur les ~25 000 flottants publiés ; à 9 chiffres c'est ~10⁻⁸, donc jamais.
+#: Et 9 chiffres restent très au-delà de tout besoin d'affichage : 935 815,187 ventes.
+_PRECISION_JSON = 9
+
+
+def _arrondir_flottants(o):
+    """Arrondit tout flottant du payload à `_PRECISION_JSON` chiffres significatifs.
+
+    POURQUOI. Le job hebdomadaire (runner Linux) et un export lancé en local écrivaient
+    des valeurs qui diffèrent d'un ULP — `935815.186488427` contre `935815.1864884269` —
+    parce que l'algèbre linéaire de numpy n'est pas compilée de la même façon des deux
+    côtés. Ce n'est pas un problème de mise en forme : ce sont deux doubles distincts.
+
+    Sans arrondi, les deux environnements se repoussent `previsions.json` indéfiniment,
+    chacun reformatant les décimales de l'autre — 814 lignes de diff pour zéro
+    information. Et surtout le compteur « n/7 fichier(s) modifié(s) » perd son POUVOIR
+    D'ALERTE, qui est sa seule raison d'être : un fichier qui bouge à chaque exécution ne
+    signale plus rien quand il bouge pour de bon.
+
+    Les booléens sont des entiers en Python et les entiers sont exacts : ni les uns ni les
+    autres ne passent par ici. `numpy.float64` hérite de `float`, donc il est couvert.
+    """
+    if isinstance(o, bool) or isinstance(o, int):
+        return o
+    if isinstance(o, float):
+        if o != o or o in (float("inf"), float("-inf")):
+            return o                     # NaN / inf : pas notre sujet, laissés visibles
+        return float(f"%.{_PRECISION_JSON}g" % o)
+    if isinstance(o, dict):
+        return {k: _arrondir_flottants(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_arrondir_flottants(v) for v in o]
+    return o
+
+
 def _write_if_changed(path, payload):
     """Écrit le JSON uniquement si son contenu a réellement changé, `generated_at` exclu
     de la comparaison.
@@ -2058,6 +2102,11 @@ def _write_if_changed(path, payload):
     utile : « Généré le » affiché par le front date de la dernière évolution réelle des
     données, pas de la dernière exécution du script. Renvoie True si le fichier a été
     (ré)écrit."""
+    # Arrondi AVANT sérialisation, et donc avant la comparaison : les deux côtés sont
+    # alors traités à la même précision (voir `_arrondir_flottants`). Point de passage
+    # unique — les 7 JSON nationaux, l'annuaire et les 101 fichiers départementaux
+    # passent tous par ici, donc aucun appelant n'a à y penser.
+    payload = _arrondir_flottants(payload)
     text = json.dumps(payload, ensure_ascii=False, indent=2)
     if os.path.exists(path):
         try:

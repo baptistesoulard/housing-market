@@ -240,3 +240,49 @@ def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():
     datetime.date.fromisoformat(b["releve_le"])
     assert 0 < b["valeur"] < 15, f"repère de taux invraisemblable : {b['valeur']}"
     assert b.get("note"), "le décalage d'horizon doit être explicité"
+
+
+# --- Stabilité d'écriture des flottants ------------------------------------------------
+# Le 2026-09-07, le job hebdomadaire (runner Linux) et un export lancé en local ont écrit
+# des valeurs distinctes d'un ULP pour la MÊME donnée — numpy n'est pas compilé de la même
+# façon des deux côtés. Résultat : 814 lignes de diff sur previsions.json pour zéro
+# information, et surtout un compteur « n/7 fichier(s) modifié(s) » qui perd son pouvoir
+# d'alerte, puisqu'un fichier qui bouge à chaque exécution ne signale plus rien.
+
+import sys                                                              # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "web" / "export"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+import web_export as we                                                 # noqa: E402
+
+#: Les deux valeurs RÉELLEMENT observées, Linux contre Windows, pour le premier mois
+#: projeté. Ce sont bien deux doubles différents : `repr` est déterministe pour un double
+#: donné, donc deux représentations distinctes ne peuvent pas venir du formatage.
+_LINUX, _WINDOWS = 935815.186488427, 935815.1864884269
+
+
+def test_les_deux_doubles_observes_sont_bien_differents():
+    """Contre-épreuve : sans elle, le test suivant pourrait passer pour de mauvaises
+    raisons (deux fois la même valeur s'arrondit trivialement au même résultat)."""
+    assert _LINUX != _WINDOWS
+
+
+def test_l_arrondi_absorbe_la_derive_entre_machines():
+    assert we._arrondir_flottants(_LINUX) == we._arrondir_flottants(_WINDOWS)
+
+
+def test_l_arrondi_preserve_ce_qui_est_exact_et_ne_touche_ni_entiers_ni_booleens():
+    """Un arrondi qui abîmerait les entiers ou les booléens serait pire que le défaut."""
+    charge = {"ventes": 954000, "actif": True, "inactif": False, "taux": 3.18,
+              "series": [{"v": _LINUX}, {"v": 0.9145580237141427}], "mois": "2027-03-01"}
+    sortie = we._arrondir_flottants(charge)
+    assert sortie["ventes"] == 954000 and isinstance(sortie["ventes"], int)
+    assert sortie["actif"] is True and sortie["inactif"] is False
+    assert sortie["taux"] == 3.18
+    assert sortie["mois"] == "2027-03-01"
+    # Neuf chiffres significatifs restent bien au-delà de tout besoin d'affichage.
+    assert sortie["series"][1]["v"] == 0.914558024
+
+
+def test_la_precision_reste_largement_au_dela_de_l_affichage():
+    """Garde sur la constante : la descendre trop abîmerait des valeurs publiées."""
+    assert 6 <= we._PRECISION_JSON <= 12

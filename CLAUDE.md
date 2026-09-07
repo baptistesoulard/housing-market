@@ -131,8 +131,40 @@ du dataset : il opère sur ce qu'on lui donne, il n'a pas de source à interroge
 
 **Ne pas régénérer les JSON du front sans vérifier.** `python web/export/web_export.py`
 doit annoncer `0/7 fichier(s) modifié(s)`. Un diff inattendu signale une divergence de
-calcul, pas du bruit — depuis que les agrégations sont en SQL, la sortie ne dépend plus de
-la version de pandas/numpy.
+calcul, pas du bruit.
+
+**Et cette stabilité est OBTENUE, pas donnée (2026-09-07).** Cette page affirmait
+qu'« depuis que les agrégations sont en SQL, la sortie ne dépend plus de la version de
+pandas/numpy » : c'était trop fort. Le job hebdomadaire (runner Linux) et un export lancé
+en local ont écrit, pour la même donnée, `935815.186488427` contre `935815.1864884269` —
+deux doubles distincts à un ULP près, parce que l'algèbre linéaire de numpy n'est pas
+compilée de la même façon des deux côtés. Ce n'est pas un défaut de mise en forme : `repr`
+est déterministe pour un double donné, donc deux représentations différentes viennent
+forcément de deux valeurs différentes.
+
+Conséquence, si on ne fait rien : les deux environnements se repoussent `previsions.json`
+indéfiniment (814 lignes de diff pour zéro information), et **le compteur « n/7 » perd son
+pouvoir d'alerte** — un fichier qui bouge à chaque exécution ne signale plus rien quand il
+bouge pour de bon. C'est-à-dire précisément la propriété pour laquelle ce compteur existe.
+
+`_arrondir_flottants` arrondit donc tout flottant à `_PRECISION_JSON = 9` **chiffres
+significatifs** au point d'écriture unique (`_write_if_changed`), avant sérialisation ET
+avant comparaison. Trois choix à ne pas défaire :
+
+* **Chiffres significatifs, pas décimales.** Le payload mêle des comptes (~9,5 × 10⁵) et
+  des coefficients (~10⁻³) : un nombre de décimales fixe écraserait les seconds ou
+  laisserait les premiers bruités.
+* **9 et non 12.** N'importe quelle troncature couvre une dérive au 16ᵉ chiffre ; ce qui
+  départage, c'est le risque qu'une valeur tombe exactement sur une frontière d'arrondi et
+  bascule quand même — environ 10^(N−17) par valeur. À 12 chiffres, ~10⁻⁵, soit une
+  occurrence attendue sur les ~25 000 flottants publiés ; à 9, ~10⁻⁸.
+* **Entiers et booléens ne passent pas par là.** Les entiers sont exacts, et en Python un
+  booléen EST un entier — les arrondir serait pire que le défaut.
+
+Mesuré au passage : écart relatif maximal introduit **4,7 × 10⁻⁹**, structure des sept
+fichiers identique, aucune valeur affichée modifiée. `tests/test_web_links.py` verrouille
+l'affaire avec les **deux doubles réellement observés**, plus une contre-épreuve qui vérifie
+qu'ils sont bien différents — sans elle, le test passerait pour de mauvaises raisons.
 
 ## L'API HTTP (`api/`) — ce qui doit rester vrai
 
