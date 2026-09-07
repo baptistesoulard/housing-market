@@ -297,8 +297,25 @@ def generate_sitadel_and_macro():
     cvs_cjo_sitadel["Type"] = cvs_cjo_sitadel["TYPE_LGT"].map(type_map)
     cvs_cjo_sitadel["Region"] = "France"
     cvs_cjo_sitadel["Department"] = "France"
-    cvs_cjo_sitadel = cvs_cjo_sitadel.rename(columns={"LOG_AUT": "Permis", "LOG_COM": "MisesEnChantier"})
-    df_sitadel = cvs_cjo_sitadel[["Date", "Region", "Department", "Type", "Permis", "MisesEnChantier"]].sort_values(["Date", "Type"]).reset_index(drop=True)
+    # ⚠️ Les séries CVS-CJO de SURFACE ne sont pas additives, celles de COMPTE le sont.
+    # Mesuré sur les 318 mois communs : la somme des 4 types reproduit EXACTEMENT le
+    # « Tous Logements » publié pour LOG_AUT/LOG_COM (0,00 %), mais s'en écarte de
+    # -0,16 % (SDP_AUT) et -0,81 % (SDP_COM) en cumul 12 mois, et jusqu'à 11 % sur un
+    # mois isolé — le SDES désaisonnalise l'agrégat de surface indépendamment de ses
+    # composantes. On garde la SOMME DES 4 TYPES, comme pour les comptes : c'est ce qui
+    # rend le total cohérent avec les ventilations individuel/collectif que le site
+    # publie à côté. Conséquence à connaître avant de crier au bug : nos m² sont ~0,8 %
+    # sous le chiffre que le SDES affiche pour la France entière.
+    #
+    # SDP_AUT/SDP_COM = surface de plancher en m². Elles ne se déduisent PAS du nombre de
+    # logements : à type figé l'écart entre les deux mesures ne dépasse pas ~4 points, mais
+    # agrégé il atteint 8 points, parce que la composition bascule des grands logements
+    # (individuel pur, ~121 m²) vers les petits (résidences, ~47 m²). Ce sont les m² qui
+    # dimensionnent le tonnage de matériaux, pas le compte de logements.
+    cvs_cjo_sitadel = cvs_cjo_sitadel.rename(columns={"LOG_AUT": "Permis", "LOG_COM": "MisesEnChantier",
+                                                      "SDP_AUT": "SurfacePermis", "SDP_COM": "SurfaceChantiers"})
+    df_sitadel = cvs_cjo_sitadel[["Date", "Region", "Department", "Type", "Permis", "MisesEnChantier",
+                                  "SurfacePermis", "SurfaceChantiers"]].sort_values(["Date", "Type"]).reset_index(drop=True)
     sit_max = df_sitadel["Date"].max()
 
     # --- Macro (REAL, synthetic fallback) — dynamic range, trailing-NaN trimmed ---

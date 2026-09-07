@@ -87,6 +87,8 @@ SITADEL = DataFrameSchema(
         "Type": Column(str, Check.isin(SITADEL_TYPES), nullable=False, coerce=True),
         "Permis": _COUNT("Building permits (LOG_AUT)"),
         "MisesEnChantier": _COUNT("Housing starts (LOG_COM)"),
+        "SurfacePermis": _COUNT("Floor area authorised, m2 (SDP_AUT)"),
+        "SurfaceChantiers": _COUNT("Floor area started, m2 (SDP_COM)"),
     },
     strict=False, coerce=True, name="sitadel",
     unique=["Date", "Type"],

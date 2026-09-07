@@ -22,7 +22,12 @@ def aggregate_sitadel(df_sitadel, types=None):
     if types:
         df = df[df["Type"].isin(types)]
         
-    df_agg = df.groupby("Date")[["Permis", "MisesEnChantier"]].sum().reset_index()
+    # Les colonnes présentes, pas une liste figée : `SurfacePermis`/`SurfaceChantiers`
+    # sont arrivées après les comptes, et cette fonction est l'implémentation de RÉFÉRENCE
+    # des tests de parité — elle doit couvrir tout ce que la vue SQL expose.
+    value_cols = [c for c in ("Permis", "MisesEnChantier", "SurfacePermis", "SurfaceChantiers")
+                  if c in df.columns]
+    df_agg = df.groupby("Date")[value_cols].sum().reset_index()
     df_agg = df_agg.sort_values("Date")
     return df_agg
 

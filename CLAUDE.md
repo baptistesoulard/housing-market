@@ -776,14 +776,57 @@ transactions, faute de verdict — même raison que pour sa carte de Perspective
 plus haut. Le code a **une seule forme** (le second membre prend le verdict s'il existe,
 sinon le repli), c'est la donnée qui manque d'un côté, pas la logique.
 
-**Reste au backlog, mesuré mais non fait : la SURFACE.** Le fichier SIT@DEL déjà en dépôt
-porte `SDP_AUT` / `SDP_COM` (surface de plancher, m²) et `data_manager.py` ne parse que
-`LOG_AUT` / `LOG_COM`. Or les matériaux suivent les m², pas le nombre de logements. Mesuré
-à juin 2026 : 293 412 logements commencés pour **22,3 M m²**, soit **−32 % vs la moyenne
-2010-19 en surface contre −23 % en logements** — le logement moyen est passé de 85,2 à
-76,1 m². Neuf points d'écart sur le tonnage adressable, invisibles aujourd'hui. Touche
-`data_manager.py`, le contrat pandera et les tests de parité : à faire dans une passe
-dédiée.
+**La SURFACE est dans l'entrepôt depuis le 2026-08-31, pas encore publiée (lot A).**
+`data_manager.py` ne parsait que `LOG_AUT` / `LOG_COM` ; il rend désormais aussi
+`SurfacePermis` / `SurfaceChantiers` (ex-`SDP_AUT` / `SDP_COM`, surface de plancher en m²).
+Or les matériaux suivent les m², pas le nombre de logements : à juin 2026, 293 412 logements
+commencés pour **22,3 M m²**, soit **−31 % vs la moyenne 2010-19 en surface contre −23 % en
+logements**.
+
+**L'explication écrite ici était FAUSSE, et la mesure l'a corrigée.** Ce fichier attribuait
+les huit points d'écart au logement moyen qui rétrécit (85,2 → 76,1 m²). C'est marginal.
+Décomposition de la baisse des surfaces commencées : **−23,3 pt de VOLUME, −5,5 pt de MIX,
+−2,8 pt de TAILLE**. Les deux tiers de l'écart invisible sont un effet de COMPOSITION —
+l'individuel pur (121 m²/logt) est passé de 33,1 % à 25,0 % des chantiers pendant que les
+résidences (47 m²/logt) passaient de 6,7 % à 14,7 %. La preuve tient en un contraste : à
+type figé l'écart m²/logements ne dépasse jamais 3,8 pt (individuel pur −42,2 % en logements
+contre −45,7 % en m²), alors qu'agrégé il atteint 7,9 pt. **Un écart agrégé plus grand que
+tous ses écarts par composante EST la signature d'un effet de mix** — le vérifier coûte une
+ligne et évite d'écrire la mauvaise cause.
+
+⚠️ **Les séries CVS-CJO de surface ne sont PAS additives ; celles de compte le sont.** Sur
+les 318 mois communs, la somme des 4 types reproduit exactement le « Tous Logements » publié
+pour `LOG_AUT`/`LOG_COM` (0,00 %), mais s'en écarte de −0,16 % (`SDP_AUT`) et **−0,81 %**
+(`SDP_COM`) en cumul 12 mois, et jusqu'à **11 % sur un mois isolé** : le SDES désaisonnalise
+l'agrégat de surface indépendamment de ses composantes. L'entrepôt garde la SOMME DES 4
+TYPES, comme pour les comptes — c'est ce qui rend le total cohérent avec les ventilations
+individuel/collectif publiées à côté. Conséquence : nos m² sont ~0,8 % sous le chiffre que le
+SDES affiche pour la France entière, et ce n'est pas un bug. Documenté au point de parse.
+
+**Ce que le lot A n'a PAS coûté, et pourquoi.** `queries.py` n'a pas bougé d'une ligne :
+`q.monthly()` prend des colonnes arbitraires, donc `q.monthly(con, "sitadel",
+["SurfaceChantiers"], (12,))` a marché dès que le Parquet a porté la colonne. `read_frames()`
+rend toujours SIX frames — aucun déballage positionnel touché. Les seuls fichiers modifiés
+sont le parse, le contrat pandera, `analysis.aggregate_sitadel` (qui somme désormais les
+colonnes PRÉSENTES et non une liste figée, puisqu'elle est l'implémentation de référence des
+tests de parité), et deux fixtures de test — dont `tests/test_housing_data.py`, qui casse dès
+qu'une colonne déclarée manque, ce qui est précisément le rôle du contrat.
+
+**Preuve que le lot est inerte côté publication** : `python web/export/web_export.py` annonce
+toujours `0/7` et `0/102`. Aucune surface ne lit encore les m² — les publier est le lot B, qui
+doit porter l'effet de mix et non le seul total de m².
+
+**Reste au backlog : le TERTIAIRE (lot C).** `Données mensuelles nationales - Locaux` (DiDo
+`375988c5-9886-4cdc-9c09-1594d4ec27c4`, licence ouverte, **CVS-CJO**, 2013-01 → 2026-07) est
+le jumeau exact du fichier logements, même API que `build_sitadel`. Il n'est pas marginal :
+**20,98 M m² commencés sur 12 mois contre 22,50 pour les logements — 51 % de la surface
+adressable, que le site ne voit pas**. Il ne bouge pas comme le logement (−15,5 % vs 2013-19
+contre −31 %) et il se scinde : entrepôt **+12,0 %**, bureau **−33,1 %**, industrie −13,3 %
+en chantiers mais **+34,5 % en autorisations**. Deux pièges : ne PAS l'ajouter au tuple de
+`read_frames()` (le piège du retrait de `revenue` — `web_export.py` déballe par position,
+`forecast_archive.py` lit l'index `[2]`), le lire par SQL uniquement ; et la série démarre en
+**2013**, donc `ana.LEVEL_REF_YEARS = ("2010","2019")` ne s'y applique pas — chaque chiffre
+doit nommer sa fenêtre, comme le taux de transformation le fait déjà.
 
 **Les correctifs de la Synthèse ont été propagés aux deux pages de marché (2026-08-27).**
 Ils y étaient restés absents, et c'était le pire endroit pour ça : le **+28,4 %** qui a

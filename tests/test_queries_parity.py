@@ -57,7 +57,7 @@ def _borrow_capacity_factor(rate_pct, years):
 
 # ------------------------------------------------------------------ cumuls glissants
 @pytest.mark.parametrize("dataset,cols", [
-    ("sitadel", ["Permis", "MisesEnChantier"]),
+    ("sitadel", ["Permis", "MisesEnChantier", "SurfacePermis", "SurfaceChantiers"]),
     ("ventes_ancien", ["Transactions"]),
 ])
 def test_monthly_matches_pandas_rolling(con, dataset, cols):

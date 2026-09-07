@@ -173,7 +173,8 @@ def test_data_manager_reads_through_the_warehouse():
                 "Date": pd.to_datetime(["2020-01-01", "2020-01-01"]),
                 "Region": "France", "Department": "France",
                 "Type": ["Logement Collectif", "Maison Individuelle Pure"],
-                "Permis": [10, 20], "MisesEnChantier": [5, 6]}),
+                "Permis": [10, 20], "MisesEnChantier": [5, 6],
+                "SurfacePermis": [1200, 2400], "SurfaceChantiers": [600, 720]}),
             "ventes_ancien": _good_ventes_ancien(),
             # every declared indicator column must be present (a missing one is the
             # upstream-rename symptom the contract exists to catch) — NaN is fine.
