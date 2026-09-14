@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T11:25:43+00:00",
+  "generated_at": "2026-09-14T11:38:14+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -127,8 +127,8 @@
         {
           "emoji": "🟠",
           "title": "Indice d'accessibilité",
-          "value": "72",
-          "sub": "logement ≈ 28 % moins accessible qu'en 2015 · sur un an : +0,4 pt"
+          "value": "73",
+          "sub": "logement ≈ 27 % moins accessible qu'en 2015 · sur un an : -0,0 pt"
         }
       ],
       "links": [

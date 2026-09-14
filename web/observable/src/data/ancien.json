@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T17:30:36+00:00",
+  "generated_at": "2026-09-14T11:38:15+00:00",
   "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
   "caption": "Le marché des logements anciens au niveau national : volumes de transactions (IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité.",
   "how_to_read": "Le cumul 12 mois glissant reproduit la série publiée par l'IGEDD (« ventes sur un an ») ; les flux mensuels en sont la reconstruction, utile pour la dynamique récente mais plus bruitée. Côté accessibilité, la capacité d'emprunt est calculée à mensualité constante : elle chute donc quand les taux montent, indépendamment des prix. L'indice d'accessibilité rapporte cette capacité aux prix — sous 100, un ménage type achète moins de surface qu'en 2015.",
@@ -4016,23 +4016,23 @@
       {
         "label": "Ensemble",
         "color": "#E64A19",
-        "value": "127,4",
-        "yoy": "+0,1%"
+        "value": "125,7",
+        "yoy": "-0,9%"
       },
       {
         "label": "Appartements",
         "color": "#1F78B4",
-        "value": "126,7",
-        "yoy": "+0,6%"
+        "value": "125,5",
+        "yoy": "-0,1%"
       },
       {
         "label": "Maisons",
         "color": "#388E3C",
-        "value": "128,0",
-        "yoy": "-0,2%"
+        "value": "125,9",
+        "yoy": "-1,3%"
       }
     ],
-    "last_date": "2026-01",
+    "last_date": "2026-04",
     "price_levels": [
       {
         "date": "2001-01-01",
@@ -4488,7 +4488,7 @@
         "date": "2019-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 112.4
+        "value": 112.5
       },
       {
         "date": "2020-01-01",
@@ -4542,31 +4542,31 @@
         "date": "2022-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 130.3
+        "value": 130.2
       },
       {
         "date": "2022-04-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 132.0
+        "value": 131.9
       },
       {
         "date": "2022-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 133.5
+        "value": 133.6
       },
       {
         "date": "2022-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 133.9
+        "value": 134.0
       },
       {
         "date": "2023-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 133.8
+        "value": 133.6
       },
       {
         "date": "2023-04-01",
@@ -4578,43 +4578,43 @@
         "date": "2023-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 131.0
+        "value": 131.1
       },
       {
         "date": "2023-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 128.7
+        "value": 128.8
       },
       {
         "date": "2024-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 126.9
+        "value": 126.7
       },
       {
         "date": "2024-04-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 126.2
+        "value": 126.1
       },
       {
         "date": "2024-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 125.9
+        "value": 126.0
       },
       {
         "date": "2024-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 125.9
+        "value": 126.1
       },
       {
         "date": "2025-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 127.3
+        "value": 127.0
       },
       {
         "date": "2025-04-01",
@@ -4626,19 +4626,25 @@
         "date": "2025-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 126.7
+        "value": 126.8
       },
       {
         "date": "2025-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 127.1
+        "value": 127.3
       },
       {
         "date": "2026-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 127.4
+        "value": 127.0
+      },
+      {
+        "date": "2026-04-01",
+        "series": "Ensemble",
+        "key": "ensemble",
+        "value": 125.7
       },
       {
         "date": "2001-01-01",
@@ -5058,7 +5064,7 @@
         "date": "2018-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 107.4
+        "value": 107.5
       },
       {
         "date": "2018-07-01",
@@ -5082,7 +5088,7 @@
         "date": "2019-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 112.1
+        "value": 112.2
       },
       {
         "date": "2019-07-01",
@@ -5130,7 +5136,7 @@
         "date": "2021-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 125.5
+        "value": 125.6
       },
       {
         "date": "2021-07-01",
@@ -5142,7 +5148,7 @@
         "date": "2021-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 128.2
+        "value": 128.3
       },
       {
         "date": "2022-01-01",
@@ -5172,31 +5178,31 @@
         "date": "2023-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 132.6
+        "value": 132.5
       },
       {
         "date": "2023-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 131.3
+        "value": 131.4
       },
       {
         "date": "2023-07-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 129.6
+        "value": 129.7
       },
       {
         "date": "2023-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 127.2
+        "value": 127.3
       },
       {
         "date": "2024-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 125.3
+        "value": 125.2
       },
       {
         "date": "2024-04-01",
@@ -5208,19 +5214,19 @@
         "date": "2024-07-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 124.5
+        "value": 124.6
       },
       {
         "date": "2024-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 124.8
+        "value": 124.9
       },
       {
         "date": "2025-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 126.0
+        "value": 125.9
       },
       {
         "date": "2025-04-01",
@@ -5238,13 +5244,19 @@
         "date": "2025-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 126.5
+        "value": 126.6
       },
       {
         "date": "2026-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 126.7
+        "value": 126.4
+      },
+      {
+        "date": "2026-04-01",
+        "series": "Appartements",
+        "key": "appartements",
+        "value": 125.5
       },
       {
         "date": "2001-01-01",
@@ -5688,7 +5700,7 @@
         "date": "2019-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 108.6
+        "value": 108.5
       },
       {
         "date": "2019-07-01",
@@ -5712,7 +5724,7 @@
         "date": "2020-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 113.8
+        "value": 113.7
       },
       {
         "date": "2020-07-01",
@@ -5724,19 +5736,19 @@
         "date": "2020-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 117.3
+        "value": 117.4
       },
       {
         "date": "2021-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 119.5
+        "value": 119.4
       },
       {
         "date": "2021-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 122.1
+        "value": 122.0
       },
       {
         "date": "2021-07-01",
@@ -5748,109 +5760,115 @@
         "date": "2021-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 127.7
+        "value": 127.8
       },
       {
         "date": "2022-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 130.6
+        "value": 130.5
       },
       {
         "date": "2022-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 132.6
+        "value": 132.5
       },
       {
         "date": "2022-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 134.3
+        "value": 134.4
       },
       {
         "date": "2022-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 134.9
+        "value": 135.0
       },
       {
         "date": "2023-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 134.7
+        "value": 134.5
       },
       {
         "date": "2023-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 133.7
+        "value": 133.6
       },
       {
         "date": "2023-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 132.0
+        "value": 132.2
       },
       {
         "date": "2023-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 129.8
+        "value": 129.9
       },
       {
         "date": "2024-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 128.1
+        "value": 127.8
       },
       {
         "date": "2024-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 127.2
+        "value": 127.1
       },
       {
         "date": "2024-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 126.9
+        "value": 127.1
       },
       {
         "date": "2024-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 126.7
+        "value": 127.0
       },
       {
         "date": "2025-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 128.2
+        "value": 127.9
       },
       {
         "date": "2025-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 127.8
+        "value": 127.6
       },
       {
         "date": "2025-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 127.1
+        "value": 127.3
       },
       {
         "date": "2025-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 127.6
+        "value": 127.9
       },
       {
         "date": "2026-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 128.0
+        "value": 127.5
+      },
+      {
+        "date": "2026-04-01",
+        "series": "Maisons",
+        "key": "maisons",
+        "value": 125.9
       }
     ],
     "price_yoy": [
@@ -6284,7 +6302,7 @@
         "date": "2019-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 3.786
+        "value": 3.878
       },
       {
         "date": "2020-01-01",
@@ -6308,7 +6326,7 @@
         "date": "2020-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 6.406
+        "value": 6.311
       },
       {
         "date": "2021-01-01",
@@ -6338,85 +6356,85 @@
         "date": "2022-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 7.42
+        "value": 7.337
       },
       {
         "date": "2022-04-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 6.883
+        "value": 6.802
       },
       {
         "date": "2022-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 6.375
+        "value": 6.454
       },
       {
         "date": "2022-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 4.609
+        "value": 4.688
       },
       {
         "date": "2023-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 2.686
+        "value": 2.611
       },
       {
         "date": "2023-04-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 0.53
+        "value": 0.607
       },
       {
         "date": "2023-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": -1.873
+        "value": -1.871
       },
       {
         "date": "2023-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": -3.883
+        "value": -3.881
       },
       {
         "date": "2024-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": -5.157
+        "value": -5.165
       },
       {
         "date": "2024-04-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": -4.898
+        "value": -4.974
       },
       {
         "date": "2024-07-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": -3.893
+        "value": -3.89
       },
       {
         "date": "2024-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": -2.176
+        "value": -2.096
       },
       {
         "date": "2025-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 0.315
+        "value": 0.237
       },
       {
         "date": "2025-04-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 0.475
+        "value": 0.555
       },
       {
         "date": "2025-07-01",
@@ -6428,13 +6446,19 @@
         "date": "2025-10-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 0.953
+        "value": 0.952
       },
       {
         "date": "2026-01-01",
         "series": "Ensemble",
         "key": "ensemble",
-        "value": 0.079
+        "value": 0.0
+      },
+      {
+        "date": "2026-04-01",
+        "series": "Ensemble",
+        "key": "ensemble",
+        "value": -0.868
       },
       {
         "date": "2002-01-01",
@@ -6830,7 +6854,7 @@
         "date": "2018-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 3.17
+        "value": 3.266
       },
       {
         "date": "2018-07-01",
@@ -6854,7 +6878,7 @@
         "date": "2019-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 4.376
+        "value": 4.372
       },
       {
         "date": "2019-07-01",
@@ -6878,7 +6902,7 @@
         "date": "2020-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 6.958
+        "value": 6.863
       },
       {
         "date": "2020-07-01",
@@ -6902,7 +6926,7 @@
         "date": "2021-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 4.671
+        "value": 4.754
       },
       {
         "date": "2021-07-01",
@@ -6914,7 +6938,7 @@
         "date": "2021-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 4.397
+        "value": 4.479
       },
       {
         "date": "2022-01-01",
@@ -6926,7 +6950,7 @@
         "date": "2022-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 4.542
+        "value": 4.459
       },
       {
         "date": "2022-07-01",
@@ -6938,55 +6962,55 @@
         "date": "2022-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 3.51
+        "value": 3.429
       },
       {
         "date": "2023-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 2.157
+        "value": 2.08
       },
       {
         "date": "2023-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 0.076
+        "value": 0.152
       },
       {
         "date": "2023-07-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": -2.041
+        "value": -1.965
       },
       {
         "date": "2023-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": -4.145
+        "value": -4.069
       },
       {
         "date": "2024-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": -5.505
+        "value": -5.509
       },
       {
         "date": "2024-04-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": -4.95
+        "value": -5.023
       },
       {
         "date": "2024-07-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": -3.935
+        "value": -3.932
       },
       {
         "date": "2024-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": -1.887
+        "value": -1.885
       },
       {
         "date": "2025-01-01",
@@ -7004,19 +7028,25 @@
         "date": "2025-07-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 1.365
+        "value": 1.284
       },
       {
         "date": "2025-10-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 1.362
+        "value": 1.361
       },
       {
         "date": "2026-01-01",
         "series": "Appartements",
         "key": "appartements",
-        "value": 0.556
+        "value": 0.397
+      },
+      {
+        "date": "2026-04-01",
+        "series": "Appartements",
+        "key": "appartements",
+        "value": -0.08
       },
       {
         "date": "2002-01-01",
@@ -7436,7 +7466,7 @@
         "date": "2019-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 2.356
+        "value": 2.262
       },
       {
         "date": "2019-07-01",
@@ -7460,7 +7490,7 @@
         "date": "2020-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 4.788
+        "value": 4.793
       },
       {
         "date": "2020-07-01",
@@ -7472,19 +7502,19 @@
         "date": "2020-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 6.346
+        "value": 6.437
       },
       {
         "date": "2021-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 6.696
+        "value": 6.607
       },
       {
         "date": "2021-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 7.293
+        "value": 7.3
       },
       {
         "date": "2021-07-01",
@@ -7496,37 +7526,37 @@
         "date": "2021-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 8.866
+        "value": 8.859
       },
       {
         "date": "2022-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 9.289
+        "value": 9.296
       },
       {
         "date": "2022-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 8.6
+        "value": 8.607
       },
       {
         "date": "2022-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 7.958
+        "value": 8.039
       },
       {
         "date": "2022-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 5.638
+        "value": 5.634
       },
       {
         "date": "2023-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 3.139
+        "value": 3.065
       },
       {
         "date": "2023-04-01",
@@ -7538,37 +7568,37 @@
         "date": "2023-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -1.713
+        "value": -1.637
       },
       {
         "date": "2023-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -3.781
+        "value": -3.778
       },
       {
         "date": "2024-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -4.9
+        "value": -4.981
       },
       {
         "date": "2024-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -4.862
+        "value": -4.865
       },
       {
         "date": "2024-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -3.864
+        "value": -3.858
       },
       {
         "date": "2024-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -2.388
+        "value": -2.232
       },
       {
         "date": "2025-01-01",
@@ -7580,25 +7610,31 @@
         "date": "2025-04-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 0.472
+        "value": 0.393
       },
       {
         "date": "2025-07-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 0.158
+        "value": 0.157
       },
       {
         "date": "2025-10-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": 0.71
+        "value": 0.709
       },
       {
         "date": "2026-01-01",
         "series": "Maisons",
         "key": "maisons",
-        "value": -0.156
+        "value": -0.313
+      },
+      {
+        "date": "2026-04-01",
+        "series": "Maisons",
+        "key": "maisons",
+        "value": -1.332
       }
     ],
     "capacity": {
@@ -8008,8 +8044,8 @@
         {
           "date": "2019-10-01",
           "capidx": 113.285152,
-          "prix": 112.4,
-          "access": 100.787502
+          "prix": 112.5,
+          "access": 100.697913
         },
         {
           "date": "2020-01-01",
@@ -8062,32 +8098,32 @@
         {
           "date": "2022-01-01",
           "capidx": 114.780227,
-          "prix": 130.3,
-          "access": 88.0891999
+          "prix": 130.2,
+          "access": 88.1568567
         },
         {
           "date": "2022-04-01",
           "capidx": 113.825709,
-          "prix": 132.0,
-          "access": 86.2315976
+          "prix": 131.9,
+          "access": 86.2969741
         },
         {
           "date": "2022-07-01",
           "capidx": 110.374284,
-          "prix": 133.5,
-          "access": 82.6773663
+          "prix": 133.6,
+          "access": 82.615482
         },
         {
           "date": "2022-10-01",
           "capidx": 106.321577,
-          "prix": 133.9,
-          "access": 79.4037166
+          "prix": 134.0,
+          "access": 79.3444601
         },
         {
           "date": "2023-01-01",
           "capidx": 101.194493,
-          "prix": 133.8,
-          "access": 75.6311604
+          "prix": 133.6,
+          "access": 75.7443807
         },
         {
           "date": "2023-04-01",
@@ -8098,44 +8134,44 @@
         {
           "date": "2023-07-01",
           "capidx": 90.9368688,
-          "prix": 131.0,
-          "access": 69.4174571
+          "prix": 131.1,
+          "access": 69.3645071
         },
         {
           "date": "2023-10-01",
           "capidx": 88.319326,
-          "prix": 128.7,
-          "access": 68.6241849
+          "prix": 128.8,
+          "access": 68.5709052
         },
         {
           "date": "2024-01-01",
           "capidx": 86.8190763,
-          "prix": 126.9,
-          "access": 68.4153478
+          "prix": 126.7,
+          "access": 68.5233436
         },
         {
           "date": "2024-04-01",
           "capidx": 87.7523821,
-          "prix": 126.2,
-          "access": 69.5343757
+          "prix": 126.1,
+          "access": 69.589518
         },
         {
           "date": "2024-07-01",
           "capidx": 88.6047779,
-          "prix": 125.9,
-          "access": 70.3771071
+          "prix": 126.0,
+          "access": 70.3212523
         },
         {
           "date": "2024-10-01",
           "capidx": 89.857193,
-          "prix": 125.9,
-          "access": 71.3718769
+          "prix": 126.1,
+          "access": 71.258678
         },
         {
           "date": "2025-01-01",
           "capidx": 91.4337793,
-          "prix": 127.3,
-          "access": 71.8254354
+          "prix": 127.0,
+          "access": 71.9951018
         },
         {
           "date": "2025-04-01",
@@ -8146,20 +8182,26 @@
         {
           "date": "2025-07-01",
           "capidx": 92.4393115,
-          "prix": 126.7,
-          "access": 72.959204
+          "prix": 126.8,
+          "access": 72.9016652
         },
         {
           "date": "2025-10-01",
           "capidx": 92.6423111,
-          "prix": 127.1,
-          "access": 72.8893085
+          "prix": 127.3,
+          "access": 72.7747927
         },
         {
           "date": "2026-01-01",
           "capidx": 92.0352124,
-          "prix": 127.4,
-          "access": 72.24114
+          "prix": 127.0,
+          "access": 72.4686711
+        },
+        {
+          "date": "2026-04-01",
+          "capidx": 91.4337793,
+          "prix": 125.7,
+          "access": 72.7396812
         }
       ],
       "20": [
@@ -8568,8 +8610,8 @@
         {
           "date": "2019-10-01",
           "capidx": 110.679364,
-          "prix": 112.4,
-          "access": 98.4691851
+          "prix": 112.5,
+          "access": 98.381657
         },
         {
           "date": "2020-01-01",
@@ -8622,32 +8664,32 @@
         {
           "date": "2022-01-01",
           "capidx": 111.85939,
-          "prix": 130.3,
-          "access": 85.8475752
+          "prix": 130.2,
+          "access": 85.9135103
         },
         {
           "date": "2022-04-01",
           "capidx": 111.106489,
-          "prix": 132.0,
-          "access": 84.1715824
+          "prix": 131.9,
+          "access": 84.2353971
         },
         {
           "date": "2022-07-01",
           "capidx": 108.369882,
-          "prix": 133.5,
-          "access": 81.1759414
+          "prix": 133.6,
+          "access": 81.115181
         },
         {
           "date": "2022-10-01",
           "capidx": 105.127173,
-          "prix": 133.9,
-          "access": 78.5117052
+          "prix": 134.0,
+          "access": 78.4531143
         },
         {
           "date": "2023-01-01",
           "capidx": 100.977071,
-          "prix": 133.8,
-          "access": 75.4686632
+          "prix": 133.6,
+          "access": 75.5816402
         },
         {
           "date": "2023-04-01",
@@ -8658,44 +8700,44 @@
         {
           "date": "2023-07-01",
           "capidx": 92.500435,
-          "prix": 131.0,
-          "access": 70.6110191
+          "prix": 131.1,
+          "access": 70.5571586
         },
         {
           "date": "2023-10-01",
           "capidx": 90.2972696,
-          "prix": 128.7,
-          "access": 70.1610487
+          "prix": 128.8,
+          "access": 70.1065758
         },
         {
           "date": "2024-01-01",
           "capidx": 89.0266802,
-          "prix": 126.9,
-          "access": 70.1549883
+          "prix": 126.7,
+          "access": 70.2657302
         },
         {
           "date": "2024-04-01",
           "capidx": 89.817796,
-          "prix": 126.2,
-          "access": 71.1709952
+          "prix": 126.1,
+          "access": 71.2274353
         },
         {
           "date": "2024-07-01",
           "capidx": 90.5383702,
-          "prix": 125.9,
-          "access": 71.9129231
+          "prix": 126.0,
+          "access": 71.8558493
         },
         {
           "date": "2024-10-01",
           "capidx": 91.593758,
-          "prix": 125.9,
-          "access": 72.7511978
+          "prix": 126.1,
+          "access": 72.6358113
         },
         {
           "date": "2025-01-01",
           "capidx": 92.916758,
-          "prix": 127.3,
-          "access": 72.9903834
+          "prix": 127.0,
+          "access": 73.1628016
         },
         {
           "date": "2025-04-01",
@@ -8706,20 +8748,26 @@
         {
           "date": "2025-07-01",
           "capidx": 93.7573745,
-          "prix": 126.7,
-          "access": 73.9995063
+          "prix": 126.8,
+          "access": 73.9411471
         },
         {
           "date": "2025-10-01",
           "capidx": 93.9267837,
-          "prix": 127.1,
-          "access": 73.8999085
+          "prix": 127.3,
+          "access": 73.7838049
         },
         {
           "date": "2026-01-01",
           "capidx": 93.4198458,
-          "prix": 127.4,
-          "access": 73.3279794
+          "prix": 127.0,
+          "access": 73.5589337
+        },
+        {
+          "date": "2026-04-01",
+          "capidx": 92.916758,
+          "prix": 125.7,
+          "access": 73.9194575
         }
       ]
     },
@@ -9786,7 +9834,7 @@
           "date": "2019-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 112.4
+          "value": 112.5
         },
         {
           "date": "2020-01-01",
@@ -9840,31 +9888,31 @@
           "date": "2022-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 130.3
+          "value": 130.2
         },
         {
           "date": "2022-04-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 132.0
+          "value": 131.9
         },
         {
           "date": "2022-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 133.5
+          "value": 133.6
         },
         {
           "date": "2022-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 133.9
+          "value": 134.0
         },
         {
           "date": "2023-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 133.8
+          "value": 133.6
         },
         {
           "date": "2023-04-01",
@@ -9876,43 +9924,43 @@
           "date": "2023-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 131.0
+          "value": 131.1
         },
         {
           "date": "2023-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 128.7
+          "value": 128.8
         },
         {
           "date": "2024-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 126.9
+          "value": 126.7
         },
         {
           "date": "2024-04-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 126.2
+          "value": 126.1
         },
         {
           "date": "2024-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 125.9
+          "value": 126.0
         },
         {
           "date": "2024-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 125.9
+          "value": 126.1
         },
         {
           "date": "2025-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 127.3
+          "value": 127.0
         },
         {
           "date": "2025-04-01",
@@ -9924,19 +9972,25 @@
           "date": "2025-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 126.7
+          "value": 126.8
         },
         {
           "date": "2025-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 127.1
+          "value": 127.3
         },
         {
           "date": "2026-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 127.4
+          "value": 127.0
+        },
+        {
+          "date": "2026-04-01",
+          "series": "Ancien",
+          "key": "ancien",
+          "value": 125.7
         }
       ],
       "yoy": [
@@ -10952,7 +11006,7 @@
           "date": "2019-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 3.786
+          "value": 3.878
         },
         {
           "date": "2020-01-01",
@@ -10976,7 +11030,7 @@
           "date": "2020-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 6.406
+          "value": 6.311
         },
         {
           "date": "2021-01-01",
@@ -11006,85 +11060,85 @@
           "date": "2022-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 7.42
+          "value": 7.337
         },
         {
           "date": "2022-04-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 6.883
+          "value": 6.802
         },
         {
           "date": "2022-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 6.375
+          "value": 6.454
         },
         {
           "date": "2022-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 4.609
+          "value": 4.688
         },
         {
           "date": "2023-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 2.686
+          "value": 2.611
         },
         {
           "date": "2023-04-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 0.53
+          "value": 0.607
         },
         {
           "date": "2023-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": -1.873
+          "value": -1.871
         },
         {
           "date": "2023-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": -3.883
+          "value": -3.881
         },
         {
           "date": "2024-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": -5.157
+          "value": -5.165
         },
         {
           "date": "2024-04-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": -4.898
+          "value": -4.974
         },
         {
           "date": "2024-07-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": -3.893
+          "value": -3.89
         },
         {
           "date": "2024-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": -2.176
+          "value": -2.096
         },
         {
           "date": "2025-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 0.315
+          "value": 0.237
         },
         {
           "date": "2025-04-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 0.475
+          "value": 0.555
         },
         {
           "date": "2025-07-01",
@@ -11096,13 +11150,19 @@
           "date": "2025-10-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 0.953
+          "value": 0.952
         },
         {
           "date": "2026-01-01",
           "series": "Ancien",
           "key": "ancien",
-          "value": 0.079
+          "value": 0.0
+        },
+        {
+          "date": "2026-04-01",
+          "series": "Ancien",
+          "key": "ancien",
+          "value": -0.868
         }
       ],
       "series_meta": [
