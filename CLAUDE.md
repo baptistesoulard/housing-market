@@ -73,6 +73,24 @@ Parquet gitignorés — donc un `git pull` apportant des CSV rafraîchis laisse 
 le Parquet local en retard. Les vues SQL appliquent la même règle, donc DuckDB et
 `read_dataset()` ne peuvent pas diverger.
 
+**Le job hebdo commite `data/` ENTIER depuis le 2026-09-19, plus une liste de fichiers.**
+Son `git add` nommait `ventes_ancien.csv`, `forecast_archive.csv` et `forecast_band.csv`,
+et oubliait les CSV dérivés que `load_or_generate_all()` reconstruit sur le runner —
+`sitadel`, `macro`, `sales`, `ecln`. Le job les réécrivait puis les perdait à sa fin, et la
+copie versionnée prenait du retard sur ses sources à chaque semaine : rattrapée à la main
+le 2026-08-24 (`0f7005a`), puis retrouvée en retard le 2026-09-19 (`macro.csv` sans le taux
+de crédit de juillet ni l'OAT d'août, pendant que le site les publiait). Une liste écrite à
+la main vieillit toujours dans le même sens — elle oublie ce qui a été ajouté depuis, c'est
+le mode de panne déjà noté pour la table des branches. D'où le dossier entier : ce qui ne
+doit PAS être versionné sous `data/` (Parquet, `_manifest.json`, `company_sales.csv`) est
+déjà dit dans `.gitignore`, que `git add <dossier>` respecte — une seule liste au lieu de
+deux. Un run sans nouveauté ne produit toujours aucun diff, parce que les dérivés se
+reconstruisent à l'identique (`build_sales` fixe sa graine). `tests/test_refresh_workflow.py`
+lit le workflow et refuse tout fichier suivi sous `data/` hors de son `git add`, avec la
+contre-épreuve que l'ancienne liste échoue bien. Corollaire pour le poste de travail :
+un `git pull` apporte désormais les dérivés AVEC leurs sources, et la garde de fraîcheur
+ci-dessus fait le reste.
+
 ## Invariants à ne pas casser
 
 **`analysis.py` et `forecast.build_target` ne sont pas du code mort.** Les agrégations
@@ -2075,6 +2093,15 @@ Deux points de conception à ne pas défaire :
 Toute réponse manquante (`Last-Modified` absent, HEAD en échec) rend `None` et **déclenche
 le téléchargement** : ne jamais inverser ce défaut — mieux vaut descendre un demi-giga pour
 rien que rater une publication en silence. `force=True` court-circuite la garde.
+
+⚠️ **`ensure_dvf` n'a AUCUN appelant (constaté le 2026-09-19), donc la chaîne s'arrête à
+mi-chemin.** `build_dvf` rafraîchit bien `dvf-recent.csv` deux fois l'an, mais rien ne
+rejoue le recollage vers `data/dvf.csv` — ni `load_or_generate_all()` (qui ne connaît pas
+ce dataset), ni le workflow. Or c'est `data/dvf.csv` que la vue SQL `dvf` lit, donc les 101
+pages départementales resteraient figées au recollage du 2026-08-20 même après une
+republication DGFiP, sans erreur ni signal. À brancher (un appel mtime-aware au démarrage,
+comme `ensure_ecln`) : depuis que le job commite `data/` entier, le fichier recollé suivrait
+alors tout seul.
 
 **Ne jamais commiter les fichiers DVF bruts** : ~500 Mo pour la fenêtre glissante, 1,1 Go
 pour l'historique. `build_dvf` les télécharge, les nettoie et les JETTE.

@@ -2,7 +2,9 @@ name: Refresh data sources
 
 # Rafraîchit automatiquement les sources publiques (INSEE / SDES / BCE / IGEDD) et commite
 # uniquement les fichiers réellement modifiés — l'écriture hash-guardée de fetch_new_sources.py
-# garantit qu'un run « sans nouveauté » ne produit aucun diff. Aucune machine à laisser allumée.
+# garantit qu'un run « sans nouveauté » ne produit aucun diff, et les CSV dérivés se
+# reconstruisent à l'identique (générateurs déterministes, aléa de build_sales fixé par une
+# graine). Aucune machine à laisser allumée.
 on:
   schedule:
     - cron: "0 6 * * 1"        # tous les lundis 06:00 UTC
@@ -70,17 +72,26 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # `data` ENTIER, pas une liste de fichiers. La liste (ventes_ancien.csv,
+          # forecast_archive.csv, forecast_band.csv) oubliait les CSV dérivés que
+          # load_or_generate_all() reconstruit ici même — sitadel, macro, sales, ecln : le
+          # job les réécrivait puis les perdait à sa fin, et la copie versionnée prenait du
+          # retard sur ses sources à chaque semaine, rattrapée à la main le 2026-08-24
+          # (0f7005a) puis le 2026-09-19. Une liste écrite à la main oublie toujours ce qui
+          # a été ajouté depuis. Ce qui ne doit PAS être versionné sous data/ (Parquet,
+          # _manifest.json, company_sales.csv) est déjà dit dans .gitignore, que
+          # `git add <dossier>` respecte — une seule liste au lieu de deux. Un run sans
+          # nouveauté ne produit toujours aucun diff : les dérivés se reconstruisent à
+          # l'identique. forecast_band.csv, réécrit par le seul `--calibrate` que ce job
+          # ne lance pas, est couvert d'office le jour où on l'y ajoute.
+          # tests/test_refresh_workflow.py vérifie que tout fichier suivi sous data/ est couvert.
+          #
           # a-propos.md est dans la liste parce que web_export.py y réécrit les dates du
           # tableau des sources : cette page doit rester du HTML statique (les robots
           # d'aperçu de partage n'exécutent pas de JS), donc les dates sont commitées
           # comme les JSON. L'oublier ici ferait afficher des dates figées à la dernière
           # publication manuelle, sur la page qui sert justement à établir la provenance.
-          # forecast_band.csv n'est réécrit que par `--calibrate`, que ce job ne lance pas :
-          # il est là pour que le jour où on l'y ajoute, l'étalon de la bande ne soit pas
-          # silencieusement laissé hors du commit.
-          git add data_manual_input data/ventes_ancien.csv data/forecast_archive.csv \
-                  data/forecast_band.csv \
-                  web/observable/src/data web/observable/src/a-propos.md
+          git add data_manual_input data web/observable/src/data web/observable/src/a-propos.md
           if git diff --cached --quiet; then
             echo "Aucune donnée modifiée — rien à committer."
           else

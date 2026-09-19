@@ -165,8 +165,10 @@ def sitadel_macro_is_stale(sitadel_csv, macro_csv):
 
     These two caches are the only ones that used to be built once and never invalidated,
     while ventes_ancien / sales / ecln are all mtime-aware. The weekly refresh
-    (fetch_new_sources.py + the GitHub Actions workflow) rewrites data_manual_input/ but
-    commits neither derived file, so without this check the app kept serving the stale
+    (fetch_new_sources.py + the GitHub Actions workflow) rewrites data_manual_input/
+    first; this check is what makes the runner rebuild both derived files from the fresh
+    sources — and, since 2026-09-19, commit them along (`git add data`). Until then the
+    job committed neither, so without this check the app kept serving the stale
     committed CSVs and silently dropped the newest month of every macro series.
     """
     for cache in (sitadel_csv, macro_csv):
