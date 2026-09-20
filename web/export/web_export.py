@@ -1590,9 +1590,11 @@ def _transformation(con) -> dict:
 #: Les hypothèses plausibles TESTÉES ET ÉCARTÉES, publiées sur la page de prévision.
 #:
 #: Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.
-#: Ces trois idées avaient toutes l'air bonnes — deux d'entre elles étaient inscrites au
-#: plan et l'une des trois a été affirmée pendant des semaines avant d'être vérifiée. Les
-#: publier avec leur chiffre est le pendant naturel de la page « Prévisions passées » :
+#: Ces idées avaient toutes l'air bonnes — plusieurs étaient inscrites au plan, une a été
+#: affirmée pendant des semaines avant d'être vérifiée. (Pas de décompte dans la prose :
+#: « trois » était déjà faux d'une entrée quand la cinquième est arrivée — le mode de panne
+#: des « huit épisodes ».) Les publier avec leur chiffre est le pendant naturel de la page
+#: « Prévisions passées » :
 #: là on montre où le modèle se trompe, ici on montre ce qu'on a renoncé à lui ajouter.
 #:
 #: STOCKÉES ET DATÉES, jamais recalculées : ce sont des résultats sur la MÉTHODE, pas des
@@ -1669,6 +1671,37 @@ REFUTATIONS = [
                   "la moyenne nationale l'efface."),
         "page": {"href": "/neuf", "libelle": "Voir la mesure sur Marché du neuf"},
         "mesure_le": "2026-08-24",
+    },
+    {
+        # Protocole, seuils et rapport : docs/plan-territoires.md §3 et
+        # docs/mesure-territoires-2026-09-20.md ; script : mesure_territoires.py.
+        "titre": "Classer les départements entre « France héritée » et « France désirée »",
+        "idee": ("Le transfert de patrimoine des quinze prochaines années ne ferait ni "
+                 "monter ni baisser l'immobilier : il creuserait l'écart entre les "
+                 "départements âgés et propriétaires, où les logements vont être hérités "
+                 "puis vendus, et ceux qui attirent des habitants, où l'argent de ces "
+                 "ventes irait s'investir. Deux axes observés — la part des résidences "
+                 "principales détenues par un ménage de 65 ans ou plus, et l'attractivité "
+                 "migratoire — devraient donc séparer les marchés qui montent de ceux qui "
+                 "baissent."),
+        "mesure": ("Le lien change de SIGNE d'un cycle à l'autre : +0,57 sur 2014-2019, "
+                   "−0,06 sur 2019-2025"),
+        "lecon": ("Sur 2014-2019, les départements âgés et propriétaires ont bien vu leurs "
+                  "prix progresser moins que les autres — mais entièrement parce qu'ils "
+                  "étaient déjà les moins chers, à une époque où les métropoles chères "
+                  "décrochaient du reste du pays : à niveau de prix donné, l'axe "
+                  "n'expliquait plus rien (corrélation partielle +0,03). Sur 2019-2025, "
+                  "c'est l'inverse qui s'est produit : ces mêmes départements ont vu leurs "
+                  "prix (+0,46) et leurs ventes (+0,44) progresser PLUS que les jeunes "
+                  "métropoles — Covid, littoral, puis une correction qui a d'abord frappé "
+                  "les grandes villes. Une relation qui change de signe avec le cycle dit "
+                  "dans quel cycle on est, pas où en sera le marché dans quinze ans. Au "
+                  "passage, le solde migratoire net s'est révélé mesurer la pénurie de "
+                  "logements et non l'attrait : il classe Paris dernier des cent "
+                  "départements. Les indicateurs eux-mêmes restent publiés, en "
+                  "description, sur chaque page départementale — sans carte des gagnants "
+                  "et des perdants."),
+        "mesure_le": "2026-09-20",
     },
 ]
 

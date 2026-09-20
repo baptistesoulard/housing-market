@@ -1087,9 +1087,9 @@ if (sens) display(multiLine({
 ## 🧪 Ce qu'on a essayé, et qui ne marche pas
 
 Un site qui ne montre que ce qui a marché laisse croire que tout ce qu'on essaie marche.
-Les trois idées ci-dessous paraissaient bonnes — deux figuraient au plan de ce site, et la
-troisième a été affirmée pendant des semaines avant d'être vérifiée. Toutes les trois ont
-été mesurées, puis écartées. Les publier est le pendant naturel de la page des prévisions
+Les idées ci-dessous paraissaient bonnes — plusieurs figuraient au plan de ce site, une a
+été affirmée pendant des semaines avant d'être vérifiée. Toutes ont été mesurées, puis
+écartées. Les publier est le pendant naturel de la page des prévisions
 passées : là on montre où le modèle se trompe, ici ce qu'on a renoncé à lui ajouter.
 
 Le seuil pour qu'un indicateur entre dans le modèle est le même pour tous : **éviter au
@@ -1122,7 +1122,7 @@ if (data.horizon_blocks && data.horizon_blocks.length) display(html`<table class
 ```
 
 ```js
-// Ces trois entrées sont des CONSTANTES DATÉES côté export (voir REFUTATIONS dans
+// Ces entrées sont des CONSTANTES DATÉES côté export (voir REFUTATIONS dans
 // web_export.py), pas des métriques recalculées : chaque mesure a coûté un backtest de
 // plusieurs centaines de millésimes, et ce sont des résultats sur la MÉTHODE, qui ne
 // bougent pas d'une semaine à l'autre.
@@ -1143,10 +1143,10 @@ if (REF.length) display(html`<div class="hm-refutations">
 ```
 
 <div class="hm-caption">
-Aucune de ces trois idées n'est absurde, et deux d'entre elles sont utilisées ailleurs dans
-la profession. Elles ne résistent simplement pas à l'épreuve qui compte : faire mieux, sur
-des données jamais vues, qu'une prévision qui se contente de prolonger le dernier chiffre
-connu.
+Aucune de ces idées n'est absurde, et plusieurs sont utilisées ailleurs dans la
+profession. Elles ne résistent simplement pas à l'épreuve qui compte : tenir sur des
+données jamais vues — pour le modèle, faire mieux qu'une prévision qui prolonge le dernier
+chiffre connu ; pour un classement, garder le même sens d'un cycle au suivant.
 </div>
 
 <div class="hm-shortcuts" style="margin-top:1.6rem">
