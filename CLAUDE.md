@@ -2198,7 +2198,7 @@ août — donc pas une course entre crawl et déploiement, mais un `import()` **
 le renderer** (budget de temps ou de requêtes), que le runtime écrit ensuite en rouge dans
 le DOM. Confirmé dans la Search Console (inspection d'URL → page explorée → « Plus
 d'infos ») : sur `/donnees`, **5 ressources sur 54** non chargées, dont deux modules du
-site en « Other error » — `theme.b3350452.js` et `_npm/isoformat@0.2.1/…` — qui servent
+site en « Other error » — `theme.b3350452.js` et le module `isoformat` 0.2.1 sous `_npm/` — qui servent
 tous deux en 200 ; sur `/departement/48`, 2 sur 52, et ce sont une police Google et le
 beacon Cloudflare Insights, aucun module du site. Le renderer de Google n'est donc pas
 déterministe d'une page à l'autre : c'est bien un abandon de sa part, pas un défaut de la
