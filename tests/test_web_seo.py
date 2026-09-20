@@ -238,6 +238,88 @@ def test_postbuild_est_idempotent(tmp_path):
     assert html.count("hm-skip") == 1 and html.count('lang="fr"') == 1 and html.count('rel="icon"') == 1
 
 
+# --- Le chapeau chiffré des pages départementales ---------------------------------------
+# Ces 101 pages chargent TOUT par fetch() : sans ce paragraphe, leur HTML ne porte aucun
+# chiffre, et un moteur de rendu qui abandonne un import() n'indexe qu'un titre et un
+# message d'erreur — constaté sur le site le 2026-09-19. Le paragraphe est écrit par
+# postbuild.mjs depuis le JSON du département, donc aussi frais que les cartes.
+
+_DEP_HTML = ('<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n<title>x</title>\n</head>\n'
+             '<body><main id="observablehq-main">\n'
+             '<h1 id="t" tabindex="-1"><a class="observablehq-header-anchor" href="#t">'
+             "Prix de l'immobilier par département</a></h1>\n"
+             '<div class="hm-caption">France métropolitaine et d\'outre-mer · DVF</div>\n'
+             '<h2>Suite</h2></main></body>\n</html>\n')
+
+
+def _dist_departemental(tmp_path, *codes):
+    (tmp_path / "departement").mkdir()
+    for code in codes:
+        (tmp_path / "departement" / f"{code}.html").write_text(_DEP_HTML, encoding="utf-8")
+    return subprocess.run([NODE, str(WEB / "scripts" / "postbuild.mjs"), str(tmp_path)],
+                          capture_output=True, text=True, encoding="utf-8", timeout=120)
+
+
+def _chapeau(tmp_path, code):
+    html = (tmp_path / "departement" / f"{code}.html").read_text(encoding="utf-8")
+    m = re.findall(r'<p class="hm-chapeau-dep">(.*?)</p>', html, re.S)
+    return html, m
+
+
+def test_postbuild_ecrit_les_chiffres_du_departement_dans_son_html(tmp_path):
+    """Le prix médian du JSON doit se retrouver EN CLAIR dans le HTML, sous l'accroche,
+    avec le trimestre et le nom du département en tête (apposé, sans préposition)."""
+    dep = json.loads((WEB / "src" / "data" / "departements" / "48.json").read_text(encoding="utf-8"))
+    assert dep["couvert"], "le test suppose que la Lozère est couverte par DVF"
+    out = _dist_departemental(tmp_path, "48")
+    assert out.returncode == 0, out.stderr
+    html, chapeaux = _chapeau(tmp_path, "48")
+    assert len(chapeaux) == 1, "un chapeau chiffré, exactement un"
+    texte = chapeaux[0].replace(" ", " ").replace(" ", " ")
+    prix = f"{round(dep['dernier']['Ensemble']['prix_m2']):,}".replace(",", " ")
+    assert texte.startswith(f"{dep['nom']} ({dep['code']}) :")
+    assert f"{prix} €/m²" in texte, texte
+    assert "sur un an" in texte and "sur cinq ans" in texte
+    assert "ventes enregistrées" in texte
+    # Sous l'accroche, avant la première section : c'est là qu'un extrait de résultat
+    # de recherche va chercher son texte.
+    assert html.index('class="hm-caption"') < html.index("hm-chapeau-dep") < html.index("<h2>")
+
+
+def test_postbuild_explique_l_absence_de_donnees_au_lieu_de_se_taire(tmp_path):
+    """Les quatre départements hors DVF (57, 67, 68, 976) ont une page, et elle doit dire
+    pourquoi elle n'a pas de chiffres — en HTML statique, pas seulement par JS."""
+    out = _dist_departemental(tmp_path, "57")
+    assert out.returncode == 0, out.stderr
+    _, chapeaux = _chapeau(tmp_path, "57")
+    assert len(chapeaux) == 1
+    assert chapeaux[0].startswith("Moselle (57) :") and "Livre foncier" in chapeaux[0]
+    assert "€/m²" not in chapeaux[0], "aucun prix à annoncer sur un département non couvert"
+
+
+def test_le_chapeau_chiffre_est_remplace_et_jamais_empile(tmp_path):
+    """Un rebuild partiel relance postbuild sur un dist/ déjà traité : deux passes doivent
+    laisser UN paragraphe, avec les chiffres de la seconde (pas de version figée)."""
+    _dist_departemental(tmp_path, "48")
+    subprocess.run([NODE, str(WEB / "scripts" / "postbuild.mjs"), str(tmp_path)],
+                   capture_output=True, text=True, encoding="utf-8", timeout=120, check=True)
+    html, chapeaux = _chapeau(tmp_path, "48")
+    assert len(chapeaux) == 1 and html.count("hm-chapeau-dep") == 1
+
+
+def test_chaque_page_porte_la_garde_de_rechargement(heads):
+    """Le runtime écrit l'échec d'un import() dans le DOM (.observablehq--error) au lieu
+    de le laisser remonter : la garde du <head> observe ces nœuds et recharge UNE fois.
+    Elle doit être sur toutes les pages, y compris la 404, et rester à usage unique —
+    un module vraiment absent ne doit pas faire boucler l'onglet."""
+    for path, head in heads["head"].items():
+        assert "Failed to fetch dynamically imported module" in head, f"{path} : garde absente"
+        assert "observablehq--error" in head and "MutationObserver" in head, path
+        assert "sessionStorage" in head, f"{path} : la garde doit être à usage unique"
+        assert "`" not in head.split("<script>", 1)[1].split("</script>", 1)[0], \
+            "un accent grave dans le script refermerait le littéral gabarit"
+
+
 def test_la_vignette_de_partage_existe(heads):
     """Sans elle, les balises og:image annoncent une image absente et un lien partagé
     s'affiche en URL nue. Elle est committée, pas produite au build (voir og-image.mjs)."""

@@ -507,6 +507,22 @@ CSS referme la chaîne et fait échouer le build sur une erreur de syntaxe sans 
 apparent (`Unexpected token ':'`, pointant une ligne de prose). Ne jamais citer un
 sélecteur entre accents graves dans ce fichier.
 
+**Le `<head>` porte une garde de rechargement (`RELOAD_GUARD`, 2026-09-19).** Le runtime
+d'Observable attrape LUI-MÊME l'échec d'un `import()` de module (`client/main.js` :
+`reject` → `inspectError`) : aucune `unhandledrejection` ne sort, l'erreur est écrite
+dans le DOM en `.observablehq--error` à la place du graphique. La garde est donc un
+`MutationObserver` sur ces nœuds, pas un écouteur de promesse — la première version
+envisagée n'aurait jamais tiré. Elle recharge la page **une fois** par onglet et par
+chemin (`sessionStorage`, fenêtre de dix minutes) quand le texte est « Failed to fetch
+dynamically imported module » ou ses variantes Firefox/Safari : le HTML revient avec les
+noms de modules du jour. Vérifié sur une page volontairement cassée servie en local :
+deux requêtes exactement (charge + un rechargement), puis 20 s sans nouvelle navigation
+alors que l'erreur persiste — pas de boucle. **Elle n'aide pas Google**, qui ne recharge
+jamais : elle protège un visiteur dont le navigateur tient un HTML d'avant un déploiement.
+Côté indexation, la réponse est le chapeau chiffré de `postbuild.mjs` (voir les pages
+départementales). Le script est du JS sans accent grave, pour la raison du paragraphe
+précédent ; `test_chaque_page_porte_la_garde_de_rechargement` le vérifie sur chaque page.
+
 **Aucune URL d'hébergement en dur.** Les balises Open Graph et l'URL canonique exigent des
 adresses ABSOLUES ; elles viennent de `HM_SITE_URL` (variable d'environnement Cloudflare
 Pages), avec pour repli le domaine de production lui-même. Un test injecte une
@@ -2166,6 +2182,34 @@ front-matter pour ses 101 pages : sans ce correctif, les 101 portent le même ti
 est exactement la cannibalisation que des descriptions distinctes cherchent à éviter.
 `head()` ne peut pas le faire — le framework ajoute son `<title>` après. Vérifié après
 build : 101 titres distincts, 101 descriptions distinctes, 0 doublon.
+
+**Et depuis le 2026-09-19, `postbuild.mjs` écrit aussi un CHAPEAU CHIFFRÉ sous l'accroche
+de chacune des 101 pages** — prix médian au m², évolutions à un et cinq ans, ventes du
+trimestre, prix médian d'un logement, m² accessibles, France entière au même trimestre ;
+et pour les quatre départements hors DVF, le texte d'`absence`. C'est **l'exception
+légitime** à la règle « aucun chiffre dans le texte statique » : cette règle existe parce
+que rien ne régénère un chapeau écrit à la main, or celui-ci est écrit par la machine à
+CHAQUE build (`site.config.depChapeau`, depuis le même JSON que la page lit au runtime),
+donc exactement aussi frais que les cartes. Pourquoi il fallait le faire : un tiers a
+montré que le moteur de rendu de Google avait indexé, sur `/donnees`, le message
+`RuntimeError: Failed to fetch dynamically imported module` **à la place des graphiques**.
+Vérifié : le hash cité était bien celui servi en production (200), inchangé depuis le 23
+août — donc pas une course entre crawl et déploiement, mais un `import()` **abandonné par
+le renderer** (budget de temps ou de requêtes), que le runtime écrit ensuite en rouge dans
+le DOM. Confirmé dans la Search Console (inspection d'URL → page explorée → « Plus
+d'infos ») : sur `/donnees`, **5 ressources sur 54** non chargées, dont deux modules du
+site en « Other error » — `theme.b3350452.js` et `_npm/isoformat@0.2.1/…` — qui servent
+tous deux en 200 ; sur `/departement/48`, 2 sur 52, et ce sont une police Google et le
+beacon Cloudflare Insights, aucun module du site. Le renderer de Google n'est donc pas
+déterministe d'une page à l'autre : c'est bien un abandon de sa part, pas un défaut de la
+page, et il peut frapper n'importe quelle page au prochain passage. Sur `/donnees`, 305
+mots statiques survivaient. Sur les pages départementales,
+dont tout le contenu arrive par `fetch()`, il n'y avait **aucun chiffre** à indexer — pour
+la requête « prix m² + département », la seule qui amène du trafic ici. Trois tests de
+`test_web_seo.py` : le prix du JSON est en clair dans le HTML sous l'accroche et avant la
+première section, l'absence est expliquée en statique, et deux passes de postbuild
+laissent UN paragraphe (remplacé, jamais empilé). Le nom du département est apposé en
+tête, sans préposition — même raison que pour la description (« en Paris »).
 
 **Conséquence pour `npm run dev`** : le serveur de développement ne sert PAS
 `/data/departements/` (la copie est faite par `postbuild`, donc au build seulement). Une

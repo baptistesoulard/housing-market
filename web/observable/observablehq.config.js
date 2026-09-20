@@ -713,6 +713,46 @@ function META({path}) {
   return "\n" + out.join("\n") + "\n";
 }
 
+// --- La garde de rechargement --------------------------------------------------------
+// Le runtime attrape LUI-MÊME l'échec d'un import() de module (client/main.js : reject →
+// inspectError) : aucune promesse ne remonte à la page, l'erreur est ÉCRITE dans le DOM,
+// en .observablehq--error, à la place du graphique. C'est ce que voit un visiteur dont le
+// navigateur tient un HTML d'avant un déploiement : les modules y sont nommés par hachage
+// de contenu, l'ancien nom n'est plus servi, et « Failed to fetch dynamically imported
+// module » remplace le contenu. Cette garde observe ces nœuds et recharge la page UNE
+// fois par onglet et par chemin (sessionStorage, avec une fenêtre de dix minutes pour
+// qu'un second déploiement plus tard dans la session soit couvert aussi) : le HTML revient
+// frais, avec les noms de modules du jour. Une fois seulement — si le module manque pour
+// de bon, on ne boucle pas, et l'erreur reste visible. Elle n'aide PAS un moteur
+// d'indexation, qui ne recharge jamais : de ce côté-là, la réponse est le chapeau chiffré
+// que scripts/postbuild.mjs écrit dans le HTML. Pas d'accent grave dans ce littéral.
+const RELOAD_GUARD = `
+<script>
+(function () {
+  var KEY = "hm-reload:" + location.pathname, FENETRE = 10 * 60 * 1000;
+  var RE = /(Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed)/;
+  function touche(node) {
+    if (!node || node.nodeType !== 1) return false;
+    var hit = node.classList.contains("observablehq--error") ? node : node.querySelector(".observablehq--error");
+    return !!(hit && RE.test(hit.textContent || ""));
+  }
+  function recharge() {
+    try {
+      var deja = Number(sessionStorage.getItem(KEY) || 0);
+      if (Date.now() - deja < FENETRE) return;
+      sessionStorage.setItem(KEY, String(Date.now()));
+    } catch (e) { return; }
+    location.reload();
+  }
+  new MutationObserver(function (records) {
+    for (var i = 0; i < records.length; i++) {
+      var ajoutes = records[i].addedNodes;
+      for (var j = 0; j < ajoutes.length; j++) if (touche(ajoutes[j])) { recharge(); return; }
+    }
+  }).observe(document.documentElement, {childList: true, subtree: true});
+})();
+</script>`;
+
 // --- Pied de page --------------------------------------------------------------------
 // Rendu au build sur toutes les pages (donc indexable, contrairement à ce que les pages
 // construisent en JavaScript). Les liens relatifs sont réécrits par le framework.
@@ -738,7 +778,7 @@ export default {
   home: SITE.name,
   root: "src",
   theme: ["air", "wide"],
-  head: (page) => META(page) + STYLE,
+  head: (page) => META(page) + STYLE + RELOAD_GUARD,
   // Remplace le Source Serif 4 chargé par défaut avec le thème `air` : cette police
   // n'était jamais rendue (--serif est réécrit sur la pile de theme.json), le site la
   // téléchargeait pour rien. Source Sans 3 est, elle, la police du corps de texte.

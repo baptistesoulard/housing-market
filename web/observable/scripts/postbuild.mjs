@@ -32,7 +32,11 @@
 //      éviter. Le <h1> compte double : un titre interpolé (# ${dep.nom}) ne rendrait
 //      qu'un <h1> vide tant que le JS n'a pas tourné (le défaut déjà corrigé ailleurs
 //      sur le site, voir « chapeau statique » dans CLAUDE.md) — la page écrit donc un
-//      texte générique statique, réécrit ici avec le nom réel du département.
+//      texte générique statique, réécrit ici avec le nom réel du département. Et un
+//      CHAPEAU CHIFFRÉ (prix médian, évolutions, ventes, m² accessibles), écrit depuis
+//      le JSON du département : sans lui, ces 101 pages n'ont AUCUN chiffre dans leur
+//      HTML — tout arrive par fetch() — et un moteur de rendu qui abandonne un import
+//      n'indexe qu'un titre et un message d'erreur (constaté le 2026-09-19).
 //
 // Réécrire du HTML après coup n'est pas élégant ; c'est la seule prise disponible pour
 // les points 1, 2 et 7 tant que le framework n'expose pas ces réglages. Le traitement
@@ -41,7 +45,7 @@ import {copyFile, mkdir, readdir, readFile, writeFile} from "node:fs/promises";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {dirname, join, resolve} from "node:path";
-import {SITE, INDEXABLE, MARK_SVG, depMeta} from "../site.config.js";
+import {SITE, INDEXABLE, MARK_SVG, depMeta, depChapeau} from "../site.config.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Le répertoire de sortie est paramétrable pour que les tests puissent faire tourner ce
@@ -105,12 +109,16 @@ if (existsSync(depSrc)) {
     "se construiront mais ne trouveront aucune donnée. Lancer `python web/export/web_export.py`.");
 }
 
-// 7. Le <title> ET le <h1> des pages départementales (voir le point 7 en tête de
-//    fichier). `depMeta` fournit les trois : `title` pour <title>, `h1` pour le texte
-//    de niveau 1, tous deux calculés depuis les mêmes données que la description.
+// 7. Le <title>, le <h1> ET le chapeau chiffré des pages départementales (voir le point
+//    7 en tête de fichier). `depMeta` fournit `title` et `h1`, calculés depuis les mêmes
+//    données que la description ; `depChapeau` écrit le paragraphe statique depuis le
+//    JSON du département — le seul texte chiffré de ces pages qu'un robot puisse lire,
+//    puisque tout le reste arrive par fetch(). Il est REMPLACÉ s'il existe déjà (rebuild
+//    partiel sur un dist/ traité), jamais empilé.
 const esc = (v) => String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const H1_GENERIQUE = "Prix de l'immobilier par département";
-let titresDep = 0;
+const CHAPEAU_RE = /\s*<p class="hm-chapeau-dep">[\s\S]*?<\/p>/g;
+let titresDep = 0, chapeauxDep = 0;
 for (const file of pages) {
   const rel = file.slice(DIST.length).replace(/\\/g, "/").replace(/\.html$/, "");
   const meta = depMeta(rel);
@@ -123,9 +131,24 @@ for (const file of pages) {
   patchedDep = patchedDep.replace(
     new RegExp(`(<h1[^>]*>(?:<a[^>]*>)?)${H1_GENERIQUE}((?:</a>)?</h1>)`),
     `$1${esc(meta.h1)}$2`);
+  // Le chapeau chiffré, juste sous l'accroche statique qui suit le <h1>. Sans JSON
+  // (export non lancé), rien n'est écrit : la page reste ce qu'elle était.
+  const jsonDep = join(depSrc, `${rel.split("/").pop()}.json`);
+  if (existsSync(jsonDep)) {
+    const texte = depChapeau(JSON.parse(await readFile(jsonDep, "utf-8")));
+    if (texte) {
+      patchedDep = patchedDep.replace(CHAPEAU_RE, "");
+      const avant = patchedDep;
+      patchedDep = patchedDep.replace(
+        /(<h1[^>]*>[\s\S]*?<\/h1>\s*<div class="hm-caption">[\s\S]*?<\/div>)/,
+        `$1\n<p class="hm-chapeau-dep">${esc(texte)}</p>`);
+      if (patchedDep !== avant) chapeauxDep++;
+      else console.warn(`postbuild: ${rel} — accroche introuvable, chapeau chiffré non posé`);
+    }
+  }
   if (patchedDep !== html) { await writeFile(file, patchedDep); titresDep++; }
 }
-if (titresDep) console.log(`postbuild: ${titresDep} titre(s) départemental(aux) personnalisé(s)`);
+if (titresDep) console.log(`postbuild: ${titresDep} titre(s) départemental(aux) personnalisé(s), ${chapeauxDep} chapeau(x) chiffré(s)`);
 
 // Le sitemap ne liste QUE les pages voulues (site.config.js), jamais le contenu de
 // dist/ : celui-ci contient aussi la 404 et les modules internes du framework, qui n'ont

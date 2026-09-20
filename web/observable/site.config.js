@@ -257,6 +257,60 @@ export function depMeta(path) {
   };
 }
 
+// --- Le chapeau chiffré des pages départementales ------------------------------------
+// La règle du site est « aucun chiffre dans le texte statique », parce que rien ne le
+// régénère. Ces pages sont l'exception LÉGITIME : le paragraphe ci-dessous est écrit par
+// scripts/postbuild.mjs à CHAQUE build, depuis le même JSON que la page lit au runtime —
+// il est donc exactement aussi frais que les cartes, et il est le seul texte chiffré que
+// lisent un robot d'indexation ou un aperçu de partage. Vérifié le 2026-09-19 : le moteur
+// de rendu de Google avait indexé, sur une page du site, le message d'erreur d'un
+// `import()` abandonné à la place des graphiques. Sur ces 101 pages, dont tout le contenu
+// arrive par fetch(), c'est le prix médian lui-même qui aurait manqué — et « prix m²
+// + département » est la requête qui amène ici.
+//
+// Pas de préposition devant le nom (voir depMeta) : le département est apposé, en tête.
+const _fr = (v, d = 0) => Number(v).toLocaleString("fr-FR", {minimumFractionDigits: d, maximumFractionDigits: d});
+const _evol = (v) => v == null ? null
+  : Math.abs(v) < 0.05 ? "stable"
+  : `${v > 0 ? "en hausse" : "en baisse"} de ${_fr(Math.abs(v), 1)} %`;
+const _trim = (iso) => `T${Math.floor(Number(iso.slice(5, 7)) / 3) + 1} ${iso.slice(0, 4)}`;
+
+/** Le paragraphe statique d'une page départementale, depuis son JSON (`dep`), ou null. */
+export function depChapeau(dep) {
+  if (!dep || typeof dep !== "object") return null;
+  const tete = `${dep.nom} (${dep.code})`;
+  if (dep.couvert !== true) {
+    if (!dep.absence) return null;
+    return `${tete} : ${dep.absence.charAt(0).toLowerCase()}${dep.absence.slice(1)}`;
+  }
+  const e = dep.dernier?.Ensemble;
+  if (!e?.date || e.prix_m2 == null) return null;
+  const parts = [`${tete} : au ${_trim(e.date)}, le prix médian est de ${_fr(e.prix_m2)} €/m²`];
+  const un = dep.evolution?.un_an, cinq = dep.evolution?.cinq_ans;
+  const evo = [un != null && `${_evol(un)} sur un an`, cinq != null && `${_evol(cinq)} sur cinq ans`]
+    .filter(Boolean);
+  // Même sens sur les deux horizons : « en hausse de 2,1 % sur un an et de 20,2 % sur
+  // cinq ans » plutôt que de répéter « en hausse ».
+  if (evo.length === 2 && un != null && cinq != null && Math.sign(un) === Math.sign(cinq)
+      && Math.abs(un) >= 0.05 && Math.abs(cinq) >= 0.05) {
+    evo[1] = `de ${_fr(Math.abs(cinq), 1)} % sur cinq ans`;
+  }
+  if (evo.length) parts.push(`, ${evo.join(" et ")}`);
+  if (e.ventes != null) parts.push(`, pour ${_fr(e.ventes)} ventes enregistrées dans le trimestre`);
+  let texte = parts.join("");
+  if (e.prix != null) texte += ` ; un logement s'y vend ${_fr(e.prix)} € en médiane, toutes surfaces confondues`;
+  texte += ".";
+  const c = dep.capacite;
+  if (c?.m2_aujourdhui != null && c.mensualite != null && c.duree_ans != null) {
+    texte += ` Avec ${_fr(c.mensualite)} € par mois sur ${_fr(c.duree_ans)} ans, cette mensualité y achète environ ${_fr(c.m2_aujourdhui)} m².`;
+  }
+  const n = dep.national_dernier;
+  if (n?.prix_m2 != null && n.date === e.date) {
+    texte += ` France entière au même trimestre : ${_fr(n.prix_m2)} €/m².`;
+  }
+  return texte;
+}
+
 /** Les pages indexables, dans l'ordre du sitemap. */
 export const INDEXABLE = [...NAV.map(({path}) => path), ...DEP_PATHS];
 
