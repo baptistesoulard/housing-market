@@ -2210,6 +2210,20 @@ garde `couvert`.
   perdre son pouvoir d'alerte, alors qu'un diff inattendu sur l'un des sept signale une
   divergence de calcul.
 
+### Backlog : le module « Territoires » (plan écrit, non commencé — 2026-09-20)
+
+Une quatrième question pour ces pages, et une page carte nationale, sont **planifiées
+mais pas commencées** : `docs/plan-territoires.md`. Origine : la vidéo de Xavier Delmas
+« la France va se couper en deux » (mai 2026) — deux indices composites INSEE croisés en
+quatre catégories de départements. Le plan en garde le mécanisme et en refuse la forme
+(indice pondéré à la main, horizon 2040 infalsifiable : les deux règles que ce fichier
+documente déjà). Il remplace par **deux axes observés** — part des résidences principales
+détenues par un ménage de 65 ans ou plus × attractivité migratoire — et une **porte
+mesurée AVANT toute page** sur les prix DVF 2014-2025 déjà dans l'entrepôt. Les sources
+(API Melodi de l'INSEE, comparateur de territoires en Parquet), leurs codes de dimension
+et leurs millésimes y sont **vérifiés et consignés** : ne pas refaire l'exploration.
+Si le module aboutit, le compteur passe à `n/8` et cette liste doit être réécrite.
+
 ## Vérifier la parité
 
 Trois recettes, par ordre de coût croissant. Les tests unitaires seuls ne suffisent pas :
