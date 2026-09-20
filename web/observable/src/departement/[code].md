@@ -258,6 +258,82 @@ plus de cent cinquante mille — et seules les <b>formes</b> se comparent. Un d�
 local quand le pays tient, ou l'inverse, est ce qu'il faut y chercher.
 </div>
 
+## Qui habite ici, et qui arrive ?
+
+<div class="hm-caption">
+Le prix d'un logement dépend de qui l'occupe et de qui voudrait l'occuper. Les repères
+ci-dessous décrivent le département tel que le <abbr title="Recensement de la population : enquête annuelle de l'INSEE, dont chaque millésime agrège cinq années de collecte">recensement</abbr>
+le voit : l'âge de ses propriétaires — un parc détenu par des ménages âgés se transmettra
+dans les quinze ans qui viennent —, la forme de son parc, la vacance, et les mouvements de
+population, qui disent si l'on vient s'y installer ou si l'on en part. Chaque repère est
+situé parmi les départements couverts : c'est la position qui parle, plus que la valeur.
+Ils décrivent, ils ne prévoient pas.
+</div>
+
+```js
+// Le profil est DESCRIPTIF, et c'est mesuré : la porte qui aurait autorisé un classement
+// « France héritée / France désirée » a été manquée (les deux axes changent de signe d'un
+// cycle à l'autre — voir la section des hypothèses écartées de la page de prévision).
+// D'où sept repères, chacun avec son percentile et la valeur France, et aucun score.
+// La valeur France vient de l'annuaire (`profil_france`, une fois pour tout le site) :
+// ratio du pays (somme sur somme) pour les parts, département médian pour le solde
+// migratoire et le niveau de vie — le libellé le dit à chaque fois.
+const nf2 = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const PROFIL_META = {
+  part_rp_65: {label: "Résidences principales détenues par un ménage de 65 ans ou plus",
+               fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  part_maisons: {label: "Part de maisons parmi les résidences principales",
+                 fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  taux_vacance: {label: "Logements vacants", fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  part_65: {label: "Habitants de 65 ans et plus", fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  solde_migratoire: {label: "Solde migratoire apparent, par an",
+                     fmt: (v) => (v >= 0 ? "+" : "−") + nf2.format(Math.abs(v)) + " %",
+                     fr: "département médian",
+                     note: "arrivées moins départs, rapportés à la population, sur la période entre deux recensements"},
+  taux_arrivee: {label: "Habitants arrivés d'un autre département dans l'année",
+                 fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  niveau_vie: {label: "Niveau de vie médian", fmt: (v) => nf0.format(v) + " € par an",
+               fr: "département médian"},
+};
+// Le percentile est la part des AUTRES départements strictement en dessous (percent_rank :
+// le département ne se compte pas lui-même — « 100 % des 100 départements » serait faux
+// d'une unité). La phrase change de sens à la médiane pour que le nombre cité soit
+// toujours la majorité — « plus bas que dans 98 % des autres » se lit, « plus élevé que
+// dans 2 % » se relit deux fois. L'effectif couvert est dit une fois, en légende.
+const position = (p) => p >= 50
+  ? `plus élevé que dans ${p} % des autres départements couverts`
+  : `plus bas que dans ${100 - p} % des autres départements couverts`;
+```
+
+```js
+if (dep.profil) display(cardGrid(dep.profil.items.filter((it) => PROFIL_META[it.key]).map((it) => {
+  const m = PROFIL_META[it.key];
+  return {label: m.label, value: m.fmt(it.v),
+          subs: [position(it.p),
+                 annuaire.profil_france?.[it.key] != null
+                   ? `${m.fr} : ${m.fmt(annuaire.profil_france[it.key])}` : null,
+                 m.note].filter(Boolean)};
+}), kpiCard));
+```
+
+```js
+if (dep.profil) display(html`<div class="hm-caption">
+  Recensement de la population, millésime ${dep.profil.millesime} — chaque millésime agrège
+  cinq années de collecte, ce n'est pas la photo d'une année ; état civil et Filosofi
+  (INSEE). ${Math.max(...dep.profil.items.map((it) => it.n))} départements couverts, le
+  niveau de vie sur ${dep.profil.items.find((it) => it.key === "niveau_vie")?.n ?? "—"}. Le solde migratoire est dit « apparent » parce qu'il est déduit : variation de
+  population moins solde naturel. Mesurés sur douze ans de prix, ces repères ont changé
+  de sens d'un cycle à l'autre — c'est pourquoi ils décrivent et ne classent pas :
+  <a href="/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas">ce qu'on a essayé, et qui
+  ne marche pas</a>.</div>`);
+```
+
+```js
+if (!dep.profil) display(html`<div class="hm-caption">Le recensement de la population ne
+  couvre pas ${dep.nom} dans les jeux de données utilisés ici (« France hors Mayotte ») :
+  aucun profil n'est publié pour ce département.</div>`);
+```
+
 ## Ce que ces chiffres comptent — et ce qu'ils ne comptent pas
 
 <details class="hm-howto">

@@ -4,6 +4,53 @@
   "region": "Hauts-de-France",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 20.4,
+        "p": 20,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 67.2,
+        "p": 51,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 7.0,
+        "p": 25,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 18.3,
+        "p": 14,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -0.18,
+        "p": 17,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 2.8,
+        "p": 27,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25970.0,
+        "p": 71,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:36+00:00"
+  "generated_at": "2026-09-20T10:09:35+00:00"
 }

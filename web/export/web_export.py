@@ -2203,6 +2203,17 @@ def build_departement(con, code: str, national) -> dict:
         "couvert": couvert,
         "source": "DVF (DGFiP) — licence ouverte v2",
     }
+    # Le profil INSEE (recensement) est indépendant de DVF : les quatre départements hors
+    # DVF le reçoivent aussi — c'est la première fois que leur page porte un chiffre.
+    # None quand le recensement ne couvre pas le département (Mayotte) : la page le dit.
+    profil = q.territoires_profil(con, code)
+    if profil:
+        # La valeur France de chaque repère est la MÊME pour les 101 fichiers : elle vit
+        # dans l'annuaire (`profil_france`), pas ici — 101 copies d'une constante, c'est
+        # ce qui avait amené le plus gros fichier à 150 octets du budget.
+        payload["profil"] = {"millesime": profil["millesime"],
+                             "items": [{k: v for k, v in it.items() if k != "fr"}
+                                       for it in profil["items"]]}
     if not couvert:
         # Ces quatre départements relèvent du Livre foncier (Alsace-Moselle) ou ne sont
         # pas couverts (Mayotte). La page le DIT au lieu d'afficher des graphiques vides :
@@ -2271,6 +2282,14 @@ def build_departements(con) -> int:
         "departements": [],
     }
     dispo = {d["code"]: d for d in q.dvf_departements(con)}
+    # Les valeurs France du profil INSEE, une fois pour tout le site (voir build_departement).
+    # Prises sur un département couvert quelconque : elles ne dépendent pas du département.
+    for code in codes:
+        profil = q.territoires_profil(con, code)
+        if profil:
+            index["profil_france"] = {"millesime": profil["millesime"],
+                                      **{it["key"]: it["fr"] for it in profil["items"]}}
+            break
 
     modifies, total = 0, 0
     for code in codes:

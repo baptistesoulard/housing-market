@@ -4,6 +4,53 @@
   "region": "Auvergne-Rhône-Alpes",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 19.5,
+        "p": 13,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 42.2,
+        "p": 8,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 6.4,
+        "p": 16,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 17.8,
+        "p": 12,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.65,
+        "p": 73,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.4,
+        "p": 72,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 32180.0,
+        "p": 98,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-08-20T17:24:55+00:00"
+  "generated_at": "2026-09-20T10:09:36+00:00"
 }

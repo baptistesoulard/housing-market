@@ -4,6 +4,53 @@
   "region": "Provence-Alpes-Côte d'Azur",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 20.0,
+        "p": 17,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 37.4,
+        "p": 6,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 7.1,
+        "p": 29,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 21.2,
+        "p": 31,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.25,
+        "p": 47,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 2.3,
+        "p": 13,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25610.0,
+        "p": 59,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:20+00:00"
+  "generated_at": "2026-09-20T10:09:32+00:00"
 }

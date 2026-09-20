@@ -4,6 +4,53 @@
   "region": "Grand Est",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 21.1,
+        "p": 23,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 55.0,
+        "p": 26,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 9.1,
+        "p": 60,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 20.7,
+        "p": 22,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -0.01,
+        "p": 26,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.0,
+        "p": 41,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25910.0,
+        "p": 67,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:34+00:00"
+  "generated_at": "2026-09-20T10:09:35+00:00"
 }

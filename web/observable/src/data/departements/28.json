@@ -4,6 +4,53 @@
   "region": "Centre-Val de Loire",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 24.4,
+        "p": 48,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 73.9,
+        "p": 61,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 8.3,
+        "p": 47,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 21.8,
+        "p": 34,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -0.06,
+        "p": 21,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.0,
+        "p": 43,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25980.0,
+        "p": 72,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:24+00:00"
+  "generated_at": "2026-09-20T10:09:33+00:00"
 }

@@ -4,6 +4,53 @@
   "region": "Nouvelle-Aquitaine",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 24.9,
+        "p": 53,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 74.6,
+        "p": 68,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 9.4,
+        "p": 67,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 23.5,
+        "p": 51,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.19,
+        "p": 40,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.4,
+        "p": 69,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 24940.0,
+        "p": 44,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:45+00:00"
+  "generated_at": "2026-09-20T10:09:37+00:00"
 }

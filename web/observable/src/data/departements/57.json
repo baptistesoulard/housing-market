@@ -4,6 +4,53 @@
   "region": "Grand Est",
   "couvert": false,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 21.2,
+        "p": 26,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 55.8,
+        "p": 27,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 9.0,
+        "p": 59,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 21.1,
+        "p": 25,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.2,
+        "p": 42,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 2.1,
+        "p": 9,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 26030.0,
+        "p": 73,
+        "n": 97
+      }
+    ]
+  },
   "absence": "Le fichier DVF de la DGFiP ne couvre pas ce département. L'Alsace et la Moselle relèvent du Livre foncier, un régime de publicité foncière distinct hérité du droit local ; Mayotte n'y figure pas non plus. Il ne s'agit pas d'un trou temporaire : aucune année n'est publiée.",
-  "generated_at": "2026-08-20T17:23:37+00:00"
+  "generated_at": "2026-09-20T10:09:35+00:00"
 }

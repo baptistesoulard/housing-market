@@ -281,6 +281,12 @@ def test_postbuild_ecrit_les_chiffres_du_departement_dans_son_html(tmp_path):
     assert f"{prix} €/m²" in texte, texte
     assert "sur un an" in texte and "sur cinq ans" in texte
     assert "ventes enregistrées" in texte
+    # Le profil INSEE (recensement) suit, avec son millésime et le repère qui porte le
+    # plus de sens : la part du parc détenue par des ménages de 65 ans ou plus.
+    age = next(it for it in dep["profil"]["items"] if it["key"] == "part_rp_65")
+    assert f"Au recensement de {dep['profil']['millesime']}" in texte
+    assert f"{str(age['v']).replace('.', ',')} % des résidences principales" in texte, texte
+    assert "solde migratoire" in texte
     # Sous l'accroche, avant la première section : c'est là qu'un extrait de résultat
     # de recherche va chercher son texte.
     assert html.index('class="hm-caption"') < html.index("hm-chapeau-dep") < html.index("<h2>")
@@ -295,6 +301,9 @@ def test_postbuild_explique_l_absence_de_donnees_au_lieu_de_se_taire(tmp_path):
     assert len(chapeaux) == 1
     assert chapeaux[0].startswith("Moselle (57) :") and "Livre foncier" in chapeaux[0]
     assert "€/m²" not in chapeaux[0], "aucun prix à annoncer sur un département non couvert"
+    # Hors DVF ne veut pas dire hors recensement : la page porte le profil INSEE, et c'est
+    # le premier chiffre que ces quatre pages aient jamais eu en statique.
+    assert "Au recensement de" in chapeaux[0] and "résidences principales" in chapeaux[0]
 
 
 def test_le_chapeau_chiffre_est_remplace_et_jamais_empile(tmp_path):

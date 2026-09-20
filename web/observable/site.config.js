@@ -275,13 +275,41 @@ const _evol = (v) => v == null ? null
   : `${v > 0 ? "en hausse" : "en baisse"} de ${_fr(Math.abs(v), 1)} %`;
 const _trim = (iso) => `T${Math.floor(Number(iso.slice(5, 7)) / 3) + 1} ${iso.slice(0, 4)}`;
 
+// La phrase du profil INSEE (recensement) : le repère qui porte le plus de sens pour un
+// lecteur — la part des résidences principales détenues par un ménage de 65 ans ou plus —
+// et le solde migratoire. Indépendante de DVF, donc présente aussi sur les quatre pages
+// hors DVF, dont c'était jusqu'ici le seul texte sans aucun chiffre. Le percentile dit la
+// part des AUTRES départements strictement en dessous (le département ne se compte pas
+// lui-même) ; la phrase bascule à la médiane pour que le nombre cité soit toujours la
+// majorité (voir la même règle dans [code].md).
+const _position = (p, n) => p >= 50
+  ? `plus que dans ${p} % des ${n - 1} autres départements couverts`
+  : `moins que dans ${100 - p} % des ${n - 1} autres départements couverts`;
+function _profilPhrase(dep) {
+  const items = dep.profil?.items;
+  if (!Array.isArray(items)) return "";
+  const age = items.find((it) => it.key === "part_rp_65");
+  const mig = items.find((it) => it.key === "solde_migratoire");
+  const parts = [];
+  if (age && age.v != null && age.p != null && age.n != null) {
+    parts.push(`Au recensement de ${dep.profil.millesime}, ${_fr(age.v, 1)} % des résidences ` +
+      `principales appartiennent à un ménage de 65 ans ou plus, ${_position(age.p, age.n)}`);
+  }
+  if (mig && mig.v != null) {
+    const sens = Math.abs(mig.v) < 0.005 ? "un solde migratoire nul"
+      : `un solde migratoire ${mig.v > 0 ? "positif" : "négatif"} de ${mig.v > 0 ? "+" : "−"}${_fr(Math.abs(mig.v), 2)} % par an`;
+    parts.push(parts.length ? ` ; le département a ${sens}` : `Le département a ${sens}`);
+  }
+  return parts.length ? ` ${parts.join("")}.` : "";
+}
+
 /** Le paragraphe statique d'une page départementale, depuis son JSON (`dep`), ou null. */
 export function depChapeau(dep) {
   if (!dep || typeof dep !== "object") return null;
   const tete = `${dep.nom} (${dep.code})`;
   if (dep.couvert !== true) {
     if (!dep.absence) return null;
-    return `${tete} : ${dep.absence.charAt(0).toLowerCase()}${dep.absence.slice(1)}`;
+    return `${tete} : ${dep.absence.charAt(0).toLowerCase()}${dep.absence.slice(1)}` + _profilPhrase(dep);
   }
   const e = dep.dernier?.Ensemble;
   if (!e?.date || e.prix_m2 == null) return null;
@@ -308,7 +336,7 @@ export function depChapeau(dep) {
   if (n?.prix_m2 != null && n.date === e.date) {
     texte += ` France entière au même trimestre : ${_fr(n.prix_m2)} €/m².`;
   }
-  return texte;
+  return texte + _profilPhrase(dep);
 }
 
 /** Les pages indexables, dans l'ordre du sitemap. */

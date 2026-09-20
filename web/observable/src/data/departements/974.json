@@ -4,6 +4,53 @@
   "region": "La Réunion",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 14.4,
+        "p": 5,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 65.4,
+        "p": 44,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 8.1,
+        "p": 43,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 13.7,
+        "p": 2,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -0.23,
+        "p": 13,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 1.6,
+        "p": 2,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 19110.0,
+        "p": 0,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -537,5 +584,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:50+00:00"
+  "generated_at": "2026-09-20T10:09:37+00:00"
 }

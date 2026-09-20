@@ -4,6 +4,47 @@
   "region": "Guadeloupe",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 24.6,
+        "p": 51,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 74.2,
+        "p": 65,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 14.2,
+        "p": 97,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 22.0,
+        "p": 36,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -0.43,
+        "p": 3,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 1.5,
+        "p": 0,
+        "n": 100
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -531,5 +572,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:49+00:00"
+  "generated_at": "2026-09-20T10:09:37+00:00"
 }

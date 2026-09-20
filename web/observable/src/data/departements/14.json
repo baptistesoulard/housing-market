@@ -4,6 +4,53 @@
   "region": "Normandie",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 22.9,
+        "p": 33,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 64.4,
+        "p": 42,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 6.2,
+        "p": 15,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 23.4,
+        "p": 45,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.47,
+        "p": 64,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 2.9,
+        "p": 30,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25600.0,
+        "p": 58,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:20+00:00"
+  "generated_at": "2026-09-20T10:09:32+00:00"
 }

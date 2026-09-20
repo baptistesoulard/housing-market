@@ -4,6 +4,53 @@
   "region": "Occitanie",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 29.6,
+        "p": 89,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 80.5,
+        "p": 88,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 8.3,
+        "p": 48,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 27.8,
+        "p": 87,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.78,
+        "p": 81,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.8,
+        "p": 88,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 23360.0,
+        "p": 6,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -526,5 +573,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:18+00:00"
+  "generated_at": "2026-09-20T10:09:32+00:00"
 }

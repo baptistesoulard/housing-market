@@ -4,6 +4,53 @@
   "region": "Auvergne-Rhône-Alpes",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 28.0,
+        "p": 74,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 76.3,
+        "p": 73,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 11.8,
+        "p": 93,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 26.1,
+        "p": 65,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.45,
+        "p": 62,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.0,
+        "p": 40,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25140.0,
+        "p": 50,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -505,6 +552,12 @@
     ]
   },
   "dernier": {
+    "Appartement": {
+      "date": "2025-10-01",
+      "prix_m2": 1548.0,
+      "prix": 94193.0,
+      "ventes": 90
+    },
     "Ensemble": {
       "date": "2025-10-01",
       "prix_m2": 1396.0,
@@ -516,12 +569,6 @@
       "prix_m2": 1356.0,
       "prix": 124500.0,
       "ventes": 326
-    },
-    "Appartement": {
-      "date": "2025-10-01",
-      "prix_m2": 1548.0,
-      "prix": 94193.0,
-      "ventes": 90
     }
   },
   "evolution": {
@@ -541,5 +588,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:30+00:00"
+  "generated_at": "2026-09-20T10:09:34+00:00"
 }

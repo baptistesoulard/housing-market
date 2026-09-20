@@ -4,6 +4,53 @@
   "region": "Bourgogne-Franche-Comté",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 27.9,
+        "p": 72,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 76.6,
+        "p": 75,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 11.6,
+        "p": 91,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 26.0,
+        "p": 64,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.08,
+        "p": 31,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 2.9,
+        "p": 33,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 24590.0,
+        "p": 30,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:46+00:00"
+  "generated_at": "2026-09-20T10:09:37+00:00"
 }

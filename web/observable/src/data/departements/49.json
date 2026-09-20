@@ -4,6 +4,53 @@
   "region": "Pays de la Loire",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 22.0,
+        "p": 30,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 70.3,
+        "p": 56,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 6.2,
+        "p": 14,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 21.1,
+        "p": 26,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": 0.27,
+        "p": 48,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 3.1,
+        "p": 47,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 25550.0,
+        "p": 56,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -547,5 +594,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:32+00:00"
+  "generated_at": "2026-09-20T10:09:34+00:00"
 }

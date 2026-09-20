@@ -4,6 +4,47 @@
   "region": "Guyane",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 8.1,
+        "p": 0,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 58.7,
+        "p": 31,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 9.8,
+        "p": 73,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 6.6,
+        "p": 0,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -1.01,
+        "p": 1,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 2.1,
+        "p": 7,
+        "n": 100
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -475,5 +516,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:49+00:00"
+  "generated_at": "2026-09-20T10:09:37+00:00"
 }

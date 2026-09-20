@@ -4,6 +4,53 @@
   "region": "Île-de-France",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 12.8,
+        "p": 2,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 0.9,
+        "p": 0,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 9.9,
+        "p": 77,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 17.7,
+        "p": 11,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -1.17,
+        "p": 0,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 5.5,
+        "p": 100,
+        "n": 100
+      },
+      {
+        "key": "niveau_vie",
+        "v": 33650.0,
+        "p": 99,
+        "n": 97
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -463,5 +510,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:40+00:00"
+  "generated_at": "2026-09-20T10:09:36+00:00"
 }

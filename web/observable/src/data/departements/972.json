@@ -4,6 +4,47 @@
   "region": "Martinique",
   "couvert": true,
   "source": "DVF (DGFiP) — licence ouverte v2",
+  "profil": {
+    "millesime": 2023,
+    "items": [
+      {
+        "key": "part_rp_65",
+        "v": 23.8,
+        "p": 43,
+        "n": 100
+      },
+      {
+        "key": "part_maisons",
+        "v": 61.9,
+        "p": 35,
+        "n": 100
+      },
+      {
+        "key": "taux_vacance",
+        "v": 15.0,
+        "p": 99,
+        "n": 100
+      },
+      {
+        "key": "part_65",
+        "v": 23.8,
+        "p": 53,
+        "n": 100
+      },
+      {
+        "key": "solde_migratoire",
+        "v": -0.5,
+        "p": 2,
+        "n": 100
+      },
+      {
+        "key": "taux_arrivee",
+        "v": 1.6,
+        "p": 1,
+        "n": 100
+      }
+    ]
+  },
   "ensemble": {
     "dates": [
       "2014-01-01",
@@ -517,5 +558,5 @@
     "prix_m2": 2054.0,
     "ventes": 186338
   },
-  "generated_at": "2026-09-02T21:38:49+00:00"
+  "generated_at": "2026-09-20T10:09:37+00:00"
 }
