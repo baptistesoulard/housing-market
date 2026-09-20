@@ -98,6 +98,8 @@ l'autre, donc ces dates ne s'alignent pas, et c'est normal.
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/BLS">Demande de crédits habitat (enquête BLS)</a></td><td>BCE / Banque de France</td><td>API SDMX (BLS)</td><td class="hm-when">T3 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/FM">Euribor 3 mois</a></td><td>BCE</td><td>API SDMX (FM)</td><td class="hm-when">août 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/IRS">OAT 10 ans</a></td><td>BCE</td><td>API SDMX (IRS)</td><td class="hm-when">août 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/metadonnees/source/serie/s1321">Recensement de la population — parc, propriétaires, âge, migrations</a></td><td>INSEE</td><td>API Melodi</td><td class="hm-when">millésime 2023</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/metadonnees/source/serie/s1172">Niveau de vie médian (Filosofi)</a></td><td>INSEE</td><td>API Melodi</td><td class="hm-when">millésime 2023</td></tr>
     <!-- hm:sources:fin -->
   </tbody>
 </table>
@@ -126,8 +128,24 @@ les promoteurs réservent, mettent en vente et vendent, avec leur prix.
 publie le suivi mensuel des ventes de logements anciens en France.
 
 **DVF** — les Demandes de Valeurs Foncières, fichier de la DGFiP qui recense les ventes
-immobilières réellement enregistrées chez le notaire. Source des 101 pages par
+immobilières réellement enregistrées chez le notaire. Source des prix des 101 pages par
 département.
+
+**RP** — le Recensement de la population, l'enquête de l'INSEE qui décrit les habitants
+et les logements. Depuis 2004 il est annuel et tournant : chaque « millésime » agrège
+cinq années de collecte autour de son année de référence, ce n'est pas la photo d'une
+année. Source du profil (âge des propriétaires, maisons, vacance, migrations) des pages
+par département.
+
+**Filosofi** — le Fichier localisé social et fiscal de l'INSEE, qui croise les
+déclarations de revenus et les prestations sociales pour mesurer le niveau de vie des
+ménages à l'échelle locale. Source du niveau de vie médian des pages par département.
+
+**Solde migratoire apparent** — la variation de population d'un territoire entre deux
+recensements, une fois retiré son solde naturel (naissances moins décès). « Apparent »
+parce qu'il est déduit, pas compté : personne ne recense les déménagements un à un. Il
+mesure ce qui reste — arrivées moins départs — et un solde négatif ne dit pas qu'on ne
+veut pas y vivre : Paris est négatif faute de logements, pas faute d'envie.
 
 **OAT** — l'Obligation Assimilable du Trésor à 10 ans : le taux auquel l'État français
 emprunte, référence du coût du crédit à long terme, y compris immobilier.
@@ -180,10 +198,13 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
 ## Limites à connaître
 
 - **Les huit pages de données sont nationales.** Aucune ventilation régionale : les
-  séries qu'elles retiennent sont celles de la France entière. Seul le prix au m² a une
-  déclinaison départementale (DVF), sur ses [101 pages dédiées](/departement/75) — les
-  taux, le chômage et les intentions d'achat qui alimentent la prévision restent
-  nationaux, faute d'équivalent local publié.
+  séries qu'elles retiennent sont celles de la France entière. Seuls le prix au m² (DVF)
+  et le profil du recensement ont une déclinaison départementale, sur les
+  [101 pages dédiées](/departement/75) — les taux, le chômage et les intentions d'achat
+  qui alimentent la prévision restent nationaux, faute d'équivalent local publié. Et ce
+  profil **décrit sans classer** : l'idée d'en tirer une carte des départements qui
+  gagneront ou perdront a été mesurée sur douze ans de prix, puis
+  [écartée](/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas).
 - **Des rythmes de publication différents.** Les permis et les ventes dans l'ancien sont
   mensuels, la commercialisation du neuf est trimestrielle, et chaque source a son propre
   délai. Une page ne s'arrête donc pas toutes séries confondues à la même date.

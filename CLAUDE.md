@@ -2057,8 +2057,9 @@ dont une branche vaut `` html`` `` ou `""`.
 
 101 pages générées par UNE route paramétrée (`web/observable/src/departement/[code].md`),
 qui font passer le site de 10 à 111 pages. Elles s'adressent à un particulier et répondent
-à trois questions, pas davantage : combien coûte le m² ici, combien de ventes s'y font, et
-combien de m² une capacité d'emprunt y achète.
+à quatre questions, pas davantage : combien coûte le m² ici, combien de ventes s'y font,
+combien de m² une capacité d'emprunt y achète — et, depuis le 2026-09-20, qui y habite et
+qui y arrive (le profil du recensement, voir « Le module Territoires » plus bas).
 
 ### D'où viennent les données
 
@@ -2254,19 +2255,53 @@ garde `couvert`.
   perdre son pouvoir d'alerte, alors qu'un diff inattendu sur l'un des sept signale une
   divergence de calcul.
 
-### Backlog : le module « Territoires » (plan écrit, non commencé — 2026-09-20)
+### Le module « Territoires » — ce qui doit rester vrai (2026-09-20)
 
-Une quatrième question pour ces pages, et une page carte nationale, sont **planifiées
-mais pas commencées** : `docs/plan-territoires.md`. Origine : la vidéo de Xavier Delmas
-« la France va se couper en deux » (mai 2026) — deux indices composites INSEE croisés en
-quatre catégories de départements. Le plan en garde le mécanisme et en refuse la forme
-(indice pondéré à la main, horizon 2040 infalsifiable : les deux règles que ce fichier
-documente déjà). Il remplace par **deux axes observés** — part des résidences principales
-détenues par un ménage de 65 ans ou plus × attractivité migratoire — et une **porte
-mesurée AVANT toute page** sur les prix DVF 2014-2025 déjà dans l'entrepôt. Les sources
-(API Melodi de l'INSEE, comparateur de territoires en Parquet), leurs codes de dimension
-et leurs millésimes y sont **vérifiés et consignés** : ne pas refaire l'exploration.
-Si le module aboutit, le compteur passe à `n/8` et cette liste doit être réécrite.
+Plan : `docs/plan-territoires.md` ; mesure : `docs/mesure-territoires-2026-09-20.md` ;
+script : `mesure_territoires.py`. Origine : la vidéo de Xavier Delmas « la France va se
+couper en deux » (mai 2026), deux indices composites INSEE croisés en quatre catégories de
+départements. Le plan en gardait le mécanisme et en refusait la forme (indice pondéré à la
+main, horizon 2040 infalsifiable), et posait une **porte mesurée AVANT toute page**.
+
+**La porte a été MANQUÉE, et c'est le résultat le plus utile du module.** Deux axes
+observés — part des résidences principales détenues par un ménage de 65 ans ou plus, et
+attractivité migratoire — testés sur les prix DVF départementaux en deux fenêtres :
+sur 2014-2019 les départements âgés et propriétaires sous-performent (ρ = −0,43), mais
+**entièrement par effet de niveau** (ρ partiel à prix donné : +0,03 ; c'était l'époque où
+les métropoles chères décrochaient) ; sur **2019-2025 le signe s'inverse** (ρ = +0,46, et
++0,46 à niveau donné ; ventes +0,44). Une relation qui change de signe d'un cycle à
+l'autre n'est pas un signal structurel à quinze ans. Au passage : le **solde migratoire
+net classe Paris dernier des 100** — il mesure la pénurie de logements, pas l'attrait.
+D'où : **pas de page carte, pas de classement**, une cinquième entrée dans `REFUTATIONS`,
+et les indicateurs publiés **en description seulement**.
+
+**Ce qui existe :**
+
+| Pièce | Où | À savoir |
+|---|---|---|
+| builder | `fetch_new_sources.build_territoires` | UNE source, l'API Melodi de l'INSEE (JSON, sans clé, `GEO=DEP` paginé) : RP 2012/2017/2023, série historique des populations légales, état civil 2008→, Filosofi 2023. Le comparateur de territoires (Parquet) est une compilation de ces mêmes jeux — vérifié octet pour octet — et insee.fr ne le date pas. Garde annuelle par le champ `modified` du catalogue de trois jeux témoins, empreinte VERSIONNÉE `territoires.lastmod.txt` ; 5 s à froid, 0,4 s sous garde. Format long, comptes entiers, **aucun ratio**. |
+| dérivé | `DataManager.ensure_territoires` → `data/territoires.csv` | le SEUL endroit qui calcule les ratios et le solde migratoire apparent (période intercensitaire précédente ; 2007 approché par la moyenne 2008-2011). Mayotte, hors des jeux RP, n'a pas de ligne. |
+| contrat | `housing_data.schema.TERRITOIRES` | code département comme DVF ; ratios bornés 0-100 ; colonnes limitées à 2023 (croisement âge × statut) ou à 97 départements (Filosofi) nullables. |
+| requête | `queries.territoires_profil` | valeur, percentile (part des **autres** départements en dessous : `percent_rank` ne compte pas le département lui-même — « 100 % des 100 » serait faux d'une unité) et valeur France (ratio des sommes, ou département médian pour le solde et le niveau de vie). |
+| surface | `[code].md`, section « Qui habite ici, et qui arrive ? » | sept cartes, pas de score ; les **quatre départements hors DVF** la reçoivent (le RP ne dépend pas de DVF) ; `postbuild` ajoute la phrase du recensement au chapeau statique, y compris pour eux — leur premier chiffre indexable. |
+| sources | `sources_table.py`, deux lignes `freq: "A"` | datées par le **millésime** (colonne `Millesime`, pas `Date`) ; « millésime 2023 » plutôt que « 2023 », parce qu'un millésime agrège cinq années de collecte. |
+
+**Trois choses à ne pas défaire :**
+
+* **`load_or_generate_all()` appelle désormais `ensure_dvf()` ET `ensure_territoires()`**,
+  et persiste les deux datasets par département dans l'entrepôt (`dvf` a gagné un Parquet
+  validé qu'il n'avait pas). `ensure_dvf` n'avait AUCUN appelant — le défaut noté ici le
+  2026-09-19. **`read_frames()` rend toujours six frames** ; `web_export.load_frames()`
+  ajoute une clé `territoires` à son *dict* (pour le tableau des sources), jamais au tuple.
+* **Le compteur reste à `n/7`.** Aucun JSON national n'a été ajouté (la page carte n'a pas
+  été construite) ; `previsions.json` a bougé deux fois, par la nouvelle entrée de
+  `REFUTATIONS` puis par son diagnostic `sources` — jamais par un chiffre.
+* **Les valeurs France du profil vivent dans l'annuaire (`departements.json`,
+  `profil_france`)**, pas dans les 101 fichiers : identiques partout, elles avaient amené
+  le plus gros à 150 octets du budget de 10 Ko. Maximum après : 9,9 Ko.
+
+**Si l'idée de la carte revient** : refaire tourner `python mesure_territoires.py` avec une
+fenêtre de plus. La porte (plan §3.4) ne bouge pas.
 
 ## Vérifier la parité
 

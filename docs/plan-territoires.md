@@ -1,5 +1,10 @@
 # Plan — module « Territoires » : France héritée, France désirée
 
+> **État d'exécution (2026-09-20, même jour)** : phases 1, 2, 3a et 4 FAITES. La porte de
+> la phase 1 a été **manquée** (le lien change de signe entre 2014-2019 et 2019-2025 —
+> `docs/mesure-territoires-2026-09-20.md`), donc la phase 3b (page carte) n'a pas été
+> construite, conformément à §3.5. Ce qui suit est le plan tel qu'écrit avant exécution.
+>
 > Rédigé le 2026-09-20, à exécuter dans une session ultérieure. Tout ce qui est marqué
 > **vérifié** l'a été ce jour-là, par requête réelle ; tout ce qui est marqué ⚠️ **à
 > vérifier** est une hypothèse plausible qu'il faut confirmer avant de s'y appuyer.

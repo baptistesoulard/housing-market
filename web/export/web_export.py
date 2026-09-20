@@ -245,8 +245,15 @@ def load_frames() -> dict:
     dm.load_or_generate_all()
     (df_sitadel, df_ventes_ancien, df_macro, df_sales,
      df_ecln, df_company_sales) = dm.read_frames()
-    return {"sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
-            "sales": df_sales, "ecln": df_ecln, "company_sales": df_company_sales}
+    frames = {"sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
+              "sales": df_sales, "ecln": df_ecln, "company_sales": df_company_sales}
+    # Le profil INSEE des départements ne sert ici qu'au tableau des sources d'À propos
+    # (dernier millésime publié) : les pages, elles, le lisent par SQL. Hors du tuple de
+    # read_frames(), qui reste à six — voir CLAUDE.md.
+    chemin = dm.paths.get("territoires")
+    if chemin and os.path.exists(chemin):
+        frames["territoires"] = pd.read_csv(chemin, dtype={"Department": str})
+    return frames
 
 
 def _period_bounds(frames: dict) -> dict:

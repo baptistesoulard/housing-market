@@ -110,6 +110,20 @@ SOURCES = [
      "url": "https://data.ecb.europa.eu/data/datasets/IRS",
      "producteur": "BCE", "acces": "API SDMX (IRS)",
      "dataset": "macro", "colonnes": ("OAT_10ans",), "freq": "M"},
+    # Le profil des pages départementales. Deux sources INSEE, deux lignes ; la date est
+    # le MILLÉSIME du recensement (une colonne `Millesime`, pas `Date`), et un millésime
+    # agrège cinq années de collecte — « 2023 » n'est pas la photo d'une année. Le solde
+    # migratoire (RP + état civil) est rangé avec le recensement, dont il porte le millésime.
+    {"mesure": "Recensement de la population — parc, propriétaires, âge, migrations",
+     "url": "https://www.insee.fr/fr/metadonnees/source/serie/s1321",
+     "producteur": "INSEE", "acces": "API Melodi",
+     "dataset": "territoires",
+     "colonnes": ("PartRP65Plus", "PartMaisons", "TauxVacance", "Part65Plus",
+                  "TauxArrivee", "SoldeMigratoire"), "freq": "A"},
+    {"mesure": "Niveau de vie médian (Filosofi)",
+     "url": "https://www.insee.fr/fr/metadonnees/source/serie/s1172",
+     "producteur": "INSEE", "acces": "API Melodi",
+     "dataset": "territoires", "colonnes": ("NiveauVieMedian",), "freq": "A"},
 ]
 
 DATASETS = sorted({s["dataset"] for s in SOURCES})
@@ -129,19 +143,27 @@ def dernier_point(frames: dict, source: dict):
         if col not in df.columns:
             continue
         valides = df.dropna(subset=[col])
-        if not valides.empty:
+        if valides.empty:
+            continue
+        if "Date" in valides.columns:
             dates.append(pd.Timestamp(valides["Date"].max()))
+        else:   # dataset daté par millésime (territoires) : le 1er janvier de l'année
+            dates.append(pd.Timestamp(int(valides["Millesime"].max()), 1, 1))
     return min(dates) if dates else pd.NaT
 
 
 def libelle_periode(date, freq: str) -> str:
-    """« juin 2026 » pour une série mensuelle, « T2 2026 » pour une trimestrielle.
+    """« juin 2026 » pour une série mensuelle, « T2 2026 » pour une trimestrielle,
+    « millésime 2023 » pour un recensement (annuel, et le mot rappelle que ce n'est pas
+    la photo d'une année).
 
     Les séries trimestrielles sont posées sur le 1er mois du trimestre (voir
     fetch_new_sources), donc le trimestre se déduit du mois sans ambiguïté."""
     if date is None or pd.isna(date):
         return "—"
     d = pd.Timestamp(date)
+    if freq == "A":
+        return f"millésime {d.year}"
     if freq == "T":
         return f"T{(d.month - 1) // 3 + 1} {d.year}"
     return f"{_MOIS[d.month - 1]} {d.year}"

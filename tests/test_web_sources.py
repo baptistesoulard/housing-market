@@ -48,7 +48,10 @@ def _frames():
         chemin = os.path.join(_DATA, f"{nom}.csv")
         if not os.path.exists(chemin):
             pytest.skip(f"{chemin} absent (lancer python fetch_new_sources.py)")
-        frames[nom] = pd.read_csv(chemin, parse_dates=["Date"])
+        df = pd.read_csv(chemin, dtype={"Department": str})
+        if "Date" in df.columns:
+            df["Date"] = pd.to_datetime(df["Date"])
+        frames[nom] = df
     return frames
 
 
@@ -117,6 +120,7 @@ def test_les_dates_publiees_sont_celles_des_donnees():
     ("T", "2026-01-01", "T1 2026"),
     ("T", "2026-04-01", "T2 2026"),
     ("T", "2026-10-01", "T4 2026"),
+    ("A", "2023-01-01", "millésime 2023"),
 ])
 def test_libelle_de_periode(freq, mois, attendu):
     """Les séries trimestrielles sont posées sur le 1er mois du trimestre : afficher

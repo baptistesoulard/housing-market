@@ -398,6 +398,10 @@ qu'aucune URL n'est écrite en dur.
 
 101 pages produites par une seule route paramétrée, `src/departement/[code].md`. Le site
 passe de 10 à 111 pages, toutes dans le sitemap, chacune avec son titre et sa description.
+Chaque page porte deux jeux de données : les **prix** (DVF, 97 départements) et, depuis le
+2026-09-20, le **profil du recensement** (INSEE, 100 départements — Mayotte exclue des jeux
+RP), section « Qui habite ici, et qui arrive ? ». Ce profil décrit et ne classe pas : voir
+`docs/mesure-territoires-2026-09-20.md`.
 
 ### Reconstruire les données
 
@@ -405,7 +409,13 @@ Deux moitiés, deux commandes. La première tourne déjà dans le refresh hebdom
 
 ```
 python fetch_new_sources.py          # dont build_dvf : fenêtre glissante 2021-2025
+                                     # et build_territoires : API Melodi de l'INSEE
 ```
+
+`build_territoires` écrit `data_manual_input/territoires-insee.csv` (comptes, format long),
+gardé par la date de mise à jour des jeux Melodi (`territoires.lastmod.txt`, versionné) ;
+`DataManager.ensure_territoires()` en dérive `data/territoires.csv` (ratios, une ligne par
+département et millésime) au démarrage, comme les autres dérivés.
 
 La seconde est une opération **ponctuelle**, hors CI, qui télécharge 1,1 Go depuis un
 miroir de millésimes archivés pour reconstituer les années que DVF ne republie plus :
