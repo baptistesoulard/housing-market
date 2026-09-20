@@ -536,3 +536,71 @@ def dvf_surface_accessible(con, departement: str, mensualite: float, annees: int
         out["m2_2015"] = round(mensualite * cap_2015 / prix_2015, 1)
         out["prix_m2_2015"] = round(prix_2015)
     return out
+
+
+# ======================= Territoires — profil INSEE par departement ==================
+# Second dataset par departement, en DESCRIPTION seulement : la porte qui aurait autorise
+# un classement « France heritee / France desiree » a ete mesuree puis manquee
+# (docs/mesure-territoires-2026-09-20.md). Chaque indicateur est publie avec son
+# PERCENTILE parmi les departements renseignes et la valeur France — jamais un score.
+
+#: (cle JSON, colonne de la vue, numerateur, denominateur, decimales).
+#: Numerateur/denominateur servent a la valeur FRANCE (somme sur somme : le ratio du
+#: pays, pas la moyenne des ratios departementaux) ; None = mediane des departements.
+TERRITOIRES_PROFIL = [
+    ("part_rp_65", "PartRP65Plus", "RPProprietaires65Plus", "RPTotalAge", 1),
+    ("part_maisons", "PartMaisons", "RPMaisons", "ResidencesPrincipales", 1),
+    ("taux_vacance", "TauxVacance", "LogementsVacants", "Logements", 1),
+    ("part_65", "Part65Plus", "Pop65Plus", "Population", 1),
+    ("solde_migratoire", "SoldeMigratoire", None, None, 2),
+    ("taux_arrivee", "TauxArrivee", "ArriveesHorsDep", "PopUnAnPlus", 1),
+    ("niveau_vie", "NiveauVieMedian", None, None, 0),
+]
+
+
+def territoires_millesime(con) -> int | None:
+    """Le dernier millesime RP present dans l'entrepot (None si le dataset manque)."""
+    try:
+        return scalar(con, 'SELECT MAX(Millesime) FROM "territoires"')
+    except Exception:          # vue absente : la source n'a jamais ete collectee
+        return None
+
+
+def territoires_profil(con, departement: str) -> dict | None:
+    """Le profil d'UN departement au dernier millesime : pour chaque indicateur, sa valeur
+    (`v`), son percentile parmi les departements renseignes (`p`, part des departements
+    strictement en dessous, 0-100) et la valeur France (`fr`).
+
+    Un indicateur manquant pour ce departement (Filosofi ne couvre que 97 departements)
+    est omis, pas mis a zero. Rend None si le departement n'a pas de ligne (Mayotte, hors
+    des jeux RP) : la page dit alors l'absence au lieu d'afficher des cartes vides.
+    """
+    m = territoires_millesime(con)
+    if m is None:
+        return None
+    if scalar(con, 'SELECT COUNT(*) FROM "territoires" WHERE Department = ? AND Millesime = ?',
+              (departement, m)) == 0:
+        return None
+    items = []
+    for cle, col, num, den, dec in TERRITOIRES_PROFIL:
+        # Le percentile ne se calcule que parmi les valeurs presentes : percent_rank()
+        # sur une colonne a NULL rangerait les absents en tete ou en queue selon le moteur.
+        r = _cur(con).execute(f'''
+            WITH t AS (SELECT Department, "{col}" AS v FROM "territoires"
+                       WHERE Millesime = ? AND "{col}" IS NOT NULL),
+                 r AS (SELECT Department, v, percent_rank() OVER (ORDER BY v) AS p FROM t)
+            SELECT v, p, (SELECT COUNT(*) FROM t) FROM r WHERE Department = ?
+        ''', [m, departement]).fetchone()
+        if not r or r[0] is None:
+            continue
+        if num and den:
+            fr = scalar(con, f'''SELECT 100.0 * SUM("{num}") / SUM("{den}") FROM "territoires"
+                                 WHERE Millesime = ? AND "{num}" IS NOT NULL''', (m,))
+        else:
+            fr = scalar(con, f'''SELECT MEDIAN("{col}") FROM "territoires"
+                                 WHERE Millesime = ? AND "{col}" IS NOT NULL''', (m,))
+        items.append({"key": cle, "v": round(float(r[0]), dec),
+                      "p": int(round(100 * float(r[1]))),
+                      "fr": round(float(fr), dec) if fr is not None else None,
+                      "n": int(r[2])})
+    return {"millesime": int(m), "items": items} if items else None

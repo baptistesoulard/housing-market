@@ -59,7 +59,7 @@ def test_empty_optional_frame_passes():
 
 def test_all_known_datasets_have_a_schema():
     expected = {"sitadel", "ventes_ancien", "macro", "sales", "ecln",
-                "company_sales", "dvf"}
+                "company_sales", "dvf", "territoires"}
     assert set(S.SCHEMAS) == expected
 
 
@@ -254,3 +254,32 @@ def _run():
 
 if __name__ == "__main__":
     sys.exit(1 if _run() else 0)
+
+
+def _ligne_territoires(**kw):
+    import pandas as pd
+    base = {"Department": "2A", "Millesime": 2023, "Population": 160000, "Pop65Plus": 42000,
+            "ResidencesPrincipales": 75000, "RPProprietaires": 45000, "RPMaisons": 40000,
+            "Logements": 110000, "LogementsVacants": 9000, "PopUnAnPlus": 158000,
+            "ArriveesHorsDep": 5000, "Actifs1564": 70000, "Chomeurs1564": 7000,
+            "RPProprietaires65Plus": 20000.0, "RPTotalAge": 75000.0,
+            "NiveauVieMedian": 22000.0, "TauxPauvrete": 18.0,
+            "PartProprietaires": 60.0, "PartMaisons": 53.3, "TauxVacance": 8.2,
+            "Part65Plus": 26.2, "TauxArrivee": 3.2, "TauxChomage": 10.0,
+            "PartRP65Plus": 26.7, "SoldeMigratoire": 0.9}
+    base.update(kw)
+    return pd.DataFrame([base])
+
+
+def test_territoires_est_le_second_dataset_par_departement():
+    """Meme regle que dvf pour le code (jamais « France »), ratios bornes a 0-100, et les
+    colonnes limitees a un millesime ou a un perimetre (croisement age x statut, Filosofi)
+    peuvent manquer sans casser le contrat."""
+    assert hd.validate("territoires", _ligne_territoires()) is not None
+    assert hd.validate("territoires", _ligne_territoires(
+        RPProprietaires65Plus=None, RPTotalAge=None, PartRP65Plus=None,
+        NiveauVieMedian=None, TauxPauvrete=None)) is not None
+    with pytest.raises(Exception):
+        hd.validate("territoires", _ligne_territoires(Department="France"), lazy=False)
+    with pytest.raises(Exception):      # un ratio a 130 % est une erreur de calcul, pas une donnee
+        hd.validate("territoires", _ligne_territoires(TauxVacance=130.0), lazy=False)

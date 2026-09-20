@@ -260,3 +260,25 @@ def test_capacity_accessibility_matches_pandas(con, years):
     acc = acc.sort_values("Date").reset_index(drop=True)
     _same(sql["capidx"], acc["capidx"], tol=1e-6, name="capidx")
     _same(sql["access"], acc["access"], tol=1e-6, name="access")
+
+
+# ------------------------------------------------------------------ territoires (percentiles)
+def test_territoires_percentiles_match_pandas(con):
+    """`territoires_profil` : le percentile SQL (percent_rank sur les departements
+    renseignes) doit valoir la part des departements strictement en dessous, calculee en
+    pandas — et la valeur France etre le ratio des sommes, pas la moyenne des ratios."""
+    if q.territoires_millesime(con) is None:
+        pytest.skip("dataset territoires absent")
+    t = pd.read_csv(os.path.join(_DATA, "territoires.csv"), dtype={"Department": str})
+    t = t[t["Millesime"] == t["Millesime"].max()]
+    for code in ("23", "75", "17"):
+        profil = q.territoires_profil(con, code)
+        assert profil is not None
+        for item in profil["items"]:
+            cle, col, num, den, _dec = next(x for x in q.TERRITOIRES_PROFIL if x[0] == item["key"])
+            s = t.set_index("Department")[col].dropna()
+            attendu = 100 * (s < s.loc[code]).sum() / (len(s) - 1)
+            assert item["p"] == int(round(attendu)), f"{code} {cle}: {item['p']} != {attendu}"
+            if num and den:
+                fr = 100 * t[num].sum() / t.loc[t[num].notna(), den].sum()
+                assert abs(item["fr"] - round(fr, _dec)) < 10 ** -_dec + 1e-9, f"{code} {cle} France"

@@ -119,7 +119,7 @@ def test_builders_registry_covers_every_source():
     assert names == {
         "build_sitadel", "build_dvf", "build_igedd", "build_macro_core", "build_prices",
         "build_neuf_price", "build_credit_volume", "build_credit_demand_bls",
-        "build_ecln", "build_renovation",
+        "build_ecln", "build_renovation", "build_territoires",
     }
 
 
@@ -181,3 +181,61 @@ def test_les_dates_http_sont_comparees_en_chronologie_pas_en_texte(monkeypatch):
     entetes = iter(["Tue, 02 Jun 2025 10:00:00 GMT", "Mon, 18 May 2026 13:14:11 GMT"])
     monkeypatch.setattr(fns, "_last_modified", lambda _url, **_kw: next(entetes))
     assert fns._dvf_publication(["2024", "2025"], ["01"]) == "2026-05-18T13:14:11Z"
+
+
+# --- La garde de publication des territoires (INSEE, Melodi) -------------------------
+# Même logique que DVF, avec une source qui ne date pas ses fichiers (pas de Last-Modified
+# sur insee.fr) : la date vient du champ `modified` du catalogue Melodi des jeux témoins.
+
+def _territoires_sans_reseau(monkeypatch, modifie, *, stamp, tmpdir):
+    monkeypatch.setattr(fns, "_melodi_modified", lambda _ds: modifie)
+    monkeypatch.setattr(fns, "OUT_DIR", tmpdir)
+    monkeypatch.setattr(fns, "TERRITOIRES_STAMP", os.path.join(tmpdir, "territoires.lastmod.txt"))
+    open(os.path.join(tmpdir, "territoires-insee.csv"), "w").close()
+    if stamp is not None:
+        with open(os.path.join(tmpdir, "territoires.lastmod.txt"), "w") as f:
+            f.write(stamp + "\n")
+
+
+def test_territoires_saute_la_collecte_quand_les_jeux_n_ont_pas_bouge(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmp:
+        _territoires_sans_reseau(monkeypatch, "2026-08-06T13:34:40Z",
+                                 stamp="2026-08-06T13:34:40Z", tmpdir=tmp)
+        reseau = _Compteur()
+        monkeypatch.setattr(fns, "_read_url", reseau)
+        fns.build_territoires()
+        assert reseau.appels == 0, "la garde a laisse passer une collecte inutile"
+
+
+def test_territoires_recollecte_quand_un_jeu_a_ete_mis_a_jour(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmp:
+        _territoires_sans_reseau(monkeypatch, "2027-06-30T09:00:00Z",
+                                 stamp="2026-08-06T13:34:40Z", tmpdir=tmp)
+        reseau = _Compteur()
+        monkeypatch.setattr(fns, "_read_url", reseau)
+        with pytest.raises(Exception):           # le reseau est coupe : rien a ecrire
+            fns.build_territoires()
+        assert reseau.appels > 0, "une mise a jour doit relancer la collecte"
+
+
+def test_territoires_recollecte_quand_la_date_est_inconnue(monkeypatch):
+    """Catalogue muet = « je ne sais pas » = on collecte. Ne jamais inverser ce defaut."""
+    with tempfile.TemporaryDirectory() as tmp:
+        _territoires_sans_reseau(monkeypatch, None, stamp="2026-08-06T13:34:40Z", tmpdir=tmp)
+        reseau = _Compteur()
+        monkeypatch.setattr(fns, "_read_url", reseau)
+        with pytest.raises(Exception):
+            fns.build_territoires()
+        assert reseau.appels > 0
+
+
+def test_la_date_de_publication_des_territoires_est_la_plus_recente_des_jeux(monkeypatch):
+    """Trois jeux temoins ; c'est le plus recemment mis a jour qui date la publication, et
+    un seul jeu muet suffit a rendre None (donc a collecter)."""
+    dates = {"DS_RP_TD_LOGEMENT_AGE_PRINC": "2026-06-25T12:05:07Z",
+             "DS_RP_SERIE_HISTORIQUE": "2026-06-25T12:00:07Z",
+             "DS_FILOSOFI_CC": "2026-08-06T13:34:40Z"}
+    monkeypatch.setattr(fns, "_melodi_modified", lambda ds: dates[ds])
+    assert fns._territoires_publication() == "2026-08-06T13:34:40Z"
+    dates["DS_FILOSOFI_CC"] = None
+    assert fns._territoires_publication() is None

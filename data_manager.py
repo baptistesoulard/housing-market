@@ -33,6 +33,12 @@ IGEDD_ANCIEN_VALUE_COL = 3  # column holding the count (in thousands)
 # années que la source ne republie plus.
 DVF_RECENT_CSV = os.path.join("data_manual_input", "dvf-recent.csv")
 DVF_HISTORIQUE_CSV = os.path.join("data_manual_input", "dvf-historique-2014-2020.csv")
+# Profil INSEE des départements (voir DataManager.ensure_territoires) : comptes en format
+# long écrits par fetch_new_sources.build_territoires, ratios calculés ici, une fois.
+TERRITOIRES_CSV = os.path.join("data_manual_input", "territoires-insee.csv")
+#: Millésimes RP publiés, et le recensement PRÉCÉDENT de chacun : la période sur laquelle
+#: se mesure le solde migratoire apparent du millésime.
+TERRITOIRES_MILLESIMES = {2012: 2007, 2017: 2012, 2023: 2017}
 
 # --- SIT@DEL construction data ---
 SITADEL_MANUAL_CSV = os.path.join("data_manual_input",
@@ -408,6 +414,9 @@ class DataManager:
             # Prix DVF par département : assemblé à partir des deux moitiés d'historique
             # (voir ensure_dvf). Seul dataset dont Department n'est pas "France".
             "dvf": os.path.join(self.data_dir, "dvf.csv"),
+            # Profil INSEE des départements (voir ensure_territoires). Comme dvf, un
+            # dataset par département : lu par SQL seulement, jamais dans read_frames().
+            "territoires": os.path.join(self.data_dir, "territoires.csv"),
         }
         
     def load_or_generate_all(self, force_regenerate=False):
@@ -459,14 +468,28 @@ class DataManager:
         # [Date, Company, Serie, Sales] shape; empty frame when nothing imported yet.
         df_company_sales = self._read_company_sales()
 
-        # Persist the loaded frames to the typed Parquet/DuckDB warehouse (validated,
-        # non-fatal). This is what subsequent reads load from — the CSVs stay next to them
-        # as the versioned, diffable interchange copy and as the fallback.
-        self._persist_to_warehouse({
+        # Les deux datasets PAR DÉPARTEMENT (prix DVF, profil INSEE). Même contrat
+        # mtime-aware que les autres dérivés ; ils ne rejoignent PAS le tuple rendu plus
+        # bas (read_frames() rend six frames, et web_export.py les déballe par position)
+        # — ils ne se lisent que par SQL. `ensure_dvf` n'avait aucun appelant jusqu'au
+        # 2026-09-20 : une republication DGFiP n'aurait jamais atteint data/dvf.csv.
+        self.ensure_dvf(force_rebuild=force_regenerate)
+        self.ensure_territoires(force_rebuild=force_regenerate)
+        frames = {
             "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
             "sales": df_sales, "ecln": df_ecln,
             "company_sales": df_company_sales,
-        })
+        }
+        for key in ("dvf", "territoires"):
+            if os.path.exists(self.paths[key]):
+                # dtype=str sur Department : « 01 » perdrait son zéro, « 2A » n'est pas
+                # numérique — le contrat pandera le refuserait dans les deux cas.
+                frames[key] = pd.read_csv(self.paths[key], dtype={"Department": str})
+
+        # Persist the loaded frames to the typed Parquet/DuckDB warehouse (validated,
+        # non-fatal). This is what subsequent reads load from — the CSVs stay next to them
+        # as the versioned, diffable interchange copy and as the fallback.
+        self._persist_to_warehouse(frames)
 
         return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_ecln, df_company_sales
 
@@ -812,6 +835,92 @@ class DataManager:
         return True, (f"Prix DVF assemblés : {len(dvf)} lignes, "
                       f"{dvf['Department'].nunique()} départements, "
                       f"{annees[0]}-{annees[-1]}.")
+
+    def ensure_territoires(self, force_rebuild=False):
+        """Assemble data/territoires.csv — le profil INSEE de chaque département, une ligne
+        par (Department, Millesime RP), comptes ET ratios.
+
+        La source (`TERRITOIRES_CSV`, format long, comptes seulement) est écrite par
+        `fetch_new_sources.build_territoires`. Les ratios sont calculés ICI et nulle part
+        ailleurs : deux surfaces qui recalculeraient chacune « part de maisons » finiraient
+        par ne plus tomber sur la même valeur. En pandas, parce que c'est un builder
+        d'ingestion — pas une agrégation sur le chemin d'exécution, qui reste SQL.
+
+        Le solde migratoire apparent d'un millésime M se mesure sur la période
+        intercensitaire qui le précède (TERRITOIRES_MILLESIMES) :
+            (pop_M − pop_M0 − Σ(naissances − décès)) / pop_M0 / (M − M0), en % par an.
+        L'état civil de Melodi commence en 2008 : pour 2007→2012 l'année manquante est
+        remplacée par la moyenne des années disponibles de la période (une approximation
+        d'un cinquième d'un solde naturel, dite ici et dans la doc du site).
+
+        Mayotte n'est pas couverte par les jeux RP (« France hors Mayotte ») : sans
+        résidences principales, un département n'a pas de ligne — la page le dit.
+        Renvoie (succès, message) ; l'absence de la source n'est pas une erreur.
+        """
+        cible = self.paths["territoires"]
+        if not os.path.exists(TERRITOIRES_CSV):
+            return True, (f"Fichier territoires introuvable (« {TERRITOIRES_CSV} ») : "
+                          "profil des départements indisponible.")
+        if os.path.exists(cible) and not force_rebuild:
+            if os.path.getmtime(TERRITOIRES_CSV) <= os.path.getmtime(cible):
+                return True, "Profil INSEE des départements déjà à jour."
+
+        long = pd.read_csv(TERRITOIRES_CSV, dtype={"Department": str})
+        large = long.pivot_table(index=["Department", "Millesime"], columns="Indicateur",
+                                 values="Valeur", aggfunc="first")
+
+        # Populations légales et état civil : séries annuelles à part, pour le solde.
+        popl = large["PopulationLegale"].unstack("Millesime")
+        nat = (large["Naissances"] - large["Deces"]).unstack("Millesime")
+
+        lignes = []
+        for m, m0 in TERRITOIRES_MILLESIMES.items():
+            if m not in large.index.get_level_values("Millesime"):
+                continue
+            x = large.xs(m, level="Millesime").copy()
+            x = x.dropna(subset=["ResidencesPrincipales", "Population"])
+            annees = list(range(m0, m))
+            dispo = [a for a in annees if a in nat.columns]
+            if m in popl.columns and m0 in popl.columns and dispo:
+                s_nat = nat[dispo].sum(axis=1) * (len(annees) / len(dispo))
+                solde = 100 * (popl[m] - popl[m0] - s_nat) / popl[m0] / (m - m0)
+                x["SoldeMigratoire"] = solde.reindex(x.index)
+            else:
+                x["SoldeMigratoire"] = np.nan
+            x["Millesime"] = m
+            lignes.append(x.reset_index())
+        if not lignes:
+            return False, "Source territoires sans millésime exploitable."
+        t = pd.concat(lignes, ignore_index=True)
+
+        comptes = ["Population", "Pop65Plus", "ResidencesPrincipales", "RPProprietaires",
+                   "RPMaisons", "Logements", "LogementsVacants", "PopUnAnPlus",
+                   "ArriveesHorsDep", "Actifs1564", "Chomeurs1564"]
+        optionnels = ["RPProprietaires65Plus", "RPTotalAge", "NiveauVieMedian", "TauxPauvrete"]
+        for c in comptes + optionnels:
+            if c not in t.columns:
+                t[c] = np.nan
+        t = t.dropna(subset=comptes)
+
+        # Les ratios, en % — le seul endroit où ils sont définis.
+        t["PartProprietaires"] = 100 * t["RPProprietaires"] / t["ResidencesPrincipales"]
+        t["PartMaisons"] = 100 * t["RPMaisons"] / t["ResidencesPrincipales"]
+        t["TauxVacance"] = 100 * t["LogementsVacants"] / t["Logements"]
+        t["Part65Plus"] = 100 * t["Pop65Plus"] / t["Population"]
+        t["TauxArrivee"] = 100 * t["ArriveesHorsDep"] / t["PopUnAnPlus"]
+        t["TauxChomage"] = 100 * t["Chomeurs1564"] / t["Actifs1564"]
+        t["PartRP65Plus"] = 100 * t["RPProprietaires65Plus"] / t["RPTotalAge"]
+
+        colonnes = (["Department", "Millesime"] + comptes + optionnels
+                    + ["PartProprietaires", "PartMaisons", "TauxVacance", "Part65Plus",
+                       "TauxArrivee", "TauxChomage", "PartRP65Plus", "SoldeMigratoire"])
+        t = t[colonnes].sort_values(["Department", "Millesime"])
+        for c in comptes:
+            t[c] = t[c].astype("int64")
+        t.to_csv(cible, index=False, encoding="utf-8", float_format="%.6g")
+        return True, (f"Profil INSEE des départements assemblé : {len(t)} lignes, "
+                      f"{t['Department'].nunique()} départements, millésimes "
+                      f"{t['Millesime'].min()}-{t['Millesime'].max()}.")
 
     def ensure_ventes_ancien(self, force_rebuild=False):
         """

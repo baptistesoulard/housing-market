@@ -9,7 +9,7 @@
       ],
       [
         "dvf",
-        "csv"
+        "parquet"
       ],
       [
         "ecln",
@@ -25,6 +25,10 @@
       ],
       [
         "sitadel",
+        "parquet"
+      ],
+      [
+        "territoires",
         "parquet"
       ],
       [

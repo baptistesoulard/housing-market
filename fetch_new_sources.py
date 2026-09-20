@@ -573,6 +573,172 @@ def build_dvf(force=False):
         _write_if_changed(DVF_STAMP, publiee + "\n", label="dvf (date de publication)")
 
 
+# ============================ Territoires (INSEE, par departement) ======================
+# Le profil structurel des 101 departements : age du parc et de la population, statut
+# d'occupation, vacance, migrations residentielles, niveau de vie, chomage. Il alimente le
+# bloc « Qui habite ici, et qui arrive ? » des pages departementales -- en DESCRIPTION
+# seulement : la porte qui aurait autorise une carte « France heritee / France desiree »
+# a ete mesuree puis MANQUEE (docs/mesure-territoires-2026-09-20.md, REFUTATIONS).
+#
+# Une seule source, en licence ouverte et sans cle : l'API Melodi de l'INSEE (JSON), pour
+# le recensement (RP 2012, 2017, 2023), la serie historique des populations legales
+# (1968 -> 2023), l'etat civil annuel et Filosofi. `GEO=DEP` rend les departements en un
+# appel pagine par jeu. Le « comparateur de territoires » (Parquet) avait ete envisage pour
+# les deux derniers : c'est une compilation de ces memes jeux, et insee.fr ne date pas son
+# fichier (pas de Last-Modified) -- une source de moins, une garde qui date tout.
+#
+# Le fichier ecrit est en FORMAT LONG (Department, Millesime, Indicateur, Valeur) et ne
+# porte que des COMPTES : les ratios sont calcules en un seul endroit, dans
+# DataManager.ensure_territoires(), qui ecrit data/territoires.csv. Les valeurs RP sont des
+# estimations ponderees (donc des flottants) : arrondies a l'entier ici, jamais avant.
+
+MELODI_DATA = "https://api.insee.fr/melodi/data/"
+MELODI_CATALOG = "https://api.insee.fr/melodi/catalog/"
+TERRITOIRES_STAMP = os.path.join(OUT_DIR, "territoires.lastmod.txt")
+
+#: Les indicateurs recuperes : (nom, jeu Melodi, filtres, fonction ligne -> garde ?).
+#: Les filtres fixent toutes les dimensions sauf GEO et TIME_PERIOD ; la fonction finale
+#: departage ce que les filtres de l'API ne savent pas exprimer (une valeur parmi celles
+#: d'une dimension deja filtree a `_T` ailleurs).
+_RP_LOG = {"OCS": "DW_MAIN", "NOR": "_T", "BUILD_END": "_T", "NRG_SRC": "_T", "CARS": "_T",
+           "CARPARK": "_T", "L_STAY": "_T", "RP_MEASURE": "DWELLINGS"}
+_RP_LOGT = {"TSH": "_T", "TDW": "_T", "NOR": "_T", "BUILD_END": "_T", "NRG_SRC": "_T",
+            "CARS": "_T", "CARPARK": "_T", "L_STAY": "_T", "RP_MEASURE": "DWELLINGS"}
+_RP_EMP = {"SEX": "_T", "EDUC": "_T", "AGE": "Y15T64", "RP_MEASURE": "POP"}
+TERRITOIRES_INDICATEURS = [
+    ("ResidencesPrincipales", "DS_RP_LOGEMENT_PRINC", _RP_LOG,
+     lambda d: d["TSH"] == "_T" and d["TDW"] == "_T"),
+    ("RPProprietaires", "DS_RP_LOGEMENT_PRINC", _RP_LOG,
+     lambda d: d["TSH"] == "100" and d["TDW"] == "_T"),
+    ("RPMaisons", "DS_RP_LOGEMENT_PRINC", _RP_LOG,
+     lambda d: d["TSH"] == "_T" and d["TDW"] == "1"),
+    ("Logements", "DS_RP_LOGEMENT_PRINC", _RP_LOGT, lambda d: d["OCS"] == "_T"),
+    ("LogementsVacants", "DS_RP_LOGEMENT_PRINC", _RP_LOGT, lambda d: d["OCS"] == "DW_VAC"),
+    ("Population", "DS_RP_POPULATION_PRINC", {"SEX": "_T", "RP_MEASURE": "POP"},
+     lambda d: d["AGE"] == "_T"),
+    ("Pop65Plus", "DS_RP_POPULATION_PRINC", {"SEX": "_T", "RP_MEASURE": "POP"},
+     lambda d: d["AGE"] == "Y_GE65"),
+    # Lieu de residence un an plus tot (nomenclature IRAN, deduite par sommation le
+    # 2026-09-20) : 11 meme logement, 12 autre logement meme commune, 21 autre commune du
+    # departement, 22 autre departement de la region, 23 autre region, 24 DOM/COM,
+    # 25T32 etranger. Le detail par origine n'existe que tous ages confondus (Y_GE1).
+    ("PopUnAnPlus", "DS_RP_MIGRES_PRINC", {"AGE": "Y_GE1", "RP_MEASURE": "POP"},
+     lambda d: d["PREV_RES_AREA"] == "_T"),
+    ("ArriveesHorsDep", "DS_RP_MIGRES_PRINC", {"AGE": "Y_GE1", "RP_MEASURE": "POP"},
+     lambda d: d["PREV_RES_AREA"] in ("22", "23", "24", "25T32")),
+    # Age de la personne de reference x statut d'occupation : 2023 seulement.
+    ("RPTotalAge", "DS_RP_TD_LOGEMENT_AGE_PRINC",
+     {"OCS": "DW_MAIN", "NOR": "_T", "TDW": "_T", "RP_MEASURE": "DWELLINGS"},
+     lambda d: d["TSH"] == "_T" and d["AGE"] == "_T"),
+    ("RPProprietaires65Plus", "DS_RP_TD_LOGEMENT_AGE_PRINC",
+     {"OCS": "DW_MAIN", "NOR": "_T", "TDW": "_T", "RP_MEASURE": "DWELLINGS"},
+     lambda d: d["TSH"] == "100" and d["AGE"] in ("Y65T79", "Y_GE80")),
+    # EMPSTA_ENQ : 1 en emploi, 2 chomeur, 1T2 actifs (au sens du recensement).
+    ("Actifs1564", "DS_RP_EMPLOI_LR_PRINC", _RP_EMP, lambda d: d["EMPSTA_ENQ"] == "1T2"),
+    ("Chomeurs1564", "DS_RP_EMPLOI_LR_PRINC", _RP_EMP, lambda d: d["EMPSTA_ENQ"] == "2"),
+    # Etat civil annuel, pour le solde migratoire apparent (calcule dans ensure_territoires).
+    ("Naissances", "DS_ETAT_CIVIL_NAIS_COMMUNES", {"EC_MEASURE": "LVB"}, lambda d: True),
+    ("Deces", "DS_ETAT_CIVIL_DECES_COMMUNES", {"EC_MEASURE": "DTH"}, lambda d: True),
+    # Populations legales des recensements (1968 -> 2023) : la base du solde migratoire.
+    ("PopulationLegale", "DS_RP_SERIE_HISTORIQUE", {"RP_MEASURE": "POP", "OCS": "_T"},
+     lambda d: True),
+    # Filosofi : niveau de vie median (EUR/an) et taux de pauvrete (%) -- 2023.
+    ("NiveauVieMedian", "DS_FILOSOFI_CC", {"FILOSOFI_MEASURE": "MED_SL"}, lambda d: True),
+    ("TauxPauvrete", "DS_FILOSOFI_CC", {"FILOSOFI_MEASURE": "PR_MD60"}, lambda d: True),
+]
+#: Les jeux dont la date de mise a jour (catalogue Melodi) date la publication : le
+#: croisement age x statut (RP, seul indicateur limite a 2023), la serie historique (RP)
+#: et Filosofi. Une mise a jour de l'un d'eux relance la collecte.
+TERRITOIRES_JEUX_TEMOINS = ("DS_RP_TD_LOGEMENT_AGE_PRINC", "DS_RP_SERIE_HISTORIQUE",
+                            "DS_FILOSOFI_CC")
+
+
+def _melodi_modified(dataset):
+    """Date de derniere mise a jour d'un jeu Melodi (champ `modified` du catalogue), en
+    ISO-8601 UTC ; None si le catalogue ne repond pas ou ne la porte pas."""
+    try:
+        cat = json.loads(_read_url(MELODI_CATALOG + dataset, "application/json"))
+        m = cat.get("modified")
+        return datetime.fromisoformat(m[:19]).strftime("%Y-%m-%dT%H:%M:%SZ") if m else None
+    except Exception:
+        return None
+
+
+def _territoires_publication():
+    """La date de mise a jour la plus recente des jeux temoins (catalogue Melodi), en
+    ISO-8601 UTC -- comparable caractere par caractere. Rend None des qu'un jeu ne repond
+    pas : on retelecharge alors, on ne saute jamais dans le doute."""
+    dates = [_melodi_modified(ds) for ds in TERRITOIRES_JEUX_TEMOINS]
+    if any(d is None for d in dates):
+        return None
+    return max(dates)
+
+
+def _melodi_dep(dataset, filtres):
+    """Toutes les observations d'un jeu au niveau departement, pagination suivie.
+    Rend [(dimensions, valeur)] ; une observation sans valeur (OBS_STATUS « M », par
+    exemple Mayotte avant 2011) rend None -- elle n'est pas une erreur."""
+    params = "&".join(f"{k}={v}" for k, v in {"GEO": "DEP", **filtres}.items())
+    out, page = [], 1
+    while True:
+        url = f"{MELODI_DATA}{dataset}?{params}&maxResult=10000&page={page}"
+        j = json.loads(_read_url(url, "application/json"))
+        obs = j.get("observations", [])
+        for o in obs:
+            out.append((o["dimensions"], o["measures"]["OBS_VALUE_NIVEAU"].get("value")))
+        if len(obs) < 10000:
+            break
+        page += 1
+    return out
+
+
+def build_territoires(force=False):
+    """Profil structurel des departements (INSEE), en format long, garde par la date de
+    mise a jour des jeux Melodi : le RP et Filosofi bougent une fois l'an, pas chaque
+    lundi. Ecrit data_manual_input/territoires-insee.csv (comptes entiers)."""
+    sortie = os.path.join(OUT_DIR, "territoires-insee.csv")
+    publiee = _territoires_publication()
+    connue = None
+    if os.path.exists(TERRITOIRES_STAMP):
+        with open(TERRITOIRES_STAMP, encoding="utf-8") as f:
+            connue = f.read().strip() or None
+    if not force and publiee and connue == publiee and os.path.exists(sortie):
+        with _LOCK:
+            _MANIFEST["territoires-insee.csv"] = {
+                "status": "ok", "changed": False, "rows": None, "last_obs": None,
+                "sha256": None, "fetched_at": _now_iso(),
+            }
+        print(f"territoires -> territoires-insee.csv [inchange] (sources publiees le {publiee})")
+        return
+
+    lignes = []
+    cache = {}
+    for nom, jeu, filtres, garde in TERRITOIRES_INDICATEURS:
+        cle = (jeu, tuple(sorted(filtres.items())))
+        if cle not in cache:
+            cache[cle] = _melodi_dep(jeu, filtres)
+        for dims, val in cache[cle]:
+            if val is None or not garde(dims):
+                continue
+            # GEO arrive prefixe (« 2026-DEP-23 ») : le code est apres le dernier tiret.
+            dep = dims["GEO"].rsplit("-", 1)[-1]
+            lignes.append((dep, dims["TIME_PERIOD"], nom, val))
+
+    if not lignes:
+        raise ValueError("territoires : aucune observation")
+    df = pd.DataFrame(lignes, columns=["Department", "Millesime", "Indicateur", "Valeur"])
+    # Une meme cellule peut arriver en plusieurs observations (ArriveesHorsDep somme quatre
+    # origines) : on somme, puis on arrondit -- jamais l'inverse.
+    df = (df.groupby(["Department", "Millesime", "Indicateur"], as_index=False)["Valeur"].sum())
+    df["Valeur"] = df["Valeur"].round().astype("int64")
+    df = df.sort_values(["Department", "Millesime", "Indicateur"])
+    _write_if_changed(sortie, df.to_csv(index=False, lineterminator="\n"), rows=len(df),
+                      last=df["Millesime"].max(), label="territoires")
+    if publiee:
+        _write_if_changed(TERRITOIRES_STAMP, publiee + "\n",
+                          label="territoires (date de publication)")
+
+
 BUILDERS = [
     build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
     build_dvf,              # DVF (DGFiP) - CONDITIONNEL : ne descend le corpus que si la
@@ -585,6 +751,8 @@ BUILDERS = [
     build_credit_demand_bls,  # demande de crédits (BLS)
     build_ecln,             # commercialisation des logements neufs
     build_renovation,       # activité second œuvre passée / prévue
+    build_territoires,      # profil INSEE des departements - CONDITIONNEL : garde par la
+                            #   date de mise a jour des jeux Melodi (annuelle)
 ]
 
 

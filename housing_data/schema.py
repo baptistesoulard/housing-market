@@ -185,6 +185,56 @@ DVF = DataFrameSchema(
     unique=["Date", "Department", "Type"],
 )
 
+# --- Territoires : profil INSEE par departement (RP, etat civil, Filosofi) ---
+# Second dataset par departement, meme regle que DVF pour le code. Une ligne par
+# (Department, Millesime RP). Les comptes sont non nuls ; les colonnes limitees a un
+# millesime (croisement age x statut : 2023 seulement) ou a un perimetre (Filosofi : 97
+# departements) sont nullable. Les ratios sont des POURCENTAGES, calcules une seule fois
+# dans DataManager.ensure_territoires — pas ici, pas dans les surfaces.
+_DEP_CODE = Column(str, Check.str_matches(r"^(\d{2}|2[AB]|\d{3})$"), nullable=False,
+                   coerce=True)
+_PCT = lambda title, nullable=False: Column(float, Check.in_range(0, 100), nullable=nullable,
+                                            coerce=True, title=title)
+TERRITOIRES = DataFrameSchema(
+    {
+        "Department": _DEP_CODE,
+        "Millesime": Column(int, Check.in_range(2012, 2060), nullable=False, coerce=True,
+                            title="Millesime du recensement (annee de reference)"),
+        "Population": _COUNT("Population municipale (RP)"),
+        "Pop65Plus": _COUNT("Population de 65 ans et plus"),
+        "ResidencesPrincipales": _COUNT("Residences principales"),
+        "RPProprietaires": _COUNT("RP occupees par leur proprietaire"),
+        "RPMaisons": _COUNT("RP en maison"),
+        "Logements": _COUNT("Logements, toutes categories"),
+        "LogementsVacants": _COUNT("Logements vacants"),
+        "PopUnAnPlus": _COUNT("Population d'un an ou plus (migrations residentielles)"),
+        "ArriveesHorsDep": _COUNT("Habitants residant hors du departement un an plus tot"),
+        "Actifs1564": _COUNT("Actifs de 15 a 64 ans (sens RP)"),
+        "Chomeurs1564": _COUNT("Chomeurs de 15 a 64 ans (sens RP)"),
+        "RPProprietaires65Plus": Column(float, Check.ge(0), nullable=True, coerce=True,
+                                        title="RP de proprietaires dont la personne de "
+                                              "reference a 65 ans ou plus (2023)"),
+        "RPTotalAge": Column(float, Check.ge(0), nullable=True, coerce=True),
+        "NiveauVieMedian": Column(float, Check.greater_than(0), nullable=True, coerce=True,
+                                  title="Niveau de vie median (EUR/an, Filosofi)"),
+        "TauxPauvrete": _PCT("Taux de pauvrete a 60 % (Filosofi)", nullable=True),
+        "PartProprietaires": _PCT("Part des RP occupees par leur proprietaire"),
+        "PartMaisons": _PCT("Part des RP en maison"),
+        "TauxVacance": _PCT("Logements vacants / logements"),
+        "Part65Plus": _PCT("Part des 65 ans et plus dans la population"),
+        "TauxArrivee": _PCT("Habitants arrives de hors du departement dans l'annee"),
+        "TauxChomage": _PCT("Chomeurs / actifs 15-64 ans (sens RP)"),
+        "PartRP65Plus": _PCT("Part des RP detenues par un menage de 65 ans ou plus",
+                             nullable=True),
+        # Solde apparent des entrees-sorties, en % par an de la population de depart :
+        # negatif quand on part (Paris), au-dela de +1 sur le littoral atlantique.
+        "SoldeMigratoire": Column(float, Check.in_range(-10, 10), nullable=True, coerce=True,
+                                  title="Solde migratoire apparent annuel (%)"),
+    },
+    strict=False, coerce=True, name="territoires",
+    unique=["Department", "Millesime"],
+)
+
 SCHEMAS: dict[str, DataFrameSchema] = {
     "sitadel": SITADEL,
     "ventes_ancien": VENTES_ANCIEN,
@@ -193,6 +243,7 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "ecln": ECLN,
     "company_sales": COMPANY_SALES,
     "dvf": DVF,
+    "territoires": TERRITOIRES,
 }
 
 
