@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-09-14T11:38:15+00:00",
+  "generated_at": "2026-09-21T11:48:50+00:00",
   "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
   "caption": "Le marché des logements anciens au niveau national : volumes de transactions (IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité.",
   "how_to_read": "Le cumul 12 mois glissant reproduit la série publiée par l'IGEDD (« ventes sur un an ») ; les flux mensuels en sont la reconstruction, utile pour la dynamique récente mais plus bruitée. Côté accessibilité, la capacité d'emprunt est calculée à mensualité constante : elle chute donc quand les taux montent, indépendamment des prix. L'indice d'accessibilité rapporte cette capacité aux prix — sous 100, un ménage type achète moins de surface qu'en 2015.",
   "kpi": {
     "label": "Ventes anciennes IGEDD (Cumul 12m glissant)",
-    "value": "954 000",
-    "delta": "+5,2% YoY",
+    "value": "956 000",
+    "delta": "+4,3% YoY",
     "subs": [
-      "au plateau depuis décembre 2025 (6 mois)",
+      "au plateau depuis décembre 2025 (7 mois)",
       "17 % au-dessus de la normale 2010-19 · plus haut que 74 % des mois depuis 2001",
-      "Dernier mois (juin 2026) : 92 500"
+      "Dernier mois (juillet 2026) : 79 500"
     ]
   },
   "main_series": {
@@ -2745,40 +2745,49 @@
         "date": "2026-03-01",
         "series": "Transactions Ancien",
         "key": "tx",
-        "raw": 68500.0,
-        "roll12": 952000.0,
-        "roll6": 502000.0,
-        "roll3": 239500.0
+        "raw": 69500.0,
+        "roll12": 953000.0,
+        "roll6": 503000.0,
+        "roll3": 240500.0
       },
       {
         "date": "2026-04-01",
         "series": "Transactions Ancien",
         "key": "tx",
         "raw": 80500.0,
-        "roll12": 947000.0,
-        "roll6": 498000.0,
-        "roll3": 250500.0
+        "roll12": 948000.0,
+        "roll6": 499000.0,
+        "roll3": 251500.0
       },
       {
         "date": "2026-05-01",
         "series": "Transactions Ancien",
         "key": "tx",
-        "raw": 68500.0,
-        "roll12": 951000.0,
-        "roll6": 455000.0,
-        "roll3": 217500.0
+        "raw": 69500.0,
+        "roll12": 953000.0,
+        "roll6": 457000.0,
+        "roll3": 219500.0
       },
       {
         "date": "2026-06-01",
         "series": "Transactions Ancien",
         "key": "tx",
-        "raw": 92500.0,
-        "roll12": 954000.0,
-        "roll6": 481000.0,
-        "roll3": 241500.0
+        "raw": 94500.0,
+        "roll12": 958000.0,
+        "roll6": 485000.0,
+        "roll3": 244500.0
+      },
+      {
+        "date": "2026-07-01",
+        "series": "Transactions Ancien",
+        "key": "tx",
+        "raw": 79500.0,
+        "roll12": 956000.0,
+        "roll6": 495000.0,
+        "roll3": 243500.0
       }
     ],
-    "last_month": "juin 2026",
+    "last_month": "juillet 2026",
     "source": "Source : IGEDD"
   },
   "monthly": {
@@ -3993,7 +4002,7 @@
       },
       {
         "date": "2026-03-01",
-        "tx": 68500.0
+        "tx": 69500.0
       },
       {
         "date": "2026-04-01",
@@ -4001,14 +4010,18 @@
       },
       {
         "date": "2026-05-01",
-        "tx": 68500.0
+        "tx": 69500.0
       },
       {
         "date": "2026-06-01",
-        "tx": 92500.0
+        "tx": 94500.0
+      },
+      {
+        "date": "2026-07-01",
+        "tx": 79500.0
       }
     ],
-    "last_month_num": 6
+    "last_month_num": 7
   },
   "prix": {
     "available": true,
@@ -9222,19 +9235,19 @@
           "date": "2019-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 113.1
+          "value": 113.0
         },
         {
           "date": "2019-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 114.2
+          "value": 114.3
         },
         {
           "date": "2020-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 115.0
+          "value": 115.1
         },
         {
           "date": "2020-04-01",
@@ -9252,7 +9265,7 @@
           "date": "2020-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 117.1
+          "value": 117.2
         },
         {
           "date": "2021-01-01",
@@ -9270,7 +9283,7 @@
           "date": "2021-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 121.6
+          "value": 121.7
         },
         {
           "date": "2021-10-01",
@@ -9288,13 +9301,13 @@
           "date": "2022-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 127.9
+          "value": 127.8
         },
         {
           "date": "2022-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 129.5
+          "value": 129.6
         },
         {
           "date": "2022-10-01",
@@ -9306,49 +9319,49 @@
           "date": "2023-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 130.2
+          "value": 130.1
         },
         {
           "date": "2023-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 130.4
+          "value": 130.3
         },
         {
           "date": "2023-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 129.8
+          "value": 129.9
         },
         {
           "date": "2023-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 129.0
+          "value": 129.1
         },
         {
           "date": "2024-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 128.6
+          "value": 128.4
         },
         {
           "date": "2024-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 128.5
+          "value": 128.4
         },
         {
           "date": "2024-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 129.4
+          "value": 129.5
         },
         {
           "date": "2024-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 129.7
+          "value": 129.8
         },
         {
           "date": "2025-01-01",
@@ -9360,25 +9373,31 @@
           "date": "2025-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 131.3
+          "value": 131.1
         },
         {
           "date": "2025-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 130.7
+          "value": 130.8
         },
         {
           "date": "2025-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 130.6
+          "value": 130.7
         },
         {
           "date": "2026-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 131.2
+          "value": 131.3
+        },
+        {
+          "date": "2026-04-01",
+          "series": "Neuf",
+          "key": "neuf",
+          "value": 131.1
         },
         {
           "date": "2001-01-01",
@@ -10418,19 +10437,19 @@
           "date": "2019-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 4.625
+          "value": 4.533
         },
         {
           "date": "2019-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 3.913
+          "value": 4.004
         },
         {
           "date": "2020-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 4.641
+          "value": 4.732
         },
         {
           "date": "2020-04-01",
@@ -10442,19 +10461,19 @@
           "date": "2020-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 2.653
+          "value": 2.743
         },
         {
           "date": "2020-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 2.539
+          "value": 2.537
         },
         {
           "date": "2021-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 3.565
+          "value": 3.475
         },
         {
           "date": "2021-04-01",
@@ -10466,13 +10485,13 @@
           "date": "2021-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 4.737
+          "value": 4.823
         },
         {
           "date": "2021-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 5.465
+          "value": 5.375
         },
         {
           "date": "2022-01-01",
@@ -10484,13 +10503,13 @@
           "date": "2022-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 6.318
+          "value": 6.234
         },
         {
           "date": "2022-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 6.497
+          "value": 6.491
         },
         {
           "date": "2022-10-01",
@@ -10502,37 +10521,37 @@
           "date": "2023-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 4.494
+          "value": 4.414
         },
         {
           "date": "2023-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 1.955
+          "value": 1.956
         },
         {
           "date": "2023-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 0.232
+          "value": 0.231
         },
         {
           "date": "2023-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": -0.922
+          "value": -0.845
         },
         {
           "date": "2024-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": -1.229
+          "value": -1.307
         },
         {
           "date": "2024-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": -1.457
+          "value": -1.458
         },
         {
           "date": "2024-07-01",
@@ -10544,37 +10563,43 @@
           "date": "2024-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 0.543
+          "value": 0.542
         },
         {
           "date": "2025-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 1.866
+          "value": 2.025
         },
         {
           "date": "2025-04-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 2.179
+          "value": 2.103
         },
         {
           "date": "2025-07-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 1.005
+          "value": 1.004
         },
         {
           "date": "2025-10-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 0.694
+          "value": 0.693
         },
         {
           "date": "2026-01-01",
           "series": "Neuf",
           "key": "neuf",
-          "value": 0.153
+          "value": 0.229
+        },
+        {
+          "date": "2026-04-01",
+          "series": "Neuf",
+          "key": "neuf",
+          "value": 0.0
         },
         {
           "date": "2002-01-01",

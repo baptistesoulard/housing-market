@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T11:38:14+00:00",
+  "generated_at": "2026-09-21T11:48:49+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -15,7 +15,7 @@
       "label": "Ancien",
       "status": "flat",
       "dot": "🟠",
-      "word": "au plateau depuis 6 mois"
+      "word": "au plateau depuis 7 mois"
     },
     {
       "key": "fin",
@@ -26,14 +26,14 @@
     }
   ],
   "takeaways": [
-    "🟠 **Aujourd'hui** — **Ancien** : 954 k ventes sur 12 mois, 17 % au-dessus de la normale 2010-19, mais au plateau depuis décembre 2025. **Neuf** : 296 k chantiers, 23 % sous la normale 2010-19, sur un stock de 124 027 invendus qui met 22 mois à s'écouler contre 15 habituellement.",
+    "🟠 **Aujourd'hui** — **Ancien** : 956 k ventes sur 12 mois, 17 % au-dessus de la normale 2010-19, mais au plateau depuis décembre 2025. **Neuf** : 296 k chantiers, 23 % sous la normale 2010-19, sur un stock de 124 027 invendus qui met 22 mois à s'écouler contre 15 habituellement.",
     "🔴 **Le carnet** — les permis reculent (-3,6% sur 3 mois) plus vite que les chantiers, qui marquent le pas après une forte année (-0,5% sur 3 mois, +17,9% sur 12 mois). Et seulement 80 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+8,3% sur 3 mois, +22,8% sur 12 mois).",
     "🔴 **Financement** — taux de crédit à 3,18 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
     "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 8 % d'ici mars 2027."
   ],
   "freshness": [
     "SIT@DEL : juillet 2026",
-    "IGEDD : juin 2026",
+    "IGEDD : juillet 2026",
     "ECLN : 2026-T2"
   ],
   "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Les blocs sont rangés par horizon et non par source : ce qui se consomme aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, puis les conditions de crédit — qui sont les entrées du modèle, d'où leur place juste avant sa projection. Chaque carte porte deux horizons : le momentum court terme, puis la tendance sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux 3 précédents, sans repasser par une base vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc « Perspective » publie la projection du modèle du site à six mois, avec sa fourchette et la part de fois où le sens annoncé s'est avéré juste sur les millésimes rétro-simulés — ses erreurs détaillées sont sur « Prévisions passées ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
@@ -51,8 +51,8 @@
         {
           "emoji": "🟠",
           "title": "Ventes de logements anciens",
-          "value": "954 k /12 m",
-          "sub": "+5,2% sur 12 mois vs les 12 précédents · au plateau depuis décembre 2025 · total exact : 954 000",
+          "value": "956 k /12 m",
+          "sub": "+4,3% sur 12 mois vs les 12 précédents · au plateau depuis décembre 2025 · total exact : 956 000",
           "level": "17 % au-dessus de la normale 2010-19 · plus haut que 74 % des mois depuis 2001"
         },
         {
@@ -150,8 +150,8 @@
         {
           "emoji": "🔴",
           "title": "Ventes anciennes projetées (mars 2027)",
-          "value": "879 k",
-          "sub": "-7,9% vs les 12 derniers mois · fourchette 796 k – 963 k · sens juste 75 % du temps à cet horizon (201 millésimes)",
+          "value": "882 k",
+          "sub": "-7,8% vs les 12 derniers mois · fourchette 798 k – 959 k · sens juste 75 % du temps à cet horizon (203 millésimes)",
           "level": "prévision du modèle du site, ajustée sur les taux, les intentions d'achat et le chômage — voir « Prévisions passées » pour ses erreurs"
         },
         {
@@ -6559,29 +6559,36 @@
         "date": "2026-03-01",
         "series": "Ventes anciennes",
         "key": "transactions",
-        "level_k": 952.0,
-        "index_100": 130.03
+        "level_k": 953.0,
+        "index_100": 130.16
       },
       {
         "date": "2026-04-01",
         "series": "Ventes anciennes",
         "key": "transactions",
-        "level_k": 947.0,
-        "index_100": 129.34
+        "level_k": 948.0,
+        "index_100": 129.48
       },
       {
         "date": "2026-05-01",
         "series": "Ventes anciennes",
         "key": "transactions",
-        "level_k": 951.0,
-        "index_100": 129.89
+        "level_k": 953.0,
+        "index_100": 130.16
       },
       {
         "date": "2026-06-01",
         "series": "Ventes anciennes",
         "key": "transactions",
-        "level_k": 954.0,
-        "index_100": 130.3
+        "level_k": 958.0,
+        "index_100": 130.84
+      },
+      {
+        "date": "2026-07-01",
+        "series": "Ventes anciennes",
+        "key": "transactions",
+        "level_k": 956.0,
+        "index_100": 130.57
       }
     ],
     "source": "Source : SIT@DEL (SDES) · IGEDD (CGEDD) — cumul 12 mois glissant"

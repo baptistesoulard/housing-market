@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T21:38:12+00:00",
+  "generated_at": "2026-09-21T11:48:50+00:00",
   "title": "🎯 Prévisions passées — ce que nous annoncions",
   "caption": "Toutes les prévisions de transactions produites par le modèle, face à ce qui s'est réellement passé. Une prévision publiée sans son historique n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre en défaut.",
   "how_to_read": "Deux natures de prévisions cohabitent ici et ne se valent pas. Les prévisions PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — personne ne peut les retoucher. Les prévisions RÉTRO-SIMULÉES ont été recalculées après coup en tronquant les données au mois visé : elles montrent que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles restent séparées partout. Leur limite : les transactions sont révisées, donc une rétro-simulation voit des données un peu meilleures que celles de l'époque.",
@@ -13,7 +13,7 @@
     },
     {
       "label": "Prévisions publiées en direct",
-      "value": "1",
+      "value": "2",
       "subs": [
         "l'archive commence à sa première publication"
       ]
@@ -29,7 +29,7 @@
       "label": "Erreur moyenne à 12 mois",
       "value": "6,4 %",
       "subs": [
-        "une prévision naïve se trompe de 10,3 %"
+        "une prévision naïve se trompe de 10,2 %"
       ]
     }
   ],
@@ -91,22 +91,32 @@
     },
     {
       "label": "2025-26 · reprise",
-      "n": 153,
-      "vintages": 17,
-      "mape": 4.16,
+      "n": 171,
+      "vintages": 18,
+      "mape": 4.13,
       "naive_mape": 4.0,
-      "skill": -0.04,
-      "direction": 0.529
+      "skill": -0.032,
+      "direction": 0.526
     }
   ],
   "kinds": {
     "archive": {
-      "n_rows": 72,
-      "n_vintages": 1,
-      "n_evaluated": 0,
+      "n_rows": 90,
+      "n_vintages": 2,
+      "n_evaluated": 4,
       "first_vintage": "2026-06-01",
-      "last_vintage": "2026-06-01",
-      "horizons": [],
+      "last_vintage": "2026-07-01",
+      "horizons": [
+        {
+          "horizon": 1,
+          "n": 4,
+          "mape": 2.64,
+          "naive_mape": 0.21,
+          "skill": -11.597,
+          "direction": 0.0,
+          "coverage": 1.0
+        }
+      ],
       "fans": [
         {
           "vintage": "2026-06-01",
@@ -400,177 +410,254 @@
               868752
             ]
           ]
+        },
+        {
+          "vintage": "2026-07-01",
+          "points": [
+            [
+              "2026-08-01",
+              936811
+            ],
+            [
+              "2026-09-01",
+              920140
+            ],
+            [
+              "2026-10-01",
+              905302
+            ],
+            [
+              "2026-11-01",
+              897070
+            ],
+            [
+              "2026-12-01",
+              889754
+            ],
+            [
+              "2027-01-01",
+              887021
+            ],
+            [
+              "2027-02-01",
+              883372
+            ],
+            [
+              "2027-03-01",
+              881555
+            ],
+            [
+              "2027-04-01",
+              873323
+            ],
+            [
+              "2027-05-01",
+              868757
+            ],
+            [
+              "2027-06-01",
+              868757
+            ],
+            [
+              "2027-07-01",
+              868757
+            ],
+            [
+              "2027-08-01",
+              868757
+            ],
+            [
+              "2027-09-01",
+              868757
+            ],
+            [
+              "2027-10-01",
+              868757
+            ],
+            [
+              "2027-11-01",
+              868757
+            ],
+            [
+              "2027-12-01",
+              868757
+            ],
+            [
+              "2028-01-01",
+              868757
+            ]
+          ]
         }
       ]
     },
     "retro": {
       "n_rows": 3780,
       "n_vintages": 210,
-      "n_evaluated": 3609,
+      "n_evaluated": 3627,
       "first_vintage": "2009-01-01",
       "last_vintage": "2026-06-01",
       "horizons": [
         {
           "horizon": 1,
-          "n": 209,
-          "mape": 3.24,
+          "n": 210,
+          "mape": 3.23,
           "naive_mape": 1.22,
-          "skill": -1.658,
-          "direction": 0.55,
-          "coverage": 0.799
+          "skill": -1.656,
+          "direction": 0.548,
+          "coverage": 0.8
         },
         {
           "horizon": 2,
-          "n": 208,
-          "mape": 3.97,
-          "naive_mape": 2.26,
-          "skill": -0.758,
-          "direction": 0.587,
-          "coverage": 0.798
+          "n": 209,
+          "mape": 3.95,
+          "naive_mape": 2.25,
+          "skill": -0.757,
+          "direction": 0.589,
+          "coverage": 0.799
         },
         {
           "horizon": 3,
-          "n": 207,
-          "mape": 4.61,
-          "naive_mape": 3.25,
-          "skill": -0.417,
-          "direction": 0.594,
-          "coverage": 0.797
-        },
-        {
-          "horizon": 4,
-          "n": 206,
-          "mape": 5.02,
-          "naive_mape": 4.2,
-          "skill": -0.195,
-          "direction": 0.646,
-          "coverage": 0.796
-        },
-        {
-          "horizon": 5,
-          "n": 205,
-          "mape": 5.35,
-          "naive_mape": 5.08,
-          "skill": -0.053,
-          "direction": 0.654,
-          "coverage": 0.795
-        },
-        {
-          "horizon": 6,
-          "n": 204,
-          "mape": 5.68,
-          "naive_mape": 5.93,
-          "skill": 0.042,
-          "direction": 0.716,
-          "coverage": 0.794
-        },
-        {
-          "horizon": 7,
-          "n": 203,
-          "mape": 5.96,
-          "naive_mape": 6.78,
-          "skill": 0.122,
-          "direction": 0.724,
+          "n": 208,
+          "mape": 4.62,
+          "naive_mape": 3.24,
+          "skill": -0.424,
+          "direction": 0.591,
           "coverage": 0.793
         },
         {
+          "horizon": 4,
+          "n": 207,
+          "mape": 5.0,
+          "naive_mape": 4.18,
+          "skill": -0.197,
+          "direction": 0.647,
+          "coverage": 0.797
+        },
+        {
+          "horizon": 5,
+          "n": 206,
+          "mape": 5.34,
+          "naive_mape": 5.06,
+          "skill": -0.056,
+          "direction": 0.65,
+          "coverage": 0.796
+        },
+        {
+          "horizon": 6,
+          "n": 205,
+          "mape": 5.67,
+          "naive_mape": 5.9,
+          "skill": 0.04,
+          "direction": 0.717,
+          "coverage": 0.795
+        },
+        {
+          "horizon": 7,
+          "n": 204,
+          "mape": 5.94,
+          "naive_mape": 6.76,
+          "skill": 0.121,
+          "direction": 0.721,
+          "coverage": 0.794
+        },
+        {
           "horizon": 8,
-          "n": 202,
-          "mape": 6.16,
-          "naive_mape": 7.56,
-          "skill": 0.186,
-          "direction": 0.752,
-          "coverage": 0.792
+          "n": 203,
+          "mape": 6.17,
+          "naive_mape": 7.54,
+          "skill": 0.182,
+          "direction": 0.749,
+          "coverage": 0.793
         },
         {
           "horizon": 9,
-          "n": 201,
-          "mape": 6.3,
-          "naive_mape": 8.31,
+          "n": 202,
+          "mape": 6.29,
+          "naive_mape": 8.28,
           "skill": 0.241,
-          "direction": 0.751,
-          "coverage": 0.801
+          "direction": 0.748,
+          "coverage": 0.802
         },
         {
           "horizon": 10,
+          "n": 201,
+          "mape": 6.32,
+          "naive_mape": 9.0,
+          "skill": 0.297,
+          "direction": 0.766,
+          "coverage": 0.801
+        },
+        {
+          "horizon": 11,
           "n": 200,
-          "mape": 6.35,
-          "naive_mape": 9.02,
-          "skill": 0.296,
+          "mape": 6.32,
+          "naive_mape": 9.64,
+          "skill": 0.344,
           "direction": 0.765,
           "coverage": 0.8
         },
         {
-          "horizon": 11,
+          "horizon": 12,
           "n": 199,
-          "mape": 6.34,
-          "naive_mape": 9.67,
-          "skill": 0.344,
-          "direction": 0.764,
+          "mape": 6.37,
+          "naive_mape": 10.23,
+          "skill": 0.377,
+          "direction": 0.789,
           "coverage": 0.799
         },
         {
-          "horizon": 12,
+          "horizon": 13,
           "n": 198,
-          "mape": 6.38,
-          "naive_mape": 10.26,
-          "skill": 0.378,
-          "direction": 0.793,
-          "coverage": 0.798
+          "mape": 6.48,
+          "naive_mape": 10.79,
+          "skill": 0.399,
+          "direction": 0.808,
+          "coverage": 0.793
         },
         {
-          "horizon": 13,
+          "horizon": 14,
           "n": 197,
-          "mape": 6.48,
-          "naive_mape": 10.81,
-          "skill": 0.4,
+          "mape": 6.67,
+          "naive_mape": 11.25,
+          "skill": 0.407,
           "direction": 0.812,
           "coverage": 0.797
         },
         {
-          "horizon": 14,
+          "horizon": 15,
           "n": 196,
-          "mape": 6.66,
-          "naive_mape": 11.28,
-          "skill": 0.41,
-          "direction": 0.816,
+          "mape": 6.92,
+          "naive_mape": 11.7,
+          "skill": 0.408,
+          "direction": 0.821,
           "coverage": 0.796
         },
         {
-          "horizon": 15,
+          "horizon": 16,
           "n": 195,
-          "mape": 6.93,
-          "naive_mape": 11.73,
-          "skill": 0.409,
-          "direction": 0.821,
+          "mape": 7.21,
+          "naive_mape": 12.12,
+          "skill": 0.405,
+          "direction": 0.8,
           "coverage": 0.795
         },
         {
-          "horizon": 16,
+          "horizon": 17,
           "n": 194,
-          "mape": 7.23,
-          "naive_mape": 12.14,
-          "skill": 0.404,
-          "direction": 0.799,
+          "mape": 7.52,
+          "naive_mape": 12.54,
+          "skill": 0.4,
+          "direction": 0.82,
           "coverage": 0.794
         },
         {
-          "horizon": 17,
-          "n": 193,
-          "mape": 7.54,
-          "naive_mape": 12.55,
-          "skill": 0.399,
-          "direction": 0.819,
-          "coverage": 0.793
-        },
-        {
           "horizon": 18,
-          "n": 192,
-          "mape": 7.82,
-          "naive_mape": 12.97,
-          "skill": 0.397,
-          "direction": 0.844,
-          "coverage": 0.792
+          "n": 193,
+          "mape": 7.79,
+          "naive_mape": 12.96,
+          "skill": 0.399,
+          "direction": 0.845,
+          "coverage": 0.793
         }
       ],
       "fans": [
@@ -16748,135 +16835,135 @@
     }
   },
   "current": {
-    "vintage": "2026-06-01",
-    "vintage_label": "juin 2026",
-    "run_date": "2026-09-02",
+    "vintage": "2026-07-01",
+    "vintage_label": "juillet 2026",
+    "run_date": "2026-09-21",
     "r2": 0.915,
     "points": [
       {
-        "date": "2026-07-01",
-        "predicted": 935815,
-        "lo": 884699,
-        "hi": 971454,
-        "assured": false
-      },
-      {
         "date": "2026-08-01",
-        "predicted": 933192,
-        "lo": 871262,
-        "hi": 978073,
+        "predicted": 936811,
+        "lo": 885695,
+        "hi": 972451,
         "assured": false
       },
       {
         "date": "2026-09-01",
-        "predicted": 916633,
-        "lo": 851032,
-        "hi": 966875,
+        "predicted": 920140,
+        "lo": 858211,
+        "hi": 965021,
         "assured": false
       },
       {
         "date": "2026-10-01",
-        "predicted": 901908,
-        "lo": 833330,
-        "hi": 953179,
+        "predicted": 905302,
+        "lo": 839700,
+        "hi": 955544,
         "assured": false
       },
       {
         "date": "2026-11-01",
-        "predicted": 893785,
-        "lo": 815241,
-        "hi": 949125,
+        "predicted": 897070,
+        "lo": 828491,
+        "hi": 948341,
         "assured": false
       },
       {
         "date": "2026-12-01",
-        "predicted": 886579,
-        "lo": 802064,
-        "hi": 949259,
+        "predicted": 889754,
+        "lo": 811210,
+        "hi": 945094,
         "assured": false
       },
       {
         "date": "2027-01-01",
-        "predicted": 883955,
-        "lo": 797819,
-        "hi": 954062,
+        "predicted": 887021,
+        "lo": 802506,
+        "hi": 949701,
         "assured": false
       },
       {
         "date": "2027-02-01",
-        "predicted": 880415,
-        "lo": 797181,
-        "hi": 957475,
+        "predicted": 883372,
+        "lo": 797235,
+        "hi": 953479,
         "assured": false
       },
       {
         "date": "2027-03-01",
-        "predicted": 878708,
-        "lo": 796355,
-        "hi": 962652,
+        "predicted": 881555,
+        "lo": 798321,
+        "hi": 958616,
         "assured": false
       },
       {
         "date": "2027-04-01",
-        "predicted": 870585,
-        "lo": 785873,
-        "hi": 954407,
+        "predicted": 873323,
+        "lo": 790970,
+        "hi": 957267,
         "assured": false
       },
       {
         "date": "2027-05-01",
-        "predicted": 868752,
-        "lo": 779760,
-        "hi": 945412,
+        "predicted": 868757,
+        "lo": 784045,
+        "hi": 952579,
         "assured": false
       },
       {
         "date": "2027-06-01",
-        "predicted": 868752,
-        "lo": 780471,
-        "hi": 945992,
+        "predicted": 868757,
+        "lo": 779765,
+        "hi": 945417,
         "assured": false
       },
       {
         "date": "2027-07-01",
-        "predicted": 868752,
-        "lo": 772992,
-        "hi": 950599,
+        "predicted": 868757,
+        "lo": 780477,
+        "hi": 945997,
         "assured": false
       },
       {
         "date": "2027-08-01",
-        "predicted": 868752,
-        "lo": 767072,
-        "hi": 960831,
+        "predicted": 868757,
+        "lo": 772997,
+        "hi": 950604,
         "assured": false
       },
       {
         "date": "2027-09-01",
-        "predicted": 868752,
-        "lo": 762501,
-        "hi": 966882,
+        "predicted": 868757,
+        "lo": 767077,
+        "hi": 960836,
         "assured": false
       },
       {
         "date": "2027-10-01",
-        "predicted": 868752,
-        "lo": 758165,
-        "hi": 967330,
+        "predicted": 868757,
+        "lo": 762506,
+        "hi": 966887,
         "assured": false
       },
       {
         "date": "2027-11-01",
-        "predicted": 868752,
-        "lo": 756513,
-        "hi": 969992,
+        "predicted": 868757,
+        "lo": 758170,
+        "hi": 967335,
         "assured": false
       },
       {
         "date": "2027-12-01",
-        "predicted": 868752,
-        "lo": 750829,
-        "hi": 978688,
+        "predicted": 868757,
+        "lo": 756518,
+        "hi": 969997,
+        "assured": false
+      },
+      {
+        "date": "2028-01-01",
+        "predicted": 868757,
+        "lo": 750834,
+        "hi": 978693,
         "assured": false
       }
     ]
@@ -17708,19 +17795,23 @@
     },
     {
       "date": "2026-03-01",
-      "value": 952000
+      "value": 953000
     },
     {
       "date": "2026-04-01",
-      "value": 947000
+      "value": 948000
     },
     {
       "date": "2026-05-01",
-      "value": 951000
+      "value": 953000
     },
     {
       "date": "2026-06-01",
-      "value": 954000
+      "value": 958000
+    },
+    {
+      "date": "2026-07-01",
+      "value": 956000
     }
   ],
   "naive_label": "Prévision naïve (le marché reste où il est)",
