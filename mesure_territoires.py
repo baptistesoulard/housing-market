@@ -409,7 +409,7 @@ def main():
     P("")
     if any(v[0] for v in verdicts.values()):
         P("**Décision : porte franchie sur les prix** → phases 2, 3a, 3b, 4 ; constante "
-          "`TERRITOIRES_GATE` datée dans `web_export.py`.")
+          "`TERRITOIRES_GATE` datée dans `web/export/reperes.py`.")
     elif any(v[1] for v in verdicts.values()):
         P("**Décision : porte franchie sur les VENTES seulement** → page carte rédigée sur les "
           "volumes, jamais sur les prix (plan §3.5).")

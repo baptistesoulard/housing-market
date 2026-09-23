@@ -128,7 +128,7 @@ else display(html`<div class="hm-api-offline">
 // un R², une MAPE, trois coefficients OLS, un z-score d'intentions d'achat — et nulle
 // part sa conclusion. Un visiteur repartait sans la phrase qu'il était venu chercher.
 //
-// Elle est GÉNÉRÉE (web_export._verdict), jamais écrite à la main : elle porte des
+// Elle est GÉNÉRÉE (web/export/verdict.py), jamais écrite à la main : elle porte des
 // chiffres, donc elle ne peut pas vivre dans le chapeau statique, que rien ne régénère.
 // La fiabilité affichée à côté n'est pas le R² mais la part de fois où le SENS annoncé à
 // cet horizon s'est avéré le bon, mesurée sur 210 millésimes.
@@ -1123,7 +1123,7 @@ if (data.horizon_blocks && data.horizon_blocks.length) display(html`<table class
 
 ```js
 // Ces entrées sont des CONSTANTES DATÉES côté export (voir REFUTATIONS dans
-// web_export.py), pas des métriques recalculées : chaque mesure a coûté un backtest de
+// web/export/reperes.py), pas des métriques recalculées : chaque mesure a coûté un backtest de
 // plusieurs centaines de millésimes, et ce sont des résultats sur la MÉTHODE, qui ne
 // bougent pas d'une semaine à l'autre.
 const REF = data.refutations ?? [];

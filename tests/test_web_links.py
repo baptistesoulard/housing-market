@@ -252,7 +252,7 @@ def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():
 import sys                                                              # noqa: E402
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "web" / "export"))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-import web_export as we                                                 # noqa: E402
+import ecriture as we                                                   # noqa: E402
 
 #: Les deux valeurs RÉELLEMENT observées, Linux contre Windows, pour le premier mois
 #: projeté. Ce sont bien deux doubles différents : `repr` est déterministe pour un double
@@ -267,14 +267,14 @@ def test_les_deux_doubles_observes_sont_bien_differents():
 
 
 def test_l_arrondi_absorbe_la_derive_entre_machines():
-    assert we._arrondir_flottants(_LINUX) == we._arrondir_flottants(_WINDOWS)
+    assert we.arrondir_flottants(_LINUX) == we.arrondir_flottants(_WINDOWS)
 
 
 def test_l_arrondi_preserve_ce_qui_est_exact_et_ne_touche_ni_entiers_ni_booleens():
     """Un arrondi qui abîmerait les entiers ou les booléens serait pire que le défaut."""
     charge = {"ventes": 954000, "actif": True, "inactif": False, "taux": 3.18,
               "series": [{"v": _LINUX}, {"v": 0.9145580237141427}], "mois": "2027-03-01"}
-    sortie = we._arrondir_flottants(charge)
+    sortie = we.arrondir_flottants(charge)
     assert sortie["ventes"] == 954000 and isinstance(sortie["ventes"], int)
     assert sortie["actif"] is True and sortie["inactif"] is False
     assert sortie["taux"] == 3.18
@@ -285,4 +285,4 @@ def test_l_arrondi_preserve_ce_qui_est_exact_et_ne_touche_ni_entiers_ni_booleens
 
 def test_la_precision_reste_largement_au_dela_de_l_affichage():
     """Garde sur la constante : la descendre trop abîmerait des valeurs publiées."""
-    assert 6 <= we._PRECISION_JSON <= 12
+    assert 6 <= we.PRECISION_JSON <= 12
