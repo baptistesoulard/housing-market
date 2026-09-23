@@ -91,7 +91,7 @@ def build_archive(con, frames: dict) -> dict:
     observed = obs[obs.index >= pd.Timestamp(start)] if start else obs
     series = [{"date": iso_mois(d), "value": int(v)} for d, v in observed.items()]
 
-    # `commun.pct` signe la valeur (« +4,1% »), ce qui convient à un glissement mais pas à une
+    # `commun.pct` signe la valeur (« +4,1 % »), ce qui convient à un glissement mais pas à une
     # ERREUR moyenne, qui est déjà une valeur absolue : un « + » y suggérerait une
     # surestimation systématique alors que le signe a été perdu au calcul.
     def _err(v) -> str:
@@ -111,7 +111,12 @@ def build_archive(con, frames: dict) -> dict:
             kpis.append({
                 "label": f"Erreur moyenne à {h} mois",
                 "value": _err(row["mape"]),
-                "subs": [f"une prévision naïve se trompe de {_err(row['naive_mape'])}"],
+                # Le rang d'horizon se compte depuis le dernier mois de DONNÉES, publié avec
+                # quelques mois de retard — pas depuis le jour où on lit. L'accueil et le
+                # verdict parlent, eux, en mois devant le lecteur : chaque mesure nomme donc
+                # sa convention, sinon deux « six mois » voisins ne désignent pas le même mois.
+                "subs": [f"une prévision naïve se trompe de {_err(row['naive_mape'])}",
+                         "horizon compté depuis le dernier mois de données publié"],
             })
 
     crossover = next((h["horizon"] for h in kinds["retro"]["horizons"]

@@ -91,7 +91,9 @@ jobs:
           # d'aperçu de partage n'exécutent pas de JS), donc les dates sont commitées
           # comme les JSON. L'oublier ici ferait afficher des dates figées à la dernière
           # publication manuelle, sur la page qui sert justement à établir la provenance.
-          git add data_manual_input data web/observable/src/data web/observable/src/a-propos.md
+          # index.md pour la même raison : web/export/accueil.py y réécrit l'erreur du
+          # modèle (bandeau de chiffres) et l'horizon où il perd contre la naïve.
+          git add data_manual_input data web/observable/src/data web/observable/src/a-propos.md web/observable/src/index.md
           if git diff --cached --quiet; then
             echo "Aucune donnée modifiée — rien à committer."
           else

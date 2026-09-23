@@ -12,6 +12,7 @@ import datetime
 import json
 import pathlib
 import re
+import sys
 
 WEB = pathlib.Path(__file__).resolve().parent.parent / "web" / "observable"
 # La navigation vit dans site.config.js — observablehq.config.js ne porte que le rendu.
@@ -51,15 +52,23 @@ def test_shortcut_labels_match_the_sidebar():
                 f"« {names[link['path']]} » côté barre latérale")
 
 
-# --- La bande de chiffres de l'accueil ------------------------------------------------
-# Ces quatre nombres sont écrits en DUR dans index.md, et c'est délibéré : ils doivent
-# être lus par les robots d'aperçu de partage, qui n'exécutent pas de JavaScript (voir le
-# commentaire de la page). Trois d'entre eux sont des constantes de fait — profondeur
-# d'historique, nombre de producteurs, cadence du rafraîchissement. Le quatrième, lui,
-# est recalculé à chaque publication de données : sans garde, il dérive en silence et
-# l'accueil finit par annoncer une performance que la page « Prévisions passées »
-# contredit deux clics plus loin.
-_ERREUR_6M = "Erreur moyenne à 6 mois"
+# --- Les affirmations chiffrées de l'accueil --------------------------------------------
+# L'accueil est rédigé et STATIQUE : les robots d'aperçu de partage n'exécutent pas de
+# JavaScript. Deux de ses affirmations dépendent pourtant des données — l'erreur du modèle
+# dans la bande de chiffres, et l'horizon en deçà duquel il perd contre une prévision
+# naïve. Écrites à la main, elles avaient dérivé toutes les deux (« 5,7 % à 6 mois » au rang
+# du millésime pendant que la Synthèse parlait de six mois du lecteur ; « à moins de
+# quatre mois » quand l'archive disait six). Elles sont désormais RÉÉCRITES par
+# web/export/accueil.py entre des marqueurs ; ces tests vérifient que le fichier commité
+# est bien ce que l'export écrirait à partir des JSON publiés.
+PREVISIONS = WEB / "src" / "data" / "previsions.json"
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "web" / "export"))
+import accueil                                                          # noqa: E402
+
+
+def _json(chemin):
+    return json.loads(chemin.read_text(encoding="utf-8"))
 
 
 def _chiffres_de_l_accueil():
@@ -71,43 +80,70 @@ def _chiffres_de_l_accueil():
         r'<span class="n">(.*?)</span>\s*<span class="d">(.*?)</span>',
         bande.group(1), re.S)
     assert len(couples) == 4, f"4 chiffres attendus dans la bande, {len(couples)} trouvés"
-    return [(n.strip(), " ".join(d.split())) for n, d in couples]
+    return [(n.strip(), re.sub(r"<[^>]+>", "", " ".join(d.split()))) for n, d in couples]
 
 
-def _kpi_archive(label):
-    kpis = json.loads(ARCHIVE.read_text(encoding="utf-8"))["kpis"]
-    trouve = [k for k in kpis if k["label"] == label]
-    assert trouve, f"KPI « {label} » absent d'archive.json"
-    return trouve[0]
+def test_les_passages_chiffres_de_l_accueil_sont_ceux_que_l_export_ecrirait():
+    """Si ce test échoue, ne pas corriger index.md à la main : relancer
+    python web/export/web_export.py, qui réécrit les passages entre leurs marqueurs."""
+    attendu = accueil.rendu(_json(PREVISIONS), _json(ARCHIVE))
+    present = accueil.passages_du_fichier(str(INDEX))
+    for cle, texte in attendu.items():
+        if texte is not None:
+            assert present[cle] == texte, (
+                f"hm:{cle} a dérivé — relancer python web/export/web_export.py")
 
 
-def test_l_erreur_annoncee_sur_l_accueil_est_celle_de_l_archive():
-    """L'accueil et la page « Prévisions passées » doivent citer le MÊME chiffre.
-
-    Si ce test échoue, ce n'est pas archive.json qu'il faut corriger : c'est la valeur
-    codée dans la bande de chiffres de web/observable/src/index.md qu'il faut reporter.
-    """
-    kpi = _kpi_archive(_ERREUR_6M)
-    modele = next(n for n, d in _chiffres_de_l_accueil() if "erreur moyenne à 6 mois" in d)
-    assert modele == kpi["value"], (
-        f"l'accueil annonce {modele} d'erreur à 6 mois, l'archive {kpi['value']} — "
-        "reporter la valeur dans la bande de chiffres d'index.md")
+def test_l_erreur_de_l_accueil_est_celle_du_verdict_et_cite_la_naive():
+    """Le chiffre du bandeau est la fiabilité mesurée À L'HORIZON DU VERDICT — celui de la
+    prévision publiée sur la Synthèse — et il ne se publie jamais sans l'erreur naïve :
+    seul, il laisserait croire que le modèle bat la référence à tous les horizons."""
+    rel = _json(PREVISIONS)["verdict"]["reliability"]
+    fmt = lambda v: f"{v:.1f} %".replace(".", ",")
+    n, legende = next((n, d) for n, d in _chiffres_de_l_accueil() if "erreur moyenne" in d)
+    assert n == fmt(rel["mape"])
+    assert fmt(rel["naive_mape"]) in legende
 
 
-def test_l_accueil_cite_aussi_la_reference_naive():
-    """Le chiffre du modèle ne se publie jamais seul.
+def test_l_erreur_de_l_accueil_dit_qu_elle_est_retro_simulee():
+    """La page « Prévisions passées » refuse d'agréger prévisions publiées et rétro-simulées.
+    Le bandeau cite un chiffre rétro-simulé : il doit le dire, et depuis quand."""
+    premier = _json(ARCHIVE)["kinds"]["retro"]["first_vintage"][:4]
+    legende = next(d for n, d in _chiffres_de_l_accueil() if "erreur moyenne" in d)
+    assert "rétro-simulées" in legende and premier in legende
 
-    Isolé, il laisse croire que le modèle bat la référence naïve à tous les horizons,
-    alors qu'il lui est INFÉRIEUR en deçà de quatre mois (voir « Prévisions passées »).
-    La légende doit donc porter l'erreur naïve, et la même que l'archive.
-    """
-    kpi = _kpi_archive(_ERREUR_6M)
-    naif = re.search(r"([\d,]+\s*%)", " ".join(kpi["subs"]))
-    assert naif, f"erreur naïve absente des sous-titres du KPI « {_ERREUR_6M} »"
-    legende = next(d for n, d in _chiffres_de_l_accueil() if "erreur moyenne à 6 mois" in d)
-    assert naif.group(1) in legende, (
-        f"l'accueil doit citer l'erreur naïve ({naif.group(1)}) à côté de celle du "
-        f"modèle ; légende actuelle : « {legende} »")
+
+def test_la_bascule_annoncee_sur_l_accueil_est_celle_de_l_archive():
+    crossover = _json(ARCHIVE)["crossover_horizon"]
+    src = " ".join(INDEX.read_text(encoding="utf-8").split())
+    assert accueil.phrase_bascule(crossover) in src
+
+
+def test_contre_epreuve_une_bascule_perimee_serait_detectee():
+    """Sans elle, le test précédent passerait même si la phrase ne dépendait pas de
+    l'horizon : l'ancienne rédaction (bascule à quatre mois) ne doit PAS être acceptée."""
+    crossover = _json(ARCHIVE)["crossover_horizon"]
+    autre = accueil.phrase_bascule((crossover or 6) - 2)
+    src = " ".join(INDEX.read_text(encoding="utf-8").split())
+    assert autre not in src
+
+
+# --- Le nombre de leviers du panneau de scénarios ---------------------------------------
+# L'accueil et la description de la page annonçaient « quatre leviers » bien après la
+# fusion des curseurs OAT et Euribor en un seul « taux de marché » : trois curseurs à
+# l'écran, quatre promis dans la meta description. On compte les curseurs dans la page.
+_LETTRES = {2: "deux", 3: "trois", 4: "quatre", 5: "cinq"}
+
+
+def test_le_nombre_de_leviers_annonce_est_celui_de_la_page():
+    page = (WEB / "src" / "previsions.md").read_text(encoding="utf-8")
+    n = len(re.findall(r"const \w+Input = base \? Inputs\.range\(", page))
+    assert n in _LETTRES, f"{n} curseurs de scénario trouvés"
+    for chemin in (INDEX, CONFIG):
+        texte = chemin.read_text(encoding="utf-8")
+        annonces = set(re.findall(r"(\w+) leviers", texte))
+        assert annonces == {_LETTRES[n]}, (
+            f"{chemin.name} annonce {annonces} leviers, la page en a {n}")
 
 
 # --- La base 100 du graphique croisé --------------------------------------------------
@@ -249,8 +285,6 @@ def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():
 # information, et surtout un compteur « n/7 fichier(s) modifié(s) » qui perd son pouvoir
 # d'alerte, puisqu'un fichier qui bouge à chaque exécution ne signale plus rien.
 
-import sys                                                              # noqa: E402
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "web" / "export"))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import ecriture as we                                                   # noqa: E402
 

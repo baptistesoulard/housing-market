@@ -41,29 +41,22 @@ confrontée au réel.</p>
 </div>
 
 <!--
-  BANDE DE CHIFFRES — volontairement STATIQUE, comme le reste du texte de cette page.
+  BANDE DE CHIFFRES — STATIQUE, comme le reste du texte de cette page.
 
   Ces quatre nombres sont l'équivalent honnête des « logos clients » d'un site
   commercial : ils doivent rassurer en deux secondes un visiteur qui ne connaît pas le
   site, et être lus par les robots d'aperçu de partage, qui n'exécutent pas de
   JavaScript. Les calculer dans le navigateur les rendrait invisibles là où ils comptent.
 
-  Contrepartie assumée : ils ne se mettent pas à jour tout seuls. Ils ont donc été
-  choisis parmi les grandeurs LENTES (profondeur d'historique, nombre de producteurs,
-  cadence de rafraîchissement) — et le seul qui bouge, l'erreur moyenne à 6 mois, est
-  verrouillé par tests/test_web_links.py, qui le compare au KPI d'archive.json et
-  échoue s'il dérive. Ne pas modifier la valeur ici sans relancer ce test.
-
-  L'erreur naïve est citée à côté de l'erreur du modèle, et ce n'est pas une coquetterie :
-  publier le seul chiffre du modèle laisserait croire qu'il bat la référence à tous les
-  horizons, alors qu'il lui est inférieur en deçà de 6 mois (voir /previsions-passees).
-
-  Le couple 5,7 / 5,9 % est serré, et c'est le prix de l'honnêteté : il est mesuré sur
-  210 millésimes couvrant HUIT épisodes de marché (2009-2026), là où l'ancien couple
-  4,1 / 7,2 % ne portait que sur le choc de taux de 2022-2024 — c'est-à-dire le seul
-  épisode que ce modèle réussit brillamment. À 12 mois, le même calcul donne 6,4 %
-  contre 10,3 % : si un jour ce bandeau doit vendre le modèle plutôt que le décrire,
-  c'est cet horizon-là qu'il faut citer, pas un autre échantillon.
+  Trois sont des grandeurs LENTES, écrites à la main (profondeur d'historique, nombre de
+  producteurs, cadence de rafraîchissement). Le quatrième, l'erreur du modèle, bouge à
+  chaque publication : il est RÉÉCRIT entre les marqueurs hm:erreur par
+  web/export/accueil.py, et commité par le job hebdomadaire — ne pas l'éditer à la main.
+  Il porte l'erreur à l'horizon du VERDICT (« dans six mois » pour qui lit, comme la
+  Synthèse), dit qu'il vient de prévisions rétro-simulées, et cite l'erreur naïve à côté :
+  seul, le chiffre du modèle laisserait croire qu'il bat la référence à tous les
+  horizons, alors qu'il perd sur les premiers mois (voir /previsions-passees).
+  tests/test_web_links.py vérifie que le passage est bien celui que l'export écrirait.
 -->
 <ul class="hm-stats">
   <li>
@@ -71,13 +64,15 @@ confrontée au réel.</p>
     <span class="d">d'historique continu, de décembre 2000 au dernier mois publié</span>
   </li>
   <li>
-    <span class="n">5 institutions</span>
-    <span class="d">INSEE, SDES, IGEDD, Banque de France, BCE — aucune donnée achetée</span>
+    <span class="n">6 institutions</span>
+    <span class="d">INSEE, SDES, IGEDD, DGFiP, Banque de France, BCE — aucune donnée achetée</span>
   </li>
+  <!-- hm:erreur:début — régénéré par web/export/accueil.py -->
   <li>
-    <span class="n">5,7 %</span>
-    <span class="d">d'erreur moyenne à 6 mois — une prévision naïve se trompe de 5,9 %</span>
+    <span class="n">6,2 %</span>
+    <span class="d">d'erreur moyenne à six mois, mesurée sur <abbr title="recalculées après coup en tronquant les données au mois visé">des prévisions rétro-simulées</abbr> depuis 2009 — une prévision naïve se trompe de 7,5 %</span>
   </li>
+  <!-- hm:erreur:fin -->
   <li>
     <span class="n">Chaque lundi</span>
     <span class="d">les sources sont récupérées et le site reconstruit, sans intervention</span>
@@ -196,15 +191,14 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
 <div class="hm-proof">
   <div>
     <h3>Des sources publiques, et rien d'autre</h3>
-    <p>INSEE, SDES (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier — voir le vocabulaire sur la page À propos">SIT@DEL</abbr>, <abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>), <abbr title="Inspection Générale de l'Environnement et du Développement Durable, suivi mensuel des ventes de logements anciens">IGEDD</abbr>, Banque de France et BCE. Chaque série est
+    <p>INSEE, SDES (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier — voir le vocabulaire sur la page À propos">SIT@DEL</abbr>, <abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>), <abbr title="Inspection Générale de l'Environnement et du Développement Durable, suivi mensuel des ventes de logements anciens">IGEDD</abbr>, <abbr title="Direction générale des Finances publiques, qui publie les Demandes de valeurs foncières (DVF) : les ventes enregistrées chez le notaire">DGFiP</abbr>, Banque de France et BCE. Chaque série est
     identifiée par sa référence d'origine et récupérée par un script versionné : aucun
     chiffre n'est saisi à la main, aucune donnée n'est achetée.</p>
   </div>
   <div>
     <h3>Un modèle qu'on peut prendre en défaut</h3>
     <p>Chaque prévision produite est <a href="/previsions-passees">archivée puis confrontée
-    au réel</a>, y compris là où elle échoue : à moins de quatre mois, le modèle fait moins
-    bien qu'une prévision naïve, et la page le dit. Le score et l'incertitude sont publiés,
+    au réel</a>, y compris là où elle échoue : <!-- hm:bascule — régénéré par web/export/accueil.py -->sur les cinq premiers mois qui suivent le dernier chiffre publié, le modèle fait moins bien qu'une prévision naïve<!-- hm:bascule:fin -->, et la page le dit. Le score et l'incertitude sont publiés,
     pas seulement la courbe.</p>
   </div>
   <div>
@@ -246,7 +240,7 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
   <a class="hm-page-card" href="/previsions">
     <span class="t">📡 Prévision & Scénarios</span>
     <span class="d">La projection des transactions à 12-18 mois, son backtest, et un
-    panneau de scénarios à quatre leviers.</span>
+    panneau de scénarios à trois leviers.</span>
   </a>
   <a class="hm-page-card" href="/previsions-passees">
     <span class="t">🎯 Prévisions passées</span>

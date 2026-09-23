@@ -14,7 +14,7 @@ import pandas as pd
 
 from commun import (COLOR_BRICK, COLOR_GREEN, COLOR_TEXT, abrege, arrondi_millier, horodatage,
                     jalons_a_venir, ligne_momentum, ligne_niveau, milliers, mois_annee,
-                    pastille, pct, renvoi, statut_annuel, statut_seq)
+                    pastille, pct, pt, renvoi, statut_annuel, statut_seq)
 from mesures import stock_neuf, taux_transformation
 from reperes import BPCE_TX_ANCIEN_2026
 from verdict import partage
@@ -340,7 +340,7 @@ def _puces(f: dict, pill_ancien: str, pill_fin: str) -> list:
     if taux is not None:
         part = f"taux de crédit à {taux['now']:.2f} %".replace(".", ",")
         if taux["sur_un_an"] is not None:
-            part += f" ({pct(taux['sur_un_an']).replace('%', ' pt')} sur un an)"
+            part += f" ({pt(taux['sur_un_an'])} sur un an)"
         l3_parts.append(part)
     if bls_now is not None:
         bls_word = ("en hausse" if bls_now > 0 else ("en baisse" if bls_now < -10 else "stable"))
@@ -470,7 +470,7 @@ def _blocs(f: dict, pill_ancien: str) -> list:
         cards_fin.append({"emoji": "⚪", "title": "Taux de crédit habitat (toutes durées)", "value": "—", "sub": ""})
     else:
         dr = taux["sur_un_an"]
-        r_sub = "toutes durées confondues · sur un an : " + (pct(dr).replace("%", " pt") if dr is not None else "—")
+        r_sub = "toutes durées confondues · sur un an : " + (pt(dr) if dr is not None else "—")
         cards_fin.append({"emoji": pastille(_statut_taux(dr)), "title": "Taux de crédit habitat",
                           "value": f"{taux['now']:.2f} %".replace(".", ","), "sub": r_sub})
     bls = f["bls"]
@@ -493,7 +493,7 @@ def _blocs(f: dict, pill_ancien: str) -> list:
             a_txt = f"logement ≈ {-gap15:.0f} % plus accessible qu'en 2015"
         else:
             a_txt = "accessibilité au niveau de 2015"
-        a_sub = a_txt + " · sur un an : " + (pct(da).replace("%", " pt") if da is not None else "—")
+        a_sub = a_txt + " · sur un an : " + (pt(da) if da is not None else "—")
         cards_fin.append({"emoji": pastille(a_status), "title": "Indice d'accessibilité",
                           "value": f"{acc['now']:.0f}", "sub": a_sub})
 

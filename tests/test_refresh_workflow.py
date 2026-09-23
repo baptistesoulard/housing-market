@@ -61,14 +61,14 @@ def test_le_job_hebdo_commite_tout_ce_qu_il_reecrit_sous_data():
         f"versionnée prendrait du retard à chaque semaine : {oublies}")
 
 
-def test_le_job_hebdo_commite_aussi_les_sources_le_front_et_la_page_de_provenance():
-    """Les trois autres cibles du `git add` ont chacune leur raison (voir le workflow) :
-    les sources, les JSON du front (sinon Cloudflare ne reconstruit rien) et `a-propos.md`,
-    dont le tableau des sources est réécrit par Python parce que la page doit rester du
-    HTML statique."""
+def test_le_job_hebdo_commite_aussi_les_sources_le_front_et_les_pages_reecrites():
+    """Les autres cibles du `git add` ont chacune leur raison (voir le workflow) : les
+    sources, les JSON du front (sinon Cloudflare ne reconstruit rien), et les deux pages
+    dont Python réécrit des passages entre marqueurs parce qu'elles doivent rester du HTML
+    statique — `a-propos.md` (tableau des sources) et `index.md` (chiffres de l'accueil)."""
     ajoutes = _chemins_ajoutes_par_le_job()
     for attendu in ("data_manual_input", "web/observable/src/data",
-                    "web/observable/src/a-propos.md"):
+                    "web/observable/src/a-propos.md", "web/observable/src/index.md"):
         assert _couvert(attendu, ajoutes), f"{attendu} a quitté le `git add` du job"
 
 

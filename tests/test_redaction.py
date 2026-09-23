@@ -9,6 +9,7 @@ Les règles verrouillées ici sont des règles de SENS, qu'aucun test sur les JS
 peut attraper tant que la donnée courante ne les met pas à l'épreuve.
 """
 import pathlib
+import re
 import sys
 
 import pandas as pd
@@ -17,6 +18,7 @@ RACINE = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RACINE / "web" / "export"))
 sys.path.insert(0, str(RACINE))
 
+import commun                                                           # noqa: E402
 import page_synthese as ps                                              # noqa: E402
 
 
@@ -135,3 +137,23 @@ def test_une_serie_absente_donne_un_tiret_pas_une_erreur():
     assert _carte(texte, "Taux de crédit habitat (toutes durées)")["value"] == "—"
     assert _carte(texte, "Demande de crédit (banques)")["value"] == "—"
     assert "None" not in _tout_le_texte(texte)
+
+
+# --- Typographie des variations ----------------------------------------------------------
+# La Synthèse publiait « -3,6% » et « 17 % » dans la même puce, et « sur un an : -0,0 pt »
+# sur la carte d'accessibilité. Les deux règles vivent dans commun._variation ; ces tests
+# les éprouvent sur la page entière, là où un nouveau format écrit à la main les
+# contournerait.
+def test_une_variation_nulle_n_a_pas_de_signe():
+    assert commun.pct(-0.03) == "0,0 %" and commun.pct(0.04) == "0,0 %"
+    assert commun.pt(-0.049) == "0,0 pt"
+    texte = ps.rediger(_faits(accessibilite={"now": 73.0, "sur_un_an": -0.03},
+                              taux={"now": 3.18, "sur_un_an": 0.02}))
+    assert not re.search(r"[+\-−]0,0\b", _tout_le_texte(texte))
+
+
+def test_le_signe_pourcent_est_toujours_precede_d_une_espace():
+    assert commun.pct(4.26) == "+4,3 %" and commun.pct(-3.6) == "-3,6 %"
+    texte = _tout_le_texte(ps.rediger(_faits()))
+    colles = re.findall(r"\d%", texte)
+    assert not colles, f"« % » collé au nombre : {colles}"

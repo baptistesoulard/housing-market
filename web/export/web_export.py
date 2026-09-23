@@ -20,7 +20,7 @@ et les briques qu'elles partagent :
     verdict.py     le verdict du modèle et sa fiabilité (Synthèse, Prévision, accueil)
     reperes.py     ce que RIEN ne régénère : repères saisis à la main, mesures datées
     ecriture.py    le point d'écriture unique (arrondi, garde de contenu)
-    sources_table.py, accueil.py   le texte statique réécrit entre marqueurs dans le Markdown
+    sources_table.py, accueil.py   texte statique réécrit entre marqueurs (À propos, accueil)
 
 La sortie doit annoncer « 0/7 fichier(s) modifié(s) » quand aucune donnée n'a bougé : un
 diff inattendu signale une divergence de calcul, pas du bruit (voir CLAUDE.md).
@@ -31,6 +31,7 @@ import os
 
 import pandas as pd
 
+import accueil                                  # chiffres de l'accueil (index.md)
 from commun import DATA_DIR
 from ecriture import ecrire_si_change
 import page_archive                             # noqa: E402
@@ -90,11 +91,12 @@ def main():
     frames = load_frames()  # rafraîchit les CSV + miroirs Parquet validés
     con = q.open_warehouse(refresh=False)  # vue DuckDB sur les Parquet déjà à jour
     period = _period_bounds(frames)        # domaine de la frise de la barre latérale
-    changed = []
+    changed, payloads = [], {}
     for name, builder in _BUILDERS.items():
         path = os.path.join(DATA_DIR, f"{name}.json")
         payload = builder(con, frames)
         payload["period"] = period
+        payloads[name] = payload
         if ecrire_si_change(path, payload):
             changed.append(name)
             print(f"[web_export] écrit {name}.json")
@@ -111,6 +113,12 @@ def main():
         print("[web_export] a-propos.md : dates du tableau des sources mises à jour")
     else:
         print("[web_export] a-propos.md : tableau des sources inchangé")
+    # Les deux affirmations chiffrées de l'accueil (erreur du modèle, horizon de bascule),
+    # même régime que le tableau des sources : Markdown réécrit entre marqueurs, hors compteur.
+    if accueil.ecrire(payloads["previsions"], payloads["archive"]):
+        print("[web_export] index.md : chiffres de l'accueil mis à jour")
+    else:
+        print("[web_export] index.md : chiffres de l'accueil inchangés")
 
 
 if __name__ == "__main__":

@@ -238,6 +238,6 @@ ${legend(visible)}
 <div class="hm-meta">${data.chart.source}</div>
 
 <div class="hm-meta">
-  Généré le ${new Date(data.generated_at).toLocaleString("fr-FR")} ·
-  front statique Observable Framework · données : pipeline Python existante.
+  Chiffres mis à jour le ${new Date(data.generated_at).toLocaleDateString("fr-FR", {day: "numeric", month: "long", year: "numeric"})} ·
+  sources et méthode : <a href="/a-propos">À propos</a>.
 </div>

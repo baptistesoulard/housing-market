@@ -91,10 +91,32 @@ def abrege(v) -> str:
     return f"{int(round(v)):,}".replace(",", " ")
 
 
-def pct(v) -> str:
+def _variation(v, unite: str) -> str:
+    """Une variation signée à une décimale, à la française : « +4,3 % », « -0,5 pt ».
+
+    Deux règles, et chacune a coûté un défaut publié :
+    * une ESPACE avant l'unité, comme partout ailleurs sur le site (« 17 % sous la
+      normale ») — la Synthèse affichait « -3,6% » et « 17 % » dans la même puce ;
+    * pas de zéro signé : une variation qui s'arrondit à zéro s'écrit « 0,0 », jamais
+      « -0,0 » ni « +0,0 », qui annoncent un sens que la donnée n'a pas (« sur un an :
+      -0,0 pt » sur la carte d'accessibilité).
+    """
     if _manquant(v):
         return "—"
-    return f"{v:+.1f}%".replace(".", ",")
+    txt = f"{float(v):+.1f}"
+    if txt in ("+0.0", "-0.0"):
+        txt = "0.0"
+    return f"{txt} {unite}".replace(".", ",")
+
+
+def pct(v) -> str:
+    """Variation en pourcentage (voir `_variation`)."""
+    return _variation(v, "%")
+
+
+def pt(v) -> str:
+    """Variation en points — d'un taux, d'un indice (voir `_variation`)."""
+    return _variation(v, "pt")
 
 
 def pastille(status: str) -> str:

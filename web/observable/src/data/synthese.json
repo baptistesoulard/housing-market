@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T11:48:49+00:00",
+  "generated_at": "2026-09-23T20:18:38+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -27,7 +27,7 @@
   ],
   "takeaways": [
     "🟠 **Aujourd'hui** — **Ancien** : 956 k ventes sur 12 mois, 17 % au-dessus de la normale 2010-19, mais au plateau depuis décembre 2025. **Neuf** : 296 k chantiers, 23 % sous la normale 2010-19, sur un stock de 124 027 invendus qui met 22 mois à s'écouler contre 15 habituellement.",
-    "🔴 **Le carnet** — les permis reculent (-3,6% sur 3 mois) plus vite que les chantiers, qui marquent le pas après une forte année (-0,5% sur 3 mois, +17,9% sur 12 mois). Et seulement 80 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+8,3% sur 3 mois, +22,8% sur 12 mois).",
+    "🔴 **Le carnet** — les permis reculent (-3,6 % sur 3 mois) plus vite que les chantiers, qui marquent le pas après une forte année (-0,5 % sur 3 mois, +17,9 % sur 12 mois). Et seulement 80 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+8,3 % sur 3 mois, +22,8 % sur 12 mois).",
     "🔴 **Financement** — taux de crédit à 3,18 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
     "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 8 % d'ici mars 2027."
   ],
@@ -45,21 +45,21 @@
           "emoji": "🟠",
           "title": "Mises en chantier",
           "value": "296 k /12 m",
-          "sub": "-0,5% sur 3 mois vs les 3 précédents · tendance 12 mois : +17,9% · total exact : 296 131",
+          "sub": "-0,5 % sur 3 mois vs les 3 précédents · tendance 12 mois : +17,9 % · total exact : 296 131",
           "level": "23 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000"
         },
         {
           "emoji": "🟠",
           "title": "Ventes de logements anciens",
           "value": "956 k /12 m",
-          "sub": "+4,3% sur 12 mois vs les 12 précédents · au plateau depuis décembre 2025 · total exact : 956 000",
+          "sub": "+4,3 % sur 12 mois vs les 12 précédents · au plateau depuis décembre 2025 · total exact : 956 000",
           "level": "17 % au-dessus de la normale 2010-19 · plus haut que 74 % des mois depuis 2001"
         },
         {
           "emoji": "🔴",
           "title": "Stock de logements neufs à vendre",
           "value": "124 027",
-          "sub": "22 mois pour l'écouler au rythme actuel · +1,6% vs le trimestre précédent",
+          "sub": "22 mois pour l'écouler au rythme actuel · +1,6 % vs le trimestre précédent",
           "level": "15 mois en moyenne depuis 2017 — il faut aujourd'hui 53 % de temps de plus pour écouler le stock"
         }
       ],
@@ -83,7 +83,7 @@
           "emoji": "🔴",
           "title": "Permis de construire",
           "value": "371 k /12 m",
-          "sub": "-3,6% sur 3 mois vs les 3 précédents · tendance 12 mois : +5,8% · total exact : 370 673",
+          "sub": "-3,6 % sur 3 mois vs les 3 précédents · tendance 12 mois : +5,8 % · total exact : 370 673",
           "level": "18 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000"
         },
         {
@@ -97,7 +97,7 @@
           "emoji": "🔴",
           "title": "Réservations particuliers neuf (ECLN)",
           "value": "16 112 /trim.",
-          "sub": "-4,8% vs le trimestre précédent · tendance 4 trimestres : -4,3%",
+          "sub": "-4,8 % vs le trimestre précédent · tendance 4 trimestres : -4,3 %",
           "level": "la demande qui décide des mises en vente, donc des chantiers suivants"
         }
       ],
@@ -128,7 +128,7 @@
           "emoji": "🟠",
           "title": "Indice d'accessibilité",
           "value": "73",
-          "sub": "logement ≈ 27 % moins accessible qu'en 2015 · sur un an : -0,0 pt"
+          "sub": "logement ≈ 27 % moins accessible qu'en 2015 · sur un an : 0,0 pt"
         }
       ],
       "links": [
@@ -151,7 +151,7 @@
           "emoji": "🔴",
           "title": "Ventes anciennes projetées (mars 2027)",
           "value": "882 k",
-          "sub": "-7,8% vs les 12 derniers mois · fourchette 798 k – 959 k · sens juste 75 % du temps à cet horizon (203 millésimes)",
+          "sub": "-7,8 % vs les 12 derniers mois · fourchette 798 k – 959 k · sens juste 75 % du temps à cet horizon (203 millésimes)",
           "level": "prévision du modèle du site, ajustée sur les taux, les intentions d'achat et le chômage — voir « Prévisions passées » pour ses erreurs"
         },
         {

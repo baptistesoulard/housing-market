@@ -11,7 +11,7 @@ export {Plot, d3};
 export const csvParse = d3.csvParse;
 
 // --- Formatage FR ------------------------------------------------------------------
-const frLocale = d3.timeFormatLocale({
+const FR_TEMPS = {
   dateTime: "%A %e %B %Y à %X", date: "%d/%m/%Y", time: "%H:%M:%S", periods: ["AM", "PM"],
   days: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
   shortDays: ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
@@ -19,7 +19,20 @@ const frLocale = d3.timeFormatLocale({
            "septembre", "octobre", "novembre", "décembre"],
   shortMonths: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août",
                 "sept.", "oct.", "nov.", "déc."],
-});
+};
+const frLocale = d3.timeFormatLocale(FR_TEMPS);
+
+// Les graduations des AXES ne passent par aucun de nos formateurs : Plot les écrit avec
+// la locale PAR DÉFAUT de d3, qui est l'anglais — « 1,000 · 1,100 » sur l'axe des volumes
+// de la Synthèse, et des mois « Jan · Apr » dès que la frise resserre la période. Les
+// vignettes, elles, passent par nf0/nf1 (Intl fr-FR) et étaient déjà justes. Poser la
+// locale française par défaut ICI, dans le module que toutes les pages importent avant
+// de tracer quoi que ce soit, corrige tous les axes du site d'un coup — plutôt qu'un
+// tickFormat par graphique, qu'un graphique suivant oublierait. Séparateur de milliers :
+// l'espace fine insécable, comme Intl.NumberFormat("fr-FR").
+d3.formatDefaultLocale({decimal: ",", thousands: "\u202f", grouping: [3],
+                        currency: ["", "\u00a0\u20ac"], percent: "\u202f%"});
+d3.timeFormatDefaultLocale(FR_TEMPS);
 export const fmtMonthFR = frLocale.utcFormat("%B %Y");
 export const MONTHS_SHORT = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
                              "juil.", "août", "sept.", "oct.", "nov.", "déc."];
