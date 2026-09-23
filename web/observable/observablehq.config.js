@@ -119,7 +119,7 @@ a[href]:not([class]), a[href]:visited:not([class]) { color: var(--hm-link); }
 /* Glossaire au fil du texte : un sigle (SIT@DEL, OAT…) porte un <abbr title> sur sa
    première occurrence par page — soulignement pointillé au survol/focus, infobulle
    native du navigateur. Pas de JS : ce sont des chapeaux statiques (voir CLAUDE.md,
-   « chapeau statique »), le glossaire complet vit dans le repli d'À propos. */
+   « Texte statique »), le glossaire complet vit dans le repli d'À propos. */
 abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm-subtle);
   text-underline-offset: 2px; cursor: help; }
 .hm-caption { color: var(--hm-ink); font-size: 0.875rem; margin: 0.2rem 0 1rem; }

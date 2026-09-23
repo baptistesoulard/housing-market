@@ -12,7 +12,7 @@ import {computeScenario} from "./components/api.js";
 
 ```js
 // Le modèle est réajusté chaque semaine par web_export.py (via api.engine, sans Flask —
-// voir CLAUDE.md, « L'API HTTP ») et publié ici comme les cinq premières pages : plus de
+// voir docs/journal/03-api-http.md) et publié ici comme les cinq premières pages : plus de
 // serveur à joindre pour un visiteur. Ce qui restait interactif sans recalcul serveur l'est
 // resté : la courbe de sensibilité est pré-calculée pour les 3 prédicteurs (le curseur ne
 // fait plus qu'y lire un point), et le panneau de scénarios applique en JS la même formule
@@ -56,7 +56,7 @@ const depuis = (rows, field = "date") => {
 # 📡 Prévision des transactions & scénarios
 
 <!--
-  CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Le chapeau des pages de données ».
+  CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
   Cette page-ci est un cas limite : sans instance de l'API, un visiteur ne voit QUE ce
   texte. Raison de plus pour qu'il dise ce que la page fait.
 -->

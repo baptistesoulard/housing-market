@@ -45,7 +45,7 @@ def _fichiers_suivis_sous_data():
     if git is None:
         pytest.skip("git absent de l'environnement")
     # encoding explicite : sous Windows, `text=True` décoderait la sortie en cp1252 et
-    # échouerait sur le premier caractère hors table (voir CLAUDE.md, « Piège Windows »).
+    # échouerait sur le premier caractère hors table (voir CLAUDE.md, « Pièges du poste de travail »).
     res = subprocess.run([git, "ls-files", "data"], cwd=_RACINE, capture_output=True,
                          encoding="utf-8", check=True)
     suivis = [l.strip() for l in res.stdout.splitlines() if l.strip()]

@@ -16,7 +16,7 @@ const macro = await FileAttachment("./data/macro.json").json();
   tout aperçu de partage, n'en voit rien. Ces deux blocs sont donc le SEUL texte de la page
   que lisent Google et LinkedIn. Le titre valait auparavant `${macro.title}`, c'est-à-dire un titre
   VIDE dans le HTML livré. Ne pas les reconvertir en interpolation.
-  Voir CLAUDE.md, « Le chapeau des pages de données ».
+  Voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
 # 🏦 Contexte Macroéconomique et Financement

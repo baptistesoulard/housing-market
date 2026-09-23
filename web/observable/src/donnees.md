@@ -21,7 +21,7 @@ const neufData = await FileAttachment("./data/neuf.json").json();
 # ⚙️ Données & Sources
 
 <!--
-  CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Le chapeau des pages de données ».
+  CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
 Toutes les séries utilisées sur ce site sont publiques et officielles. La date de dernière

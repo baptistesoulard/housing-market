@@ -4,7 +4,7 @@ toc: false
 ---
 
 <!--
-  REPRISE APRÈS RETRAIT (2026-08-21) — voir CLAUDE.md, « Les pages départementales ».
+  REPRISE APRÈS RETRAIT (2026-08-21) — voir docs/journal/07-pages-departementales.md.
 
   L'ancienne version chargeait par fetch() vers une adresse construite au runtime avec
   observable.params.code, et s'affichait PAR INTERMITTENCE une fois déployée — même

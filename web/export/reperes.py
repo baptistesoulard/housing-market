@@ -51,7 +51,7 @@ BENCHMARK_FNAIM = {
 #: `_transformation`). Stockée plutôt que recalculée : c'est un résultat sur la MÉTHODE,
 #: pas une métrique vivante, et rejouer un backtest à origine glissante de 197 millésimes
 #: à chaque export ajouterait des minutes au job hebdomadaire pour un chiffre qui ne bouge
-#: pas d'une semaine à l'autre. Le protocole est dans CLAUDE.md.
+#: pas d'une semaine à l'autre. Le protocole est dans docs/journal/06-prevision-et-archive.md.
 NEUF_GATE = {
     "mesure_le": "2026-08-24",
     "millesimes": 197,
@@ -76,7 +76,7 @@ NEUF_GATE = {
 #: métriques vivantes. Chaque mesure a coûté un backtest à origine glissante de plusieurs
 #: centaines de millésimes ; les rejouer à chaque export ajouterait des dizaines de minutes
 #: au job hebdomadaire pour des chiffres qui ne bougent pas. Le protocole de chacune est
-#: dans CLAUDE.md.
+#: dans docs/journal/06-prevision-et-archive.md.
 #:
 #: Le seuil d'entrée du modèle, rappelé sur la page : au moins 5 % d'erreur évitée hors
 #: échantillon sur au moins 3 des 4 plages d'horizon (1-3, 4-6, 7-12 et 13-18 mois).

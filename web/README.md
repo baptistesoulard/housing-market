@@ -382,7 +382,7 @@ qu'aucune URL n'est écrite en dur.
 > référence littérale, jamais résolue au département réel — vérifié dans le HTML
 > construit. Le mécanisme retenu charge donc par `fetch()`, vers l'adresse stable copiée
 > au build, avec la structure de cellules vue s'exécuter correctement en production
-> avant le retrait. Voir `CLAUDE.md`, section « Les pages départementales », pour le
+> avant le retrait. Voir `docs/journal/07-pages-departementales.md`, pour le
 > détail des preuves et l'inconnue qui subsiste (l'intermittence d'origine n'a jamais
 > été formellement expliquée, seulement débattue par élimination).
 

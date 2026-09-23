@@ -4,7 +4,7 @@ Pourquoi un module à part, et pourquoi générer du Markdown.
 
 La page « À propos » doit rester du HTML rendu AU BUILD : c'est, avec l'accueil, le seul
 texte du site que lisent les robots d'aperçu de partage, qui n'exécutent aucun JavaScript
-(voir CLAUDE.md, « Le site public »). Or la date du dernier point de chaque série change
+(voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état »). Or la date du dernier point de chaque série change
 à chaque publication. Les deux contraintes sont inconciliables côté navigateur : un bloc
 de code JS remplirait les cellules pour un visiteur et laisserait le tableau vide pour
 tout robot — donc pour l'aperçu au partage et pour l'indexation.

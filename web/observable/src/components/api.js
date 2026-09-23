@@ -14,8 +14,8 @@
 // deux implémentations d'un même calcul divergent tôt ou tard si rien ne les compare.
 //
 // Le backend Flask (api/, python -m api) reste intact et testé : ce n'est pas son
-// retrait, seulement celui de son appel depuis ces deux pages. Voir CLAUDE.md,
-// « L'API HTTP ».
+// retrait, seulement celui de son appel depuis ces deux pages. Voir
+// docs/journal/03-api-http.md.
 
 /** Régression linéaire simple y = a + b·x, en JS.
  *

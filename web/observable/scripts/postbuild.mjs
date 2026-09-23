@@ -31,7 +31,7 @@
 //      exactement la cannibalisation que des descriptions distinctes cherchent à
 //      éviter. Le <h1> compte double : un titre interpolé (# ${dep.nom}) ne rendrait
 //      qu'un <h1> vide tant que le JS n'a pas tourné (le défaut déjà corrigé ailleurs
-//      sur le site, voir « chapeau statique » dans CLAUDE.md) — la page écrit donc un
+//      sur le site, voir « Texte statique » dans CLAUDE.md) — la page écrit donc un
 //      texte générique statique, réécrit ici avec le nom réel du département. Et un
 //      CHAPEAU CHIFFRÉ (prix médian, évolutions, ventes, m² accessibles), écrit depuis
 //      le JSON du département : sans lui, ces 101 pages n'ont AUCUN chiffre dans leur
