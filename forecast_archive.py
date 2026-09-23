@@ -74,9 +74,8 @@ BAND_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 #: sur ses valeurs de repli : ces millésimes-là ne prouveraient rien.
 BACKFILL_START = "2009-01-01"
 
-#: Fenêtre d'entraînement du backtest — même valeur que `api.engine.FORECAST_SPLIT` et
-#: `app.py:_FORECAST_SPLIT`, recopiée plutôt qu'importée pour la même raison qu'eux : ce
-#: module ne doit dépendre ni de l'app Streamlit ni de l'API.
+#: Fenêtre d'entraînement du backtest — même valeur que `api.engine.FORECAST_SPLIT`,
+#: recopiée plutôt qu'importée : ce module ne doit pas dépendre de l'API.
 FORECAST_SPLIT = "2021-12-01"
 
 COLUMNS = [

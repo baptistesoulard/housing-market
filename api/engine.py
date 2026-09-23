@@ -1,6 +1,6 @@
 """Couche 2 bis — composition du moteur de calcul, **sans HTTP**.
 
-Ce module n'importe ni Flask ni Streamlit : c'est l'invariant central du patron « API
+Ce module n'importe pas Flask : c'est l'invariant central du patron « API
 HTTP locale ». Il se teste et s'exécute serveur éteint (`python -c "from api import
 engine; print(engine.rate_model())"`), et `api/routes.py` ne fait que le traduire en JSON.
 
@@ -31,13 +31,12 @@ import forecast as fc
 import queries as q
 from data_manager import DataManager
 
-# Fenêtre d'entraînement du backtest — même valeur que `app.py:_FORECAST_SPLIT`. Les deux
-# surfaces doivent afficher les mêmes chiffres, donc la constante est partagée par copie
-# explicite plutôt que par import croisé (l'API ne doit pas dépendre de l'app Streamlit).
+# Fenêtre d'entraînement du backtest — même valeur que `forecast_archive.FORECAST_SPLIT`.
+# Recopiée plutôt qu'importée : ni l'un ni l'autre ne doit dépendre de l'autre.
 FORECAST_SPLIT = "2021-12-01"
 
-# Grilles de décalage exposées au curseur du front. Bornes identiques à celles de l'onglet
-# Streamlit « Vérifier les décalages retenus », pour que les deux donnent le même R².
+# Grilles de décalage exposées au curseur « Vérifier les décalages retenus » de la page
+# de prévision (courbes pré-calculées par web_export, voir page_previsions).
 LAG_GRIDS = {
     "rate": ("kr", "Credit_Logement_Taux_Interet", range(0, 13)),
     "intentions": ("ki", "Intentions_Achat_Logement", range(0, 19)),

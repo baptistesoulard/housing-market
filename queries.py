@@ -1,23 +1,23 @@
-"""Couche de calcul SQL partagée — DuckDB comme moteur unique des deux apps.
+"""Couche de calcul SQL partagée — DuckDB comme moteur unique des agrégations.
 
 L'entrepôt `housing_data/` expose déjà les datasets en Parquet typé avec une vue SQL
 DuckDB par dataset (zéro serveur). Ce module est la **porte d'entrée unique des
-agrégations** pour toutes les surfaces (`app.py` Streamlit, `web/export/web_export.py`,
-`report.py`) : il ouvre cette connexion et fait faire au moteur ce qui était auparavant
+agrégations** pour toutes les surfaces (l'export du site `web/export/`, l'API `api/`,
+l'archive des prévisions) : il ouvre cette connexion et fait faire au moteur ce qui était auparavant
 refait à la main en pandas — GROUP BY, cumuls glissants (fonctions de fenêtre), YoY par
 LAG, z-score, capacité d'emprunt, jointures, filtrage des NULL. Définir chaque agrégation
-UNE fois ici garantit que les deux apps affichent exactement les mêmes chiffres.
+UNE fois ici garantit que toutes les pages affichent exactement les mêmes chiffres.
 
 Ce qui reste hors de ce module (par nature) : les **modèles statistiques** (OLS de
 `forecast.py`) restent en numpy — DuckDB n'est pas un moteur de régression — mais leurs
 séries d'entrée sont produites ici. Les helpers de post-agrégation `analysis.calculate_kpis`
-/ `momentum_metrics` / `build_market_commentary` restent réutilisés tels quels (ils
+/ `momentum_metrics` / `level_context` restent réutilisés tels quels (ils
 opèrent sur de petites frames déjà agrégées).
 
 Deux formes de sortie :
   * `rows(...)`  -> list[dict] directement sérialisable (NULL SQL -> None, jamais de
     NaN, dates déjà formatées par strftime côté SQL) ;
-  * `frame(...)` -> DataFrame, pour les helpers partagés avec `app.py`/`report.py`
+  * `frame(...)` -> DataFrame, pour les helpers de post-agrégation
     (`analysis.calculate_kpis` / `momentum_metrics`) qu'on réutilise tels quels.
 
 Les cumuls glissants SQL répliquent exactement `pandas.rolling(w, min_periods=w).sum()` :
@@ -47,7 +47,7 @@ def open_warehouse(refresh: bool = True):
     `refresh=True` lance d'abord `DataManager.load_or_generate_all()`, qui reconstruit
     les CSV manquants et met à jour les miroirs Parquet validés : c'est le seul moment
     où pandas voit les données brutes. Tout le reste passe par SQL. Les appelants qui ont
-    déjà rafraîchi les données (l'app Streamlit via son `@st.cache_resource`) passent
+    déjà rafraîchi les données (web_export.py, qui vient d'appeler `load_frames()`) passent
     `refresh=False` pour rouvrir une connexion sur les Parquet déjà à jour.
     """
     if refresh:
@@ -59,15 +59,15 @@ def open_warehouse(refresh: bool = True):
 def _cur(con):
     """Curseur DuckDB **isolé** pour UNE requête — jamais la connexion partagée.
 
-    `app.py` met sa connexion en cache avec `@st.cache_resource`, donc UN SEUL objet
-    connexion est partagé par toutes les sessions Streamlit, qui s'exécutent chacune dans
+    Un process long (l'API HTTP, et avant elle l'app Streamlit retirée le 2026-09-23)
+    garde UNE connexion partagée par toutes ses requêtes, qui s'exécutent chacune dans
     son thread. Or un `DuckDBPyConnection` porte le résultat de son dernier `execute()` :
     deux threads qui l'utilisent en même temps se volent mutuellement leur jeu de
     résultats. Le symptôme n'est pas une erreur SQL mais un DataFrame **bien formé et
     faux** — celui de la requête de l'autre session : `q.monthly(con, "ventes_ancien",
     ["Transactions"])` renvoyait les colonnes de la requête sitadel concurrente, d'où un
     `KeyError: 'Transactions'` dans `analysis.calculate_kpis`, en production seulement
-    (en local il n'y a qu'une session, donc jamais de concurrence).
+    (en local il n'y avait qu'une session, donc jamais de concurrence).
 
     `con.cursor()` ouvre une connexion indépendante sur la MÊME base en mémoire — les
     vues créées par `housing_data.connect()` restent visibles, l'état de résultat ne l'est
@@ -138,8 +138,7 @@ def _row_filter(types=None, years=None, category_col: str = "Type"):
     Sans ce paramètre, seuls les deux premiers datasets étaient
     filtrables côté SQL et les autres restaient agrégés en pandas.
 
-    `years=(min, max)` reproduit le `_filter_years` d'app.py (bornes incluses, sur
-    l'ANNÉE civile), appliqué avant le GROUP BY comme le faisait le filtrage pandas.
+    `years=(min, max)` borne sur l'ANNÉE civile (bornes incluses), appliqué avant le GROUP BY comme le faisait le filtrage pandas.
     """
     clauses, params = [], []
     if types:
@@ -153,7 +152,7 @@ def _row_filter(types=None, years=None, category_col: str = "Type"):
 
 def _select_with_windows(value_cols, windows):
     """Projection + clause WINDOW, en tolérant `windows=()` (agrégat mensuel nu, sans
-    cumul glissant : c'est le cas des barres de comparaison mois-par-mois d'app.py, où
+    cumul glissant : c'est le cas des barres de comparaison mois-par-mois, où
     une clause WINDOW vide produirait du SQL invalide)."""
     quoted = ", ".join(f'"{c}"' for c in value_cols)
     if not windows:
@@ -174,7 +173,7 @@ def monthly(con, dataset: str, value_cols, windows=(12,), types=None,
 
     Attention : borner par `years` borne AUSSI les fenêtres glissantes. Les vues qui
     veulent un cumul 12 mois correct en début de période doivent agréger sur l'historique
-    complet puis découper à l'affichage — c'est ce que fait app.py.
+    complet puis découper à l'affichage — c'est ce que fait le front (frise de période).
     """
     sums = ", ".join(f'SUM("{c}")::DOUBLE AS "{c}"' for c in value_cols)
     where, params = _row_filter(types, years, category_col)
@@ -317,7 +316,7 @@ def macro_last_and_year_ago(con, col: str, months: int = 12):
 
 def capacity_expr(rate_expr: str, years: int) -> str:
     """Expression SQL du facteur de capacité d'emprunt (valeur actuelle d'une mensualité
-    unitaire sur `years` ans) — transcription de `_borrow_capacity_factor` d'app.py."""
+    unitaire sur `years` ans), 1 − (1+i)⁻ⁿ sur i, au taux mensuel i."""
     n = years * 12
     i = f"(({rate_expr}) / 1200.0)"
     return f"CASE WHEN {i} > 0 THEN (1.0 - POWER(1.0 + {i}, -{n})) / {i} ELSE {float(n)} END"

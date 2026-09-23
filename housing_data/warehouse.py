@@ -20,7 +20,7 @@ Design choices, on purpose:
     older than its own CSV, so a CSV-only refresh can not be masked by a stale mirror.
   * The query surface is standard SQL over one view per dataset, so the same warehouse is
     reusable by an API (FastAPI), a notebook, or an HTML/CSS front (static Parquet export
-    / DuckDB-WASM) — not just this Streamlit app.
+    / DuckDB-WASM).
 
 Public API:
     write_dataset(name, df, data_dir)      validate -> Parquet (returns path)

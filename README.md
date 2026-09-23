@@ -1,162 +1,105 @@
-# HousingMarket — Market Intelligence Immobilier
+# Baromètre du Logement
 
-Dashboard **Streamlit** d'analyse conjoncturelle du marché immobilier français (national) et d'aide à la prévision. Il met en regard la construction neuve (SIT@DEL / SDES), la commercialisation du neuf (ECLN), les ventes dans l'ancien (IGEDD), les prix (Notaires-INSEE), l'accessibilité, le contexte macro-financier (confiance, taux, Euribor, OAT, intentions d'achat, chômage, volume et demande de crédits) et un module de **prévision des transactions** avec scénarios.
+Site d'analyse du marché du logement en France, publié sur
+**[barometre-logement.com](https://barometre-logement.com)**. Il met en regard la
+construction neuve, les ventes dans l'ancien, les prix et les conditions de financement,
+en tire une prévision des transactions à 12-18 mois, et publie l'historique de ses
+prévisions face au réel. Chaque série vient d'un organisme public ; rien n'est saisi à la
+main, rien n'est acheté.
 
-L'outil permet aussi d'**importer les ventes mensuelles d'une société** (CSV) pour les corréler aux indicateurs de marché dans le moteur de prévision, et de **générer un bilan PDF** (chiffres clés, commentaire d'analyse, graphiques, repère BPCE) depuis la barre latérale.
+Le dépôt a deux moitiés :
 
-## Aperçu des onglets
+- **Python** (racine) — acquiert les sources, les valide, les agrège et écrit des JSON
+  statiques ;
+- **le site** (`web/observable/`, Observable Framework, Node) — lit ces JSON et se
+  construit en HTML statique, servi par Cloudflare Pages.
 
-L'application est organisée en **7 onglets** suivant les segments de marché puis l'entonnoir de lecture (où en est le marché → pourquoi → où va-t-il → outils).
+```
+fetch_new_sources.py ─► data_manual_input/ ─► DataManager ─► data/*.csv + Parquet
+                                                                  │
+                          queries.py (DuckDB) ◄───────────────────┘
+                                  │
+      forecast.py / api/engine.py ┤
+                                  ▼
+                  web/export/web_export.py ─► web/observable/src/data/*.json
+                                                        │
+                                  Observable Framework ─► dist/ ─► Cloudflare Pages
+```
 
-0. **🧭 Synthèse** — page d'accueil « coup d'œil » : **chips d'état par pilier** (🟢/🟠/🔴 pour Neuf, Ancien, Financement), encart **« À retenir »** en puces (une par pilier + implication demande second œuvre), 3 blocs de cartes (*Activité* / *Conditions de financement* / *Perspective* avec verdict vs cible BPCE), fraîcheur des données par source, et un **graphique croisé neuf/ancien en deux panneaux** — niveaux réels sur échelle unique + base 100 (moyenne 2015, convention INSEE). Chiffres nationaux, indépendants du filtre de période.
-1. **🏗️ Marché du neuf** — permis et mises en chantier (SIT@DEL : cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle par année), **KPI de glissement** (3 derniers mois vs n-1), **dynamique Individuel vs Collectif** (driver du second œuvre), puis section **Commercialisation Neuf (ECLN)** : encours & mises en vente, délai d'écoulement, **réservations par catégorie d'acquéreurs** (particuliers / bailleurs sociaux / investisseurs institutionnels), prix au m².
-2. **🏠 Marché de l'ancien** — ventes dans l'ancien (IGEDD : cumuls 12/6 mois, brut, moyennes mobiles, comparaison mensuelle), puis section **Prix & Accessibilité** : indices de prix des logements anciens (Notaires-INSEE) et **neufs** (INSEE), glissement annuel, **capacité d'emprunt** (à mensualité constante) et **indice d'accessibilité** (capacité ÷ prix).
-3. **🏦 Environnement & Financement** — confiance des ménages, taux de crédit / Euribor / OAT (togglables), intentions d'achat, chômage BIT, **volume de crédits à l'habitat** (production mensuelle + cumul 12 mois), **demande de crédits (enquête BLS)** — indicateur avancé — et **activité du second œuvre** (rénovation, passée & prévue).
-4. **📰 Actualités & Aides** — veille curatée des dispositifs d'aide FR/UE (Jeanbrun, MaPrimeRénov', PTZ, DPE, CEE, EAHP…), impacts qualitatifs par pilier et échéancier.
-5. **📡 Prévision & Scénarios** — modèle à deux étages *taux de crédit ~ OAT + Euribor* puis *transactions ~ taux + intentions + chômage* (décalés, **lags cherchés sur le train seul**), **backtest hors échantillon**, **projection mensuelle à horizon 12-18 mois** (partie « sans hypothèse » tant que les indicateurs décalés sont déjà observés, puis extension par report avec repère visuel et bande ±1,28·RMSE), **propagation à une prévision mensuelle des ventes société** par famille, **rénovation en 3ᵉ driver** (comparatif R² transactions seules vs transactions+rénovation), **repère BPCE L'Observatoire 2026**, et panneau de scénarios à 4 leviers (OAT / Euribor / chômage / **intentions d'achat** → transactions → ventes société importées).
-6. **⚙️ Données & Sources** — **import des ventes mensuelles d'une société** (CSV `Date, Sales` — **multi-séries** : une colonne `Serie`/`Produit`/`Famille` crée une famille de produits par valeur, sélectionnable dans le moteur de prévision), ou dépôt versionné d'un fichier par famille dans `data_manual_input/ventes-<famille>.csv`.
+Un workflow GitHub Actions ([`refresh-data.yml`](.github/workflows/refresh-data.yml))
+enchaîne chaque lundi : rafraîchir les sources, enregistrer la prévision du jour dans
+l'archive, régénérer les JSON, commiter ce qui a changé. Le commit déclenche la
+reconstruction du site.
+
+> L'application Streamlit d'origine (`app.py`, onglets et rapport PDF) a été retirée le
+> 2026-09-23 : le site en avait repris toutes les pages, et tenir deux interfaces alignées
+> coûtait plus qu'il ne rapportait. Elle reste dans l'historique git.
+
+## Les pages
+
+| Page | Contenu |
+|---|---|
+| Accueil, À propos, Mentions légales | Rédigées, 100 % statiques (lisibles par les robots de partage) |
+| Synthèse | État des trois piliers (neuf, ancien, financement), du présent vers l'avenir |
+| Marché du neuf | Permis et mises en chantier (SIT@DEL), individuel/collectif, commercialisation (ECLN) |
+| Marché de l'ancien | Ventes (IGEDD), prix Notaires-INSEE, capacité d'emprunt et accessibilité |
+| Environnement & Financement | Taux, OAT, Euribor, confiance, intentions d'achat, chômage, crédits, rénovation |
+| Actualités & Aides | Veille curatée des dispositifs publics (`actualites.py`) |
+| Prévision & Scénarios | Projection des ventes anciennes, son incertitude, un panneau de scénarios à trois leviers |
+| Prévisions passées | Toutes les prévisions produites, face à ce qui s'est passé |
+| Données & Sources | Confronter ses propres ventes aux indicateurs, sans que le fichier quitte le navigateur |
+| 101 pages départementales | Prix au m² et ventes (DVF), m² accessibles, profil INSEE du département |
 
 ## Lancer en local
 
 ```bash
 pip install -r requirements.txt
-streamlit run app.py
+python fetch_new_sources.py            # rafraîchit data_manual_input/ (réseau)
+python web/export/web_export.py        # reconstruit data/ et écrit les JSON du site
+npm --prefix web/observable install
+npm --prefix web/observable run dev    # http://localhost:3000
 ```
 
-L'application s'ouvre sur http://localhost:8501.
+`python web/export/web_export.py` doit annoncer **`0/7 fichier(s) modifié(s)`** quand
+aucune donnée n'a bougé : un diff inattendu signale une divergence de calcul, pas du
+bruit.
+
+Tests :
+
+```bash
+python -m pytest tests/ -q
+```
+
+Les tests de parité SQL se sautent sans entrepôt construit, ceux de parité JS et de
+référencement sans Node, ceux de l'API sans Flask.
 
 ## Données
 
-Toutes les séries de `data/` sont **réelles**, issues de sources publiques officielles (seules les ventes de produits second-œuvre restent synthétiques et anonymisées — 3 familles génériques). L'acquisition de **toutes** les sources est scriptée dans **`fetch_new_sources.py`** (hors-runtime, via `urllib` de la bibliothèque standard) : `python fetch_new_sources.py` rafraîchit l'intégralité de `data_manual_input/` en une commande, à l'exception des compilations manuelles `ventes-*.csv`. L'application, elle, ne fait aucun appel réseau.
-
-Le script est optimisé pour des mises à jour fréquentes et sûres :
-
-- **Builders parallèles, isolés en cas de panne** — les 9 sources sont téléchargées en concurrence (I/O réseau indépendant) ; une API en panne ne skippe que sa source, les autres se rafraîchissent.
-- **Retry + backoff exponentiel** sur les erreurs réseau transitoires (5xx / resets des API INSEE / BCE / DiDo).
-- **Écriture hash-gardée & atomique** — un fichier n'est réécrit que si son contenu a réellement changé (pas de `mtime` bumpé pour rien → cache app préservé, pas de diff git parasite), via `tmp` + `os.replace` (jamais de CSV tronqué en cas de coupure).
-- **Manifeste de provenance** `data/_manifest.json` (non versionné) : par fichier — changé ?, dernière observation, hash, horodatage — plus les échecs éventuels.
-- **Reconstruction déterministe** de la série dérivée `data/ventes_ancien.csv` après un nouveau classeur IGEDD (`ensure_ventes_ancien` est *mtime-aware*).
-- **Automatisation** — le workflow GitHub Actions [`.github/workflows/refresh-data.yml`](.github/workflows/refresh-data.yml) lance le script chaque lundi (et à la demande) et ne committe que les fichiers réellement modifiés. `python fetch_new_sources.py --sequential` désactive le parallélisme pour déboguer une source.
-
-| Indicateur | Source | Accès |
+| Indicateur | Producteur | Accès |
 |---|---|---|
-| Ventes dans l'ancien (cumul 12 m) | IGEDD | fichier `.xls` (URL directe cgedd.fr) |
-| Logements autorisés / commencés (SIT@DEL) | SDES | API DiDo (data.gouv) |
-| Commercialisation des logements neufs (ECLN : réservations, mises en vente, encours, délai, prix, acquéreurs) | SDES | data.gouv / API DiDo |
-| Prix des logements anciens (Notaires-INSEE) & neufs | INSEE | API SDMX BDM |
-| Confiance des ménages, intentions d'achat, chômage BIT | INSEE | API SDMX BDM |
-| Taux de crédit habitat & **volume de crédits** (décomposé hors renégociations / renégociations) | Banque de France / BCE | API SDMX BCE (MIR) |
-| **Demande de crédits habitat** (enquête BLS, réalisé + perspectives 3 mois) | BCE / Banque de France | API SDMX BCE (BLS) |
-| Euribor 3 mois, OAT 10 ans | BCE | API SDMX BCE |
-| **Activité du second œuvre** (rénovation — activité passée & prévue) | INSEE (enquête conjoncture bâtiment) | API SDMX BDM |
+| Logements autorisés et commencés (SIT@DEL) | SDES | API DiDo (data.gouv.fr) |
+| Commercialisation des logements neufs (ECLN) | SDES | API DiDo (data.gouv.fr) |
+| Ventes de logements anciens | IGEDD | classeur publié |
+| Prix des logements anciens / neufs | Notaires-INSEE / INSEE | API SDMX (BDM) |
+| Confiance des ménages, intentions d'achat, chômage BIT | INSEE | API SDMX (BDM) |
+| Activité du second œuvre (rénovation) | INSEE, enquête de conjoncture | API SDMX (BDM) |
+| Taux et volume des crédits nouveaux à l'habitat | Banque de France / BCE | API SDMX (MIR) |
+| Demande de crédits habitat (enquête BLS) | BCE / Banque de France | API SDMX (BLS) |
+| Euribor 3 mois, OAT 10 ans | BCE | API SDMX |
+| Demandes de valeurs foncières (DVF) | DGFiP | data.gouv.fr (geo-dvf) |
+| Recensement, niveau de vie (Filosofi) | INSEE | API Melodi |
 
-Les identifiants de séries (idbanks INSEE, clés BCE, ressources DiDo) sont documentés dans [`data_manual_input/Data source.txt`](data_manual_input/Data%20source.txt).
+La liste détaillée, avec la date du dernier point publié de chaque série, est sur la page
+[À propos](https://barometre-logement.com/a-propos) — elle est réécrite par l'export à
+chaque publication. Les identifiants de séries sont dans
+[`data_manual_input/Data source.txt`](data_manual_input/Data%20source.txt).
 
-Les **ventes mensuelles d'une société** importées via l'onglet Données Source sont des **données utilisateur** (stockées dans `data/company_sales.csv`, non versionnées / `.gitignore`) ; elles ne sont pas une source publique. Le **rapport PDF** est généré localement (aucun appel réseau).
+## Pour contribuer
 
-## Limitations connues & feuille de route
+[`CLAUDE.md`](CLAUDE.md) porte les invariants à ne pas casser et les pièges connus ; le
+journal des décisions et des mesures datées est dans [`docs/journal/`](docs/journal/).
+Le front a son propre guide : [`web/README.md`](web/README.md).
 
-Audit du système de données (2026-07-15). Le pipeline est robuste sur le fond (sources réelles, provenance tracée, gestion NaN honnête, cache par `mtime`, reconstruction IGEDD exacte). Les points ci-dessous restent à traiter, par priorité.
-
-### P0 — correction & fiabilité de base
-
-- ✅ **Cohérence ventes ↔ transactions (résolu 2026-07-15).** Les ventes synthétiques de second œuvre sont désormais construites (`build_sales`) à partir des **permis SIT@DEL réels** et des **transactions IGEDD réelles** — la série que l'app affiche —, via la série des ventes anciennes réelle (IGEDD) chargée *avant* la génération des ventes. L'ancienne série de transactions synthétique (jetée) et `macro_model` ont été supprimés. Corrélation « Sécurité & Domotique » ↔ IGEDD décalé 2 mois = 0,99.
-- ✅ **Couverture temporelle alignée (résolu 2026-07-15).** Plus de `date_range` hardcodé : `generate_sitadel_and_macro` dérive la borne de la donnée réelle (SIT@DEL + buffer, puis trim des mois de queue tout-NaN → macro se termine sur la dernière observation réelle, ex. 2026-06 pour confiance/Euribor/OAT/intentions) ; `build_sales` est borné à `min(SIT@DEL, IGEDD)` (2026-05) — plus aucun mois fabriqué sans donnée marché.
-- ✅ **Validation de schéma sur les uploads (résolu 2026-07-16).** `update_with_custom_csv` et `import_company_sales` valident désormais la donnée contre le contrat pandera (`hd.validate(..., lazy=False)`) avant écriture : un fichier aux bonnes colonnes mais au contenu invalide (NaN parasite, compte négatif, ligne non-nationale, doublon Date/Type, catégorie inconnue) est rejeté avec un message clair au lieu de casser un onglet plus loin. Reste ouvert : un vrai `logging` fichier (les `print` et les tuples `(bool, message)` subsistent).
-
-### P1 — consolidation
-
-- ✅ **Tests automatisés (résolu 2026-07-16).** `tests/test_logic.py` couvre les invariants clés : reproduction IGEDD (dérive ≤ 12 sur le cumul 12 m), `momentum_metrics`, `calculate_kpis`, `ols`/`scenario`, et `forecast_path` (horizon + report). Standalone ou pytest, comme `tests/test_housing_data.py`.
-- ✅ **Métadonnée de provenance (résolu 2026-07-30).** `fetch_new_sources.py` écrit `data/_manifest.json` (par fichier : changé ?, dernière observation, hash, horodatage + échecs). Non versionné (artefact régénéré). Reste ouvert : l'afficher dans l'onglet Données & Export.
-- ✅ **Acquisition optimisée & automatisée (2026-07-30).** Builders parallèles, retry/backoff, écriture hash-gardée + atomique (`tmp` + `os.replace`), reconstruction *mtime-aware* de `ventes_ancien.csv`, et workflow GitHub Actions hebdomadaire qui ne committe que les fichiers modifiés.
-- **Bouton « Reconstruire la macro »** dans l'onglet Données & Export, symétrique des boutons IGEDD / ECLN existants.
-- **Loader IGEDD fragile** : indices de colonnes en dur (`DATE_COL=1`, `VALUE_COL=3`, nom de feuille) — à fiabiliser (détection d'en-têtes).
-
-### P2 — refonte de fond
-
-- **Registre de sources unique** : centraliser `série → {fichier, colonne, fréquence, clé SDMX}` dans un seul dict partagé par `fetch_new_sources.py` et `data_manager.py` (aujourd'hui dupliqué → risque de dérive). ✅ Premier pas (2026-07-18) : `MACRO_CORE_SERIES` dans `fetch_new_sources.py`, alignement verrouillé par `tests/test_fetch_sources.py`.
-- **Stockage macro en format long** (`[Date, série, valeur, fréquence]`) : `macro.csv` est aujourd'hui un format large ~35 % NaN (séries trimestrielles réindexées en mensuel).
-- **Versionnement des données** : snapshots horodatés avant écrasement, plutôt qu'une réécriture en place.
-- **Dernière série synthétique** : remplacer les ventes second œuvre par un proxy réel (seul maillon non réel restant). ✅ **Pilier rénovation actif (2026-07-16)** : 2 séries INSEE réelles (activité passée/prévue du second œuvre, idbanks 001586954/001586886) branchées comme 2ᵉ facteur du modèle de ventes — le mécanisme de remplacement du synthétique est en place ; reste à disposer de vraies ventes société pour retirer `build_sales`.
-
-### Réalisés le 2026-07-16 (première vague)
-
-- **Cache de chargement** : `read_frames()` + `@st.cache_data` keyé sur les mtimes → plus de relecture des CSV ni de réécriture des 7 Parquet à chaque interaction (le miroir entrepôt ne tourne qu'à la (re)génération).
-- **Ventes société multi-séries** : format `[Date, Company, Serie, Sales]`, sélecteur de famille de produits dans les 3 moteurs ; cible réelle par défaut + avertissement de circularité sur le synthétique.
-- **Prévision à horizon** (voir onglet 5) et **export SAP IBP** de cette prévision.
-- **Page Synthèse** feu-tricolore (onglet 0).
-- **Extraction i18n** : dictionnaire `T` sorti dans `translations.py` ; étiquettes corrigées (catégorie « Ventes second-œuvre (synthétiques) », texte de reset, clés mortes de la carte supprimées).
-
-### Réalisés le 2026-07-16 (seconde vague — robustesse & pertinence)
-
-- **Anti-fuite / anti-overfit** : (e3) recherche de décalages du modèle de transactions sur le **train uniquement** (`search_tx_lags(split=)`) — le MAPE hors échantillon n'est plus flatté ; (e2) l'**optimiseur composite** sélectionne sur un **split train/test** et affiche le **r hors échantillon** (le seul honnête sur ~9 500 combinaisons) ; (e1) l'atelier Time-Lag affiche la **corrélation sur variations annuelles** + le **n de points** à côté du r sur niveaux, avec avertissement d'auto-corrélation quand l'indicateur est lissé ; (e4) **slider « Intentions d'achat »** ajouté au panneau de scénarios (3ᵉ prédicteur enfin pilotable).
-- **Prévision mensuelle des ventes société** : `forecast.propagate_to_series` propage la trajectoire de transactions projetée à travers l'élasticité estimée → prévision par famille + bande, **exportable SAP IBP** (4ᵉ source d'export).
-- **Pilier rénovation comme 3ᵉ driver — ACTIF (2026-07-16)** : deux séries **réelles** INSEE (Enquête mensuelle de conjoncture dans l'industrie du bâtiment, **second œuvre**, CVS, mensuel 1975→2026-06) — activité **passée** (idbank 001586954) et **prévue** (001586886, avancée). Affichées dans l'onglet Contexte Macro (section « Rénovation & second œuvre »), pastille Synthèse, et 2ᵉ facteur du modèle `forecast.fit_sales_two_factor` (ventes ~ transactions + rénovation) — comparatif R² dans l'onglet Prévision. Acquisition : `fetch_new_sources.build_renovation()`. Enrichissement futur possible : un proxy de volume (MaPrimeRénov'/éco-PTZ).
-- **Import versionné des ventes** : `data_manual_input/ventes-<famille>.csv`, ingérés automatiquement quand aucun upload ad-hoc n'est présent ; **table récap « une famille = un décalage »** dans l'onglet Prévision.
-- **Tests étendus** (`tests/test_logic.py`, 10 tests) : anti-fuite du lag search, propagation ventes, modèle 2 facteurs, split de l'optimiseur composite.
-
-### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 2)
-
-Après la phase 0 (couche SQL `queries.py` + tests de parité) et la phase 1 (`web_export.py`), la phase 2 bascule les **deux surfaces restantes**. DuckDB est désormais le moteur d'agrégation unique du projet.
-
-- **`report.py` sur la couche SQL** : les 4 graphiques et le bloc KPI/commentaire du rapport PDF passent par `queries.py`. `build_pdf_report(con, lang)` ne reçoit plus de DataFrame — le rapport est slicer-indépendant, donc les vues de l'entrepôt suffisent. Le graphique individuel/collectif fait une requête au lieu d'un agrégat par groupe.
-- **`app.py` sur la couche SQL** : toutes les chaînes `aggregate_* -> calculate_rolling_12m -> calculate_rolling` remplacées par `q.monthly` / `q.monthly_by_group`, avec la connexion DuckDB en `@st.cache_resource`. Le bloc individuel/collectif passe de **8 passes pandas sur l'historique à 1 requête** (fenêtres partitionnées par groupe).
-- **`queries.py` élargi** : filtre `years=(min, max)` (le slicer d'années fait côté SQL), support de `windows=()` (agrégat mensuel nu, sans cumul), et `macro_frame()` pour les traceurs.
-- **Parité vérifiée de bout en bout, pas seulement en test unitaire** :
-  - le **PDF est strictement identique** octet pour octet entre la voie pandas et la voie SQL (graphiques, KPI et commentaire compris) ;
-  - `app.py` exécuté via le harnais Streamlit rend des valeurs **identiques** — 35 métriques, 185 blocs markdown, 90 légendes — à l'état par défaut **et** avec le slicer déplacé (2015-2020), ce qui exerce le filtre SQL.
-- **`analysis.py` change de statut** : ses agrégations ne sont plus sur le chemin d'exécution mais sont conservées comme **implémentation de référence** des tests de parité (`tests/test_queries_parity.py`, 15 tests). Ses helpers de post-agrégation (`calculate_kpis`, `momentum_metrics`, `build_market_commentary`) restent, eux, appelés au runtime.
-- **Effet de bord bienvenu** : les calculs faits par DuckDB ne dépendent plus de la version de pandas/numpy. L'export web, qui variait au 1e-14 près sur `capidx`/`access` selon l'environnement, est maintenant reproductible bit-pour-bit.
-- **CI réparée** : le workflow hebdomadaire n'installait que `pandas numpy xlrd` alors que la phase 1 avait rendu `duckdb`/`pandera`/`pyarrow` obligatoires pour l'export — l'étape « Régénérer les données du front web » échouait à l'import.
-
-### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 3)
-
-La phase 2 avait laissé `app.py` à moitié migré : les onglets d'affichage passaient par SQL, mais les onglets d'analyse interactive (Prévision, Atelier exploratoire, Données & Export) gardaient 11 agrégations pandas. La phase 3 les traite.
-
-- **`q.monthly` généralisé** : le filtre de catégorie codait en dur la colonne `Type`, donc seuls sitadel et ventes_ancien étaient filtrables côté SQL. Le paramètre `category_col` ouvre les autres datasets — `Product` (sales), `Serie` (company_sales).
-- **8 sites migrés** : sélecteur de série des ventes société importées, table récap « une famille = un décalage », les deux indicateurs de l'atelier Time-Lag, les benchmarks CA société et ventes second-œuvre, et la composante 1 de l'indicateur composite.
-- **`q.macro_rolling`** : nouveau helper pour les cumuls de crédits à l'habitat. Contrairement à `rolling_sum`, il CONSERVE les lignes à cumul NULL et les colonnes brutes — la vue superpose des barres mensuelles et une courbe cumulée sur le même axe, elle a besoin des deux.
-- **Un seul calcul reste délibérément en pandas** : le lissage 12 mois de l'atelier Time-Lag (`min_periods=1`). C'est un lissage d'affichage appliqué en aval à la série déjà agrégée, quelle que soit sa provenance parmi trois branches ; le passer en SQL obligerait à pousser toute la sélection d'indicateur dans la requête, sans gain numérique. La raison est écrite à côté du code.
-- **Parité vérifiée sous trois états de widgets** : `app.py` rendu via le harnais Streamlit donne des valeurs identiques à l'état par défaut, avec le slicer déplacé (2015-2020), **et avec 13 selectbox basculés sur leur dernière option** — c'est ce dernier état qui exerce réellement les branches `Product` / `Company` / `Serie`. Métriques, markdown, légendes et tableaux comparés.
-- **Tests** : `tests/test_queries_parity.py` passe de 15 à 19 cas (filtre de catégorie sur les trois datasets non-`Type`, `macro_rolling` vs `dropna().rolling()`). 58 collectés sur l'ensemble des suites : 57 verts, 1 skip légitime (`company_sales` vide tant qu'aucun import utilisateur n'a eu lieu).
-
-### Réalisés le 2026-08-19 (DuckDB moteur de calcul — phase 4)
-
-Dernière série définie deux fois : le cumul 12 mois des transactions. L'onglet « Marché de l'ancien » affichait `Transactions_12M` calculé en SQL, tandis que toute la chaîne de prévision recalculait le même cumul en pandas (`forecast.build_target`).
-
-- **`q.transactions_run_rate(con)`** produit désormais cette série pilote — conforme au principe posé en phase 0 : les modèles restent en numpy (DuckDB n'est pas un moteur de régression), mais **leurs séries d'entrée sont produites par la couche SQL**. Renvoie une Series indexée par Date, car les modèles la manipulent par son index (`.shift()`, `.resample("QS")`, jointures).
-- **`_forecast_bundle` prend `tx12` en paramètre** au lieu de la dériver : la fonction est `@st.cache_data` et une connexion DuckDB n'est ni hachable ni sérialisable, alors qu'une Series est une clé de cache valide.
-- **`forecast.build_target` conservée** comme implémentation de référence des tests de parité, au même titre que les agrégations d'`analysis.py`. Le docstring le dit.
-- **Nettoyages** : `import forecast` était mort dans `web_export.py` depuis la phase 1 ; les alias `df_sitadel_full` / `df_ventes_ancien_full` n'ont plus d'utilisateur, l'entrepôt étant par nature l'historique complet.
-- **Parité** : `tx12` SQL vs pandas à **maxdiff 0**, même index, même dtype, même nom. `app.py` identique sous les trois états de widgets. 59 tests collectés, 58 verts, 1 skip légitime.
-
-### Réalisés le 2026-08-19 (entrepôt Parquet — axe *stockage*)
-
-⚠️ Axe distinct de celui ci-dessus. Les phases 0-4 précédentes portent sur *qui calcule* (DuckDB comme moteur d'agrégation). Celle-ci porte sur *où l'on lit* : la couche `housing_data/` écrivait les Parquet **à côté** des CSV, qui restaient le chemin de lecture. Elle bascule la lecture sur l'entrepôt.
-
-- **Le Parquet est le chemin de lecture au runtime.** `DataManager.read_frames()` et le chargement à froid passent par `housing_data.read_dataset()` : les séries sont lues typées et colonnaires, sans re-parsing des dates ni devinette de dtype à chaque démarrage. Cela supprime la situation où l'app lisait les mêmes données par deux chemins — DuckDB sur les Parquet pour les agrégations, pandas sur les CSV pour tout le reste.
-- **Garde de fraîcheur — le point porteur.** `warehouse.resolve()` ne retient un Parquet que s'il est **au moins aussi récent que son CSV**. Cas protégé : un `git pull` apporte les CSV rafraîchis par le job hebdomadaire, alors que le Parquet local date de la session précédente — sans cette règle, l'app servirait le miroir périmé. Les vues SQL appliquent la même règle, donc DuckDB et `read_dataset()` ne peuvent pas diverger.
-- **Repli CSV intégral.** Toute lecture retombe sur le CSV si le Parquet manque (clone neuf : `data/*.parquet` est gitignoré), s'il est périmé, ou si les libs sont absentes.
-- **Clé de cache alignée** : `DataManager.data_signature()` porte sur le fichier **réellement lu** (type, mtime, taille), donc le cache Streamlit se vide aussi quand un rafraîchissement fait basculer Parquet → CSV.
-- **API entrepôt élargie** : `read_all()`, `resolve()`, `signature()`, et `dataset_sources()` côté `DataManager` — la barre latérale affiche, dataset par dataset, s'il est lu en Parquet ou en repli CSV.
-- **Tests** (`tests/test_housing_data.py`) : garde anti-Parquet-périmé (y compris côté vue SQL), `read_all`, mouvement de la signature, parité Parquet/CSV de `read_frames()`.
-
-
-## Modules
-
-- `app.py` — interface Streamlit (7 onglets dont la Synthèse, bilingue FR/EN).
-- `translations.py` — dictionnaire de traductions `T` (FR/EN) extrait d'`app.py`.
-- `data_manager.py` — chargement / génération / cache des jeux de données (dont import des ventes société).
-- `analysis.py` — filtres, agrégations, cumuls glissants, momentum et commentaire d'analyse auto-généré.
-- `simulation.py` — décalage temporel d'un indicateur (le reste du module, recherche de décalage par r de Pearson et indicateur composite, est parti avec l'onglet « Atelier exploratoire »).
-- `forecast.py` — modèles de prévision (OLS taux + transactions, backtest, scénarios, élasticité transactions→ventes société).
-- `actualites.py` — veille curatée des dispositifs d'aide FR/UE (onglet « Actualités & Aides ») : items, jalons et impacts qualitatifs par pilier.
-- `housing_data/` — **couche données réutilisable** : `schema.py` (contrats typés pandera, un par dataset) et `warehouse.py` (persistance **Parquet** + surface SQL **DuckDB** embarquée, zéro serveur). Découplée de Streamlit : une API, un notebook ou un front statique peuvent consommer le même entrepôt.
-- `queries.py` — **couche de calcul SQL partagée** : DuckDB est le moteur d'agrégation unique des trois surfaces (`app.py`, `web/export/web_export.py`, `report.py`). Cumuls glissants (fonctions de fenêtre), YoY, z-score, capacité d'emprunt, regroupements par type — définis UNE fois, donc les trois surfaces affichent les mêmes chiffres par construction.
-- `export.py` — export SAP IBP (module intact mais **débranché** : besoin métier suspendu, plus aucun appelant ni test).
-- `fetch_new_sources.py` — acquisition des sources réelles (INSEE / SDES / BCE).
-- `report.py` — génération du **rapport PDF** (bilan : chiffres clés, commentaire, graphiques, repère BPCE) via reportlab + matplotlib. Bouton « 📄 Rapport PDF » dans la barre latérale.
-
-## Stack
-
-Python · Streamlit · pandas · numpy · plotly · xlrd · matplotlib · reportlab · DuckDB (moteur de calcul) · pyarrow (Parquet) · pandera (contrats)
+Le code est sous licence MIT ([`LICENSE`](LICENSE)). Les données restent sous les
+conditions de leurs producteurs (Licence ouverte / Etalab pour la plupart, conditions
+propres pour les séries de la BCE).

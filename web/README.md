@@ -1,35 +1,41 @@
-# Front statique — PoC de migration hors Streamlit
+# Le site — Observable Framework
 
-Preuve de concept : porter le dashboard HousingMarket vers un **site statique moderne**
-(publié sous la marque **Baromètre du Logement**, cf. `SITE` dans `site.config.js`)
-(Observable Framework) déployable sur Cloudflare Pages / Netlify, **sans réécrire la
-couche back-office Python**. Ce PoC couvre les **5 premiers onglets** de l'app.
+Le front public du **Baromètre du Logement** (cf. `SITE` dans `site.config.js`) : un site
+statique Observable Framework, déployé sur Cloudflare Pages. Il est né comme preuve de
+concept de migration hors de l'app Streamlit ; celle-ci a été retirée le 2026-09-23, et le
+site est désormais la seule interface du projet.
 
 ## Principe
 
 ```
-  [ INCHANGÉ — back-office Python ]                 [ NOUVEAU — couche produit ]
-  data_manager / analysis / forecast  ──►  web_export.py  ──►  JSON statiques
-  actualites / DataManager (Parquet→CSV)                             │
+  [ Python — données et calcul ]                    [ Node — le site ]
+  fetch / DataManager / queries / forecast  ──►  web/export/  ──►  JSON statiques
+                                                                     │
                                                                      ▼
                                               Observable Framework  ──►  dist/ (HTML/JS)
                                                                      ▼
-                                              Cloudflare Pages / Netlify (CDN, ~0 €)
+                                              Cloudflare Pages (CDN)
 ```
 
-`web_export.py` **réutilise telles quelles** les fonctions de l'app (`analysis`,
-`forecast`, `actualites`, `DataManager`) et recompute exactement le contenu des cinq
-premiers onglets d'`app.py`, un JSON par page (`synthese`, `neuf`, `ancien`, `macro`,
-`actualites`). La palette est centralisée dans `web/theme.json` (source unique lue par
-`web/export/theme.py`, le CSS de la config et `components/theme.js` généré). Le front ne
-fait que **lire** ces JSON : aucun Python n'est requis au build du site.
+`web/export/` **réutilise telles quelles** les fonctions de la chaîne Python (`analysis`,
+`forecast`, `api.engine`, `queries`, `DataManager`) et écrit un JSON par page. La palette
+est centralisée dans `web/theme.json` (source unique lue par `web/export/theme.py`, le CSS
+de la config et `components/theme.js` généré). Le front ne fait que **lire** ces JSON :
+aucun Python n'est requis au build du site.
 
 ## Arborescence
 
 ```
 web/
 ├── export/
-│   ├── web_export.py            # agrégats Python → JSON statiques + theme.js
+│   ├── web_export.py            # orchestration : un constructeur par page → JSON
+│   ├── page_*.py                # synthese, marches, contexte, previsions, archive, departements
+│   ├── commun.py                # mise en forme FR, palette, chemins
+│   ├── mesures.py / verdict.py  # faits partagés entre pages ; verdict du modèle
+│   ├── reperes.py               # ce que rien ne régénère : repères et mesures DATÉS
+│   ├── ecriture.py              # point d'écriture unique (arrondi, garde de contenu)
+│   ├── sources_table.py         # tableau des sources d'À propos (réécrit dans le .md)
+│   ├── accueil.py               # chiffres de l'accueil (réécrits dans index.md)
 │   └── theme.py                 # charge web/theme.json, génère components/theme.js
 ├── observable/
 │   ├── site.config.js           # IDENTITÉ : adresse publique, descriptions, NAV, logo
@@ -48,7 +54,7 @@ web/
 │       │   ├── hm.js            # graphiques & helpers partagés
 │       │   ├── period.js        # frise de période globale (barre latérale)
 │       │   └── theme.js         # palette, généré depuis web/theme.json
-│       └── data/synthese.json   # généré par web_export.py (commité pour le déploiement)
+│       └── data/*.json          # générés par web_export.py (commités pour le déploiement)
 ├── ../forecast_archive.py       # (racine) mémoire des prévisions : --record / --backfill
 └── README.md
 ```
@@ -59,38 +65,22 @@ navigation, le logo), **`observablehq.config.js` dit à quoi il RESSEMBLE**. Le 
 aussi lu par `scripts/postbuild.mjs` et par `tests/test_web_seo.py` : une page ajoutée là
 apparaît d'un coup dans la barre latérale, dans le sitemap et dans les tests.
 
-## Coexistence avec l'app Streamlit
-
-Ce PoC est **purement additif** : tout vit sous `web/` et n'importe le back-office Python
-qu'en lecture. `app.py` (Streamlit) n'est pas modifié et reste pleinement fonctionnel —
-l'objectif est justement de faire tourner **les deux en parallèle pour comparer**.
-
-- **Streamlit (existant)** : `streamlit run app.py` → http://localhost:8501. Reste
-  déployé là où il l'est déjà (Streamlit Community Cloud, etc.) : rien à changer.
-- **Front statique (PoC)** : voir ci-dessous → http://localhost:3000.
-
-Les deux configs sont dans `.claude/launch.json` (`streamlit-legacy` et `web-synthese`).
-
 ## Lancer en local
 
 ```bash
-# 1) (Ré)générer les données du front depuis la pipeline Python
+# 1) (Ré)générer les données du front depuis la chaîne Python
 python web/export/web_export.py
 
 # 2) Installer et lancer le serveur de dev (http://localhost:3000)
 npm --prefix web/observable install
 npm --prefix web/observable run dev
-
-# (en parallèle, l'app Streamlit d'origine, pour comparer)
-streamlit run app.py    # http://localhost:8501
 ```
 
 ## Look & feel
 
-Typo et couleurs alignées sur ce que l'app Streamlit **rend** : corps de texte en Source
-Sans 3 (la police que Streamlit embarque ; chargée ici via `globalStylesheets`), titres
-dans la pile Segoe UI d'`app.py`, soulignés en rouge brique (#E64A19), texte anthracite
-(#2D3748). Les graphiques affichent les valeurs **au survol** (infobulle « closest » type
+Typo et couleurs héritées de l'app Streamlit d'origine : corps de texte en Source Sans 3
+(chargée via `globalStylesheets`), titres dans la pile Segoe UI, soulignés en rouge brique
+(#E64A19), texte anthracite (#2D3748). Les graphiques affichent les valeurs **au survol** (infobulle « closest » type
 Plotly, mois en français).
 
 Deux règles de mise en page valent d'être connues avant de toucher au CSS :
@@ -209,7 +199,7 @@ instance de l'API soit joignable quelque part, ce qui n'a jamais été le cas po
 visiteur du site déployé. Ce n'est plus vrai : les **huit pages** lisent maintenant un
 JSON statique produit par `web_export.py`, comme les six premières l'ont toujours fait.
 Le septième export, `previsions.json`, appelle `api.engine` **au build**, pas au
-runtime — voir `build_previsions` dans `web/export/web_export.py`.
+runtime — voir `build_previsions` dans `web/export/page_previsions.py`.
 
 Deux pages ajoutent par-dessus un calcul **côté client**, en JavaScript, jamais un appel
 réseau :
@@ -455,87 +445,41 @@ un titre interpolé ne rendrait qu'un `<h1>` vide tant que le JS n'a pas tourné
 **Conséquence** : en `npm run dev`, une page départementale s'affiche sans ses chiffres,
 puisque la copie n'a lieu qu'au build. Vérifier sur `dist/`.
 
-## Périmètre du PoC / suite
+## Les pages et leurs contrôles
 
-Les **5 premiers onglets** de l'app Streamlit sont portés, avec les mêmes sections, les
-mêmes graphiques et les mêmes options de vue (cumul 12 / 6 mois, brut, moyennes mobiles,
-légendes cliquables) :
+Huit pages de données (Synthèse, Marché du neuf, Marché de l'ancien, Environnement &
+Financement, Actualités & Aides, Prévision & Scénarios, Prévisions passées, Données &
+Sources), trois pages rédigées (accueil, À propos, mentions légales) et les 101 pages
+départementales.
 
-- ✅ **Synthèse** — pastilles par pilier, à retenir, 3 blocs de cartes, fraîcheur,
-  graphique croisé neuf/ancien en deux panneaux (niveaux + base 100 = moyenne 2015).
-- ✅ **Marché du neuf** — SIT@DEL (courbes, comparaison mensuelle), individuel vs
-  collectif, ECLN (encours & mises en vente, délai d'écoulement, acquéreurs, prix au m²).
-- ✅ **Marché de l'ancien** — IGEDD, puis prix Notaires-INSEE, capacité d'emprunt et
-  indice d'accessibilité, neuf vs ancien.
-
-  Ces deux pages sont **jumelles** : elles ouvrent sur les trois mêmes sections, portant le
-  même intitulé et dans le même ordre (chiffres clés, courbes d'évolution, comparaison
-  mensuelle), puis chacune ajoute ce qui lui est propre. Chaque section du socle renvoie à
-  sa jumelle d'en face. `tests/test_web_structure.py` verrouille ce parallèle — le build,
-  lui, ne valide pas les fragments d'URL et laisserait passer une ancre morte.
-- ✅ **Environnement & Financement** — confiance, taux, intentions, chômage, volumes de
-  crédits, demande BLS, rénovation.
-- ✅ **Actualités & Aides** — filtres, matrice d'impact, échéancier, fiches détaillées.
-
-Une **huitième page de données** s'est ajoutée, sans équivalent dans l'app Streamlit :
-**🎯 Prévisions passées**, l'archive du modèle confrontée au réalisé (voir plus bas).
-
-À ces sept pages de données s'ajoutent **deux pages rédigées**, qui n'existent pas dans
-l'app Streamlit et n'ont de sens que pour un site public : l'**accueil** (ce que le site
-répond, pourquoi s'y fier, le plan des pages) et **À propos** (méthode, sources, limites,
-qui écrit). L'accueil a pris la racine `/` ; la Synthèse est passée à `/synthese`.
-
-### Parité des contrôles
+*Marché du neuf* et *Marché de l'ancien* sont **jumelles** : elles ouvrent sur les mêmes
+sections, portant le même intitulé et dans le même ordre, puis chacune ajoute ce qui lui
+est propre. Chaque section du socle renvoie à sa jumelle d'en face.
+`tests/test_web_structure.py` verrouille ce parallèle — le build, lui, ne valide pas les
+fragments d'URL et laisserait passer une ancre morte.
 
 - **Filtre de période** — une **frise à deux poignées dans la barre latérale**
-  (`src/components/period.js`), montée sur **toutes** les pages, comme le curseur
-  « Période (années) » de la barre latérale Streamlit. Son domaine vient de l'export
-  Python (bloc `period` des 5 JSON, même union de datasets qu'`app.py`), donc il est
-  identique d'un onglet à l'autre quelle que soit l'étendue des séries de la page.
-
-  Le site étant un ensemble de pages HTML distinctes, changer d'onglet **recharge** la
-  page : la position de la frise est donc persistée dans `localStorage`, ce qui lui donne
-  le comportement d'un contrôle unique qui suit l'utilisateur — la barre latérale
-  Streamlit, elle, survit aux changements d'onglet sans rien faire.
+  (`src/components/period.js`), montée sur **toutes** les pages. Son domaine vient de
+  l'export Python (bloc `period` des sept JSON), donc il est identique d'une page à
+  l'autre quelle que soit l'étendue des séries affichées. Changer de page recharge le
+  HTML : la position est persistée dans `localStorage`.
 
   Il ne rogne que l'affichage : cumuls glissants et moyennes mobiles sont calculés en
-  amont sur l'historique complet, exactement comme `app.py` qui filtre après avoir
-  calculé — une fenêtre étroite montre donc les mêmes valeurs, jamais des cumuls
-  tronqués. Deux nuances par page :
+  amont sur l'historique complet — une fenêtre étroite montre donc les mêmes valeurs,
+  jamais des cumuls tronqués. Nuances par page :
 
   - *Marché du neuf*, *Marché de l'ancien*, *Environnement & Financement* : tous les
     graphiques suivent la fenêtre ; les cartes « Chiffres clés » restent au dernier mois
-    disponible, comme dans Streamlit.
+    disponible.
   - *Synthèse* : seul le graphique croisé neuf/ancien suit la fenêtre. Pastilles, « à
-    retenir » et cartes restent indépendants du curseur, exactement comme `app.py` qui
-    les calcule sur les frames non filtrées.
+    retenir » et cartes restent indépendants du curseur.
   - *Actualités & Aides* : la frise est affichée pour rester présente partout, mais la
-    page ne la consomme pas (l'échéancier porte sur des mesures à venir, au-delà du
-    domaine du curseur). Une mention « Sans effet sur cet onglet » le dit sous le
-    contrôle.
+    page ne la consomme pas (l'échéancier porte sur des mesures à venir). Une mention
+    « Sans effet sur cet onglet » le dit sous le contrôle.
 - **Segmentation par type de logement** — sur *Marché du neuf*, les quatre types SIT@DEL
-  se cochent/décochent et rejouent la courbe **et** les KPI, comme le panneau repliable
-  d'`app.py` (aucun type coché = tous, même convention que le multiselect vide).
+  se cochent/décochent et rejouent la courbe **et** les KPI (aucun type coché = tous).
   L'export publie `by_type` (séries par type, en colonnaire : le front somme les types
   retenus) et `kpis_by_type` (les KPI des 15 sous-ensembles, pré-calculés par les mêmes
-  fonctions `analysis` que le reste de l'app — aucune statistique n'est réimplémentée en
-  JavaScript).
-
-### Écart connu avec Streamlit
-
-- **FR uniquement.** L'app Streamlit est bilingue (sélecteur FR/EN) ; le front ne sert
-  que le français. Les libellés venant de l'export Python, bilinguiser suppose de
+  fonctions `analysis` — aucune statistique n'est réimplémentée en JavaScript).
+- **FR uniquement.** Les libellés viennent de l'export Python ; bilinguiser supposerait de
   produire un JSON par langue.
-
-### Suite
-
-- ✅ **Les 7 onglets sont portés.** Prévision & Scénarios et Données & Sources ont
-  rejoint le site le 2026-08-20 par un chemin différent des cinq premiers (l'API HTTP),
-  puis sont passées au **même chemin** que les six autres pages le 2026-08-23 — voir
-  « Toutes les pages sont statiques » ci-dessous. Aucune des huit pages de données
-  n'a plus besoin d'un serveur pour fonctionner.
-- ✅ **Le site est publiable.** Accueil et À propos rédigés, métadonnées de partage et
-  de référencement, sitemap, favicon, langue du document et lien d'évitement — voir
-  « Être trouvable et partageable ».
-- ⏭️ Bilingue FR/EN pour les deux nouvelles pages (les cinq premières le sont déjà via
-  l'export Python).

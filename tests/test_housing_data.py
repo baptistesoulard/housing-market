@@ -141,7 +141,7 @@ def test_read_all_returns_only_what_is_on_disk():
 
 
 def test_signature_moves_on_every_kind_of_change():
-    """The Streamlit cache key: it must move on a rewrite, and also when a refresh flips
+    """The freshness cache key: it must move on a rewrite, and also when a refresh flips
     which file (Parquet or CSV) a dataset is read from."""
     with tempfile.TemporaryDirectory() as d:
         empty = hd.signature(d)

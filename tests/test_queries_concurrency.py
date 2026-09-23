@@ -1,9 +1,9 @@
 """Régression : la couche SQL doit rester juste quand PLUSIEURS threads partagent une
 même connexion DuckDB.
 
-Pourquoi ce test existe : `app.py` met sa connexion en cache avec `@st.cache_resource`,
-donc un seul objet connexion sert toutes les sessions Streamlit — et chaque session
-s'exécute dans son propre thread. Un `DuckDBPyConnection` porte le résultat de son dernier
+Pourquoi ce test existe : un process long garde UNE connexion partagée par toutes ses
+requêtes — l'API HTTP aujourd'hui, l'app Streamlit (retirée le 2026-09-23) quand le bug
+s'est produit — et chaque requête s'exécute dans son propre thread. Un `DuckDBPyConnection` porte le résultat de son dernier
 `execute()` : deux threads qui l'utilisent simultanément se volent leur jeu de résultats.
 Le symptôme n'est pas une erreur SQL mais un DataFrame **bien formé et faux**, celui de
 la requête de l'autre thread — d'où, en production uniquement, un

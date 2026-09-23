@@ -1,34 +1,27 @@
-# HousingMarket_v3 — dépendances d'exécution (app Streamlit national-only)
-# Revu le 2026-07-15 : ajout de matplotlib + reportlab pour le RAPPORT PDF (report.py).
-# Notes :
-#  - prix Notaires-INSEE/neuf, ECLN, volume/demande de crédits sont lus depuis des CSV
-#    (pandas) et tracés via plotly ; capacité d'emprunt / accessibilité = numpy.
-#  - le module de prévision (forecast.py : régressions OLS taux + transactions, backtest,
-#    scénarios, élasticité transactions→CA/ventes) est en numpy pur (np.linalg.lstsq).
-#  - l'acquisition des séries (INSEE SDMX BDM + SDES/data.gouv + BCE SDMX/BLS) est un
-#    outillage HORS runtime : fetch_new_sources.py, via urllib de la bibliothèque standard.
-#  - matplotlib (backend Agg) + reportlab servent UNIQUEMENT au rapport PDF, importés à la
-#    demande (lazy) dans le handler du bouton ; l'app reste utilisable sans les solliciter.
-streamlit>=1.30.0     # UI de l'application
+# HousingMarket_v3 — dépendances Python de la chaîne de données et de l'export du site.
+# Revu le 2026-09-23 : l'app Streamlit et son rapport PDF sont retirés, donc streamlit,
+# plotly, matplotlib et reportlab ne sont plus nécessaires. Le produit est le site statique
+# (web/observable, Node) ; Python sert à acquérir les sources, les valider, les agréger et
+# écrire les JSON que le site lit.
+#
+#  - l'acquisition des séries (INSEE SDMX BDM, SDES/data.gouv, BCE SDMX, IGEDD, DVF, Melodi)
+#    est un outillage hors runtime : fetch_new_sources.py, via urllib de la bibliothèque
+#    standard ;
+#  - le module de prévision (forecast.py : régressions OLS, backtest, scénarios) est en
+#    numpy pur (np.linalg.lstsq).
 pandas>=2.0.0         # manipulation des données (CSV/Excel, séries temporelles)
-numpy>=1.20.0         # calculs numériques / accessibilité / régressions de prévision
-plotly>=5.10.0        # graphiques (courbes, KPI)
+numpy>=1.20.0         # régressions de prévision, capacité d'emprunt
 xlrd>=2.0.1           # lecture du .xls IGEDD (ventes anciennes) via pandas.read_excel
-matplotlib>=3.7.0     # graphiques du rapport PDF (rendu PNG en mémoire, backend Agg)
-reportlab>=4.0.0      # génération du rapport PDF (module report.py, bouton sidebar)
+
 # --- Couche données (housing_data/) + couche de calcul (queries.py) : contrats typés,
-# entrepôt Parquet, et DuckDB comme MOTEUR D'AGRÉGATION des trois surfaces.
-# NON optionnelles depuis le refactor compute (phases 1-3) : app.py, web_export.py et
-# report.py importent queries.py au niveau module, donc housing_data, donc ces trois libs.
-# L'import reste gardé dans data_manager.py, mais ce repli ne couvre plus que le seul
-# fetch_new_sources.py — les applis, elles, ne démarrent pas sans.
+# entrepôt Parquet, et DuckDB comme MOTEUR D'AGRÉGATION. Obligatoires pour l'export du site
+# (web/export/) et l'API : ils importent queries.py au niveau module, donc housing_data,
+# donc ces trois libs. L'import reste gardé dans data_manager.py pour fetch_new_sources.py.
 pandera>=0.20.0       # contrats de schéma (validation des datasets avant écriture)
 pyarrow>=12.0.0       # moteur Parquet (format d'échange typé, colonnaire)
 duckdb>=1.0.0         # moteur SQL embarqué (zéro serveur) au-dessus des Parquet
 
-# --- API HTTP mince (api/) devant le moteur de calcul, pour le front Observable.
-# OPTIONNELLE : ni l'app Streamlit, ni report.py, ni web_export.py n'en dépendent — seules
-# les pages web « Prévision » et « Données » l'interrogent, et elles savent afficher un
-# encart quand elle ne répond pas. `api/engine.py` n'importe PAS Flask (le moteur reste
-# exécutable serveur éteint) ; seul `api/routes.py` le fait.
-flask>=3.0.0          # serveur HTTP + routage JSON (BSD-3) — `python -m api`
+# --- API HTTP mince (api/) devant le moteur de calcul. OPTIONNELLE : aucune page du site
+# ne l'appelle (elles lisent des JSON statiques), et web_export.py importe `api.engine`,
+# qui n'importe PAS Flask. Seul `api/routes.py` le fait — `python -m api` pour explorer.
+flask>=3.0.0          # serveur HTTP + routage JSON (BSD-3)

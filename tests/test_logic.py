@@ -155,7 +155,7 @@ def test_pillar_neuf_ne_moyenne_pas_ses_deux_etages():
     assert ana.pillar_neuf({"last3_seq": -8.0}, {"last3_seq": -6.0})["status"] == "down"
     # Sous la tolerance, rien ne bouge : le sequentiel saute de plusieurs points par mois.
     assert ana.pillar_neuf({"last3_seq": 1.0}, {"last3_seq": -1.0})["kind"] == "stable"
-    # Le mot existe dans les deux langues (app.py est bilingue, le site ne l'est pas).
+    # Le mot existe dans les deux langues (le site ne publie que le FR).
     assert ana.pillar_neuf({"last3_seq": -10.0}, {"last3_seq": 30.0}, lang="EN")["word"]
 
 
@@ -311,27 +311,6 @@ def test_forecast_path_band_is_calibrated_per_horizon():
     assert abs((path["hi"].iloc[5] - path["pred"].iloc[5]) - 1.2816 * 5_000.0) < 1e-6
 
 
-def test_propagate_to_series_drives_sales_from_tx_path():
-    """The company-sales forecast = a + b·tx12(t − lag_m), driven by observed tx then the
-    forecast path, out to tx_path end + lag_m."""
-    obs_idx = pd.date_range("2020-01-01", periods=24, freq="MS")   # ...2021-12
-    tx12_obs = pd.Series(np.linspace(800_000, 900_000, 24), index=obs_idx, name="tx12")
-    path_idx = pd.date_range("2022-01-01", periods=6, freq="MS")   # ...2022-06
-    tx_path = pd.DataFrame({"Date": path_idx, "pred": np.linspace(905_000, 930_000, 6),
-                            "lo": 0, "hi": 0, "assured": True})
-    fit = {"beta": [1_000.0, 0.01], "lag_m": 3, "r2": 0.9, "n": 20}
-    sales_df = pd.DataFrame({"Date": obs_idx, "Sales": np.linspace(100, 200, 24)})
-    out = fc.propagate_to_series(fit, tx12_obs, tx_path, sales_df, "Sales", sigma_tx=1_000.0)
-    assert not out.empty
-    # Horizon: last sales month (2021-12) +1 .. tx_path end (2022-06) + lag_m(3) = 2022-09.
-    assert out["Date"].max() == pd.Timestamp("2022-09-01")
-    # First projected month 2022-01 uses tx at 2021-10 (observed).
-    drv = tx12_obs.loc[pd.Timestamp("2021-10-01")]
-    assert abs(out["pred"].iloc[0] - (1_000.0 + 0.01 * drv)) < 1e-6
-    # Band = |b|·z·sigma (z≈1.2816).
-    assert abs((out["hi"].iloc[0] - out["pred"].iloc[0]) - 0.01 * 1.2816 * 1_000.0) < 1e-6
-
-
 def test_search_tx_lags_split_avoids_leakage():
     """With a train/test split, the lag search must use the TRAIN window only. Build a
     series whose intentions lead transactions by 6 months IN TRAIN, but by 2 months (more
@@ -359,26 +338,6 @@ def test_search_tx_lags_split_avoids_leakage():
     train = fc.search_tx_lags(macro, tx12, split=split)         # must see only the train lag
     assert train["ki"] == 6, f"split search leaked (ki={train['ki']})"
     assert full["ki"] != train["ki"] or full["ki"] == 2         # sanity: full is pulled to test
-
-
-def test_two_factor_recovers_renovation_driver():
-    """sales = a + b_tx·tx(t-3) + b_reno·reno(t-6): the two-factor fit must recover both
-    lags and beat a transactions-only fit."""
-    idx = pd.date_range("2015-01-01", periods=96, freq="MS")
-    rng = np.random.default_rng(3)
-    tx = pd.Series(np.linspace(800_000, 950_000, 96) + rng.normal(0, 3_000, 96), index=idx)
-    reno = pd.Series(rng.normal(50, 8, 96), index=idx)
-    sales_vals = np.full(96, np.nan)
-    for t in range(96):
-        if t >= 6:
-            sales_vals[t] = 100.0 + 0.0005 * tx.iloc[t - 3] + 3.0 * reno.iloc[t - 6]
-    sdf = pd.DataFrame({"Date": idx, "Sales": sales_vals}).dropna()
-    tf = fc.fit_sales_two_factor(sdf, tx, reno, "Sales")
-    assert tf is not None
-    assert tf["tx_lag"] == 3 and tf["reno_lag"] == 6
-    assert tf["r2"] > 0.98
-    single = fc.best_tx_to_monthly(sdf, tx, "Sales")
-    assert tf["r2"] >= single["r2"]  # adding renovation cannot hurt in-sample fit
 
 
 # --- Derived-cache invalidation & source resilience -------------------------------------

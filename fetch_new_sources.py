@@ -1,6 +1,6 @@
 """
 Off-runtime acquisition of ALL the real source files in data_manual_input/. Run
-`python fetch_new_sources.py` to refresh everything in one go; the Streamlit app itself
+`python fetch_new_sources.py` to refresh everything in one go; the site export itself
 never hits the network (it only reads the CSVs this script maintains). Each builder is
 failure-isolated: one API being down skips that file and the rest still refresh.
 

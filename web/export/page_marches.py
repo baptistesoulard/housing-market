@@ -28,7 +28,7 @@ _TYPE_CODES = {"Maison Individuelle Pure": "ip", "Maison Individuelle Groupée":
 
 def _yoy_kpi(kpis, mom, label, month_label, regime=ana.ADJUSTED_SEQUENTIAL,
              level=None, plateau=None):
-    """Carte KPI d'un onglet marché (miroir des st.metric d'app.py).
+    """Carte KPI d'une page de marché.
 
     Alignée sur la Synthèse, et pour les mêmes raisons mesurées :
 
@@ -119,9 +119,9 @@ def build_neuf(con, frames: dict) -> dict:
                          "la demande qui décide des mises en vente, donc des chantiers suivants",
                          f"Dernier trimestre disponible : {kd.year}-T{(kd.month - 1) // 3 + 1}"]})
 
-    # --- Segmentation par type de logement (parité avec le sélecteur d'app.py) ---------
-    # Streamlit laisse ne retenir qu'un sous-ensemble des quatre types SIT@DEL, ce qui
-    # rejoue AUSSI les deux KPI de la page. Pour ne pas réimplémenter les statistiques
+    # --- Segmentation par type de logement ------------------------------------------
+    # Le sélecteur de la page laisse ne retenir qu'un sous-ensemble des quatre types
+    # SIT@DEL, ce qui rejoue AUSSI les deux KPI de la page. Pour ne pas réimplémenter les statistiques
     # côté front (et risquer qu'elles divergent), on exporte :
     #   - `by_type` : les séries par type, en colonnaire (un tableau de valeurs aligné sur
     #     `dates`). Le front additionne les types sélectionnés, ce qui est exact : le cumul
@@ -194,7 +194,7 @@ def build_neuf(con, frames: dict) -> dict:
                            "roll12_yoy": pct(g_mom["roll12_yoy"]) if g_mom["roll12_yoy"] is not None else None,
                            "last3_seq": pct(g_mom["last3_seq"]) if g_mom["last3_seq"] is not None else "—",
                            "niveau": ligne_niveau(g_lvl)})
-            # Courbes : seulement individuel pur + collectif (comme app.py).
+            # Courbes : seulement individuel pur + collectif.
             if types in (ana.SITADEL_INDIVIDUEL_PUR, ana.SITADEL_COLLECTIF):
                 # La clé DOIT s'appeler "value" : c'est ce que `multiLine` trace (y: "value").
                 # Elle s'est appelée "value_k" un temps — seule série de tout l'export à

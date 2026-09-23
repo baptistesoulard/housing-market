@@ -12,7 +12,7 @@ Typical uses:
     frames = read_all()                                         # every dataset on disk
     df = query("SELECT Date, Reservations FROM ecln ORDER BY Date")   # SQL, no server
 
-The layer is deliberately decoupled from Streamlit so an API, a notebook or an HTML/CSS
+The layer is deliberately decoupled from any UI so an API, a notebook or an HTML/CSS
 front can consume the exact same warehouse.
 """
 from .schema import SCHEMAS, MACRO_VALUE_COLUMNS, validate

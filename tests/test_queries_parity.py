@@ -1,10 +1,10 @@
 """Tests de PARITÉ : la couche SQL (`queries.py`, DuckDB) donne EXACTEMENT les mêmes
-chiffres que l'ancienne voie pandas (`analysis.py` + les calculs inline d'`app.py`),
+chiffres que l'ancienne voie pandas (`analysis.py` + les calculs inline de l'ex-app Streamlit),
 sur les données RÉELLES de `data/*.parquet`.
 
 C'est le filet de sécurité de la migration « DuckDB = moteur de calcul unique » : tant
 que ces tests sont verts, remplacer un appel pandas par son équivalent SQL ne peut pas
-faire diverger les chiffres affichés par Streamlit, le web ou le rapport PDF.
+faire diverger les chiffres publiés par le site.
 
 Ignoré proprement (skip) si l'entrepôt Parquet n'est pas présent ou si duckdb manque.
 """
@@ -48,7 +48,7 @@ def _same(a, b, tol=1e-9, name=""):
 
 
 def _borrow_capacity_factor(rate_pct, years):
-    """Réplique `_borrow_capacity_factor` d'app.py (référence pandas/numpy)."""
+    """Facteur de capacité d'emprunt en numpy (référence de `queries.capacity_expr`)."""
     i = np.asarray(rate_pct, dtype=float) / 100.0 / 12.0
     n = years * 12
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -102,7 +102,7 @@ def test_monthly_type_filter_matches_pandas(con):
 
 def test_monthly_without_windows_matches_bare_aggregate(con):
     """`windows=()` = agrégat mensuel nu, sans cumul glissant. C'est ce que consomment les
-    barres de comparaison mois-par-mois d'app.py et les métriques de momentum : une clause
+    barres de comparaison mois-par-mois et les métriques de momentum : une clause
     WINDOW vide produirait du SQL invalide, ce chemin doit donc rester couvert."""
     types = ana.SITADEL_INDIVIDUEL_PUR
     sql = q.monthly(con, "sitadel", ["Permis", "MisesEnChantier"], windows=(),
@@ -118,7 +118,7 @@ def test_monthly_without_windows_matches_bare_aggregate(con):
 
 @pytest.mark.parametrize("years", [(2015, 2020), (2019, 2019)])
 def test_monthly_years_filter_matches_pandas_slicer(con, years):
-    """`years=` reproduit le `_filter_years` d'app.py (bornes incluses, sur l'année civile),
+    """`years=` borne sur l'année civile (bornes incluses),
     appliqué avant le GROUP BY comme le faisait le filtrage pandas en amont de l'agrégat."""
     sql = q.monthly(con, "ventes_ancien", ["Transactions"], windows=(),
                     years=years).sort_values("Date").reset_index(drop=True)

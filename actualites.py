@@ -8,7 +8,7 @@ pas des sorties de modèle — ils servent de grille de lecture pour les scénar
 l'onglet « 📡 Prévision & Scénarios ».
 
 Mise à jour : éditer NEWS_ITEMS puis la constante MAJ. Textes bilingues {"FR": .., "EN": ..}
-comme le helper _L() d'app.py. `tests/test_actualites.py` vérifie la cohérence du contenu.
+(le site ne publie que le FR ; l'EN est conservé pour une version anglaise éventuelle). `tests/test_actualites.py` vérifie la cohérence du contenu.
 """
 
 # Date d'arrêt de la veille (affichée dans l'onglet — à mettre à jour à chaque édition).

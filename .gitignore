@@ -8,7 +8,6 @@ env/
 
 # Environnements & secrets
 .env
-.streamlit/secrets.toml
 
 # Fichiers de travail internes (non destinés à la publication)
 .claude/

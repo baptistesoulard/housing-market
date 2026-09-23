@@ -2,13 +2,13 @@
 
 Statut depuis la phase 2 du refactor compute : les agrégations (`aggregate_sitadel`,
 `aggregate_ventes_ancien`, `calculate_rolling_12m`, `calculate_rolling`) ne sont plus sur
-le chemin d'exécution — les trois surfaces (app.py, web_export.py, report.py) passent par
+le chemin d'exécution — l'export du site (`web/export/`) et l'API (`api/`) passent par
 la couche SQL `queries.py`. Elles sont CONSERVÉES à dessein comme **implémentation de
 référence** : `tests/test_queries_parity.py` compare chaque requête DuckDB à son
 équivalent pandas ici. Les supprimer supprimerait le filet de sécurité de la migration.
 
-Les helpers de POST-agrégation (`calculate_kpis`, `momentum_metrics`,
-`build_market_commentary`) restent eux bel et bien appelés au runtime : ils opèrent sur
+Les helpers de POST-agrégation (`calculate_kpis`, `momentum_metrics`, `level_context`,
+`plateau_months`, `pillar_neuf`, `base_100`) restent eux bel et bien appelés au runtime : ils opèrent sur
 les petites frames déjà agrégées que renvoie la couche SQL.
 """
 import pandas as pd
@@ -161,8 +161,8 @@ def momentum_metrics(df, value_col, date_col="Date"):
 # Sa lecture honnête est le niveau 12 mois, complété par `plateau_months` qui dit depuis
 # quand ce niveau ne bouge plus.
 #
-# D'où DEUX régimes, et une fonction qui porte le choix pour les deux surfaces (app.py
-# et web_export.py) afin qu'elles ne puissent pas en retenir un chacune.
+# D'où DEUX régimes, et une fonction qui porte le choix pour toutes les pages de l'export
+# (Synthèse, Marché du neuf, Marché de l'ancien) afin qu'aucune n'en retienne un autre.
 ADJUSTED_SEQUENTIAL = "seq"      # série CVS : lire le séquentiel
 RAW_TWELVE_MONTHS = "roll12"     # série brute ou reconstruite : lire le cumul 12 mois
 
@@ -308,69 +308,6 @@ def pillar_neuf(mom_permis, mom_mises, tol=SEQ_TOL, lang="FR"):
         kind, word, status = "aval_repli", ("chantiers en repli", "starts declining"), "flat"
     return {"status": status, "kind": kind, "amont": amont, "aval": aval,
             "word": word[0] if lang == "FR" else word[1]}
-
-
-def _trend_phrase(v, lang="FR"):
-    """Qualitative wording for a growth rate (%), used in the auto commentary."""
-    if v is None:
-        return "—"
-    if lang == "EN":
-        return ("accelerating sharply" if v > 5 else "rising" if v > 1
-                else "broadly stable" if v >= -1 else "slowing" if v >= -5 else "falling sharply")
-    return ("accélère nettement" if v > 5 else "progresse" if v > 1
-            else "se stabilise" if v >= -1 else "ralentit" if v >= -5 else "recule nettement")
-
-
-def build_market_commentary(kpi_permis, kpi_mises, kpi_tx,
-                            mom_permis, mom_mises, mom_tx,
-                            mom_indiv_pur=None, lang="FR"):
-    """Short data-driven narrative (3 sentences, BPCE « à retenir » style) summarising new
-    construction, existing-home sales and the overall momentum. Inputs are the dicts from
-    calculate_kpis (current_12m, yoy_12m_pct) and momentum_metrics (roll12_yoy, last3_yoy).
-    Fully derived from the numbers, so it stays in sync with the KPIs."""
-    def pct(v):
-        if v is None:
-            return "—"
-        s = f"{v:+.1f}%"
-        return s.replace(".", ",") if lang == "FR" else s
-
-    def th(v):
-        return f"{int(v):,}".replace(",", " ")
-
-    p_yoy, m_yoy, t_yoy = kpi_permis["yoy_12m_pct"], kpi_mises["yoy_12m_pct"], kpi_tx["yoy_12m_pct"]
-    m3, t3 = mom_mises.get("last3_yoy"), mom_tx.get("last3_yoy")
-    ip3 = mom_indiv_pur.get("last3_yoy") if mom_indiv_pur else None
-
-    if lang == "EN":
-        s1 = (f"New construction is {_trend_phrase(p_yoy, lang)}: building permits {pct(p_yoy)} and "
-              f"housing starts {pct(m_yoy)} over 12 months (starts {pct(m3)} over the last 3 months "
-              f"vs a year earlier"
-              + (f", led by detached houses at {pct(ip3)}" if ip3 is not None else "") + ").")
-        s2 = (f"Existing-home sales stand at {th(kpi_tx['current_12m'])} over 12 months ({pct(t_yoy)}), "
-              f"but momentum is {_trend_phrase(t3, lang)} at {pct(t3)} over the last 3 months vs a year earlier.")
-        if (t3 is not None and t3 < 0) and (m3 is not None and m3 > 0):
-            s3 = ("Leading construction indicators are turning up while existing-home transactions cool "
-                  "— a lead the second-œuvre pipeline should follow with its usual lag.")
-        elif t3 is not None and t3 < 0:
-            s3 = "The recent slowdown in transactions warrants caution on near-term demand."
-        else:
-            s3 = "Overall, indicators point to a gradual recovery in activity."
-    else:
-        s1 = (f"La construction neuve {_trend_phrase(p_yoy, lang)} : permis {pct(p_yoy)} et mises en "
-              f"chantier {pct(m_yoy)} sur 12 mois (mises en chantier {pct(m3)} sur 3 mois vs un an plus tôt"
-              + (f", portées par l'individuel pur à {pct(ip3)}" if ip3 is not None else "") + ").")
-        s2 = (f"Les ventes de logements anciens s'établissent à {th(kpi_tx['current_12m'])} sur 12 mois "
-              f"({pct(t_yoy)}), mais la dynamique {_trend_phrase(t3, lang)} : {pct(t3)} sur les 3 derniers "
-              f"mois par rapport à l'an dernier.")
-        if (t3 is not None and t3 < 0) and (m3 is not None and m3 > 0):
-            s3 = ("Les indicateurs avancés de construction se redressent tandis que les transactions "
-                  "anciennes ralentissent — une avance que la demande de second œuvre devrait suivre "
-                  "avec son décalage habituel.")
-        elif t3 is not None and t3 < 0:
-            s3 = "Le ralentissement récent des transactions invite à la prudence sur la demande à court terme."
-        else:
-            s3 = "Globalement, les indicateurs pointent vers une reprise graduelle de l'activité."
-    return " ".join([s1, s2, s3])
 
 
 def calculate_kpis(df, value_col, date_col="Date"):

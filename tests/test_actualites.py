@@ -1,6 +1,6 @@
 """Cohérence du contenu éditorial de l'onglet « Actualités & Aides » (actualites.py).
 
-Garde-fous de structure : chaque item de NEWS_ITEMS doit rester rendable par app.py
+Garde-fous de structure : chaque item de NEWS_ITEMS doit rester rendable par le site
 (clés présentes, bilingue FR/EN, impacts dans l'échelle, dates parseables, jalons typés).
 """
 import sys
@@ -89,10 +89,10 @@ def test_la_veille_n_est_pas_perimee():
 
 
 def test_il_reste_une_echeance_a_venir():
-    """Sinon la carte « Prochaine échéance aides » disparaît des DEUX surfaces, en silence.
+    """Sinon la carte « Prochaine échéance aides » disparaît de la Synthèse, en silence.
 
-    Depuis que le filtre se compare au jour courant et non à `MAJ` (web_export
-    `_jalons_a_venir`, app.py `_AUJOURDHUI`), une veille dont tous les jalons sont passés
+    Depuis que le filtre se compare au jour courant et non à `MAJ`
+    (`web/export/commun.jalons_a_venir`), une veille dont tous les jalons sont passés
     ne produit plus de carte du tout — pas d'erreur, pas de trou visible, juste un bloc
     qui a une carte de moins. C'est le prix de la correction, et voici sa contrepartie."""
     aujourdhui = pd.Timestamp.today().normalize().strftime("%Y-%m-%d")

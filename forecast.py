@@ -1,12 +1,12 @@
 """
-Prospective module: turn the app's real leading indicators into a small, transparent
+Prospective module: turn the site's real leading indicators into a small, transparent
 two-stage model of existing-home transactions, plus a scenario engine.
 
 Two-stage econometrics (plain OLS via numpy — no extra dependency):
-  Stage 1  credit rate  ~ OAT 10y + Euribor 3M               (scenario lever on financing)
+  Stage 1  credit rate  ~ OAT 10y (lagged, see search_rate_lag; Euribor removed 2026-08-25)
   Stage 2  transactions ~ credit rate(lag) + purchase-intentions(lag) + unemployment(lag)
 
-Everything is fit on the app's REAL national series (macro.csv + IGEDD ventes_ancien.csv). The
+Everything is fit on the REAL national series (macro.csv + IGEDD ventes_ancien.csv). The
 transactions target is the 12-month rolling sum (the published "ventes sur un an").
 A train/test split (fit ≤2021, predict 2022→) provides an honest out-of-sample backtest.
 """
@@ -509,87 +509,3 @@ def best_tx_to_monthly(df_series, tx12, value_col="Sales", lags=range(0, 19)):
         if fit and (best is None or fit["r2"] > best["r2"]):
             best = fit
     return best
-
-
-def fit_sales_two_factor(df_series, tx12, reno, value_col="Sales",
-                         tx_lags=range(0, 19, 3), reno_lags=range(0, 19, 3), min_obs=12):
-    """Two-driver elasticity of a company's monthly sales:
-
-        sales(t) ≈ a + b_tx·tx12(t − l₁) + b_reno·reno(t − l₂)
-
-    Renovation adds the STOCK-driven second-œuvre demand channel that existing-home
-    transactions (move-driven) miss — the third driver for a building-products maker, and
-    the path that eventually replaces the synthetic sales series. Grid-searches both lags
-    for the best in-sample R². `tx12` and `reno` are Date-indexed monthly Series. Returns
-    {beta:[a, b_tx, b_reno], r2, tx_lag, reno_lag, n} or None (too few overlapping months
-    or reno unavailable).
-    """
-    if reno is None:
-        return None
-    reno = reno.dropna()
-    if reno.empty:
-        return None
-    s = (df_series[["Date", value_col]].dropna()
-         .assign(Date=lambda d: pd.to_datetime(d["Date"]))
-         .groupby("Date")[value_col].sum().sort_index())
-    best = None
-    for l1 in tx_lags:
-        tx_s = tx12.dropna().copy()
-        tx_s.index = pd.to_datetime(tx_s.index) + pd.DateOffset(months=l1)
-        for l2 in reno_lags:
-            rn = reno.copy()
-            rn.index = pd.to_datetime(rn.index) + pd.DateOffset(months=l2)
-            d = pd.DataFrame({"y": s}).join(tx_s.rename("tx")).join(rn.rename("rn")).dropna()
-            if len(d) < min_obs:
-                continue
-            beta, r2, _, _ = ols(d[["tx", "rn"]].values, d["y"].values)
-            if best is None or r2 > best["r2"]:
-                best = {"beta": beta, "r2": r2, "tx_lag": l1, "reno_lag": l2, "n": len(d)}
-    return best
-
-
-def propagate_to_series(fit, tx12_obs, tx_path, sales_df, value_col="Sales",
-                        sigma_tx=0.0, z=1.2816):
-    """Monthly forecast of a company's OWN sales from the transactions forecast path.
-
-    Turns the demand-planning deliverable into a company-level series: with the estimated
-    elasticity `fit` (from best_tx_to_monthly: sales ≈ a + b·tx12(t − lag_m)), the future
-    transactions path drives a month-by-month projection of the imported sales, out to the
-    transactions horizon + the elasticity lag. The band propagates the transactions
-    uncertainty `sigma_tx` through the slope b (±z·|b|·sigma_tx, z≈80%).
-
-    fit       : dict {beta:[a,b], lag_m, r2, n} from best_tx_to_monthly.
-    tx12_obs  : observed 12-month transactions Series (Date-indexed).
-    tx_path   : forecast_path frame [Date, pred, ...] (future transactions).
-    sales_df  : the company series [Date, value_col].
-    Returns a [Date, pred, lo, hi] frame (empty when nothing is projectable).
-    """
-    cols = ["Date", "pred", "lo", "hi"]
-    if fit is None or sales_df is None or sales_df.empty:
-        return pd.DataFrame(columns=cols)
-    a, b = float(fit["beta"][0]), float(fit["beta"][1])
-    lag = int(fit["lag_m"])
-    tx_obs = tx12_obs.dropna()
-    parts = [tx_obs]
-    if tx_path is not None and not tx_path.empty:
-        parts.append(tx_path.set_index("Date")["pred"])
-    tx_full = pd.concat(parts).sort_index()
-    tx_full = tx_full[~tx_full.index.duplicated(keep="last")]
-
-    s = sales_df[["Date", value_col]].dropna().copy()
-    s["Date"] = pd.to_datetime(s["Date"])
-    if s.empty:
-        return pd.DataFrame(columns=cols)
-    last_sales = s["Date"].max()
-    end = tx_full.index.max() + pd.DateOffset(months=lag)
-    future = pd.date_range(last_sales + pd.DateOffset(months=1), end, freq="MS")
-    band = abs(b) * z * sigma_tx
-
-    rows = []
-    for t in future:
-        drv = tx_full.get(t - pd.DateOffset(months=lag))
-        if drv is None or pd.isna(drv):
-            continue
-        pred = a + b * float(drv)
-        rows.append({"Date": t, "pred": pred, "lo": pred - band, "hi": pred + band})
-    return pd.DataFrame(rows, columns=cols)
