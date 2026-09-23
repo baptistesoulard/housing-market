@@ -1,5 +1,4 @@
 import os
-import glob
 import pandas as pd
 import numpy as np
 
@@ -118,12 +117,6 @@ ECLN_VALUE_COLUMNS = ["Reservations", "MisesEnVente", "Annulations", "Encours",
                       "DelaiEcoulement", "PrixM2_Collectif",
                       "Resa_Sociaux", "Resa_Institutionnels"]
 ECLN_COLUMNS = ["Date"] + ECLN_VALUE_COLUMNS
-# --- Versioned company sales (optional) — one CSV per product family in data_manual_input,
-# named "ventes-<slug>.csv", each [Date, Sales] (+ optional Company/Serie). A traceable,
-# git-versionable default source of company sales, used when no ad-hoc upload
-# (data/company_sales.csv) is present. The upload always wins.
-VENTES_GLOB = os.path.join("data_manual_input", "ventes-*.csv")
-
 # Real macro series: (manual-input file, target column). Only the first two are
 # required (raise FileNotFoundError, triggering the synthetic fallback); the two
 # financing rates are optional add-ons — a missing file just leaves NaN so the
@@ -170,7 +163,7 @@ def sitadel_macro_is_stale(sitadel_csv, macro_csv):
     manual-input sources it was derived from.
 
     These two caches are the only ones that used to be built once and never invalidated,
-    while ventes_ancien / sales / ecln are all mtime-aware. The weekly refresh
+    while ventes_ancien / ecln are mtime-aware. The weekly refresh
     (fetch_new_sources.py + the GitHub Actions workflow) rewrites data_manual_input/
     first; this check is what makes the runner rebuild both derived files from the fresh
     sources — and, since 2026-09-19, commit them along (`git add data`). Until then the
@@ -281,8 +274,7 @@ def _synthetic_rate(year, month):
 def generate_sitadel_and_macro():
     """Build the REAL national SIT@DEL construction series (from the manual-input CSV) and
     the REAL macro dataframe (build_macro_from_files, with a synthetic fallback). No
-    existing-home sales here: those come from the real IGEDD series (ensure_ventes_ancien)
-    and second-œuvre sales are derived from real SIT@DEL + real IGEDD in build_sales().
+    existing-home sales here: those come from the real IGEDD series (ensure_ventes_ancien).
 
     Coverage is DYNAMIC — no hardcoded end. SIT@DEL comes straight from its CSV (its own
     real extent). The macro monthly index spans 2001 to SIT@DEL's last month plus a short
@@ -347,52 +339,6 @@ def generate_sitadel_and_macro():
     return df_sitadel, df_macro
 
 
-def build_sales(df_sitadel, df_ventes_ancien):
-    """Synthetic national sales of second-œuvre building products, driven by the REAL
-    leading indicators the app actually displays: individual-house & collective permits
-    (SIT@DEL) and existing-home transactions (IGEDD). Three generic building-trade
-    families, each with its own lead-time: closures/joinery ~12m after housing permits;
-    outdoor equipment with individual houses; security/home-automation ~2m after
-    existing-home sales.
-
-    The series is bounded to the real market extent — min of the SIT@DEL and IGEDD last
-    months — so it never fabricates a month with no underlying real data. Values are the
-    only remaining synthetic dataset, pending a real second-œuvre source.
-    """
-    np.random.seed(42)  # reproducible synthetic noise, independent of prior RNG use
-    end = min(df_sitadel["Date"].max(), df_ventes_ancien["Date"].max())
-    date_range = pd.date_range("2001-01-01", end, freq="MS")
-
-    permits_house = df_sitadel[df_sitadel["Type"] == "Maison Individuelle Pure"].groupby("Date")["Permis"].sum()
-    permits_coll = df_sitadel[df_sitadel["Type"] == "Logement Collectif"].groupby("Date")["Permis"].sum()
-    # REAL IGEDD monthly transaction flows (the exact series shown to the user), not a
-    # discarded synthetic proxy.
-    tx_total = df_ventes_ancien.groupby("Date")["Transactions"].sum()
-
-    # Fallback for the first months, before the lagged driver exists. Constant, so it is
-    # read once rather than re-evaluated as a default argument on every iteration.
-    ph0, pc0, tx0 = permits_house.iloc[0], permits_coll.iloc[0], tx_total.iloc[0]
-
-    sales_data = []
-    for date in date_range:
-        ph = permits_house.get(date - pd.DateOffset(months=12), ph0)
-        pc = permits_coll.get(date - pd.DateOffset(months=18), pc0)
-        tx = tx_total.get(date - pd.DateOffset(months=2), tx0)
-
-        fermetures = int(ph * 4.8 + pc * 1.5 + np.random.normal(3000, 400))
-        exterieur = int(ph * 0.95 + np.random.normal(600, 100))
-        securite = int(tx * 0.12 + np.random.normal(1000, 200))
-
-        for product, units in (("Fermetures & Menuiseries", fermetures),
-                               ("Équipements Extérieurs", exterieur),
-                               ("Sécurité & Domotique", securite)):
-            sales_data.append({
-                "Date": date, "Region": "France", "Department": "France",
-                "Product": product, "Sales_Units": max(0, units),
-            })
-
-    return pd.DataFrame(sales_data)
-
 class DataManager:
     """
     Manages loading, updating, and saving of housing and macroeconomic indicators.
@@ -406,11 +352,7 @@ class DataManager:
             "sitadel": os.path.join(self.data_dir, "sitadel.csv"),
             "ventes_ancien": os.path.join(self.data_dir, "ventes_ancien.csv"),
             "macro": os.path.join(self.data_dir, "macro.csv"),
-            "sales": os.path.join(self.data_dir, "sales.csv"),
             "ecln": os.path.join(self.data_dir, "ecln.csv"),
-            # Optional MONTHLY company sales, assembled from data_manual_input/ventes-*.csv
-            # (build_company_sales_from_manual_inputs). Absent = empty frame.
-            "company_sales": os.path.join(self.data_dir, "company_sales.csv"),
             # Prix DVF par département : assemblé à partir des deux moitiés d'historique
             # (voir ensure_dvf). Seul dataset dont Department n'est pas "France".
             "dvf": os.path.join(self.data_dir, "dvf.csv"),
@@ -422,20 +364,18 @@ class DataManager:
     def load_or_generate_all(self, force_regenerate=False):
         """
         Loads the datasets. SIT@DEL is real (manual-input CSV), macro is real
-        (build_macro_from_files) and the "ventes dans l'ancien" series (df_ventes_ancien) is the real
-        IGEDD national series (ensure_ventes_ancien) — none are synthetic. Only the
-        second-œuvre `sales` remain synthetic, and they are now DERIVED FROM the real
-        SIT@DEL permits and the real IGEDD transactions (build_sales), so the modelled
-        series is consistent with the data the app shows.
+        (build_macro_from_files), the "ventes dans l'ancien" series (df_ventes_ancien) is the
+        real IGEDD national series (ensure_ventes_ancien) and ECLN is the real SDES series.
+        None is synthetic since the second-œuvre `sales` and `company_sales` datasets were
+        removed (2026-09-23): nothing consumed them once the Streamlit app was gone.
         """
-        # 1. Real IGEDD "ventes dans l'ancien" first — it anchors both the display and the
-        #    transaction-linked synthetic sales, so it must exist before sales are built.
+        # 1. Real IGEDD "ventes dans l'ancien".
         self.ensure_ventes_ancien(force_rebuild=force_regenerate)
         df_ventes_ancien = self._read_dataset("ventes_ancien")
 
         # 2. Real SIT@DEL + macro, generated & cached together. Rebuilt when forced,
         #    missing, OR stale relative to any manual-input source — same mtime-aware
-        #    contract as ventes_ancien / sales / ecln, so a data refresh
+        #    contract as ventes_ancien / ecln, so a data refresh
         #    actually propagates instead of leaving the committed CSVs a month behind.
         if force_regenerate or sitadel_macro_is_stale(self.paths["sitadel"],
                                                       self.paths["macro"]):
@@ -446,39 +386,21 @@ class DataManager:
             df_sitadel = self._read_dataset("sitadel")
             df_macro = self._read_dataset("macro")
 
-        # 3. Synthetic second-œuvre sales, DERIVED FROM real SIT@DEL permits + real IGEDD
-        #    transactions. Rebuild when forced, missing, or when a driver (ventes_ancien/sitadel) is
-        #    newer than the cache (so a data refresh propagates).
-        _sales_stale = (force_regenerate or not os.path.exists(self.paths["sales"])
-                        or os.path.getmtime(self.paths["sales"]) < max(
-                            os.path.getmtime(self.paths["ventes_ancien"]),
-                            os.path.getmtime(self.paths["sitadel"])))
-        if _sales_stale:
-            df_sales = build_sales(df_sitadel, df_ventes_ancien)
-            df_sales.to_csv(self.paths["sales"], index=False, encoding="utf-8")
-        else:
-            df_sales = self._read_dataset("sales")
-
         # Real ECLN commercialisation-of-new-dwellings series (quarterly). Rebuilt from
         # the SDES manual-input CSV; empty frame when the source file is absent.
         self.ensure_ecln(force_rebuild=force_regenerate)
         df_ecln = self._read_optional("ecln", ECLN_COLUMNS)
 
-        # Optional monthly company sales (data_manual_input/ventes-*.csv). Canonical
-        # [Date, Company, Serie, Sales] shape; empty frame when there is none.
-        df_company_sales = self._read_company_sales()
-
         # Les deux datasets PAR DÉPARTEMENT (prix DVF, profil INSEE). Même contrat
         # mtime-aware que les autres dérivés ; ils ne rejoignent PAS le tuple rendu plus
-        # bas (read_frames() rend six frames, et web_export.py les déballe par position)
+        # bas (read_frames() rend quatre frames, et web_export.py les déballe par position)
         # — ils ne se lisent que par SQL. `ensure_dvf` n'avait aucun appelant jusqu'au
         # 2026-09-20 : une republication DGFiP n'aurait jamais atteint data/dvf.csv.
         self.ensure_dvf(force_rebuild=force_regenerate)
         self.ensure_territoires(force_rebuild=force_regenerate)
         frames = {
             "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
-            "sales": df_sales, "ecln": df_ecln,
-            "company_sales": df_company_sales,
+            "ecln": df_ecln,
         }
         for key in ("dvf", "territoires"):
             if os.path.exists(self.paths[key]):
@@ -491,13 +413,13 @@ class DataManager:
         # as the versioned, diffable interchange copy and as the fallback.
         self._persist_to_warehouse(frames)
 
-        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_ecln, df_company_sales
+        return df_sitadel, df_ventes_ancien, df_macro, df_ecln
 
     def read_frames(self):
         """Read the already-persisted datasets into frames WITHOUT re-generating or
         re-writing the warehouse. Cheap, side-effect-free path for long-lived consumers
         (the API process, forecast_archive), so a read does not re-validate and re-write
-        the six Parquet files.
+        the Parquet files.
 
         Reads Parquet when it is present and fresh, the CSV otherwise (see
         `housing_data.warehouse.resolve`). Assumes load_or_generate_all() has already run
@@ -506,10 +428,8 @@ class DataManager:
         df_sitadel = self._read_dataset("sitadel")
         df_ventes_ancien = self._read_dataset("ventes_ancien")
         df_macro = self._read_dataset("macro")
-        df_sales = self._read_dataset("sales")
         df_ecln = self._read_optional("ecln", ECLN_COLUMNS)
-        df_company_sales = self._read_company_sales()
-        return df_sitadel, df_ventes_ancien, df_macro, df_sales, df_ecln, df_company_sales
+        return df_sitadel, df_ventes_ancien, df_macro, df_ecln
 
     def _read_dataset(self, key):
         """Read one REQUIRED dataset by warehouse name.
@@ -561,62 +481,7 @@ class DataManager:
             out = {k: ("csv" if os.path.exists(p) else None) for k, p in self.paths.items()}
         else:
             out = {k: hd.resolve(k, data_dir=self.data_dir)[1] for k in self.paths}
-        # company_sales only reaches the warehouse when an ad-hoc upload exists; otherwise
-        # it is rebuilt from data_manual_input/ventes-*.csv (see _read_company_sales).
-        if not os.path.exists(self.paths["company_sales"]):
-            out["company_sales"] = "csv"
         return out
-
-    def _read_company_sales(self):
-        """Return the canonical [Date, Company, Serie, Sales] company-sales frame.
-
-        Precedence: an ad-hoc upload (data/company_sales.csv) wins; otherwise the versioned
-        data_manual_input/ventes-*.csv files (one per product family) are used; otherwise an
-        empty frame. Back-compatible with the legacy single-series upload (no Serie column):
-        Serie then defaults to Company so downstream code always has a series label.
-        """
-        # Deliberately keyed on the ad-hoc upload CSV rather than on the Parquet: the
-        # warehouse copy is written from whichever source won last time, so trusting it
-        # here would freeze an old import and hide a changed data_manual_input/ventes-*.csv
-        # (the Parquet freshness guard only watches data/company_sales.csv).
-        if os.path.exists(self.paths["company_sales"]):
-            df = self._read_dataset("company_sales")
-            if "Serie" not in df.columns:
-                df["Serie"] = df["Company"] if "Company" in df.columns else "Ventes"
-            return df
-        return self.build_company_sales_from_manual_inputs()
-
-    @staticmethod
-    def build_company_sales_from_manual_inputs(pattern=VENTES_GLOB):
-        """Read every data_manual_input/ventes-*.csv (one per product family) into a single
-        [Date, Company, Serie, Sales] frame. Each file needs a Date column and a numeric
-        sales column (Sales/Ventes/…); a 'Serie' column splits it further, else the file
-        slug (ventes-<slug>.csv) is the series label; 'Company' is optional. Empty (typed)
-        frame when nothing matches."""
-        cols = ["Date", "Company", "Serie", "Sales"]
-        frames = []
-        for path in sorted(glob.glob(pattern)):
-            df = pd.read_csv(path)
-            if "Date" not in df.columns:
-                continue
-            val = next((c for c in DataManager._SALES_VALUE_ALIASES if c in df.columns), None)
-            if val is None:
-                others = [c for c in df.columns if c not in ("Date", "Company", "Serie")]
-                val = others[0] if len(others) == 1 else None
-            if val is None:
-                continue
-            slug = os.path.splitext(os.path.basename(path))[0].replace("ventes-", "")
-            out = pd.DataFrame()
-            out["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-            out["Company"] = (str(df["Company"].dropna().iloc[0])
-                              if "Company" in df.columns and df["Company"].notna().any() else slug)
-            out["Serie"] = (df["Serie"].astype(str).str.strip() if "Serie" in df.columns else slug)
-            out["Sales"] = pd.to_numeric(df[val], errors="coerce")
-            out = out.dropna(subset=["Date", "Sales"])
-            frames.append(out[cols])
-        if not frames:
-            return pd.DataFrame(columns=cols)
-        return pd.concat(frames, ignore_index=True).sort_values(["Serie", "Date"]).reset_index(drop=True)
 
     def _persist_to_warehouse(self, frames):
         """Validate the datasets against their contracts and persist them as Parquet next
@@ -640,11 +505,6 @@ class DataManager:
             except Exception as e:  # validation or write failure — surface, don't crash
                 first = str(e).splitlines()[0] if str(e) else e.__class__.__name__
                 self.warehouse_status[name] = (False, first)
-
-    # Column-name aliases accepted on import (first match wins).
-    _SALES_VALUE_ALIASES = ["Sales", "Ventes", "Sales_Units", "Valeur", "Value", "CA", "CA_MEUR"]
-    _SALES_SERIES_ALIASES = ["Serie", "Série", "Series", "Produit", "Product",
-                             "Famille", "Categorie", "Catégorie", "Gamme"]
 
     @staticmethod
     def build_ecln_from_manual_input(path=ECLN_CSV):
@@ -869,7 +729,7 @@ class DataManager:
         Guarantees data/ventes_ancien.csv holds the real IGEDD "ventes dans l'ancien" series
         (national, monthly flows reconstructed from the 12-month cumulative). Builds
         it from the IGEDD .xls when data/ventes_ancien.csv is missing or force_rebuild is set.
-        Returns (success, message). Never writes synthetic sales.
+        Returns (success, message). Never writes synthetic data.
         """
         # Rebuild when the derived CSV is missing, forced, OR stale relative to the source
         # workbook (the fetch script rewrites the .xls only when it actually changed, so a

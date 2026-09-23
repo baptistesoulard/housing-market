@@ -38,12 +38,6 @@ SITADEL_TYPES = [
     "Maison Individuelle Pure",
     "Logement en Résidence",
 ]
-SALES_PRODUCTS = [
-    "Fermetures & Menuiseries",
-    "Équipements Extérieurs",
-    "Sécurité & Domotique",
-]
-
 # Every macro indicator column (all optional/nullable: a source that starts late or is
 # absent leaves a real NaN gap rather than an invented value — see data_manager).
 MACRO_VALUE_COLUMNS = [
@@ -115,18 +109,6 @@ MACRO = DataFrameSchema(
     unique=["Date"],
 )
 
-SALES = DataFrameSchema(
-    {
-        "Date": _DATE,
-        "Region": _FRANCE,
-        "Department": _FRANCE,
-        "Product": Column(str, Check.isin(SALES_PRODUCTS), nullable=False, coerce=True),
-        "Sales_Units": _COUNT("Synthetic second-œuvre units"),
-    },
-    strict=False, coerce=True, name="sales",
-    unique=["Date", "Product"],
-)
-
 ECLN = DataFrameSchema(
     {
         "Date": _DATE,
@@ -143,25 +125,9 @@ ECLN = DataFrameSchema(
     unique=["Date"],
 )
 
-# Optional user-imported monthly company sales (present only after an import). Multi-series:
-# one company, one or more product families ("Serie"), monthly. A single-series import gets
-# Serie = Company so the shape is uniform whether the source file split by product or not.
-COMPANY_SALES = DataFrameSchema(
-    {
-        "Date": _DATE,
-        "Company": Column(str, nullable=False, coerce=True),
-        "Serie": Column(str, nullable=False, coerce=True,
-                        title="Product family / imported series label"),
-        "Sales": Column(float, nullable=False, coerce=True,
-                        title="Imported monthly sales"),
-    },
-    strict=False, coerce=True, name="company_sales",
-    unique=["Date", "Serie"],
-)
-
 # --- DVF : prix au m2 par departement ---------------------------------------
 # SEUL dataset dont Department n'est PAS "France". Il est nouveau exprès : les colonnes
-# Region/Department de sitadel/sales/ventes_ancien sont contraintes a "France" et
+# Region/Department de sitadel/ventes_ancien sont contraintes a "France" et
 # tests/test_queries_parity.py compare chaque requete SQL a une implementation pandas de
 # reference sur ces datasets — en changer la cardinalite ferait sauter ce filet pour rien.
 DVF = DataFrameSchema(
@@ -239,9 +205,7 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "sitadel": SITADEL,
     "ventes_ancien": VENTES_ANCIEN,
     "macro": MACRO,
-    "sales": SALES,
     "ecln": ECLN,
-    "company_sales": COMPANY_SALES,
     "dvf": DVF,
     "territoires": TERRITOIRES,
 }
@@ -253,7 +217,7 @@ def validate(name: str, df, lazy: bool = True):
     Raises KeyError for an unknown dataset name and pandera.errors.SchemaError(s) when
     the frame violates its contract (with lazy=True, all failures are collected and
     reported together). An empty frame is passed through untouched — a not-yet-populated
-    optional dataset (ecln/company_sales absent) is not a contract breach.
+    optional dataset (ecln absent) is not a contract breach.
     """
     schema = SCHEMAS[name]
     if df is None or len(df) == 0:

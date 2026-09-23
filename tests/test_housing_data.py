@@ -53,13 +53,12 @@ def test_contract_rejects_bad_data():
 
 
 def test_empty_optional_frame_passes():
-    empty = pd.DataFrame(columns=["Date", "Company", "Sales"])
-    assert hd.validate("company_sales", empty) is empty   # no-op on empty
+    empty = pd.DataFrame(columns=["Date", "Reservations"])
+    assert hd.validate("ecln", empty) is empty   # no-op on empty
 
 
 def test_all_known_datasets_have_a_schema():
-    expected = {"sitadel", "ventes_ancien", "macro", "sales", "ecln",
-                "company_sales", "dvf", "territoires"}
+    expected = {"sitadel", "ventes_ancien", "macro", "ecln", "dvf", "territoires"}
     assert set(S.SCHEMAS) == expected
 
 
@@ -181,10 +180,6 @@ def test_data_manager_reads_through_the_warehouse():
             "macro": pd.DataFrame({"Date": pd.to_datetime(["2020-01-01", "2020-02-01"]),
                                    **{c: [float("nan")] * 2 for c in S.MACRO_VALUE_COLUMNS},
                                    "Prix_Ancien_Ensemble": [100.0, 101.0]}),
-            "sales": pd.DataFrame({
-                "Date": pd.to_datetime(["2020-01-01"]), "Region": "France",
-                "Department": "France", "Product": ["Sécurité & Domotique"],
-                "Sales_Units": [42]}),
         }
         for name, df in frames.items():                     # CSV first, then the Parquet
             df.to_csv(os.path.join(d, f"{name}.csv"), index=False)
@@ -195,14 +190,15 @@ def test_data_manager_reads_through_the_warehouse():
         from_parquet = dm.read_frames()
         assert str(from_parquet[0]["Date"].dtype) == "datetime64[ns]"
         assert int(from_parquet[1]["Transactions"].sum()) == 131000
-        assert from_parquet[4].empty and from_parquet[5].empty   # ecln / company_sales absents
+        assert len(from_parquet) == 4                             # sitadel, ventes_ancien, macro, ecln
+        assert from_parquet[3].empty                              # ecln absent
 
         # Same frames once the Parquet is gone: the CSV fallback must be equivalent.
         for name in frames:
             os.remove(hd.parquet_path(name, d))
         assert dm.dataset_sources()["macro"] == "csv"
         from_csv = dm.read_frames()
-        for a, b in zip(from_parquet[:4], from_csv[:4]):
+        for a, b in zip(from_parquet[:3], from_csv[:3]):
             pd.testing.assert_frame_equal(a.reset_index(drop=True), b.reset_index(drop=True),
                                           check_dtype=False)
 

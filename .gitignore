@@ -17,7 +17,6 @@ env/
 Thumbs.db
 .vscode/
 .idea/
-data/company_sales.csv
 
 # Entrepôt Parquet : cache typé RECONSTRUIT depuis les CSV au premier chargement
 # (housing_data/). C'est le chemin de lecture au runtime, mais pas un artefact versionné :

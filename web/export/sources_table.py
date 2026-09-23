@@ -110,6 +110,16 @@ SOURCES = [
      "url": "https://data.ecb.europa.eu/data/datasets/IRS",
      "producteur": "BCE", "acces": "API SDMX (IRS)",
      "dataset": "macro", "colonnes": ("OAT_10ans",), "freq": "M"},
+    # Les prix et les ventes des 101 pages départementales. La ligne manquait alors que le
+    # site en tire plus de pages que de toutes les autres sources réunies. Le lien vise le
+    # jeu GÉOLOCALISÉ d'Etalab, celui que `fetch_new_sources.build_dvf` télécharge (même
+    # donnée que la DGFiP, normalisée) ; l'historique 2014-2020 vient d'un miroir des
+    # millésimes archivés, qui n'est pas une source de mise à jour. La date est le dernier
+    # trimestre publié, tous départements confondus — DVF paraît deux fois par an.
+    {"mesure": "Prix et ventes de logements par département (DVF)",
+     "url": "https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees",
+     "producteur": "DGFiP — format Etalab", "acces": "Fichiers publiés (data.gouv.fr)",
+     "dataset": "dvf", "colonnes": ("PrixM2Median", "NbVentes"), "freq": "T"},
     # Le profil des pages départementales. Deux sources INSEE, deux lignes ; la date est
     # le MILLÉSIME du recensement (une colonne `Millesime`, pas `Date`), et un millésime
     # agrège cinq années de collecte — « 2023 » n'est pas la photo d'une année. Le solde

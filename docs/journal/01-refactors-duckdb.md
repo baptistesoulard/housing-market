@@ -99,3 +99,27 @@ lit le workflow et refuse tout fichier suivi sous `data/` hors de son `git add`,
 contre-épreuve que l'ancienne liste échoue bien. Corollaire pour le poste de travail :
 un `git pull` apporte désormais les dérivés AVEC leurs sources, et la garde de fraîcheur
 ci-dessus fait le reste.
+
+## 2026-09-23 — `sales` et `company_sales` retirés de l'entrepôt
+
+Recherche des consommateurs après le retrait de l'app Streamlit :
+
+* **`sales`** (ventes second œuvre SYNTHÉTIQUES, dérivées des permis et des ventes
+  anciennes par `build_sales`) : plus aucune page, ni l'API, ni l'archive ne la lisait. Son
+  seul usage restant était l'union de dates des bornes de la frise (`_period_bounds`), qu'il
+  n'élargissait pas — la série était bornée par SIT@DEL et l'IGEDD. Preuve : les sept JSON
+  du front sont restés identiques à son retrait, bornes de période comprises.
+* **`company_sales`** : alimenté par `data_manual_input/ventes-*.csv`, et il n'en existait
+  aucun. Toujours vide. L'import de ventes du site se fait dans le NAVIGATEUR (`bestLagFit`,
+  « Données & Sources »), sans passer par ce dataset.
+
+Partis avec eux : `build_sales`, les lectures `_read_company_sales` /
+`build_company_sales_from_manual_inputs` et leurs alias de colonnes, les contrats pandera
+`SALES` / `COMPANY_SALES` (donc leurs vues SQL), le paramètre `category_col` de
+`queries.monthly` (il n'existait que pour leurs colonnes « Product » et « Serie ») et son
+test de parité, `data/sales.csv`. **`read_frames()` rend désormais QUATRE frames** —
+sitadel, ventes_ancien, macro, ecln ; `macro` reste à l'index 2, donc `forecast_archive` et
+`api/engine` n'ont pas bougé. Seul changement publié : le diagnostic `health.datasets` de
+`previsions.json`, qui ne liste plus ces deux datasets. `forecast.best_tx_to_monthly`
+reste : c'est la référence Python de `bestLagFit` (test de parité JS), sur données
+synthétiques.

@@ -111,11 +111,15 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
 - **Le Parquet est le chemin de lecture, le CSV la copie versionnée et le repli.**
   `warehouse.resolve()` ne retient un Parquet que s'il est au moins aussi récent que son
   CSV (un `git pull` qui apporte des CSV frais bascule donc en repli CSV — voulu).
-- **`read_frames()` / `load_or_generate_all()` rendent SIX frames, déballées par
-  POSITION** : sitadel, ventes_ancien, macro, sales, ecln, company_sales. `dvf` et
-  `territoires` ne rejoignent jamais ce tuple : SQL uniquement. Ajouter ou retirer un
-  dataset du tuple oblige à relire tous les déballages (`web_export.load_frames`,
-  `forecast_archive` qui lit `[2]`, `api/engine`).
+- **`read_frames()` / `load_or_generate_all()` rendent QUATRE frames, déballées par
+  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf` et `territoires` ne rejoignent
+  jamais ce tuple : SQL uniquement (l'export les relit à part pour le tableau des
+  sources). Ajouter ou retirer un dataset du tuple oblige à relire tous les déballages
+  (`web_export.load_frames`, `forecast_archive` et `api/engine` qui lisent `[2]`). Les
+  ventes second œuvre synthétiques (`sales`) et les ventes société (`company_sales`) en
+  sont sorties le 2026-09-23, faute de consommateur (journal 01).
+- **Un dataset sans consommateur se retire.** Il coûte un contrat, une vue SQL, un CSV
+  commité chaque semaine et une ligne de chaque déballage ; `git` le garde.
 - **`queries.py` est la porte unique des agrégations.** Les agrégateurs d'`analysis.py`
   (`aggregate_*`, `calculate_rolling*`) et `forecast.build_target` ne sont plus appelés :
   ce sont les **références** de `tests/test_queries_parity.py`. Ne pas les supprimer.
@@ -226,13 +230,8 @@ Détail et mesures : journal 06.
 - **Le délai anti-spam du formulaire est déclaré par le client** (`_t`) : un script qui
   poste directement le contourne, et il n'y a pas de limite de débit. Une règle de
   limitation de débit Cloudflare sur `/api/contact` suffit, sans code.
-- **DVF manque au tableau des sources d'À propos** (il n'est que dans le vocabulaire),
-  alors qu'il alimente 101 pages : ajouter une ligne à `sources_table.SOURCES`
-  (dataset `dvf`, trimestriel).
-- **Datasets `sales` (ventes second œuvre synthétiques) et `company_sales`** : leur seul
-  consommateur était l'app Streamlit ; `sales` ne sert plus qu'aux bornes de la frise
-  (`web_export._period_bounds`). Les retirer touche le tuple de `read_frames()` (voir
-  plus haut). `DataManager.data_signature()` n'a plus de consommateur à l'exécution.
+- **`DataManager.data_signature()` n'a plus de consommateur à l'exécution** (il servait
+  de clé de cache à Streamlit) ; il reste testé.
 - **Chapeaux et `how_to_read`** (chaînes littérales de l'export) n'ont aucune garde contre
   la dérive, hors le seuil de mots.
 - **Surfaces SIT@DEL** dans l'entrepôt mais pas publiées (lot B : publier l'effet de mix,

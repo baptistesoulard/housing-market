@@ -4,10 +4,6 @@
     "status": "ok",
     "datasets": [
       [
-        "company_sales",
-        "csv"
-      ],
-      [
         "dvf",
         "parquet"
       ],
@@ -17,10 +13,6 @@
       ],
       [
         "macro",
-        "parquet"
-      ],
-      [
-        "sales",
         "parquet"
       ],
       [

@@ -306,3 +306,13 @@ et les indicateurs publiés **en description seulement**.
 
 **Si l'idée de la carte revient** : refaire tourner `python mesure_territoires.py` avec une
 fenêtre de plus. La porte (plan §3.4) ne bouge pas.
+
+## 2026-09-23 — DVF entre au tableau des sources d'À propos
+
+La source qui alimente le plus de pages du site (101) n'avait pas de ligne dans le tableau
+de provenance : elle n'apparaissait que dans le vocabulaire. Ligne ajoutée dans
+`sources_table.SOURCES` (dataset `dvf`, colonnes `PrixM2Median` et `NbVentes`,
+trimestriel), liée au jeu géolocalisé d'Etalab sur data.gouv.fr — celui que `build_dvf`
+télécharge. `web_export.load_frames` relit `data/dvf.csv` à côté de `territoires` pour
+dater la ligne ; le dernier point affiché est le dernier trimestre publié, tous
+départements confondus (T4 2025 à l'ajout).

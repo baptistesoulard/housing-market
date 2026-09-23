@@ -144,29 +144,6 @@ def test_years_filter_and_type_filter_combine(con):
     _same(sql["Permis"], agg["Permis"], name="collectif 2018-2022")
 
 
-@pytest.mark.parametrize("dataset,col,category_col", [
-    ("sales", "Sales_Units", "Product"),
-    ("company_sales", "Sales", "Serie"),
-])
-def test_category_col_filters_non_type_datasets(con, dataset, col, category_col):
-    """Deux datasets portent leur catégorie dans une colonne autre que `Type`. Sans
-    `category_col` ils restaient agrégés en pandas dans les onglets interactifs."""
-    path = os.path.join(_DATA, f"{dataset}.parquet")
-    if not os.path.exists(path):
-        pytest.skip(f"{dataset} absent (dataset optionnel)")
-    df = pd.read_parquet(path)
-    if df.empty:
-        pytest.skip(f"{dataset} vide")
-    valeur = sorted(df[category_col].dropna().unique())[0]
-
-    sql = q.monthly(con, dataset, [col], windows=(), types=[valeur],
-                    category_col=category_col).sort_values("Date").reset_index(drop=True)
-    ref = (df[df[category_col] == valeur].groupby("Date")[col].sum().reset_index()
-           .sort_values("Date").reset_index(drop=True))
-    assert sql["Date"].tolist() == ref["Date"].tolist(), f"{dataset}/{valeur}"
-    _same(sql[col], ref[col], name=f"{dataset}[{category_col}={valeur}]")
-
-
 def test_macro_rolling_matches_dropna_then_rolling(con):
     """`macro_rolling` réplique `df.dropna(subset=[c]).rolling(w).sum()` en CONSERVANT les
     lignes à cumul NULL et les colonnes brutes — les vues qui superposent barres mensuelles

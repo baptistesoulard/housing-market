@@ -30,7 +30,7 @@ Sources (all open / official — full per-file details in data_manual_input/Data
     institutionnels / ventes en bloc »).
   * Rénovation / second œuvre — activité passée & prévue (INSEE conjoncture bâtiment).
 
-Not fetchable here: ventes-*.csv (compilations manuelles de ventes société).
+Every source is fetchable here; nothing in data_manual_input/ is compiled by hand.
 """
 import os
 import re

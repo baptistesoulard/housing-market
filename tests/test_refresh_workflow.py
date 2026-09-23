@@ -1,7 +1,7 @@
 """Ce que le job hebdomadaire (.github/workflows/refresh-data.yml) commite.
 
 Le runner reconstruit les CSV dérivés de `data/` (`load_or_generate_all` : sitadel, macro,
-sales, ecln) puis les PERDAIT à la fin du job : son `git add` était une liste écrite à la
+ecln — et sales, retiré depuis) puis les PERDAIT à la fin du job : son `git add` était une liste écrite à la
 main, qui ne nommait que ventes_ancien / forecast_archive / forecast_band. La copie
 versionnée prenait donc du retard sur ses sources à chaque semaine, rattrapée à la main le
 2026-08-24 (0f7005a) puis le 2026-09-19. Une liste écrite à la main oublie toujours ce qui
@@ -74,7 +74,7 @@ def test_le_job_hebdo_commite_aussi_les_sources_le_front_et_les_pages_reecrites(
 
 def test_contre_epreuve_l_ancienne_liste_oubliait_bien_les_derives():
     """Sans elle, le test principal passerait pour de mauvaises raisons si `_couvert`
-    acceptait tout. L'ancienne liste DOIT laisser macro.csv et sales.csv de côté."""
+    acceptait tout. L'ancienne liste DOIT laisser macro.csv et sitadel.csv de côté."""
     assert not _couvert("data/macro.csv", _ANCIENNE_LISTE)
-    assert not _couvert("data/sales.csv", _ANCIENNE_LISTE)
+    assert not _couvert("data/sitadel.csv", _ANCIENNE_LISTE)
     assert _couvert("data/ventes_ancien.csv", _ANCIENNE_LISTE)

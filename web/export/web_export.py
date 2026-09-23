@@ -58,29 +58,32 @@ _BUILDERS = {"synthese": page_synthese.build_synthese,
 
 # ============================ chargement partagé des frames =======================
 def load_frames() -> dict:
-    """Charge les 6 datasets une seule fois (réutilisé par tous les builders d'onglets)."""
+    """Charge les datasets une seule fois (réutilisé par tous les builders de pages)."""
     dm = DataManager()
     dm.load_or_generate_all()
-    (df_sitadel, df_ventes_ancien, df_macro, df_sales,
-     df_ecln, df_company_sales) = dm.read_frames()
+    df_sitadel, df_ventes_ancien, df_macro, df_ecln = dm.read_frames()
     frames = {"sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
-              "sales": df_sales, "ecln": df_ecln, "company_sales": df_company_sales}
-    # Le profil INSEE des départements ne sert ici qu'au tableau des sources d'À propos
-    # (dernier millésime publié) : les pages, elles, le lisent par SQL. Hors du tuple de
-    # read_frames(), qui reste à six — voir CLAUDE.md.
-    chemin = dm.paths.get("territoires")
-    if chemin and os.path.exists(chemin):
-        frames["territoires"] = pd.read_csv(chemin, dtype={"Department": str})
+              "ecln": df_ecln}
+    # Les deux datasets PAR DÉPARTEMENT (prix DVF, profil INSEE) ne servent ici qu'au
+    # tableau des sources d'À propos (dernier point publié) : les pages, elles, les lisent
+    # par SQL. Hors du tuple de read_frames() — voir CLAUDE.md.
+    for cle in ("dvf", "territoires"):
+        chemin = dm.paths.get(cle)
+        if chemin and os.path.exists(chemin):
+            df = pd.read_csv(chemin, dtype={"Department": str})
+            if "Date" in df.columns:
+                df["Date"] = pd.to_datetime(df["Date"])
+            frames[cle] = df
     return frames
 
 
 def _period_bounds(frames: dict) -> dict:
     """Bornes du curseur d'années partagé par tout le front (barre latérale).
 
-    Union de SIT@DEL, des ventes anciennes, des ventes second-œuvre et de la macro.
-    Publiée dans les sept payloads pour que la frise ait exactement le même domaine sur
-    toutes les pages, quelle que soit l'étendue des séries de la page affichée."""
-    dates = pd.concat([frames[k]["Date"] for k in ("sitadel", "ventes_ancien", "sales", "macro")
+    Union de SIT@DEL, des ventes anciennes et de la macro. Publiée dans les sept payloads
+    pour que la frise ait exactement le même domaine sur toutes les pages, quelle que soit
+    l'étendue des séries de la page affichée."""
+    dates = pd.concat([frames[k]["Date"] for k in ("sitadel", "ventes_ancien", "macro")
                        if frames.get(k) is not None and not frames[k].empty]).dropna()
     return {"min": int(dates.dt.year.min()), "max": int(dates.dt.year.max())}
 

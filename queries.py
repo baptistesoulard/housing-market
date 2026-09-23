@@ -130,19 +130,14 @@ def _window_clause(windows, partition: str | None = None) -> str:
         for w in windows)
 
 
-def _row_filter(types=None, years=None, category_col: str = "Type"):
-    """Clause WHERE + paramètres communs aux agrégats : filtre de catégorie et/ou de période.
-
-    `category_col` est la colonne qui porte la catégorie du dataset : "Type" pour
-    sitadel/ventes_ancien, mais "Product" pour sales et "Serie" pour company_sales.
-    Sans ce paramètre, seuls les deux premiers datasets étaient
-    filtrables côté SQL et les autres restaient agrégés en pandas.
+def _row_filter(types=None, years=None):
+    """Clause WHERE + paramètres communs aux agrégats : filtre de type et/ou de période.
 
     `years=(min, max)` borne sur l'ANNÉE civile (bornes incluses), appliqué avant le GROUP BY comme le faisait le filtrage pandas.
     """
     clauses, params = [], []
     if types:
-        clauses.append(f'"{category_col}" IN (' + ", ".join(["?"] * len(types)) + ")")
+        clauses.append('"Type" IN (' + ", ".join(["?"] * len(types)) + ")")
         params += list(types)
     if years:
         clauses.append("year(Date) BETWEEN ? AND ?")
@@ -161,13 +156,12 @@ def _select_with_windows(value_cols, windows):
 
 
 def monthly(con, dataset: str, value_cols, windows=(12,), types=None,
-            years=None, category_col: str = "Type") -> pd.DataFrame:
+            years=None) -> pd.DataFrame:
     """Série mensuelle nationale d'un dataset + ses cumuls glissants, en UN passage SQL.
 
     Remplace la chaîne `analysis.aggregate_* -> calculate_rolling_12m -> calculate_rolling`,
-    qui recopiait le DataFrame à chaque étape. `types` filtre la colonne de catégorie côté
-    SQL (aucune ligne inutile ne remonte) — `category_col` dit laquelle : "Type" par
-    défaut, mais "Product" (sales) ou "Serie" (company_sales).
+    qui recopiait le DataFrame à chaque étape. `types` filtre la colonne `Type` côté
+    SQL (aucune ligne inutile ne remonte).
     `years=(min, max)` restreint à une période, pour les vues où l'agrégat lui-même est
     borné par le slicer d'années.
 
@@ -176,7 +170,7 @@ def monthly(con, dataset: str, value_cols, windows=(12,), types=None,
     complet puis découper à l'affichage — c'est ce que fait le front (frise de période).
     """
     sums = ", ".join(f'SUM("{c}")::DOUBLE AS "{c}"' for c in value_cols)
-    where, params = _row_filter(types, years, category_col)
+    where, params = _row_filter(types, years)
     projection, window = _select_with_windows(value_cols, windows)
     return frame(con, f"""
         WITH mensuel AS (
