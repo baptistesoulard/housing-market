@@ -12,6 +12,7 @@ par page, écrire ce qui a changé. Chaque page a son module :
     page_previsions.py    Prévision & Scénarios
     page_archive.py       Prévisions passées
     page_departements.py  les 101 pages départementales + l'annuaire
+    page_carte.py         Carte des départements (les 101 côte à côte)
 
 et les briques qu'elles partagent :
 
@@ -22,7 +23,7 @@ et les briques qu'elles partagent :
     ecriture.py    le point d'écriture unique (arrondi, garde de contenu)
     sources_table.py, accueil.py   texte statique réécrit entre marqueurs (À propos, accueil)
 
-La sortie doit annoncer « 0/7 fichier(s) modifié(s) » quand aucune donnée n'a bougé : un
+La sortie doit annoncer « 0/8 fichier(s) modifié(s) » quand aucune donnée n'a bougé : un
 diff inattendu signale une divergence de calcul, pas du bruit (voir CLAUDE.md).
 """
 from __future__ import annotations
@@ -35,6 +36,7 @@ import accueil                                  # chiffres de l'accueil (index.m
 from commun import DATA_DIR
 from ecriture import ecrire_si_change
 import page_archive                             # noqa: E402
+import page_carte                               # noqa: E402
 import page_contexte                            # noqa: E402
 import page_departements                        # noqa: E402
 import page_marches                             # noqa: E402
@@ -53,7 +55,8 @@ _BUILDERS = {"synthese": page_synthese.build_synthese,
              "macro": page_contexte.build_macro,
              "actualites": page_contexte.build_actualites,
              "archive": page_archive.build_archive,
-             "previsions": page_previsions.build_previsions}
+             "previsions": page_previsions.build_previsions,
+             "carte": page_carte.build_carte}
 
 
 # ============================ chargement partagé des frames =======================
@@ -80,7 +83,7 @@ def load_frames() -> dict:
 def _period_bounds(frames: dict) -> dict:
     """Bornes du curseur d'années partagé par tout le front (barre latérale).
 
-    Union de SIT@DEL, des ventes anciennes et de la macro. Publiée dans les sept payloads
+    Union de SIT@DEL, des ventes anciennes et de la macro. Publiée dans tous les payloads
     pour que la frise ait exactement le même domaine sur toutes les pages, quelle que soit
     l'étendue des séries de la page affichée."""
     dates = pd.concat([frames[k]["Date"] for k in ("sitadel", "ventes_ancien", "macro")
@@ -111,7 +114,7 @@ def main():
     page_departements.build_departements(con)
     # Le tableau des sources de la page « À propos », lui aussi hors du compteur ci-dessus :
     # ce n'est pas un JSON du front mais du Markdown complété sur place, et le compteur
-    # « n/7 » vaut par sa capacité d'alerte sur une divergence de calcul (voir CLAUDE.md).
+    # « n/8 » vaut par sa capacité d'alerte sur une divergence de calcul (voir CLAUDE.md).
     if sources_table.ecrire(frames):
         print("[web_export] a-propos.md : dates du tableau des sources mises à jour")
     else:

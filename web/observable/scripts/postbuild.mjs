@@ -45,7 +45,7 @@ import {copyFile, mkdir, readdir, readFile, writeFile} from "node:fs/promises";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {dirname, join, resolve} from "node:path";
-import {SITE, INDEXABLE, MARK_SVG, depMeta, depChapeau} from "../site.config.js";
+import {SITE, INDEXABLE, MARK_SVG, depMeta, depChapeau, carteTableau} from "../site.config.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Le répertoire de sortie est paramétrable pour que les tests puissent faire tourner ce
@@ -149,6 +149,25 @@ for (const file of pages) {
   if (patchedDep !== html) { await writeFile(file, patchedDep); titresDep++; }
 }
 if (titresDep) console.log(`postbuild: ${titresDep} titre(s) départemental(aux) personnalisé(s), ${chapeauxDep} chapeau(x) chiffré(s)`);
+
+// 8. Le tableau statique de la page « Carte des départements », entre ses deux marqueurs
+//    (voir carteTableau dans site.config.js). Même régime que le chapeau chiffré : écrit
+//    à chaque build depuis le JSON que la page lit, REMPLACÉ s'il existe déjà — jamais
+//    empilé. Sans carte.json (export non lancé), la page garde ses marqueurs vides.
+const carteJson = join(ROOT, "src", "data", "carte.json");
+const cartePage = join(DIST, "carte.html");
+const TABLEAU_RE = /(<!-- hm:tableau-departements[^>]*-->)[\s\S]*?(<!-- hm:tableau-departements:fin -->)/;
+if (existsSync(carteJson) && existsSync(cartePage)) {
+  const tableau = carteTableau(JSON.parse(await readFile(carteJson, "utf-8")));
+  const html = await readFile(cartePage, "utf-8");
+  if (tableau && TABLEAU_RE.test(html)) {
+    const complete = html.replace(TABLEAU_RE, (_, debut, fin) => `${debut}\n${tableau}\n${fin}`);
+    if (complete !== html) await writeFile(cartePage, complete);
+    console.log(`postbuild: carte.html — tableau des départements écrit`);
+  } else {
+    console.warn("postbuild: carte.html — marqueurs hm:tableau-departements introuvables, tableau non posé");
+  }
+}
 
 // Le sitemap ne liste QUE les pages voulues (site.config.js), jamais le contenu de
 // dist/ : celui-ci contient aussi la 404 et les modules internes du framework, qui n'ont

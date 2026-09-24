@@ -174,6 +174,12 @@ export const NAV = [
   {icon: "🏠", name: "Marché de l'ancien", path: "/ancien",
    description: "Ventes de logements anciens (IGEDD), prix Notaires-INSEE, capacité " +
      "d'emprunt à mensualité constante et indice d'accessibilité, neuf contre ancien."},
+  // La vue d'ensemble des 101 pages départementales, qui n'en avaient aucune : on y entrait
+  // par une liste déroulante. Juste après l'ancien, dont elle est la déclinaison locale.
+  {icon: "🗺️", name: "Carte des départements", path: "/carte",
+   seoTitle: "Carte des prix immobiliers par département",
+   description: "Carte des 101 départements : prix au m², évolution des prix, ventes " +
+     "et profil des habitants (DVF, recensement INSEE), à comparer d'un coup d'œil."},
   {icon: "🏦", name: "Environnement & Financement", path: "/macro",
    description: "Taux de crédit, Euribor et OAT, confiance des ménages, intentions " +
      "d'achat, chômage, production de crédits habitat et demande de crédits (enquête BLS)."},
@@ -337,6 +343,40 @@ export function depChapeau(dep) {
     texte += ` France entière au même trimestre : ${_fr(n.prix_m2)} €/m².`;
   }
   return texte + _profilPhrase(dep);
+}
+
+// --- Le tableau statique de la page « Carte des départements » -----------------------
+// Même exception légitime que le chapeau chiffré ci-dessus, et pour la même raison : la
+// carte est dessinée dans le navigateur, donc invisible à un robot. Ce tableau, écrit par
+// scripts/postbuild.mjs à CHAQUE build depuis carte.json, est ce qu'il lit — et c'est aussi
+// le seul endroit du site qui relie, en HTML simple, les 101 pages départementales entre
+// elles et à une page de navigation (maillage interne). Il sert enfin de vue en tableau de
+// la carte, pour qui ne distingue pas les couleurs.
+const _html = (v) => String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const _variation = (v) => v == null ? "—"
+  : Math.round(Math.abs(v) * 10) === 0 ? "0,0 %"
+  : `${v > 0 ? "+" : "−"}${_fr(Math.abs(v), 1)} %`;
+
+/** Le <table> des départements de la page carte, depuis carte.json, ou null. */
+export function carteTableau(carte) {
+  if (!carte || !Array.isArray(carte.indicateurs) || !Array.isArray(carte.departements)) return null;
+  const i = (key) => carte.indicateurs.findIndex((m) => m.key === key);
+  const iPrix = i("prix_m2"), iEvol = i("evol_1an");
+  if (iPrix < 0 || iEvol < 0) return null;
+  const periode = carte.periode_dvf ? ` au ${_html(carte.periode_dvf)}` : "";
+  const lignes = carte.departements.map((d) => {
+    const lien = `<a href="/departement/${_html(d.code)}">${_html(d.code)} — ${_html(d.nom)}</a>`;
+    const prix = d.v[iPrix];
+    if (prix == null) {
+      const raison = d.couvert === false ? "hors DVF (Livre foncier ou non couvert)" : "non renseigné";
+      return `<tr><td>${lien}</td><td colspan="2">${raison}</td></tr>`;
+    }
+    return `<tr><td>${lien}</td><td>${_fr(prix)} €</td><td>${_variation(d.v[iEvol])}</td></tr>`;
+  });
+  return `<table class="hm-table hm-table-deps">\n` +
+    `<caption>Prix médian au m²${periode} et évolution sur un an — ventes enregistrées (DVF)</caption>\n` +
+    `<thead><tr><th>Département</th><th>Prix médian au m²</th><th>Sur un an</th></tr></thead>\n` +
+    `<tbody>\n${lignes.join("\n")}\n</tbody>\n</table>`;
 }
 
 /** Les pages indexables, dans l'ordre du sitemap. */

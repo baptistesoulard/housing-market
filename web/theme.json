@@ -30,7 +30,16 @@
     "C'est donc une déclaration morte : ne pas s'aligner dessus. Un seul rôle de police ici,",
     "Source Sans 3 (le nom actuel de Source Sans Pro), chargée par observablehq.config.js via",
     "globalStylesheets ; la suite de la pile n'est qu'un repli. Calibri a été retiré — police",
-    "de document à petite hauteur d'x, qui paraît plus petite et plus molle à taille égale."
+    "de document à petite hauteur d'x, qui paraît plus petite et plus molle à taille égale.",
+    "",
+    "`carte` porte les rampes de la page « Carte des départements », validées le 2026-09-24 par",
+    "le validateur de palettes (mode ordinal : une teinte, clarté monotone, écarts visibles,",
+    "extrémité claire >= 2:1 sur le fond ; pôles du divergent séparés pour les daltonismes).",
+    "`sequentielle` sert une grandeur (7 classes, du clair au foncé, une teinte bleue) ;",
+    "`divergente` un écart de part et d'autre d'un pivot (brique = sous le pivot, bleu = au-",
+    "dessus, gris neutre AU pivot — jamais une teinte). Aucune ne porte de jugement : le bleu",
+    "n'est pas « bien ». `sans_donnee` est le trait des HACHURES des départements non",
+    "renseignés : une texture et non un gris plein, pour ne pas se confondre avec le pivot."
   ],
 
   "brand": {
@@ -77,5 +86,13 @@
 
   "font": {
     "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
+  },
+
+  "carte": {
+    "sequentielle": ["#91b7de", "#76a0cb", "#5c89b8", "#4173a5", "#265d92", "#00487f", "#00326c"],
+    "divergente": ["#952c00", "#be6b4d", "#e5a691", "#d9dde3", "#91b7de", "#4d82b7", "#004e90"],
+    "sans_donnee": "#9AA5B1",
+    "contour": "#FFFFFF",
+    "cadre": "#B0B7C3"
   }
 }

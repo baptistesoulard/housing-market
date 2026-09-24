@@ -86,7 +86,7 @@ confrontée au réel.</p>
 <div class="hm-dep-invite">
 Les pages du site portent sur la France entière. Pour le prix au m² de votre département,
 le nombre de ventes qui s'y font et le nombre de m² que votre capacité d'emprunt y achète,
-choisissez-le ici.
+choisissez-le ici — ou comparez-les tous sur la <a href="/carte">carte des départements</a>.
 </div>
 
 ```js
@@ -209,7 +209,7 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
   </div>
 </div>
 
-## Les huit pages
+## Les neuf pages
 
 <div class="hm-pages">
   <a class="hm-page-card" href="/synthese">
@@ -226,6 +226,11 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
     <span class="t">🏠 Marché de l'ancien</span>
     <span class="d">Volumes de ventes, prix Notaires-INSEE, et ce que le pouvoir d'achat
     immobilier des ménages devient à mensualité constante.</span>
+  </a>
+  <a class="hm-page-card" href="/carte">
+    <span class="t">🗺️ Carte des départements</span>
+    <span class="d">Les départements côte à côte : prix au m², évolution des prix, ventes
+    et profil des habitants, sur une carte et en tableau.</span>
   </a>
   <a class="hm-page-card" href="/macro">
     <span class="t">🏦 Environnement & Financement</span>

@@ -597,3 +597,76 @@ def territoires_profil(con, departement: str) -> dict | None:
                       "fr": round(float(fr), dec) if fr is not None else None,
                       "n": int(r[2])})
     return {"millesime": int(m), "items": items} if items else None
+
+
+# ======================= Carte des départements ======================================
+# Les trois requêtes qui manquaient à la page « Carte des départements » : tout le reste
+# (prix, évolutions, m² accessibles, profil INSEE) est déjà servi par les fonctions
+# ci-dessus, département par département.
+
+def dvf_ventes_annuelles(con) -> list[dict]:
+    """Ventes des quatre derniers trimestres publiés et des quatre précédents, par département.
+
+    Un nombre de ventes par TRIMESTRE ne se compare ni d'une saison à l'autre ni d'un
+    département à l'autre ; quatre trimestres consécutifs, si. Les deux fenêtres ne sont
+    rendues que COMPLÈTES (quatre trimestres chacune) : un trimestre retiré par le
+    plancher d'effectif de DVF ferait sinon comparer trois trimestres à quatre.
+    """
+    return rows(con, """
+        WITH e AS (SELECT Department AS code, Date, NbVentes AS v FROM "dvf"
+                   WHERE Type = 'Ensemble'),
+             fin AS (SELECT code, MAX(Date) AS d FROM e GROUP BY code),
+             w AS (SELECT e.code, e.v,
+                          CASE WHEN e.Date > fin.d - INTERVAL 1 YEAR THEN 'cur'
+                               WHEN e.Date > fin.d - INTERVAL 2 YEAR THEN 'prev' END AS f
+                   FROM e JOIN fin USING (code))
+        SELECT code,
+               CASE WHEN COUNT(*) FILTER (WHERE f = 'cur') = 4
+                    THEN SUM(v) FILTER (WHERE f = 'cur') END AS ventes,
+               CASE WHEN COUNT(*) FILTER (WHERE f = 'prev') = 4
+                    THEN SUM(v) FILTER (WHERE f = 'prev') END AS ventes_prec
+        FROM w GROUP BY code ORDER BY code
+    """)
+
+
+def territoires_colonnes(con, colonnes, millesime: int | None = None) -> dict:
+    """{département: {colonne: valeur}} pour un millésime du recensement (le dernier par
+    défaut). Sert les grandeurs que le profil ne publie pas telles quelles (la population,
+    dénominateur des ventes par habitant)."""
+    m = millesime if millesime is not None else territoires_millesime(con)
+    if m is None:
+        return {}
+    cols = ", ".join(f'"{c}"' for c in colonnes)
+    out = {}
+    for r in rows(con, f'SELECT Department AS code, {cols} FROM "territoires" '
+                       'WHERE Millesime = ? ORDER BY Department', (m,)):
+        out[r.pop("code")] = r
+    return out
+
+
+def territoires_retournement(con, millesime: int, debut: int, fin: int) -> list[dict]:
+    """Le nuage de la réfutation « France héritée » (docs/mesure-territoires-2026-09-20.md).
+
+    Pour chaque département : `x`, l'indice d'âge du parc au millésime du recensement —
+    part de propriétaires × part des 65 ans et plus, le proxy dont la fidélité à la mesure
+    directe a été mesurée (ρ = 0,99 en 2023) ; `y`, la croissance du prix au m² entre deux
+    années (moyenne des trimestres, en 100 × écart de log, soit des points de %), en ÉCART
+    au département médian. Même construction que `mesure_territoires.fenetre`, donc le
+    graphique montre exactement ce que la porte a mesuré.
+    """
+    return rows(con, """
+        WITH p AS (SELECT Department AS code, year(Date) AS a, AVG(PrixM2Median) AS prix
+                   FROM "dvf" WHERE Type = 'Ensemble' AND year(Date) IN (?, ?)
+                   GROUP BY 1, 2),
+             g AS (SELECT code,
+                          100 * ln(MAX(prix) FILTER (WHERE a = ?)
+                                   / MAX(prix) FILTER (WHERE a = ?)) AS dp
+                   FROM p GROUP BY code),
+             t AS (SELECT Department AS code,
+                          "PartProprietaires" * "Part65Plus" / 100 AS x
+                   FROM "territoires" WHERE Millesime = ?)
+        SELECT g.code, t.x, g.dp - MEDIAN(g.dp) OVER () AS y
+        FROM g JOIN t USING (code)
+        WHERE g.dp IS NOT NULL AND t.x IS NOT NULL
+        ORDER BY g.code
+    """, (debut, fin, fin, debut, millesime), digits={"x": 2, "y": 2})

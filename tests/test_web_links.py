@@ -282,7 +282,7 @@ def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():
 # Le 2026-09-07, le job hebdomadaire (runner Linux) et un export lancé en local ont écrit
 # des valeurs distinctes d'un ULP pour la MÊME donnée — numpy n'est pas compilé de la même
 # façon des deux côtés. Résultat : 814 lignes de diff sur previsions.json pour zéro
-# information, et surtout un compteur « n/7 fichier(s) modifié(s) » qui perd son pouvoir
+# information, et surtout un compteur « n/8 fichier(s) modifié(s) » qui perd son pouvoir
 # d'alerte, puisqu'un fichier qui bouge à chaque exécution ne signale plus rien.
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))

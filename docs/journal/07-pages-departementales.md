@@ -316,3 +316,40 @@ trimestriel), liée au jeu géolocalisé d'Etalab sur data.gouv.fr — celui que
 télécharge. `web_export.load_frames` relit `data/dvf.csv` à côté de `territoires` pour
 dater la ligne ; le dernier point affiché est le dernier trimestre publié, tous
 départements confondus (T4 2025 à l'ajout).
+
+## 2026-09-24 — La page « Carte des départements »
+
+Demande de l'auteur après avoir revu la vidéo qui avait inspiré le module Territoires : le
+site manquait de la dimension géographique — 101 pages départementales, aucune vue
+d'ensemble, une liste déroulante pour y entrer. La porte manquée du 2026-09-20 avait refusé
+une carte en quatre catégories (une PRÉVISION), pas la carte elle-même : la page construite
+est descriptive, et elle montre la réfutation au lieu de la taire.
+
+* **Trois sections** : une mesure à la fois (13 mesures DVF et recensement, sélecteur),
+  deux mesures face à face (nuage, médianes, rien de nommé), et « une relation qui s'est
+  retournée » — indice d'âge du parc contre croissance relative du prix, sur les deux
+  fenêtres de la mesure. Recalculées sur les données du jour, les corrélations de rang
+  retombent exactement sur celles de la mesure (−0,43 sur 2014-2019, +0,46 sur
+  2019-2025) : le graphique ne réinterprète rien.
+* **Fond de carte** : contours administratifs d'Etalab (IGN Admin Express, Licence ouverte
+  2.0), version 1 000 m, simplifiés (Douglas-Peucker 0,008°, coordonnées au millième) à
+  177 Ko ; collectivités d'outre-mer retirées ; outre-mer en encarts et Paris + petite
+  couronne agrandis. Construit par `web/export/fond_de_carte.py`, versionné.
+* **Encarts redressés.** Dans la conique conforme de la page, un encart posé loin du
+  méridien central tourne de n·(λ − λ0) : près de 8° pour l'outre-mer à 7,6° O. Chaque
+  encart est pré-tourné de l'angle opposé dans le fond de carte, ce qui lie le fond à la
+  projection de `hm.js` — un test vérifie qu'ils restent alignés.
+* **Deux pièges rencontrés.** (1) `theme.js` n'avait pas été régénéré après l'ajout de
+  `carte` au thème : le build passe, et TOUTES les pages tombent dans le navigateur (« does
+  not provide an export named 'carte' »), puisque toutes importent `hm.js`. Deux tests le
+  gardent désormais. (2) L'étiquette de l'encart parisien, ancrée sur le bord même de
+  l'emprise projetée, était SUPPRIMÉE par la projection (pas rognée : absente du SVG) ;
+  ancrée un peu sous le bord et remontée par `dy`.
+* **Vérification du rendu** : le panneau navigateur intégré, masqué, n'exécute aucune
+  cellule. La page a été vérifiée dans Edge sans affichage via Playwright
+  (`chromium.launch({channel: "msedge"})` — le Chromium de Playwright n'est pas installé
+  sur le poste) : aucune erreur, 101 lignes au tableau, survol et clic vers la page du
+  département, pas de défilement horizontal à 375 px.
+* **Tableau statique** des 101 départements (prix au m², évolution sur un an), écrit par
+  `postbuild.mjs` entre les marqueurs `hm:tableau-departements` : texte chiffré pour les
+  robots, vue en tableau de la carte, et maillage interne vers les 101 pages.

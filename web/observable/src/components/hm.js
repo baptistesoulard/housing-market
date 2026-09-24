@@ -2,8 +2,8 @@
 // Importé par les .md via  import {...} from "./components/hm.js".
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
-import {html} from "npm:htl";
-import {ui} from "./theme.js";
+import {html, svg} from "npm:htl";
+import {ui, series, carte} from "./theme.js";
 
 // Réexportés pour que les PAGES n'aient jamais à importer `npm:` elles-mêmes :
 // toutes les pages passent par ce module, une seule façon de charger une lib.
@@ -329,4 +329,172 @@ export function sumByType({dates, series}, codes, meta) {
     }
   }
   return out;
+}
+
+// --- Cartes et nuages de départements (page « Carte des départements ») -------------
+// Une mesure s'affiche partout de la même façon : même unité, même rang, mêmes mots que
+// sur les pages départementales. `formatMesure` et `positionRang` sont la seule définition
+// de ces deux choses côté navigateur.
+
+/** Le formateur d'une mesure, selon son unité (champ `unite` de carte.json). */
+export function formatMesure(unite) {
+  // Pas de zéro signé : une variation qui s'arrondit à 0 ne porte ni « + » ni « − ».
+  const signe = (v) => (Math.round(Math.abs(v) * 10) === 0 ? "" : v > 0 ? "+" : "−");
+  switch (unite) {
+    case "euro": return (v) => `${nf0.format(v)} €`;
+    case "euro_an": return (v) => `${nf0.format(v)} € par an`;
+    case "pct": return (v) => `${nf1.format(v)} %`;
+    case "pct_signe": return (v) => `${signe(v)}${nf1.format(Math.abs(v))} %`;
+    case "m2": return (v) => `${nf0.format(v)} m²`;
+    default: return (v) => nf1.format(v);
+  }
+}
+
+/** Le rang d'un département, dit comme sur sa propre page. `p` = part des AUTRES
+ *  départements renseignés strictement en dessous (percent_rank, 0-100). */
+export function positionRang(p) {
+  if (p == null) return "";
+  return p >= 50
+    ? `plus élevé que dans ${p} % des autres départements`
+    : `plus bas que dans ${100 - p} % des autres départements`;
+}
+
+/**
+ * Carte des départements coloriée par UNE mesure.
+ *
+ * geo      : le fond de carte (departements-geo.json : features + cadres des encarts).
+ * valeurs  : Map code -> {nom, couvert, v, p}.
+ * mesure   : l'entrée de carte.json (echelle, unite, label, ref, ref_libelle).
+ *
+ * Deux échelles, jamais d'arc-en-ciel (voir « carte » dans web/theme.json, validé) :
+ *  - « sequentielle » : sept classes de QUANTILES — chaque couleur regroupe à peu près le
+ *    même nombre de départements, sinon Paris seul occupe la moitié du dégradé ;
+ *  - « divergente » : un pivot à zéro en gris neutre, brique en dessous, bleu au-dessus,
+ *    bornée au 95e centile des écarts pour qu'un département hors norme ne délave pas
+ *    tous les autres (il prend la teinte extrême, sa valeur exacte reste au survol).
+ * Un département sans valeur est HACHURÉ, jamais gris : un gris plein se confondrait avec
+ * le pivot du divergent, c'est-à-dire avec « zéro ».
+ */
+export function carteDepartements({geo, valeurs, mesure, width = 640,
+                                   href = (code) => `/departement/${code}`}) {
+  const fmt = formatMesure(mesure.unite);
+  const val = (f) => valeurs.get(f.properties.code) ?? {};
+  const xs = geo.features.map((f) => val(f).v).filter((v) => v != null);
+  let echelle;
+  if (mesure.echelle === "divergente") {
+    const m = d3.quantile(xs.map(Math.abs).sort(d3.ascending), 0.95) || 1;
+    const n = carte.divergente.length;
+    echelle = {type: "linear", domain: d3.range(n).map((i) => -m + (2 * m * i) / (n - 1)),
+               range: carte.divergente, interpolate: "lab", clamp: true};
+  } else {
+    echelle = {type: "quantile", domain: xs, n: carte.sequentielle.length,
+               range: carte.sequentielle};
+  }
+  const couleur = Plot.scale({color: echelle});
+  // Un identifiant par carte : deux cartes sur une page ne doivent pas se voler le motif.
+  const motif = "hm-hachures-" + Math.random().toString(36).slice(2, 9);
+  const titre = (f) => {
+    const d = val(f), code = f.properties.code;
+    const nom = `${d.nom ?? f.properties.nom} (${code})`;
+    if (d.v == null) {
+      return nom + "\n" + (d.couvert === false
+        ? "Hors DVF : Alsace-Moselle (Livre foncier) ou Mayotte"
+        : "Non renseigné pour cette mesure");
+    }
+    const ref = mesure.ref != null ? `\n${mesure.ref_libelle} : ${fmt(mesure.ref)}` : "";
+    return `${nom}\n${fmt(d.v)}\n${positionRang(d.p)}${ref}`;
+  };
+  // Étiquettes des encarts, au-dessus de chaque cadre (en longitude/latitude). Le point
+  // d'ancrage est posé un peu SOUS le bord haut du cadre, et le texte remonté par `dy` :
+  // ancré sur le bord, le cadre parisien — le plus haut, donc le bord même de l'emprise —
+  // tombait hors du domaine projeté et son étiquette disparaissait sans erreur.
+  const etiquettes = (geo.cadres ?? []).map((c) => {
+    const pts = c.geometry.coordinates[0];
+    return {nom: c.properties.nom, x: d3.mean(pts, (p) => p[0]),
+            y: d3.max(pts, (p) => p[1]) - 0.08};
+  });
+  const plot = Plot.plot({
+    // marginTop : l'étiquette de l'encart parisien, posée au-dessus de son cadre, sortirait
+    // sinon du SVG. La projection DOIT rester alignée avec web/export/fond_de_carte.py,
+    // qui pré-tourne les encarts pour cette projection précise.
+    width, marginTop: 20,
+    projection: {type: "conic-conformal", parallels: [44, 49], rotate: [-3, 0],
+                 // Les cadres des encarts débordent des départements qu'ils entourent :
+                 // ils doivent entrer dans l'emprise, sinon leur étiquette sort du SVG.
+                 domain: {type: "FeatureCollection",
+                          features: [...geo.features, ...(geo.cadres ?? [])]}},
+    color: {type: "identity"},
+    marks: [
+      Plot.geo(geo.features, {
+        fill: (f) => (val(f).v == null ? `url(#${motif})` : couleur.apply(val(f).v)),
+        stroke: carte.contour, strokeWidth: 0.7,
+        href: (f) => href(f.properties.code), title: titre, tip: {...TIP}}),
+      Plot.geo(geo.cadres ?? [], {fill: "none", stroke: carte.cadre, strokeWidth: 0.8}),
+      // clip: false — l'étiquette de l'encart le plus haut (Paris) déborde dans la marge,
+      // au-dessus du cadre de la carte, que la projection rogne par défaut.
+      Plot.text(etiquettes, {x: "x", y: "y", text: "nom", dy: -12, fontSize: 11,
+                             fill: ui.muted, textAnchor: "middle", clip: false}),
+    ],
+  });
+  plot.insertBefore(hachures(motif), plot.firstChild);
+  const legende = Plot.legend({color: echelle, label: mesure.label, tickFormat: fmt,
+                               width: Math.min(420, width), ticks: 5});
+  const aucune = geo.features.some((f) => val(f).v == null);
+  const temoin = aucune ? html`<span class="hm-carte-nd">${svg`<svg width="16" height="12"
+      aria-hidden="true">${hachures(motif + "-l")}<rect width="16" height="12"
+      fill=${"url(#" + motif + "-l)"} stroke=${carte.cadre}/></svg>`} non renseigné</span>` : "";
+  return html`<div class="hm-carte">
+    <div class="hm-carte-legende">${legende}${temoin}</div>
+    ${plot}
+  </div>`;
+}
+
+// Le motif des départements sans valeur : des hachures, et non un aplat gris.
+function hachures(id) {
+  return svg`<defs><pattern id=${id} width="6" height="6" patternUnits="userSpaceOnUse"
+      patternTransform="rotate(45)"><rect width="6" height="6" fill="#FFFFFF"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke=${carte.sans_donnee} stroke-width="1.6"/>
+    </pattern></defs>`;
+}
+
+/**
+ * Nuage de départements : un point par département, deux mesures en abscisse et en
+ * ordonnée. Les MÉDIANES tracées découpent le nuage en quatre groupes sans en nommer
+ * aucun — c'est au lecteur de dire ce qu'il y voit, pas à un score.
+ *
+ * points : [{code, nom, x, y}] ; etiquettes : codes à nommer sur le graphique (peu !).
+ * xLog / yLog : échelle logarithmique, pour un prix au m² que Paris écraserait sinon
+ * (le nuage tiendrait dans le premier quart de l'axe).
+ */
+export function nuageDepartements({points, fmtX, fmtY, xLabel, yLabel, width = 640,
+                                   height = 380, medianes = true, tendance = false,
+                                   zeroY = false, xDomain, yDomain, etiquettes = [],
+                                   xLog = false, yLog = false,
+                                   href = (code) => `/departement/${code}`}) {
+  const nommes = points.filter((d) => etiquettes.includes(d.code));
+  return Plot.plot({
+    // marginRight : une étiquette de département au bord droit (Paris, la Creuse) serait
+    // rognée sans elle.
+    width, height, marginLeft: 56, marginBottom: 44, marginRight: 72,
+    x: {label: xLabel, domain: xDomain, grid: true, tickFormat: fmtX, ticks: 5,
+        ...(xLog ? {type: "log"} : {})},
+    y: {label: yLabel, domain: yDomain, grid: true, tickFormat: fmtY,
+        ...(yLog ? {type: "log"} : {})},
+    marks: [
+      medianes ? Plot.ruleX([d3.median(points, (d) => d.x)],
+                            {stroke: ui.greyLine, strokeDasharray: "4,3"}) : null,
+      medianes ? Plot.ruleY([d3.median(points, (d) => d.y)],
+                            {stroke: ui.greyLine, strokeDasharray: "4,3"}) : null,
+      zeroY ? Plot.ruleY([0], {stroke: ui.rule}) : null,
+      tendance ? Plot.linearRegressionY(points, {x: "x", y: "y", stroke: series.brick,
+                                                 strokeWidth: 2, ci: 0}) : null,
+      Plot.dot(points, {x: "x", y: "y", r: 4, fill: series.blue, fillOpacity: 0.8,
+                        stroke: "#FFFFFF", strokeWidth: 1, href: (d) => href(d.code),
+                        title: (d) => `${d.nom} (${d.code})\n${xLabel} : ${fmtX(d.x)}\n` +
+                                      `${yLabel} : ${fmtY(d.y)}`,
+                        tip: {...TIP}}),
+      Plot.text(nommes, {x: "x", y: "y", text: "nom", dx: 7, textAnchor: "start",
+                         fontSize: 11, fill: ui.muted}),
+    ],
+  });
 }

@@ -40,7 +40,8 @@ fetch_new_sources.py ─► data_manual_input/ ─► DataManager ─► data/*.
 
 ```bash
 python -m pytest tests/ -q                  # tout ; parité SQL sautée sans entrepôt, JS/SEO sans Node, API sans Flask
-python web/export/web_export.py             # doit annoncer 0/7 et 0/102 si rien n'a bougé
+python web/export/web_export.py             # doit annoncer 0/8 et 0/102 si rien n'a bougé
+python web/export/fond_de_carte.py          # réseau ; fond de carte des départements, à la main (rare)
 npm --prefix web/observable run build       # → dist/ (observable build + scripts/postbuild.mjs)
 npm --prefix web/observable run dev         # préversion ; ne sert PAS /data/departements/
 python fetch_new_sources.py                 # réseau ; --sequential pour déboguer une source
@@ -54,18 +55,19 @@ python forecast_archive.py --calibrate      # recalibre la bande (deux passes, v
 |---|---|
 | `web_export.py` | orchestration seule : charger, un constructeur par page, écrire ce qui a changé |
 | `page_synthese.py` | `faits()` (seule fonction qui lit l'entrepôt) → `rediger()` (phrases, pastilles) |
-| `page_marches.py`, `page_contexte.py`, `page_previsions.py`, `page_archive.py`, `page_departements.py` | une page (ou deux jumelles) chacun |
+| `page_marches.py`, `page_contexte.py`, `page_previsions.py`, `page_archive.py`, `page_departements.py`, `page_carte.py` | une page (ou deux jumelles) chacun |
 | `commun.py` | mise en forme FR (`pct`, `pt`, `milliers`, `abrege`, `mois_annee`), palette, chemins |
 | `mesures.py` | faits partagés entre pages (stock neuf, taux de transformation) — un calcul, un chiffre |
 | `verdict.py` | verdict du modèle et sa fiabilité, partagés par Synthèse, Prévision et accueil |
 | `reperes.py` | **tout ce que rien ne régénère** : repères saisis à la main et mesures datées |
 | `ecriture.py` | point d'écriture unique : arrondi à 9 chiffres significatifs, garde de contenu |
 | `sources_table.py`, `accueil.py` | Markdown réécrit entre marqueurs (`a-propos.md`, `index.md`) |
+| `fond_de_carte.py` | outil ponctuel : fond de carte des départements, versionné (`departements-geo.json`) |
 
 Règles :
 
-- **Le compteur « n/7 fichier(s) modifié(s) » est une alarme.** Un diff inattendu sur un
-  JSON national signale une divergence de calcul. Un refactor doit laisser `0/7` et
+- **Le compteur « n/8 fichier(s) modifié(s) » est une alarme.** Un diff inattendu sur un
+  JSON national signale une divergence de calcul. Un refactor doit laisser `0/8` et
   `0/102` ; une régénération délibérée se dit dans le commit. Les départements et le
   Markdown réécrit sont comptés à part, exprès.
 - **L'arrondi (`ecriture.arrondir_flottants`) est ce qui rend ce compteur fiable** entre
@@ -95,8 +97,9 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
 - **Les seules exceptions sont GÉNÉRÉES** et ne s'éditent jamais à la main : le tableau des
   sources d'À propos (`sources_table.py`), les deux affirmations chiffrées de l'accueil —
   erreur du modèle et horizon de bascule — (`accueil.py`), le chapeau chiffré des 101
-  pages départementales (`scripts/postbuild.mjs`, à chaque build). Les marqueurs `hm:*`
-  délimitent ce qui est réécrit.
+  pages départementales et le tableau des départements de la page carte
+  (`scripts/postbuild.mjs`, à chaque build). Les marqueurs `hm:*` délimitent ce qui est
+  réécrit.
 - **Jamais de `# ${…}`** ni de chapeau interpolé : ≥ 40 mots statiques avant la première
   section (`tests/test_web_structure.py`).
 - **Corriger un chiffre dans la doc ne le corrige pas sur le site** : `grep` la valeur dans
@@ -208,6 +211,16 @@ Détail et mesures : journal 06.
   `/data/departements/<code>.json` et lues par `fetch()`. Budget 10 Ko par fichier ; les 4
   départements hors DVF (57, 67, 68, 976) ont une page qui explique l'absence. Pas de
   prévision régionalisée.
+- **Carte des départements** (`carte.md`, `page_carte.py`, `carteDepartements` et
+  `nuageDepartements` dans `hm.js`) : elle DÉCRIT, elle ne classe pas — pas de score, pas
+  de « gagnants » (la porte Territoires a été manquée, journal 07 ; la page le montre).
+  Couleurs validées dans `web/theme.json` (`carte`) : une teinte pour une grandeur (classes
+  de quantiles), deux teintes et un gris au pivot pour un écart, HACHURES pour « non
+  renseigné » (un gris plein se lirait « zéro »). Le fond de carte est versionné et
+  pré-tourne ses encarts pour la projection de `hm.js` : les deux doivent rester alignés
+  (`tests/test_carte.py`). `components/theme.js` est GÉNÉRÉ : un nom ajouté au thème sans
+  régénération casse toutes les pages dans le navigateur, sans erreur de build
+  (`test_theme_js_est_a_jour_de_theme_json`).
 - **Le formulaire de contact** : l'adresse de destination n'entre JAMAIS dans le dépôt
   (`CONTACT_TO`, `RESEND_API_KEY` côté Cloudflare) ; sans elles la route répond 503.
 - **Rien ne teste le RENDU.** Vérifier sur le site construit (`dist/`). Le panneau

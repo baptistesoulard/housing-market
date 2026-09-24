@@ -29,7 +29,8 @@ aucun Python n'est requis au build du site.
 web/
 ├── export/
 │   ├── web_export.py            # orchestration : un constructeur par page → JSON
-│   ├── page_*.py                # synthese, marches, contexte, previsions, archive, departements
+│   ├── page_*.py                # synthese, marches, contexte, previsions, archive, departements, carte
+│   ├── fond_de_carte.py         # outil ponctuel : fond de carte des départements (versionné)
 │   ├── commun.py                # mise en forme FR, palette, chemins
 │   ├── mesures.py / verdict.py  # faits partagés entre pages ; verdict du modèle
 │   ├── reperes.py               # ce que rien ne régénère : repères et mesures DATÉS
@@ -338,7 +339,7 @@ prend un répertoire en argument, ce qui permet aux tests de le faire tourner su
 Chaque page de contenu affiche à droite la liste de ses sections (« Sur cette page »),
 construite **au build** à partir de ses titres de niveau 2 — un titre posé par
 ``display(html`<h2>…`)`` n'y figure donc jamais. L'accueil s'en abstient : c'est une page
-d'atterrissage, dont la section « Les huit pages » tient déjà lieu de navigation.
+d'atterrissage, dont la section « Les neuf pages » tient déjà lieu de navigation.
 
 Il n'apparaît qu'à partir de **1320 px**, et non des 1216 px du framework : celui-ci
 réserve 208 px de gouttière, ce qui faisait tomber les panneaux appariés de deux colonnes
@@ -426,7 +427,7 @@ npm --prefix web/observable run build
 ```
 
 `web_export.py` compte les départements **à part** des sept JSON nationaux : la ligne
-`0/7 fichier(s) modifié(s)` doit rester lisible, c'est un signal de régression.
+`0/8 fichier(s) modifié(s)` doit rester lisible, c'est un signal de régression.
 
 ### Pourquoi ces pages ne se chargent pas comme les autres
 
@@ -447,10 +448,10 @@ puisque la copie n'a lieu qu'au build. Vérifier sur `dist/`.
 
 ## Les pages et leurs contrôles
 
-Huit pages de données (Synthèse, Marché du neuf, Marché de l'ancien, Environnement &
-Financement, Actualités & Aides, Prévision & Scénarios, Prévisions passées, Données &
-Sources), trois pages rédigées (accueil, À propos, mentions légales) et les 101 pages
-départementales.
+Neuf pages de données (Synthèse, Marché du neuf, Marché de l'ancien, Carte des
+départements, Environnement & Financement, Actualités & Aides, Prévision & Scénarios,
+Prévisions passées, Données & Sources), trois pages rédigées (accueil, À propos, mentions
+légales) et les 101 pages départementales.
 
 *Marché du neuf* et *Marché de l'ancien* sont **jumelles** : elles ouvrent sur les mêmes
 sections, portant le même intitulé et dans le même ordre, puis chacune ajoute ce qui lui

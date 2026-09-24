@@ -43,6 +43,7 @@ reconstruction du site.
 | Synthèse | État des trois piliers (neuf, ancien, financement), du présent vers l'avenir |
 | Marché du neuf | Permis et mises en chantier (SIT@DEL), individuel/collectif, commercialisation (ECLN) |
 | Marché de l'ancien | Ventes (IGEDD), prix Notaires-INSEE, capacité d'emprunt et accessibilité |
+| Carte des départements | Les départements côte à côte : prix, évolutions, ventes, profil INSEE — et pourquoi la page ne classe pas |
 | Environnement & Financement | Taux, OAT, Euribor, confiance, intentions d'achat, chômage, crédits, rénovation |
 | Actualités & Aides | Veille curatée des dispositifs publics (`actualites.py`) |
 | Prévision & Scénarios | Projection des ventes anciennes, son incertitude, un panneau de scénarios à trois leviers |
@@ -60,7 +61,7 @@ npm --prefix web/observable install
 npm --prefix web/observable run dev    # http://localhost:3000
 ```
 
-`python web/export/web_export.py` doit annoncer **`0/7 fichier(s) modifié(s)`** quand
+`python web/export/web_export.py` doit annoncer **`0/8 fichier(s) modifié(s)`** quand
 aucune donnée n'a bougé : un diff inattendu signale une divergence de calcul, pas du
 bruit.
 

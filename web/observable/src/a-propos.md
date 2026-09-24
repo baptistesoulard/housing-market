@@ -198,14 +198,16 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
 
 ## Limites à connaître
 
-- **Les huit pages de données sont nationales.** Aucune ventilation régionale : les
-  séries qu'elles retiennent sont celles de la France entière. Seuls le prix au m² (DVF)
-  et le profil du recensement ont une déclinaison départementale, sur les
-  [101 pages dédiées](/departement/75) — les taux, le chômage et les intentions d'achat
-  qui alimentent la prévision restent nationaux, faute d'équivalent local publié. Et ce
-  profil **décrit sans classer** : l'idée d'en tirer une carte des départements qui
-  gagneront ou perdront a été mesurée sur douze ans de prix, puis
-  [écartée](/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas).
+- **Les pages de marché sont nationales.** Aucune ventilation régionale : les séries
+  qu'elles retiennent sont celles de la France entière. Seuls le prix au m² et les ventes
+  (DVF) et le profil du recensement ont une déclinaison départementale, sur les
+  [101 pages dédiées](/departement/75) et sur la [carte des départements](/carte) — les
+  taux, le chômage et les intentions d'achat qui alimentent la prévision restent
+  nationaux, faute d'équivalent local publié. Et cette carte **décrit sans classer** :
+  l'idée d'en tirer une carte des départements qui gagneront ou perdront a été mesurée
+  sur douze ans de prix, puis
+  [écartée](/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas) — la carte montre
+  d'ailleurs pourquoi.
 - **Des rythmes de publication différents.** Les permis et les ventes dans l'ancien sont
   mensuels, la commercialisation du neuf est trimestrielle, et chaque source a son propre
   délai. Une page ne s'arrête donc pas toutes séries confondues à la même date.

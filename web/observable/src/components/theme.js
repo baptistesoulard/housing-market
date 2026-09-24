@@ -52,10 +52,33 @@ export const THEME = {
   },
   "font": {
     "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
+  },
+  "carte": {
+    "sequentielle": [
+      "#91b7de",
+      "#76a0cb",
+      "#5c89b8",
+      "#4173a5",
+      "#265d92",
+      "#00487f",
+      "#00326c"
+    ],
+    "divergente": [
+      "#952c00",
+      "#be6b4d",
+      "#e5a691",
+      "#d9dde3",
+      "#91b7de",
+      "#4d82b7",
+      "#004e90"
+    ],
+    "sans_donnee": "#9AA5B1",
+    "contour": "#FFFFFF",
+    "cadre": "#B0B7C3"
   }
 };
 
-export const {brand, series, status, delta, ui} = THEME;
+export const {brand, series, status, delta, ui, carte} = THEME;
 
 // Rampe catégorielle dans son ordre d'assignation (jamais cyclée).
 export const SERIES_ORDER = [series.brick, series.blue, series.green, series.violet, series.gold];

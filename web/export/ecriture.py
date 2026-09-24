@@ -38,7 +38,7 @@ def arrondir_flottants(o):
 
     Sans arrondi, les deux environnements se repoussent `previsions.json` indéfiniment,
     chacun reformatant les décimales de l'autre — 814 lignes de diff pour zéro
-    information. Et surtout le compteur « n/7 fichier(s) modifié(s) » perd son POUVOIR
+    information. Et surtout le compteur « n/8 fichier(s) modifié(s) » perd son POUVOIR
     D'ALERTE, qui est sa seule raison d'être : un fichier qui bouge à chaque exécution ne
     signale plus rien quand il bouge pour de bon.
 

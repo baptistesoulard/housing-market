@@ -11,9 +11,9 @@ import dvf_clean                                # noqa: E402
 import queries as q                             # noqa: E402
 
 
-# Régime À PART des sept JSON nationaux, et c'est délibéré.
+# Régime À PART des huit JSON nationaux, et c'est délibéré.
 #
-# Les sept pages nationales tiennent chacune dans un fichier chargé à l'ouverture. Les
+# Les huit pages nationales tiennent chacune dans un fichier chargé à l'ouverture. Les
 # départements, eux, sont 101 : un fichier unique les contenant tous ferait télécharger
 # le pays entier à quelqu'un qui veut voir le sien. D'où un fichier PAR département,
 # chargé à la demande, plus un index léger pour le sélecteur.
@@ -115,7 +115,7 @@ def _verifier_budget(chemin, code):
 def build_departements(con) -> int:
     """Écrit l'index + un fichier par département. Renvoie le nombre de fichiers modifiés.
 
-    Volontairement HORS de `_BUILDERS` : le compteur « n/7 fichier(s) modifié(s) » des
+    Volontairement HORS de `_BUILDERS` : le compteur « n/8 fichier(s) modifié(s) » des
     pages nationales est un signal de régression (un diff inattendu sur l'un des sept
     signale une divergence de calcul), et le noyer dans un total à 107 lui ferait perdre
     tout pouvoir d'alerte.

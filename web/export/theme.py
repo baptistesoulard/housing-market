@@ -51,7 +51,7 @@ def write_theme_js(path: str = THEME_JS_PATH) -> str:
         "// GÉNÉRÉ par web/export/theme.py — NE PAS ÉDITER À LA MAIN.\n"
         "// Source de vérité : web/theme.json  ·  régénérer : python web/export/web_export.py\n"
         f"export const THEME = {body};\n\n"
-        "export const {brand, series, status, delta, ui} = THEME;\n"
+        "export const {brand, series, status, delta, ui, carte} = THEME;\n"
         "\n// Rampe catégorielle dans son ordre d'assignation (jamais cyclée).\n"
         "export const SERIES_ORDER = [series.brick, series.blue, series.green,"
         " series.violet, series.gold];\n"

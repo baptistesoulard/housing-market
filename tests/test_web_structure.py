@@ -126,7 +126,7 @@ def test_les_ancres_visees_existent_dans_la_page_cible(page):
 
 # L'accueil a quatre sections et PAS de sommaire, délibérément : c'est une page
 # d'atterrissage qui se lit d'un trait et se termine par un appel à cliquer. Un sommaire y
-# entrerait en concurrence avec « Les huit pages », qui EST la navigation du site.
+# entrerait en concurrence avec « Les neuf pages », qui EST la navigation du site.
 SANS_SOMMAIRE = {"index"}
 
 
@@ -208,7 +208,7 @@ def test_display_ne_recoit_jamais_de_valeur_vide():
 
 
 # --- Le chapeau indexable des pages de données ------------------------------------------
-# Les huit pages de données construisent leur contenu dans le NAVIGATEUR à partir des JSON.
+# Les neuf pages de données construisent leur contenu dans le NAVIGATEUR à partir des JSON.
 # Un robot d'indexation, comme tout aperçu de partage, n'en voit rien. Leur titre et leur
 # chapeau sont donc le seul texte qu'ils lisent — et ils étaient interpolés, `# ${x.title}`,
 # ce qui livrait un titre VIDE dans le HTML : la page la plus importante du site pour un
@@ -217,7 +217,7 @@ def test_display_ne_recoit_jamais_de_valeur_vide():
 # Ce test empêche la rechute. Il travaille sur la SOURCE Markdown, en pur Python : une
 # interpolation se reconnaît à l'œil nu, et le vérifier ici évite d'exiger un build.
 
-PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "macro", "actualites",
+PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "carte", "macro", "actualites",
                     "previsions", "previsions-passees", "donnees"]
 
 
@@ -513,3 +513,48 @@ def test_multiline_pose_une_legende_des_deux_series():
     corps = hm[hm.index("export function multiLine"):]
     assert re.search(r"meta\.length\s*>=\s*2", corps), (
         "la légende automatique doit se déclencher à partir de deux séries")
+
+
+# --- Le module de thème généré ----------------------------------------------------------
+# `src/components/theme.js` est GÉNÉRÉ par web/export/theme.py depuis web/theme.json, et
+# commité. Le 2026-09-24, `carte` a été ajouté au thème et importé par hm.js sans que
+# theme.js soit régénéré : le build passe (il ne vérifie pas les exports entre modules),
+# et TOUTES les pages du site tombent dans le navigateur sur « does not provide an export
+# named 'carte' », puisque toutes importent hm.js. Deux gardes, parce que les deux
+# défauts sont possibles séparément.
+_COMPOSANTS = os.path.join(_WEB, "components")
+
+
+def test_theme_js_est_a_jour_de_theme_json():
+    """Le fichier commité doit être exactement ce que theme.py générerait aujourd'hui."""
+    import sys
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                    "web", "export"))
+    import theme
+    with tempfile.TemporaryDirectory() as d:
+        attendu = theme.write_theme_js(os.path.join(d, "theme.js"))
+        with open(attendu, encoding="utf-8") as f:
+            regenere = f.read()
+    with open(os.path.join(_COMPOSANTS, "theme.js"), encoding="utf-8") as f:
+        commite = f.read()
+    assert commite == regenere, (
+        "components/theme.js est périmé — relancer python web/export/web_export.py "
+        "(ou theme.write_theme_js()) et commiter le résultat")
+
+
+def test_chaque_nom_importe_de_theme_js_y_est_exporte():
+    with open(os.path.join(_COMPOSANTS, "theme.js"), encoding="utf-8") as f:
+        source = f.read()
+    exportes = set()
+    for bloc in re.findall(r"export const \{([^}]*)\}", source):
+        exportes |= {n.strip() for n in bloc.split(",") if n.strip()}
+    exportes |= set(re.findall(r"export const (\w+)\s*=", source))
+    fichiers = glob.glob(os.path.join(_COMPOSANTS, "*.js")) + glob.glob(os.path.join(_WEB, "*.md"))
+    for chemin in fichiers:
+        with open(chemin, encoding="utf-8") as f:
+            texte = f.read()
+        for bloc in re.findall(r'import\s*\{([^}]*)\}\s*from\s*"\./(?:components/)?theme\.js"', texte):
+            for nom in (n.strip().split(" as ")[0] for n in bloc.split(",") if n.strip()):
+                assert nom in exportes, (
+                    f"{os.path.basename(chemin)} importe « {nom} » de theme.js, qui ne l'exporte "
+                    "pas — la page tomberait dans le navigateur, le build ne dirait rien")

@@ -226,6 +226,15 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
    cliquer. Sans ce modificateur, le curseur en main promet une interaction qui n'existe
    pas — un contrôle qui ment sur ce qu'il fait est pire qu'un texte inerte. */
 .hm-legend--static .hm-legend-item { cursor: default; }
+/* Carte des départements : la légende (rampe ou classes de Plot) et le témoin hachuré
+   « non renseigné » sur une même ligne, au-dessus de la carte. Le curseur en main sur les
+   départements dit qu'un clic ouvre leur page — c'est vrai, le lien est dans le SVG. */
+.hm-carte { margin: 0.4rem 0 0.6rem; }
+.hm-carte-legende { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.4rem 1.2rem; }
+.hm-carte-nd { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--hm-ink); padding-bottom: 0.9rem; }
+.hm-carte svg a path { cursor: pointer; }
+.hm-carte svg a:hover path, .hm-carte svg a:focus path { stroke: var(--hm-ink); stroke-width: 1.4; }
+.hm-choix { display: flex; flex-wrap: wrap; gap: 0.2rem 1.5rem; }
 /* Tableau large replié dans un « details » : c'est le conteneur qui défile, jamais la
    page — un site qui glisse latéralement sur mobile a l'air cassé. */
 .hm-scroller { overflow-x: auto; }
