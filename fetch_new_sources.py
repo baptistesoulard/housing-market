@@ -232,6 +232,113 @@ def build_locaux():
     _write_if_changed(path, raw, rows=raw.count(chr(10)), label="locaux")
 
 
+#: Libelle SDES -> cle de colonne du fichier departemental reduit (Permis_<cle>,
+#: Chantiers_<cle>). Memes neuf libelles que LOCAUX_DESTINATIONS_SDES, dans le meme ordre.
+LOCAUX_CLES_SDES = {
+    "Ensemble des locaux non-residentiels": "Ensemble",
+    "Exploitation agricole": "Agricole", "Commerce": "Commerce",
+    "Services publics": "Public", "Autres activites": "Activites",
+    "Commerce - hotels": "Hotels", "Autres activites - industrie": "Industrie",
+    "Autres activites - entrepot": "Entrepots", "Autres activites - bureau": "Bureaux",
+}
+_DIDO = "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/"
+LOCAUX_DEP_RID = "a301bf87-730c-400a-87e0-ce71b7b1d1af"
+LOCAUX_REG_RID = "b4da5bf2-4b1f-4a39-9d79-805777c29c5d"
+
+
+def _dido_csv(rid, colonnes):
+    """Un fichier DiDo en DataFrame, en-tete verifie avant toute lecture."""
+    raw = _get(_DIDO + rid + "/csv").decode("utf-8", "replace")
+    header = raw.splitlines()[0] if raw else ""
+    for col in colonnes:
+        if col not in header:
+            raise ValueError(f"en-tête DiDo inattendu (colonne '{col}' absente) : {header!r}")
+    return pd.read_csv(io.StringIO(raw), sep=";", dtype=str)
+
+
+def reduire_locaux_departements(dep, reg):
+    """Fichier departemental brut + fichier regional -> tableau departemental REDUIT.
+
+    Le fichier du SDES pese 9 Mo (une ligne par mois x departement x destination, libelles
+    compris) ; le site n'a besoin que des surfaces, BRUTES — le departemental n'existe
+    qu'en brut, et le site ne lit ces series qu'en cumul 12 mois, ou le brut ne s'ecarte
+    du CVS-CJO national que de 1,5 % au plus. D'ou une ligne par (mois, departement) et
+    une colonne par destination et par mesure : ~2 Mo, et un mois nouveau s'ajoute en fin
+    de fichier (tri Date puis Department), ce qui garde le diff git minuscule.
+
+    Le fichier REGIONAL sert de controle, et il est exact : chaque region vaut la somme
+    de ses departements, pour chaque mois et chaque destination, au m2 pres (verifie sur
+    les 26 406 cellules du millesime 2026-08). Un ecart signale un departement manquant,
+    une region redecoupee ou une table departements.py perimee : on arrete, le fichier
+    precedent reste en place. Les regions ne sont donc PAS stockees — elles se
+    recalculent en SQL, exactement.
+
+    Une valeur mensuelle peut etre NEGATIVE (-433 m2 autorises dans un departement en mai
+    2026) : c'est une annulation enregistree ce mois-la, en date de prise en compte. Elle
+    est gardee telle quelle ; les cumuls 12 mois l'absorbent.
+    """
+    import departements
+
+    absents = set(LOCAUX_CLES_SDES) - set(dep["DESTINATION"])
+    if absents:
+        raise ValueError(f"locaux départementaux : libellés absents {sorted(absents)}")
+    inconnus = set(dep["DEPARTEMENT_CODE"]) - set(departements.DEPARTEMENTS)
+    if inconnus:
+        raise ValueError(f"locaux départementaux : départements inconnus {sorted(inconnus)}")
+
+    dep = dep[dep["DESTINATION"].isin(LOCAUX_CLES_SDES)].copy()
+    dep["Date"] = pd.to_datetime(dep["ANNEE"] + "-" + dep["MOIS"].str.zfill(2) + "-01")
+    for c in ("SDP_AUT", "SDP_COM"):
+        dep[c] = pd.to_numeric(dep[c]).astype("int64")
+
+    # Controle regional : somme des departements == region, cellule par cellule.
+    reg = reg[reg["NAT_SERIES"] == "Brute"].copy()
+    reg["Date"] = pd.to_datetime(reg["ANNEE"] + "-" + reg["MOIS"].str.zfill(2) + "-01")
+    for c in ("SDP_AUT", "SDP_COM"):
+        reg[c] = pd.to_numeric(reg[c]).astype("int64")
+    dep["Region"] = dep["DEPARTEMENT_CODE"].map(departements.region)
+    somme = dep.groupby(["Date", "Region", "DESTINATION"])[["SDP_AUT", "SDP_COM"]].sum()
+    publie = reg.groupby(["Date", "REGION", "DESTINATION"])[["SDP_AUT", "SDP_COM"]].sum()
+    publie.index.names = somme.index.names
+    j = somme.join(publie, rsuffix="_reg", how="outer")
+    ecart = j.isna().any(axis=1) | (j["SDP_AUT"] != j["SDP_AUT_reg"]) \
+        | (j["SDP_COM"] != j["SDP_COM_reg"])
+    if ecart.any():
+        exemple = j[ecart].head(3).to_dict("index")
+        raise ValueError(f"locaux : {int(ecart.sum())} cellule(s) où la somme des "
+                         f"départements ne redonne pas la région publiée — {exemple}")
+
+    dep["cle"] = dep["DESTINATION"].map(LOCAUX_CLES_SDES)
+    large = dep.pivot_table(index=["Date", "DEPARTEMENT_CODE"], columns="cle",
+                            values=["SDP_AUT", "SDP_COM"], aggfunc="sum")
+    # Grille COMPLETE mois x departement : les cumuls glissants SQL comptent des lignes,
+    # un mois manquant decalerait silencieusement la fenetre. Un trou vaut zero.
+    grille = pd.MultiIndex.from_product(
+        [sorted(dep["Date"].unique()), sorted(dep["DEPARTEMENT_CODE"].unique())],
+        names=["Date", "DEPARTEMENT_CODE"])
+    large = large.reindex(grille).fillna(0).astype("int64")
+    out = pd.DataFrame({"Date": large.index.get_level_values(0).strftime("%Y-%m-%d"),
+                        "Department": large.index.get_level_values(1)})
+    for cle in LOCAUX_CLES_SDES.values():
+        out[f"Permis_{cle}"] = large[("SDP_AUT", cle)].to_numpy()
+        out[f"Chantiers_{cle}"] = large[("SDP_COM", cle)].to_numpy()
+    return out
+
+
+def build_locaux_territoires():
+    """SIT@DEL2, locaux non residentiels par departement (brut), controles par les regions.
+
+    Deux telechargements (~11 Mo), un fichier ecrit (~2 Mo) : voir
+    reduire_locaux_departements. Les fichiers bruts ne sont jamais conserves."""
+    cols = ("ANNEE", "MOIS", "DESTINATION", "SDP_AUT", "SDP_COM")
+    dep = _dido_csv(LOCAUX_DEP_RID, cols + ("DEPARTEMENT_CODE",))
+    reg = _dido_csv(LOCAUX_REG_RID, cols + ("REGION", "NAT_SERIES"))
+    out = reduire_locaux_departements(dep, reg)
+    path = os.path.join(OUT_DIR, "locaux-departements.csv")
+    _write_if_changed(path, out.to_csv(index=False), rows=len(out),
+                      last=out["Date"].iloc[-1], label="locaux (départements)")
+
+
 def build_igedd():
     """IGEDD existing-home sales workbook — stable direct URL on cgedd.fr (the IGEDD
     page 'prix-immobilier-evolution-a-long-terme-a1048' links to it). Saved as-is; the
@@ -775,6 +882,7 @@ def build_territoires(force=False):
 BUILDERS = [
     build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
     build_locaux,           # SIT@DEL2, locaux non residentiels (meme API)
+    build_locaux_territoires,  # les memes, par departement, controles par les regions
     build_dvf,              # DVF (DGFiP) - CONDITIONNEL : ne descend le corpus que si la
                             #   source a ete republiee (voir la garde dans le builder)
     build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)

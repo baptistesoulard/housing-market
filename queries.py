@@ -670,3 +670,76 @@ def territoires_retournement(con, millesime: int, debut: int, fin: int) -> list[
         WHERE g.dp IS NOT NULL AND t.x IS NOT NULL
         ORDER BY g.code
     """, (debut, fin, fin, debut, millesime), digits={"x": 2, "y": 2})
+
+
+# ======================= Locaux non résidentiels par territoire ========================
+# Les surfaces de locaux par département (dataset `locaux_departements`, BRUT, format
+# large) et par région, qui s'en déduisent exactement : le SDES publie les régions, et
+# chacune vaut la somme de ses départements au m² près — contrôlé à la collecte
+# (fetch_new_sources.reduire_locaux_departements). La table département → région vient
+# de `departements.py`, figée, comme partout sur le site.
+
+#: Les colonnes du dataset, dans l'ordre du contrat : <Permis|Chantiers>_<clé>.
+LOCAUX_CLES = hd.schema.LOCAUX_CLES
+#: Période de référence du niveau — la même que la page nationale (page_locaux.REF_LOCAUX).
+LOCAUX_REF = (2013, 2019)
+
+
+def locaux_territoires(con, echelon: str = "departement") -> list[dict]:
+    """Par territoire : cumul des 12 derniers mois, des 12 précédents, et NIVEAU de
+    référence, pour chaque mesure et chaque clé (`Chantiers_Entrepots_12m`, …).
+
+    Le niveau de référence a EXACTEMENT la définition de `analysis.level_context`, celle
+    de la page nationale : moyenne des cumuls 12 mois glissants dont le mois de fin tombe
+    en 2013-2019 (le premier cumul complet finit en décembre 2013). Une moyenne des
+    années civiles, plus simple, donnait −16,4 % là où la carte de tête affiche −15,5 % :
+    deux « écarts à 2013-19 » différents pour la même série, sur la même page.
+
+    `echelon` : "departement" (codes INSEE) ou "region" (noms, ceux de departements.py).
+    """
+    import departements as _dep
+
+    mesures = [f"{m}_{c}" for c in LOCAUX_CLES for m in ("Permis", "Chantiers")]
+    if echelon == "region":
+        paires = list(_dep.DEPARTEMENTS.items())
+        valeurs = ", ".join(["(?, ?)"] * len(paires))
+        params = [x for code, (_nom, reg) in paires for x in (code, reg)]
+        source = (f'(SELECT l.*, t.terr FROM "locaux_departements" l '
+                  f'JOIN (VALUES {valeurs}) t(dep, terr) ON l.Department = t.dep)')
+    elif echelon == "departement":
+        params = []
+        source = '(SELECT *, Department AS terr FROM "locaux_departements")'
+    else:
+        raise ValueError(f"échelon inconnu : {echelon!r}")
+
+    sums = ", ".join(f'SUM("{c}")::DOUBLE AS "{c}"' for c in mesures)
+    roll = ", ".join(f'CASE WHEN COUNT("{c}") OVER w = 12 THEN SUM("{c}") OVER w END AS "{c}"'
+                     for c in mesures)
+    fin = ", ".join(
+        f'MAX(CASE WHEN r.Date = b.d1 THEN r."{c}" END) AS "{c}_12m", '
+        f'MAX(CASE WHEN r.Date = b.d1 - INTERVAL 12 MONTH THEN r."{c}" END) AS "{c}_prec", '
+        f'AVG(CASE WHEN year(r.Date) BETWEEN {LOCAUX_REF[0]} AND {LOCAUX_REF[1]} '
+        f'THEN r."{c}" END) AS "{c}_ref"'
+        for c in mesures)
+    return rows(con, f"""
+        WITH m AS (SELECT Date, terr AS code, {sums} FROM {source} GROUP BY Date, terr),
+             r AS (SELECT code, Date, {roll} FROM m
+                   WINDOW w AS (PARTITION BY code ORDER BY Date
+                                ROWS BETWEEN 11 PRECEDING AND CURRENT ROW)),
+             b AS (SELECT MAX(Date) AS d1 FROM m)
+        SELECT r.code, strftime(b.d1, '%Y-%m-%d') AS date, {fin}
+        FROM r, b GROUP BY r.code, b.d1 ORDER BY r.code
+    """, params)
+
+
+def locaux_annuel(con, departement: str) -> list[dict]:
+    """Surfaces de locaux par ANNÉE CIVILE complète pour un département : le total
+    autorisé et commencé, et les m² commencés des quatre destinations. Seules les années
+    de douze mois sont rendues — l'année en cours n'est pas une année."""
+    cols = ["Permis_Ensemble", "Chantiers_Ensemble", "Chantiers_Agricole",
+            "Chantiers_Commerce", "Chantiers_Public", "Chantiers_Activites"]
+    sums = ", ".join(f'SUM("{c}")::BIGINT AS "{c}"' for c in cols)
+    return rows(con, f"""
+        SELECT year(Date) AS annee, {sums} FROM "locaux_departements"
+        WHERE Department = ? GROUP BY 1 HAVING COUNT(*) = 12 ORDER BY 1
+    """, (departement,))

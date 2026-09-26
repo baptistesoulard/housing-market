@@ -230,6 +230,28 @@ LOCAUX = DataFrameSchema(
     unique=["Date", "Type"],
 )
 
+# --- Locaux non residentiels PAR DEPARTEMENT (SIT@DEL2, series BRUTES) --------------
+# Format LARGE : une ligne par (mois, departement), une colonne par destination et par
+# mesure. Les cles reprennent les niveaux du dataset national : Ensemble (le total publie),
+# les quatre destinations (Agricole, Commerce, Public, Activites) et les quatre
+# sous-destinations (Hotels, Industrie, Entrepots, Bureaux), deja comptees dans la leur.
+# Les regions ne sont pas stockees : elles se recalculent exactement (voir
+# fetch_new_sources.reduire_locaux_departements). Une valeur MENSUELLE peut etre negative
+# (annulation enregistree ce mois-la) : aucune borne basse, les cumuls 12 mois l'absorbent.
+LOCAUX_CLES = ["Ensemble", "Agricole", "Commerce", "Public", "Activites",
+               "Hotels", "Industrie", "Entrepots", "Bureaux"]
+_SURFACE = lambda title: Column(int, nullable=False, coerce=True, title=title)
+LOCAUX_DEPARTEMENTS = DataFrameSchema(
+    {
+        "Date": _DATE,
+        "Department": _DEP_CODE,
+        **{f"{m}_{c}": _SURFACE(f"m2 {m.lower()} ({c}), brut, date de prise en compte")
+           for c in LOCAUX_CLES for m in ("Permis", "Chantiers")},
+    },
+    strict=False, coerce=True, name="locaux_departements",
+    unique=["Date", "Department"],
+)
+
 SCHEMAS: dict[str, DataFrameSchema] = {
     "sitadel": SITADEL,
     "ventes_ancien": VENTES_ANCIEN,
@@ -238,6 +260,7 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "dvf": DVF,
     "territoires": TERRITOIRES,
     "locaux": LOCAUX,
+    "locaux_departements": LOCAUX_DEPARTEMENTS,
 }
 
 

@@ -59,6 +59,9 @@ LOCAUX_LIBELLES = {
     "Autres activites - bureau": ("Bureaux", "Sous-destination"),
 }
 LOCAUX_ENSEMBLE_SDES = "Ensemble des locaux non-residentiels"
+# Les mêmes surfaces PAR DÉPARTEMENT, déjà réduites au format large par
+# fetch_new_sources.build_locaux_territoires (et contrôlées par les régions publiées).
+LOCAUX_DEP_CSV = os.path.join("data_manual_input", "locaux-departements.csv")
 
 # --- Macro indicators (real, national) ---
 # Household confidence: INSEE monthly synthetic confidence indicator (CVS, base 100 =
@@ -379,6 +382,8 @@ class DataManager:
             # Surfaces de locaux non résidentiels (voir ensure_locaux). National, mais
             # même régime que les deux précédents : SQL seulement, hors du tuple.
             "locaux": os.path.join(self.data_dir, "locaux.csv"),
+            # Les mêmes, par département (brutes) : les régions s'en déduisent en SQL.
+            "locaux_departements": os.path.join(self.data_dir, "locaux_departements.csv"),
         }
         
     def load_or_generate_all(self, force_regenerate=False):
@@ -420,11 +425,12 @@ class DataManager:
         self.ensure_territoires(force_rebuild=force_regenerate)
         # Les locaux non résidentiels : même régime, hors du tuple, SQL seulement.
         self.ensure_locaux(force_rebuild=force_regenerate)
+        self.ensure_locaux_departements(force_rebuild=force_regenerate)
         frames = {
             "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
             "ecln": df_ecln,
         }
-        for key in ("dvf", "territoires", "locaux"):
+        for key in ("dvf", "territoires", "locaux", "locaux_departements"):
             if os.path.exists(self.paths[key]):
                 # dtype=str sur Department : « 01 » perdrait son zéro, « 2A » n'est pas
                 # numérique — le contrat pandera le refuserait dans les deux cas.
@@ -818,6 +824,28 @@ class DataManager:
         df.to_csv(cible, index=False, encoding="utf-8")
         return True, (f"Locaux non résidentiels importés : {df['Date'].nunique()} mois "
                       f"({df['Date'].min()[:7]} → {df['Date'].max()[:7]}).")
+
+    def ensure_locaux_departements(self, force_rebuild=False):
+        """Garantit data/locaux_departements.csv, copie VALIDÉE du fichier réduit par
+        fetch_new_sources (même rapport que dvf-recent.csv → dvf.csv). La réduction et le
+        contrôle par les régions ont eu lieu à la collecte ; ici, on vérifie ce dont les
+        cumuls SQL dépendent : une grille mois × département COMPLÈTE (une fenêtre
+        glissante compte des lignes — un mois manquant la décalerait en silence)."""
+        cible = self.paths["locaux_departements"]
+        if not os.path.exists(LOCAUX_DEP_CSV):
+            return True, (f"Fichier « {LOCAUX_DEP_CSV} » introuvable : locaux par "
+                          "département indisponibles.")
+        if os.path.exists(cible) and not force_rebuild:
+            if os.path.getmtime(LOCAUX_DEP_CSV) <= os.path.getmtime(cible):
+                return True, "Locaux par département déjà à jour."
+        df = pd.read_csv(LOCAUX_DEP_CSV, dtype={"Department": str})
+        attendu = df["Date"].nunique() * df["Department"].nunique()
+        if len(df) != attendu or df.duplicated(["Date", "Department"]).any():
+            return False, (f"Locaux par département non reconstruits : grille incomplète "
+                           f"({len(df)} lignes pour {attendu} attendues).")
+        df.sort_values(["Date", "Department"]).to_csv(cible, index=False, encoding="utf-8")
+        return True, (f"Locaux par département importés : {df['Department'].nunique()} "
+                      f"départements, {df['Date'].min()[:7]} → {df['Date'].max()[:7]}.")
 
     def ensure_ventes_ancien(self, force_rebuild=False):
         """
