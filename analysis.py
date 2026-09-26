@@ -164,7 +164,11 @@ def momentum_metrics(df, value_col, date_col="Date"):
 # D'où DEUX régimes, et une fonction qui porte le choix pour toutes les pages de l'export
 # (Synthèse, Marché du neuf, Marché de l'ancien) afin qu'aucune n'en retienne un autre.
 ADJUSTED_SEQUENTIAL = "seq"      # série CVS : lire le séquentiel
-RAW_TWELVE_MONTHS = "roll12"     # série brute ou reconstruite : lire le cumul 12 mois
+# Série brute ou reconstruite — ou trop bruitée pour le séquentiel même corrigée des
+# variations saisonnières : lire le cumul 12 mois. C'est le cas des surfaces de locaux non
+# résidentiels (CVS-CJO, mais 19 % d'écart-type d'un mois à l'autre ; le 3 mois séquentiel
+# y vaut ±12,5 points, contre ±8 pour les m² de logements) : voir web/export/page_locaux.py.
+RAW_TWELVE_MONTHS = "roll12"
 
 
 def headline_momentum(mom, regime):

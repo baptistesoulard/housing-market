@@ -8,8 +8,10 @@ jumelles donnent à voir.
 
 Rien dans le build ne protège cette symétrie. Renommer « 📊 Courbes d'évolution du
 marché » d'un seul côté casserait à la fois l'ancre visée par le renvoi d'en face et le
-parallèle des deux sommaires — et le site se construirait sans un mot, la validation de
-liens d'Observable Framework ne regardant pas les fragments (#ancre).
+parallèle des deux sommaires — et le site se construirait quand même : la validation de
+liens d'Observable Framework signale un fragment mort (#ancre) par un simple
+AVERTISSEMENT (« 1 broken link », observé le 2026-09-26), sans faire échouer le build ;
+et elle ne voit rien du parallèle des sommaires.
 
 Ce test ferme ce trou-là, en pur Python : il n'a besoin ni de Node ni d'un build.
 """
@@ -70,12 +72,16 @@ def _ancre(titre):
     """Le fragment que le framework fabrique pour un titre.
 
     Reproduit le comportement OBSERVÉ sur le HTML construit : « & » devient « and », les
-    diacritiques sautent (décomposition NFKD, les combinantes sont retirées), le reste
+    diacritiques sautent (décomposition NFD, les combinantes sont retirées), le reste
     des caractères non alphanumériques devient un tiret. Le cas « œ » est instructif —
     il n'a pas de décomposition, il disparaît donc entièrement (« second œuvre » →
-    « second-uvre »). test_l_ancre_reproduit_le_build fige trois valeurs relevées sur
-    dist/ : si le framework change de règle, c'est là que ça se verra."""
-    t = unicodedata.normalize("NFKD", titre.replace("&", " and "))
+    « second-uvre »). Même sort pour « ² » : « En m² » donne « en-m », pas « en-m2 ». La
+    décomposition était NFKD, qui change « ² » en « 2 » — et le premier renvoi vers une
+    section en m² (2026-09-26) visait une ancre que le build n'a pas. Il l'a signalée :
+    les liens internes AVEC fragment sont validés, contrairement à ce qu'on croyait.
+    test_l_ancre_reproduit_le_build fige les valeurs relevées sur dist/ : si le framework
+    change de règle, c'est là que ça se verra."""
+    t = unicodedata.normalize("NFD", titre.replace("&", " and "))
     t = "".join(c for c in t if not unicodedata.combining(c))
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", t.lower())).strip("-")
 
@@ -86,6 +92,7 @@ def test_l_ancre_reproduit_le_build():
     assert _ancre("📊 Courbes d'évolution du marché") == "courbes-d-evolution-du-marche"
     assert _ancre("📅 Comparaison Mensuelle par Année") == "comparaison-mensuelle-par-annee"
     assert _ancre("🏷️ Prix des logements & accessibilité") == "prix-des-logements-and-accessibilite"
+    assert _ancre("📐 En m² : ce que voient les matériaux") == "en-m-ce-que-voient-les-materiaux"
 
 
 @pytest.mark.parametrize("page", sorted(JUMELLES))
@@ -126,7 +133,7 @@ def test_les_ancres_visees_existent_dans_la_page_cible(page):
 
 # L'accueil a quatre sections et PAS de sommaire, délibérément : c'est une page
 # d'atterrissage qui se lit d'un trait et se termine par un appel à cliquer. Un sommaire y
-# entrerait en concurrence avec « Les neuf pages », qui EST la navigation du site.
+# entrerait en concurrence avec « Les dix pages », qui EST la navigation du site.
 SANS_SOMMAIRE = {"index"}
 
 
@@ -208,7 +215,7 @@ def test_display_ne_recoit_jamais_de_valeur_vide():
 
 
 # --- Le chapeau indexable des pages de données ------------------------------------------
-# Les neuf pages de données construisent leur contenu dans le NAVIGATEUR à partir des JSON.
+# Les dix pages de données construisent leur contenu dans le NAVIGATEUR à partir des JSON.
 # Un robot d'indexation, comme tout aperçu de partage, n'en voit rien. Leur titre et leur
 # chapeau sont donc le seul texte qu'ils lisent — et ils étaient interpolés, `# ${x.title}`,
 # ce qui livrait un titre VIDE dans le HTML : la page la plus importante du site pour un
@@ -217,7 +224,8 @@ def test_display_ne_recoit_jamais_de_valeur_vide():
 # Ce test empêche la rechute. Il travaille sur la SOURCE Markdown, en pur Python : une
 # interpolation se reconnaît à l'œil nu, et le vérifier ici évite d'exiger un build.
 
-PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "carte", "macro", "actualites",
+PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "carte", "non-residentiel", "macro",
+                    "actualites",
                     "previsions", "previsions-passees", "donnees"]
 
 
@@ -558,3 +566,24 @@ def test_chaque_nom_importe_de_theme_js_y_est_exporte():
                 assert nom in exportes, (
                     f"{os.path.basename(chemin)} importe « {nom} » de theme.js, qui ne l'exporte "
                     "pas — la page tomberait dans le navigateur, le build ne dirait rien")
+
+
+# --- Une entrée réactive ne se lit pas dans la cellule qui la définit -----------------
+# Mode de panne rencontré le 2026-09-26 sur « Construction non résidentielle » : la
+# période (`Generators.input(periodFilter(…))`) était définie dans la même cellule que la
+# fonction qui filtrait les séries. Dans CETTE cellule, la variable est encore le
+# générateur, pas sa valeur : `filterYears(rows, rangeL)` comparait des années à NaN et
+# rendait une liste vide. Deux graphiques sur trois s'affichaient sans une courbe — axes
+# en place, pas d'erreur, build vert. Les autres cellules, elles, reçoivent la valeur
+# déballée, d'où un défaut qui ne touche que les voisins immédiats de la définition.
+
+@pytest.mark.parametrize("nom", PAGES_DE_DONNEES + ["index"])
+def test_une_entree_reactive_n_est_pas_lue_dans_sa_propre_cellule(nom):
+    for bloc in re.findall(r"^```js\n(.*?)^```", _page(nom), re.S | re.M):
+        entrees = re.findall(r"\bconst\s+(\w+)\s*=\s*(?:view|Generators\.input)\(", bloc)
+        for var in entrees:
+            reste = re.sub(rf"\bconst\s+{var}\s*=", "", bloc, count=1)
+            reste = "\n".join(l for l in reste.splitlines() if not l.strip().startswith("//"))
+            assert not re.search(rf"(?<![\w.]){var}\b", reste), (
+                f"{nom}.md : « {var} » est lu dans la cellule qui le définit — il y vaut "
+                "le générateur, pas la valeur. Le définir dans une cellule à part.")

@@ -56,6 +56,12 @@ SOURCES = [
             "et-surfaces-series-mensuelles-donnees-estimees-1",
      "producteur": "SDES", "acces": "API DiDo (data.gouv.fr)",
      "dataset": "sitadel", "colonnes": ("Permis", "MisesEnChantier"), "freq": "M"},
+    # Même fichier SIT@DEL, autre jeu : les surfaces de locaux, en date de prise en compte.
+    {"mesure": "Locaux non résidentiels autorisés et commencés (SIT@DEL)",
+     "url": "https://www.data.gouv.fr/datasets/locaux-non-residentiels-autorises-et-"
+            "commences-series-mensuelles",
+     "producteur": "SDES", "acces": "API DiDo (data.gouv.fr)",
+     "dataset": "locaux", "colonnes": ("SurfacePermis", "SurfaceChantiers"), "freq": "M"},
     {"mesure": "Commercialisation des logements neufs (ECLN)",
      "url": "https://www.data.gouv.fr/datasets/donnees-nationales-sur-la-"
             "commercialisation-des-logements-neufs",

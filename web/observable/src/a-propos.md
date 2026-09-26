@@ -86,6 +86,7 @@ l'autre, donc ces dates ne s'alignent pas, et c'est normal.
   <tbody>
     <!-- hm:sources:début — lignes régénérées par web/export/sources_table.py -->
     <tr><td><a href="https://www.data.gouv.fr/datasets/logements-autorises-et-commences-nombre-et-surfaces-series-mensuelles-donnees-estimees-1">Logements autorisés et commencés (SIT@DEL)</a></td><td>SDES</td><td>API DiDo (data.gouv.fr)</td><td class="hm-when">juillet 2026</td></tr>
+    <tr><td><a href="https://www.data.gouv.fr/datasets/locaux-non-residentiels-autorises-et-commences-series-mensuelles">Locaux non résidentiels autorisés et commencés (SIT@DEL)</a></td><td>SDES</td><td>API DiDo (data.gouv.fr)</td><td class="hm-when">juillet 2026</td></tr>
     <tr><td><a href="https://www.data.gouv.fr/datasets/donnees-nationales-sur-la-commercialisation-des-logements-neufs">Commercialisation des logements neufs (ECLN)</a></td><td>SDES</td><td>API DiDo (data.gouv.fr)</td><td class="hm-when">T2 2026</td></tr>
     <tr><td><a href="https://www.igedd.developpement-durable.gouv.fr/prix-immobilier-evolution-a-long-terme-a1048.html">Ventes de logements anciens</a></td><td>IGEDD</td><td>Classeur publié</td><td class="hm-when">juillet 2026</td></tr>
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/010567059">Prix des logements anciens</a></td><td>Notaires-INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T2 2026</td></tr>

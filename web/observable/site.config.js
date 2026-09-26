@@ -180,6 +180,12 @@ export const NAV = [
    seoTitle: "Carte des prix immobiliers par département",
    description: "Carte des 101 départements : prix au m², évolution des prix, ventes " +
      "et profil des habitants (DVF, recensement INSEE), à comparer d'un coup d'œil."},
+  // L'autre moitié de la construction neuve, en m² : ce que le logement ne dit pas à qui
+  // fabrique des matériaux. Après les pages logement, avant l'environnement financier.
+  {icon: "🏭", name: "Construction non résidentielle", path: "/non-residentiel",
+   seoTitle: "Construction de bureaux, entrepôts et commerces en France",
+   description: "Surfaces de locaux autorisées et mises en chantier (SIT@DEL) : entrepôts, " +
+     "industrie, bureaux, commerces, bâtiments agricoles et équipements publics, en m²."},
   {icon: "🏦", name: "Environnement & Financement", path: "/macro",
    description: "Taux de crédit, Euribor et OAT, confiance des ménages, intentions " +
      "d'achat, chômage, production de crédits habitat et demande de crédits (enquête BLS)."},

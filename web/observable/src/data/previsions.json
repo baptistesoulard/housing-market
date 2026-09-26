@@ -12,6 +12,10 @@
         "parquet"
       ],
       [
+        "locaux",
+        "parquet"
+      ],
+      [
         "macro",
         "parquet"
       ],

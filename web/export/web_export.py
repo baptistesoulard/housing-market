@@ -8,6 +8,7 @@ par page, écrire ce qui a changé. Chaque page a son module :
 
     page_synthese.py      Synthèse — faits, puis rédaction
     page_marches.py       Marché du neuf, Marché de l'ancien
+    page_locaux.py        Construction non résidentielle (surfaces de locaux)
     page_contexte.py      Environnement & Financement, Actualités & Aides
     page_previsions.py    Prévision & Scénarios
     page_archive.py       Prévisions passées
@@ -23,7 +24,7 @@ et les briques qu'elles partagent :
     ecriture.py    le point d'écriture unique (arrondi, garde de contenu)
     sources_table.py, accueil.py   texte statique réécrit entre marqueurs (À propos, accueil)
 
-La sortie doit annoncer « 0/8 fichier(s) modifié(s) » quand aucune donnée n'a bougé : un
+La sortie doit annoncer « 0/9 fichier(s) modifié(s) » quand aucune donnée n'a bougé : un
 diff inattendu signale une divergence de calcul, pas du bruit (voir CLAUDE.md).
 """
 from __future__ import annotations
@@ -39,6 +40,7 @@ import page_archive                             # noqa: E402
 import page_carte                               # noqa: E402
 import page_contexte                            # noqa: E402
 import page_departements                        # noqa: E402
+import page_locaux                              # noqa: E402
 import page_marches                             # noqa: E402
 import page_previsions                          # noqa: E402
 import page_synthese                            # noqa: E402
@@ -52,6 +54,7 @@ from data_manager import DataManager            # noqa: E402
 _BUILDERS = {"synthese": page_synthese.build_synthese,
              "neuf": page_marches.build_neuf,
              "ancien": page_marches.build_ancien,
+             "locaux": page_locaux.build_locaux,
              "macro": page_contexte.build_macro,
              "actualites": page_contexte.build_actualites,
              "archive": page_archive.build_archive,
@@ -67,10 +70,10 @@ def load_frames() -> dict:
     df_sitadel, df_ventes_ancien, df_macro, df_ecln = dm.read_frames()
     frames = {"sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
               "ecln": df_ecln}
-    # Les deux datasets PAR DÉPARTEMENT (prix DVF, profil INSEE) ne servent ici qu'au
-    # tableau des sources d'À propos (dernier point publié) : les pages, elles, les lisent
-    # par SQL. Hors du tuple de read_frames() — voir CLAUDE.md.
-    for cle in ("dvf", "territoires"):
+    # Les datasets hors du tuple (prix DVF, profil INSEE, locaux non résidentiels) ne
+    # servent ici qu'au tableau des sources d'À propos (dernier point publié) : les pages,
+    # elles, les lisent par SQL. Hors du tuple de read_frames() — voir CLAUDE.md.
+    for cle in ("dvf", "territoires", "locaux"):
         chemin = dm.paths.get(cle)
         if chemin and os.path.exists(chemin):
             df = pd.read_csv(chemin, dtype={"Department": str})
@@ -114,7 +117,7 @@ def main():
     page_departements.build_departements(con)
     # Le tableau des sources de la page « À propos », lui aussi hors du compteur ci-dessus :
     # ce n'est pas un JSON du front mais du Markdown complété sur place, et le compteur
-    # « n/8 » vaut par sa capacité d'alerte sur une divergence de calcul (voir CLAUDE.md).
+    # « n/9 » vaut par sa capacité d'alerte sur une divergence de calcul (voir CLAUDE.md).
     if sources_table.ecrire(frames):
         print("[web_export] a-propos.md : dates du tableau des sources mises à jour")
     else:

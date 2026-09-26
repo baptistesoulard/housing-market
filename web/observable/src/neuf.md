@@ -168,6 +168,8 @@ ${ivMetrics.length ? ivSection() : html`<div class="hm-caption">Sélectionnez au
 
 <div class="hm-caption">Un fabricant de matériaux vend au mètre carré — de dalle, de toiture, de façade, de cloison — et non au logement. Les deux unités ne bougent pas ensemble : quand la construction glisse de la maison individuelle vers l'immeuble collectif et les résidences gérées, le nombre de logements résiste mieux que la surface bâtie. Cette section mesure l'écart et dit d'où il vient. Elle porte sur tous les types de logement, quelle que soit la sélection plus haut, puisque c'est justement leur mélange qu'elle mesure.</div>
 
+<div class="hm-shortcuts"><a class="hm-shortcut" href="./non-residentiel">🏭 les m² de bureaux, d'entrepôts et de commerces</a></div>
+
 ```js
 const SF = neuf.surfaces ?? null;
 const sfMetric = view(Inputs.radio(

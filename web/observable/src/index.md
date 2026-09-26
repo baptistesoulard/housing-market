@@ -209,7 +209,7 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
   </div>
 </div>
 
-## Les neuf pages
+## Les dix pages
 
 <div class="hm-pages">
   <a class="hm-page-card" href="/synthese">
@@ -231,6 +231,11 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
     <span class="t">🗺️ Carte des départements</span>
     <span class="d">Les départements côte à côte : prix au m², évolution des prix, ventes
     et profil des habitants, sur une carte et en tableau.</span>
+  </a>
+  <a class="hm-page-card" href="/non-residentiel">
+    <span class="t">🏭 Construction non résidentielle</span>
+    <span class="d">L'autre part de la construction neuve : entrepôts, industrie, bureaux,
+    commerces, bâtiments agricoles et publics, en m² autorisés et commencés.</span>
   </a>
   <a class="hm-page-card" href="/macro">
     <span class="t">🏦 Environnement & Financement</span>
