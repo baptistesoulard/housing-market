@@ -1,0 +1,1305 @@
+Date,Type,Niveau,SurfacePermis,SurfaceChantiers
+2013-01-01,Commerce et services,Destination,722683,421760
+2013-01-01,Exploitation agricole ou forestière,Destination,986247,292693
+2013-01-01,"Industrie, entrepôts et bureaux",Destination,1340715,690322
+2013-01-01,Équipements publics,Destination,634621,424823
+2013-01-01,Bureaux,Sous-destination,403958,268625
+2013-01-01,Entrepôts,Sous-destination,431069,196353
+2013-01-01,Hôtels,Sous-destination,107055,62870
+2013-01-01,Industrie,Sous-destination,492186,205111
+2013-02-01,Commerce et services,Destination,659852,400327
+2013-02-01,Exploitation agricole ou forestière,Destination,905214,358447
+2013-02-01,"Industrie, entrepôts et bureaux",Destination,1137475,689715
+2013-02-01,Équipements publics,Destination,610710,391607
+2013-02-01,Bureaux,Sous-destination,489199,245709
+2013-02-01,Entrepôts,Sous-destination,304803,216750
+2013-02-01,Hôtels,Sous-destination,66182,31919
+2013-02-01,Industrie,Sous-destination,367018,197778
+2013-03-01,Commerce et services,Destination,597419,438358
+2013-03-01,Exploitation agricole ou forestière,Destination,945566,370601
+2013-03-01,"Industrie, entrepôts et bureaux",Destination,1297904,807886
+2013-03-01,Équipements publics,Destination,555490,630747
+2013-03-01,Bureaux,Sous-destination,386098,304223
+2013-03-01,Entrepôts,Sous-destination,698682,241081
+2013-03-01,Hôtels,Sous-destination,88790,27635
+2013-03-01,Industrie,Sous-destination,325226,233228
+2013-04-01,Commerce et services,Destination,607172,473081
+2013-04-01,Exploitation agricole ou forestière,Destination,980818,466964
+2013-04-01,"Industrie, entrepôts et bureaux",Destination,1036914,689611
+2013-04-01,Équipements publics,Destination,596363,480600
+2013-04-01,Bureaux,Sous-destination,347077,276036
+2013-04-01,Entrepôts,Sous-destination,426970,250068
+2013-04-01,Hôtels,Sous-destination,71862,74474
+2013-04-01,Industrie,Sous-destination,317468,193315
+2013-05-01,Commerce et services,Destination,671024,536123
+2013-05-01,Exploitation agricole ou forestière,Destination,1029285,553652
+2013-05-01,"Industrie, entrepôts et bureaux",Destination,1215636,1025727
+2013-05-01,Équipements publics,Destination,644818,560437
+2013-05-01,Bureaux,Sous-destination,516742,401393
+2013-05-01,Entrepôts,Sous-destination,478685,346510
+2013-05-01,Hôtels,Sous-destination,69235,64440
+2013-05-01,Industrie,Sous-destination,310946,283507
+2013-06-01,Commerce et services,Destination,608240,439099
+2013-06-01,Exploitation agricole ou forestière,Destination,989452,538085
+2013-06-01,"Industrie, entrepôts et bureaux",Destination,1011476,860935
+2013-06-01,Équipements publics,Destination,671910,430115
+2013-06-01,Bureaux,Sous-destination,371480,295119
+2013-06-01,Entrepôts,Sous-destination,423825,317405
+2013-06-01,Hôtels,Sous-destination,104086,59107
+2013-06-01,Industrie,Sous-destination,220220,179789
+2013-07-01,Commerce et services,Destination,585725,419615
+2013-07-01,Exploitation agricole ou forestière,Destination,1090851,524646
+2013-07-01,"Industrie, entrepôts et bureaux",Destination,1089781,769637
+2013-07-01,Équipements publics,Destination,586980,477490
+2013-07-01,Bureaux,Sous-destination,383019,181960
+2013-07-01,Entrepôts,Sous-destination,421758,398860
+2013-07-01,Hôtels,Sous-destination,74939,37576
+2013-07-01,Industrie,Sous-destination,245572,202414
+2013-08-01,Commerce et services,Destination,616385,356498
+2013-08-01,Exploitation agricole ou forestière,Destination,1004820,449935
+2013-08-01,"Industrie, entrepôts et bureaux",Destination,1068374,814352
+2013-08-01,Équipements publics,Destination,620823,412591
+2013-08-01,Bureaux,Sous-destination,297261,270980
+2013-08-01,Entrepôts,Sous-destination,394278,363620
+2013-08-01,Hôtels,Sous-destination,91214,32849
+2013-08-01,Industrie,Sous-destination,288540,258781
+2013-09-01,Commerce et services,Destination,657170,400195
+2013-09-01,Exploitation agricole ou forestière,Destination,1212287,521260
+2013-09-01,"Industrie, entrepôts et bureaux",Destination,1072352,765249
+2013-09-01,Équipements publics,Destination,557744,458130
+2013-09-01,Bureaux,Sous-destination,285898,270693
+2013-09-01,Entrepôts,Sous-destination,454215,278244
+2013-09-01,Hôtels,Sous-destination,61329,55221
+2013-09-01,Industrie,Sous-destination,250559,209217
+2013-10-01,Commerce et services,Destination,784843,465056
+2013-10-01,Exploitation agricole ou forestière,Destination,941242,518024
+2013-10-01,"Industrie, entrepôts et bureaux",Destination,1182515,883807
+2013-10-01,Équipements publics,Destination,654500,479736
+2013-10-01,Bureaux,Sous-destination,428751,351244
+2013-10-01,Entrepôts,Sous-destination,358079,270499
+2013-10-01,Hôtels,Sous-destination,112689,70460
+2013-10-01,Industrie,Sous-destination,291179,251144
+2013-11-01,Commerce et services,Destination,632951,329865
+2013-11-01,Exploitation agricole ou forestière,Destination,824978,544094
+2013-11-01,"Industrie, entrepôts et bureaux",Destination,1187505,718411
+2013-11-01,Équipements publics,Destination,492437,474667
+2013-11-01,Bureaux,Sous-destination,450546,219697
+2013-11-01,Entrepôts,Sous-destination,503467,261889
+2013-11-01,Hôtels,Sous-destination,67245,48821
+2013-11-01,Industrie,Sous-destination,281855,202925
+2013-12-01,Commerce et services,Destination,613859,358933
+2013-12-01,Exploitation agricole ou forestière,Destination,866870,551915
+2013-12-01,"Industrie, entrepôts et bureaux",Destination,1364832,731038
+2013-12-01,Équipements publics,Destination,482389,504891
+2013-12-01,Bureaux,Sous-destination,733228,265626
+2013-12-01,Entrepôts,Sous-destination,399334,249099
+2013-12-01,Hôtels,Sous-destination,71677,63108
+2013-12-01,Industrie,Sous-destination,232926,201308
+2014-01-01,Commerce et services,Destination,539427,348260
+2014-01-01,Exploitation agricole ou forestière,Destination,739653,543051
+2014-01-01,"Industrie, entrepôts et bureaux",Destination,1160943,633941
+2014-01-01,Équipements publics,Destination,546044,501655
+2014-01-01,Bureaux,Sous-destination,512048,199299
+2014-01-01,Entrepôts,Sous-destination,385897,219112
+2014-01-01,Hôtels,Sous-destination,72960,40834
+2014-01-01,Industrie,Sous-destination,291589,214590
+2014-02-01,Commerce et services,Destination,661502,343564
+2014-02-01,Exploitation agricole ou forestière,Destination,612494,584434
+2014-02-01,"Industrie, entrepôts et bureaux",Destination,1126508,823851
+2014-02-01,Équipements publics,Destination,437479,452078
+2014-02-01,Bureaux,Sous-destination,351845,226630
+2014-02-01,Entrepôts,Sous-destination,472979,322408
+2014-02-01,Hôtels,Sous-destination,92042,59120
+2014-02-01,Industrie,Sous-destination,289950,229712
+2014-03-01,Commerce et services,Destination,562985,481795
+2014-03-01,Exploitation agricole ou forestière,Destination,843480,565626
+2014-03-01,"Industrie, entrepôts et bureaux",Destination,922204,714696
+2014-03-01,Équipements publics,Destination,571296,446606
+2014-03-01,Bureaux,Sous-destination,352939,222966
+2014-03-01,Entrepôts,Sous-destination,360060,207507
+2014-03-01,Hôtels,Sous-destination,73234,40923
+2014-03-01,Industrie,Sous-destination,263892,255068
+2014-04-01,Commerce et services,Destination,419958,372023
+2014-04-01,Exploitation agricole ou forestière,Destination,726386,462625
+2014-04-01,"Industrie, entrepôts et bureaux",Destination,1135253,617724
+2014-04-01,Équipements publics,Destination,410893,344464
+2014-04-01,Bureaux,Sous-destination,391500,193474
+2014-04-01,Entrepôts,Sous-destination,521574,253499
+2014-04-01,Hôtels,Sous-destination,39948,35225
+2014-04-01,Industrie,Sous-destination,311313,190228
+2014-05-01,Commerce et services,Destination,490609,365411
+2014-05-01,Exploitation agricole ou forestière,Destination,744053,401575
+2014-05-01,"Industrie, entrepôts et bureaux",Destination,931136,554723
+2014-05-01,Équipements publics,Destination,416429,388148
+2014-05-01,Bureaux,Sous-destination,291060,209596
+2014-05-01,Entrepôts,Sous-destination,456715,170028
+2014-05-01,Hôtels,Sous-destination,47111,76435
+2014-05-01,Industrie,Sous-destination,246089,150154
+2014-06-01,Commerce et services,Destination,612773,341708
+2014-06-01,Exploitation agricole ou forestière,Destination,831981,541512
+2014-06-01,"Industrie, entrepôts et bureaux",Destination,1153469,788292
+2014-06-01,Équipements publics,Destination,504434,432959
+2014-06-01,Bureaux,Sous-destination,394125,327776
+2014-06-01,Entrepôts,Sous-destination,465763,203682
+2014-06-01,Hôtels,Sous-destination,75560,35679
+2014-06-01,Industrie,Sous-destination,313463,196644
+2014-07-01,Commerce et services,Destination,570994,564689
+2014-07-01,Exploitation agricole ou forestière,Destination,823087,517015
+2014-07-01,"Industrie, entrepôts et bureaux",Destination,1350508,756755
+2014-07-01,Équipements publics,Destination,489839,505366
+2014-07-01,Bureaux,Sous-destination,343755,251990
+2014-07-01,Entrepôts,Sous-destination,688487,223353
+2014-07-01,Hôtels,Sous-destination,84398,39548
+2014-07-01,Industrie,Sous-destination,315842,302954
+2014-08-01,Commerce et services,Destination,570142,380526
+2014-08-01,Exploitation agricole ou forestière,Destination,937460,487851
+2014-08-01,"Industrie, entrepôts et bureaux",Destination,933107,803001
+2014-08-01,Équipements publics,Destination,458704,299539
+2014-08-01,Bureaux,Sous-destination,321840,225183
+2014-08-01,Entrepôts,Sous-destination,312342,437254
+2014-08-01,Hôtels,Sous-destination,55607,32476
+2014-08-01,Industrie,Sous-destination,239982,196832
+2014-09-01,Commerce et services,Destination,610417,342250
+2014-09-01,Exploitation agricole ou forestière,Destination,841532,521809
+2014-09-01,"Industrie, entrepôts et bureaux",Destination,954128,751690
+2014-09-01,Équipements publics,Destination,560164,344188
+2014-09-01,Bureaux,Sous-destination,301730,273034
+2014-09-01,Entrepôts,Sous-destination,333010,259173
+2014-09-01,Hôtels,Sous-destination,64597,87432
+2014-09-01,Industrie,Sous-destination,243461,205957
+2014-10-01,Commerce et services,Destination,468942,368858
+2014-10-01,Exploitation agricole ou forestière,Destination,846267,544593
+2014-10-01,"Industrie, entrepôts et bureaux",Destination,924088,697956
+2014-10-01,Équipements publics,Destination,420543,356686
+2014-10-01,Bureaux,Sous-destination,274153,235130
+2014-10-01,Entrepôts,Sous-destination,455697,266094
+2014-10-01,Hôtels,Sous-destination,59070,49980
+2014-10-01,Industrie,Sous-destination,166521,187893
+2014-11-01,Commerce et services,Destination,429161,400857
+2014-11-01,Exploitation agricole ou forestière,Destination,706670,728565
+2014-11-01,"Industrie, entrepôts et bureaux",Destination,933237,791080
+2014-11-01,Équipements publics,Destination,352302,343340
+2014-11-01,Bureaux,Sous-destination,239755,210907
+2014-11-01,Entrepôts,Sous-destination,382025,295884
+2014-11-01,Hôtels,Sous-destination,39580,55328
+2014-11-01,Industrie,Sous-destination,364899,281534
+2014-12-01,Commerce et services,Destination,551371,356345
+2014-12-01,Exploitation agricole ou forestière,Destination,775240,501293
+2014-12-01,"Industrie, entrepôts et bureaux",Destination,1052626,592752
+2014-12-01,Équipements publics,Destination,506020,224976
+2014-12-01,Bureaux,Sous-destination,305039,223553
+2014-12-01,Entrepôts,Sous-destination,533431,190395
+2014-12-01,Hôtels,Sous-destination,75815,67033
+2014-12-01,Industrie,Sous-destination,245180,141496
+2015-01-01,Commerce et services,Destination,435324,340531
+2015-01-01,Exploitation agricole ou forestière,Destination,697996,547787
+2015-01-01,"Industrie, entrepôts et bureaux",Destination,806460,842839
+2015-01-01,Équipements publics,Destination,415392,356081
+2015-01-01,Bureaux,Sous-destination,317125,396274
+2015-01-01,Entrepôts,Sous-destination,326480,227770
+2015-01-01,Hôtels,Sous-destination,58267,29927
+2015-01-01,Industrie,Sous-destination,184857,173210
+2015-02-01,Commerce et services,Destination,446802,398744
+2015-02-01,Exploitation agricole ou forestière,Destination,836383,383690
+2015-02-01,"Industrie, entrepôts et bureaux",Destination,1028436,700473
+2015-02-01,Équipements publics,Destination,507773,418147
+2015-02-01,Bureaux,Sous-destination,330451,207933
+2015-02-01,Entrepôts,Sous-destination,411562,316667
+2015-02-01,Hôtels,Sous-destination,55023,24229
+2015-02-01,Industrie,Sous-destination,255560,141001
+2015-03-01,Commerce et services,Destination,536221,346649
+2015-03-01,Exploitation agricole ou forestière,Destination,782393,444033
+2015-03-01,"Industrie, entrepôts et bureaux",Destination,1068544,538190
+2015-03-01,Équipements publics,Destination,374720,321991
+2015-03-01,Bureaux,Sous-destination,367682,211678
+2015-03-01,Entrepôts,Sous-destination,437214,184785
+2015-03-01,Hôtels,Sous-destination,96332,39700
+2015-03-01,Industrie,Sous-destination,310224,127930
+2015-04-01,Commerce et services,Destination,540880,255973
+2015-04-01,Exploitation agricole ou forestière,Destination,985796,466524
+2015-04-01,"Industrie, entrepôts et bureaux",Destination,860004,703170
+2015-04-01,Équipements publics,Destination,378645,326639
+2015-04-01,Bureaux,Sous-destination,302892,225328
+2015-04-01,Entrepôts,Sous-destination,376588,293562
+2015-04-01,Hôtels,Sous-destination,95987,28052
+2015-04-01,Industrie,Sous-destination,245268,259606
+2015-05-01,Commerce et services,Destination,468686,213743
+2015-05-01,Exploitation agricole ou forestière,Destination,985943,437428
+2015-05-01,"Industrie, entrepôts et bureaux",Destination,1003652,619234
+2015-05-01,Équipements publics,Destination,343631,315533
+2015-05-01,Bureaux,Sous-destination,307637,223118
+2015-05-01,Entrepôts,Sous-destination,476290,228332
+2015-05-01,Hôtels,Sous-destination,50347,6184
+2015-05-01,Industrie,Sous-destination,271740,159516
+2015-06-01,Commerce et services,Destination,522442,392821
+2015-06-01,Exploitation agricole ou forestière,Destination,1003324,516878
+2015-06-01,"Industrie, entrepôts et bureaux",Destination,1141986,685229
+2015-06-01,Équipements publics,Destination,411747,426685
+2015-06-01,Bureaux,Sous-destination,332081,232957
+2015-06-01,Entrepôts,Sous-destination,460615,185523
+2015-06-01,Hôtels,Sous-destination,69884,32337
+2015-06-01,Industrie,Sous-destination,317844,220412
+2015-07-01,Commerce et services,Destination,555578,319237
+2015-07-01,Exploitation agricole ou forestière,Destination,927925,505848
+2015-07-01,"Industrie, entrepôts et bureaux",Destination,1252048,742749
+2015-07-01,Équipements publics,Destination,376144,385498
+2015-07-01,Bureaux,Sous-destination,362658,212461
+2015-07-01,Entrepôts,Sous-destination,526913,368277
+2015-07-01,Hôtels,Sous-destination,81634,18348
+2015-07-01,Industrie,Sous-destination,300271,213357
+2015-08-01,Commerce et services,Destination,569514,310609
+2015-08-01,Exploitation agricole ou forestière,Destination,942475,435360
+2015-08-01,"Industrie, entrepôts et bureaux",Destination,858078,504780
+2015-08-01,Équipements publics,Destination,406705,346999
+2015-08-01,Bureaux,Sous-destination,397377,218742
+2015-08-01,Entrepôts,Sous-destination,228774,223632
+2015-08-01,Hôtels,Sous-destination,52601,20950
+2015-08-01,Industrie,Sous-destination,203546,118640
+2015-09-01,Commerce et services,Destination,564889,361047
+2015-09-01,Exploitation agricole ou forestière,Destination,840804,628298
+2015-09-01,"Industrie, entrepôts et bureaux",Destination,1128810,729193
+2015-09-01,Équipements publics,Destination,519106,358399
+2015-09-01,Bureaux,Sous-destination,401403,213288
+2015-09-01,Entrepôts,Sous-destination,361368,313566
+2015-09-01,Hôtels,Sous-destination,100044,38687
+2015-09-01,Industrie,Sous-destination,304546,171464
+2015-10-01,Commerce et services,Destination,585192,320347
+2015-10-01,Exploitation agricole ou forestière,Destination,944614,456859
+2015-10-01,"Industrie, entrepôts et bureaux",Destination,1207145,618249
+2015-10-01,Équipements publics,Destination,434976,390147
+2015-10-01,Bureaux,Sous-destination,384089,203155
+2015-10-01,Entrepôts,Sous-destination,433655,240803
+2015-10-01,Hôtels,Sous-destination,113485,21369
+2015-10-01,Industrie,Sous-destination,318843,165712
+2015-11-01,Commerce et services,Destination,634791,471660
+2015-11-01,Exploitation agricole ou forestière,Destination,916509,530193
+2015-11-01,"Industrie, entrepôts et bureaux",Destination,994277,748031
+2015-11-01,Équipements publics,Destination,456443,397098
+2015-11-01,Bureaux,Sous-destination,303319,288887
+2015-11-01,Entrepôts,Sous-destination,443570,258319
+2015-11-01,Hôtels,Sous-destination,100802,94439
+2015-11-01,Industrie,Sous-destination,293156,196046
+2015-12-01,Commerce et services,Destination,534852,348091
+2015-12-01,Exploitation agricole ou forestière,Destination,891373,448517
+2015-12-01,"Industrie, entrepôts et bureaux",Destination,925415,609351
+2015-12-01,Équipements publics,Destination,461930,263621
+2015-12-01,Bureaux,Sous-destination,286271,200866
+2015-12-01,Entrepôts,Sous-destination,495174,252662
+2015-12-01,Hôtels,Sous-destination,145646,33240
+2015-12-01,Industrie,Sous-destination,182842,184942
+2016-01-01,Commerce et services,Destination,692968,451565
+2016-01-01,Exploitation agricole ou forestière,Destination,894040,529891
+2016-01-01,"Industrie, entrepôts et bureaux",Destination,1089374,1052021
+2016-01-01,Équipements publics,Destination,394910,347481
+2016-01-01,Bureaux,Sous-destination,319073,413272
+2016-01-01,Entrepôts,Sous-destination,547648,365271
+2016-01-01,Hôtels,Sous-destination,58636,78565
+2016-01-01,Industrie,Sous-destination,282555,205567
+2016-02-01,Commerce et services,Destination,665848,328157
+2016-02-01,Exploitation agricole ou forestière,Destination,945560,555838
+2016-02-01,"Industrie, entrepôts et bureaux",Destination,1042309,641718
+2016-02-01,Équipements publics,Destination,452251,313612
+2016-02-01,Bureaux,Sous-destination,308516,310675
+2016-02-01,Entrepôts,Sous-destination,440195,229944
+2016-02-01,Hôtels,Sous-destination,123036,32665
+2016-02-01,Industrie,Sous-destination,262906,142426
+2016-03-01,Commerce et services,Destination,450424,368638
+2016-03-01,Exploitation agricole ou forestière,Destination,948895,599896
+2016-03-01,"Industrie, entrepôts et bureaux",Destination,953659,727300
+2016-03-01,Équipements publics,Destination,434141,376276
+2016-03-01,Bureaux,Sous-destination,329609,242485
+2016-03-01,Entrepôts,Sous-destination,409124,278910
+2016-03-01,Hôtels,Sous-destination,65599,33369
+2016-03-01,Industrie,Sous-destination,244153,185177
+2016-04-01,Commerce et services,Destination,571557,430415
+2016-04-01,Exploitation agricole ou forestière,Destination,1116180,502773
+2016-04-01,"Industrie, entrepôts et bureaux",Destination,1337617,659992
+2016-04-01,Équipements publics,Destination,404990,335785
+2016-04-01,Bureaux,Sous-destination,601906,267082
+2016-04-01,Entrepôts,Sous-destination,546533,238597
+2016-04-01,Hôtels,Sous-destination,82146,40694
+2016-04-01,Industrie,Sous-destination,316746,195155
+2016-05-01,Commerce et services,Destination,565576,349237
+2016-05-01,Exploitation agricole ou forestière,Destination,664825,510440
+2016-05-01,"Industrie, entrepôts et bureaux",Destination,1031872,990025
+2016-05-01,Équipements publics,Destination,487398,331746
+2016-05-01,Bureaux,Sous-destination,408432,314085
+2016-05-01,Entrepôts,Sous-destination,390754,509154
+2016-05-01,Hôtels,Sous-destination,74611,40108
+2016-05-01,Industrie,Sous-destination,299196,202305
+2016-06-01,Commerce et services,Destination,599175,372677
+2016-06-01,Exploitation agricole ou forestière,Destination,717782,558913
+2016-06-01,"Industrie, entrepôts et bureaux",Destination,1060008,814523
+2016-06-01,Équipements publics,Destination,453993,358103
+2016-06-01,Bureaux,Sous-destination,346150,227221
+2016-06-01,Entrepôts,Sous-destination,439770,362330
+2016-06-01,Hôtels,Sous-destination,133802,57618
+2016-06-01,Industrie,Sous-destination,259813,212709
+2016-07-01,Commerce et services,Destination,621431,231471
+2016-07-01,Exploitation agricole ou forestière,Destination,705719,306183
+2016-07-01,"Industrie, entrepôts et bureaux",Destination,1025683,571376
+2016-07-01,Équipements publics,Destination,380567,254389
+2016-07-01,Bureaux,Sous-destination,257918,219909
+2016-07-01,Entrepôts,Sous-destination,508852,184976
+2016-07-01,Hôtels,Sous-destination,63922,14389
+2016-07-01,Industrie,Sous-destination,224719,169457
+2016-08-01,Commerce et services,Destination,928048,453404
+2016-08-01,Exploitation agricole ou forestière,Destination,964832,475316
+2016-08-01,"Industrie, entrepôts et bureaux",Destination,1321249,694348
+2016-08-01,Équipements publics,Destination,582344,345788
+2016-08-01,Bureaux,Sous-destination,351652,231344
+2016-08-01,Entrepôts,Sous-destination,580464,291209
+2016-08-01,Hôtels,Sous-destination,83308,61398
+2016-08-01,Industrie,Sous-destination,341475,211376
+2016-09-01,Commerce et services,Destination,597502,327584
+2016-09-01,Exploitation agricole ou forestière,Destination,811530,526535
+2016-09-01,"Industrie, entrepôts et bureaux",Destination,1367878,666445
+2016-09-01,Équipements publics,Destination,481370,396216
+2016-09-01,Bureaux,Sous-destination,420946,244579
+2016-09-01,Entrepôts,Sous-destination,613198,238673
+2016-09-01,Hôtels,Sous-destination,81717,38197
+2016-09-01,Industrie,Sous-destination,301959,205514
+2016-10-01,Commerce et services,Destination,681629,324455
+2016-10-01,Exploitation agricole ou forestière,Destination,750938,520398
+2016-10-01,"Industrie, entrepôts et bureaux",Destination,1260693,992142
+2016-10-01,Équipements publics,Destination,478952,335285
+2016-10-01,Bureaux,Sous-destination,318726,219818
+2016-10-01,Entrepôts,Sous-destination,631031,599445
+2016-10-01,Hôtels,Sous-destination,75213,46486
+2016-10-01,Industrie,Sous-destination,271827,147180
+2016-11-01,Commerce et services,Destination,524335,291465
+2016-11-01,Exploitation agricole ou forestière,Destination,780284,482646
+2016-11-01,"Industrie, entrepôts et bureaux",Destination,1260032,709313
+2016-11-01,Équipements publics,Destination,468674,338339
+2016-11-01,Bureaux,Sous-destination,382832,234036
+2016-11-01,Entrepôts,Sous-destination,630450,283406
+2016-11-01,Hôtels,Sous-destination,63512,25428
+2016-11-01,Industrie,Sous-destination,261629,181883
+2016-12-01,Commerce et services,Destination,614433,470277
+2016-12-01,Exploitation agricole ou forestière,Destination,756141,547185
+2016-12-01,"Industrie, entrepôts et bureaux",Destination,1274168,873454
+2016-12-01,Équipements publics,Destination,467193,441684
+2016-12-01,Bureaux,Sous-destination,395916,275850
+2016-12-01,Entrepôts,Sous-destination,500353,331513
+2016-12-01,Hôtels,Sous-destination,104480,91047
+2016-12-01,Industrie,Sous-destination,359633,316047
+2017-01-01,Commerce et services,Destination,633673,440179
+2017-01-01,Exploitation agricole ou forestière,Destination,823450,489641
+2017-01-01,"Industrie, entrepôts et bureaux",Destination,1044643,684113
+2017-01-01,Équipements publics,Destination,467986,341809
+2017-01-01,Bureaux,Sous-destination,337436,264392
+2017-01-01,Entrepôts,Sous-destination,504901,199547
+2017-01-01,Hôtels,Sous-destination,80913,35240
+2017-01-01,Industrie,Sous-destination,273149,194400
+2017-02-01,Commerce et services,Destination,503821,383717
+2017-02-01,Exploitation agricole ou forestière,Destination,790676,441933
+2017-02-01,"Industrie, entrepôts et bureaux",Destination,1154726,727884
+2017-02-01,Équipements publics,Destination,382587,368577
+2017-02-01,Bureaux,Sous-destination,249867,259069
+2017-02-01,Entrepôts,Sous-destination,600362,243452
+2017-02-01,Hôtels,Sous-destination,60128,64185
+2017-02-01,Industrie,Sous-destination,251841,221664
+2017-03-01,Commerce et services,Destination,676517,310710
+2017-03-01,Exploitation agricole ou forestière,Destination,892308,562261
+2017-03-01,"Industrie, entrepôts et bureaux",Destination,1143179,1047215
+2017-03-01,Équipements publics,Destination,529395,274549
+2017-03-01,Bureaux,Sous-destination,309586,347652
+2017-03-01,Entrepôts,Sous-destination,534508,535771
+2017-03-01,Hôtels,Sous-destination,129830,41836
+2017-03-01,Industrie,Sous-destination,318198,157011
+2017-04-01,Commerce et services,Destination,666614,370802
+2017-04-01,Exploitation agricole ou forestière,Destination,726990,523398
+2017-04-01,"Industrie, entrepôts et bureaux",Destination,1146406,965896
+2017-04-01,Équipements publics,Destination,519102,390940
+2017-04-01,Bureaux,Sous-destination,655268,249100
+2017-04-01,Entrepôts,Sous-destination,360394,527229
+2017-04-01,Hôtels,Sous-destination,162704,68382
+2017-04-01,Industrie,Sous-destination,251941,188152
+2017-05-01,Commerce et services,Destination,623112,321039
+2017-05-01,Exploitation agricole ou forestière,Destination,795237,377460
+2017-05-01,"Industrie, entrepôts et bureaux",Destination,1302361,742309
+2017-05-01,Équipements publics,Destination,607634,329261
+2017-05-01,Bureaux,Sous-destination,457965,266790
+2017-05-01,Entrepôts,Sous-destination,576601,287641
+2017-05-01,Hôtels,Sous-destination,70318,38991
+2017-05-01,Industrie,Sous-destination,330955,179320
+2017-06-01,Commerce et services,Destination,880719,374866
+2017-06-01,Exploitation agricole ou forestière,Destination,805281,520194
+2017-06-01,"Industrie, entrepôts et bureaux",Destination,1222700,890103
+2017-06-01,Équipements publics,Destination,427186,389858
+2017-06-01,Bureaux,Sous-destination,427071,249218
+2017-06-01,Entrepôts,Sous-destination,484668,443104
+2017-06-01,Hôtels,Sous-destination,85432,80211
+2017-06-01,Industrie,Sous-destination,292968,198743
+2017-07-01,Commerce et services,Destination,708407,316037
+2017-07-01,Exploitation agricole ou forestière,Destination,834178,318303
+2017-07-01,"Industrie, entrepôts et bureaux",Destination,1242676,640606
+2017-07-01,Équipements publics,Destination,504446,254306
+2017-07-01,Bureaux,Sous-destination,389913,318455
+2017-07-01,Entrepôts,Sous-destination,444326,179108
+2017-07-01,Hôtels,Sous-destination,102935,34157
+2017-07-01,Industrie,Sous-destination,311644,178474
+2017-08-01,Commerce et services,Destination,824949,553505
+2017-08-01,Exploitation agricole ou forestière,Destination,851974,551314
+2017-08-01,"Industrie, entrepôts et bureaux",Destination,1814282,847703
+2017-08-01,Équipements publics,Destination,634152,508915
+2017-08-01,Bureaux,Sous-destination,434195,315435
+2017-08-01,Entrepôts,Sous-destination,756291,383207
+2017-08-01,Hôtels,Sous-destination,136237,51674
+2017-08-01,Industrie,Sous-destination,628777,211840
+2017-09-01,Commerce et services,Destination,666810,447707
+2017-09-01,Exploitation agricole ou forestière,Destination,839701,492427
+2017-09-01,"Industrie, entrepôts et bureaux",Destination,1492286,1295563
+2017-09-01,Équipements publics,Destination,470492,368758
+2017-09-01,Bureaux,Sous-destination,419129,280500
+2017-09-01,Entrepôts,Sous-destination,759901,742318
+2017-09-01,Hôtels,Sous-destination,118172,50293
+2017-09-01,Industrie,Sous-destination,306632,203118
+2017-10-01,Commerce et services,Destination,692860,388608
+2017-10-01,Exploitation agricole ou forestière,Destination,918446,532975
+2017-10-01,"Industrie, entrepôts et bureaux",Destination,1466656,944485
+2017-10-01,Équipements publics,Destination,544501,316235
+2017-10-01,Bureaux,Sous-destination,431566,206199
+2017-10-01,Entrepôts,Sous-destination,815562,456833
+2017-10-01,Hôtels,Sous-destination,91436,40130
+2017-10-01,Industrie,Sous-destination,204371,230887
+2017-11-01,Commerce et services,Destination,734098,473744
+2017-11-01,Exploitation agricole ou forestière,Destination,760665,465605
+2017-11-01,"Industrie, entrepôts et bureaux",Destination,1209752,923236
+2017-11-01,Équipements publics,Destination,567027,391418
+2017-11-01,Bureaux,Sous-destination,469053,332763
+2017-11-01,Entrepôts,Sous-destination,412069,283984
+2017-11-01,Hôtels,Sous-destination,152197,56152
+2017-11-01,Industrie,Sous-destination,336263,333293
+2017-12-01,Commerce et services,Destination,747122,355058
+2017-12-01,Exploitation agricole ou forestière,Destination,789689,446074
+2017-12-01,"Industrie, entrepôts et bureaux",Destination,1302336,975615
+2017-12-01,Équipements publics,Destination,451273,370348
+2017-12-01,Bureaux,Sous-destination,426142,293458
+2017-12-01,Entrepôts,Sous-destination,462664,422737
+2017-12-01,Hôtels,Sous-destination,150875,56350
+2017-12-01,Industrie,Sous-destination,377673,257426
+2018-01-01,Commerce et services,Destination,542288,385813
+2018-01-01,Exploitation agricole ou forestière,Destination,1190411,472529
+2018-01-01,"Industrie, entrepôts et bureaux",Destination,1314357,984363
+2018-01-01,Équipements publics,Destination,445958,405608
+2018-01-01,Bureaux,Sous-destination,541486,292383
+2018-01-01,Entrepôts,Sous-destination,553041,407652
+2018-01-01,Hôtels,Sous-destination,118201,57345
+2018-01-01,Industrie,Sous-destination,315017,191805
+2018-02-01,Commerce et services,Destination,598061,423378
+2018-02-01,Exploitation agricole ou forestière,Destination,762800,540514
+2018-02-01,"Industrie, entrepôts et bureaux",Destination,1299010,1014704
+2018-02-01,Équipements publics,Destination,650518,340595
+2018-02-01,Bureaux,Sous-destination,564139,393008
+2018-02-01,Entrepôts,Sous-destination,346111,317068
+2018-02-01,Hôtels,Sous-destination,73406,37924
+2018-02-01,Industrie,Sous-destination,412215,311126
+2018-03-01,Commerce et services,Destination,639772,377075
+2018-03-01,Exploitation agricole ou forestière,Destination,694429,550828
+2018-03-01,"Industrie, entrepôts et bureaux",Destination,1657335,895706
+2018-03-01,Équipements publics,Destination,611422,511564
+2018-03-01,Bureaux,Sous-destination,601664,333109
+2018-03-01,Entrepôts,Sous-destination,768071,333728
+2018-03-01,Hôtels,Sous-destination,121180,47408
+2018-03-01,Industrie,Sous-destination,290468,233225
+2018-04-01,Commerce et services,Destination,471431,353371
+2018-04-01,Exploitation agricole ou forestière,Destination,672404,338911
+2018-04-01,"Industrie, entrepôts et bureaux",Destination,1347877,818689
+2018-04-01,Équipements publics,Destination,480837,264330
+2018-04-01,Bureaux,Sous-destination,453647,361561
+2018-04-01,Entrepôts,Sous-destination,646263,218540
+2018-04-01,Hôtels,Sous-destination,84268,66478
+2018-04-01,Industrie,Sous-destination,317890,253295
+2018-05-01,Commerce et services,Destination,658654,458718
+2018-05-01,Exploitation agricole ou forestière,Destination,723233,538742
+2018-05-01,"Industrie, entrepôts et bureaux",Destination,1075672,896789
+2018-05-01,Équipements publics,Destination,492999,536964
+2018-05-01,Bureaux,Sous-destination,383984,337151
+2018-05-01,Entrepôts,Sous-destination,463811,353432
+2018-05-01,Hôtels,Sous-destination,60630,82334
+2018-05-01,Industrie,Sous-destination,258142,228901
+2018-06-01,Commerce et services,Destination,560408,472084
+2018-06-01,Exploitation agricole ou forestière,Destination,762466,458881
+2018-06-01,"Industrie, entrepôts et bureaux",Destination,1318784,799667
+2018-06-01,Équipements publics,Destination,477903,334651
+2018-06-01,Bureaux,Sous-destination,379312,237604
+2018-06-01,Entrepôts,Sous-destination,594983,326235
+2018-06-01,Hôtels,Sous-destination,74782,94989
+2018-06-01,Industrie,Sous-destination,318711,225196
+2018-07-01,Commerce et services,Destination,524309,409921
+2018-07-01,Exploitation agricole ou forestière,Destination,792243,694605
+2018-07-01,"Industrie, entrepôts et bureaux",Destination,1319104,854559
+2018-07-01,Équipements publics,Destination,633405,443127
+2018-07-01,Bureaux,Sous-destination,448835,306122
+2018-07-01,Entrepôts,Sous-destination,385521,328030
+2018-07-01,Hôtels,Sous-destination,119146,34377
+2018-07-01,Industrie,Sous-destination,382105,248335
+2018-08-01,Commerce et services,Destination,539267,273978
+2018-08-01,Exploitation agricole ou forestière,Destination,646875,386123
+2018-08-01,"Industrie, entrepôts et bureaux",Destination,1418594,641089
+2018-08-01,Équipements publics,Destination,423264,293122
+2018-08-01,Bureaux,Sous-destination,429467,244298
+2018-08-01,Entrepôts,Sous-destination,681037,325003
+2018-08-01,Hôtels,Sous-destination,90740,43573
+2018-08-01,Industrie,Sous-destination,322493,133372
+2018-09-01,Commerce et services,Destination,664195,316478
+2018-09-01,Exploitation agricole ou forestière,Destination,934342,423151
+2018-09-01,"Industrie, entrepôts et bureaux",Destination,1389256,770195
+2018-09-01,Équipements publics,Destination,472019,336473
+2018-09-01,Bureaux,Sous-destination,436189,294521
+2018-09-01,Entrepôts,Sous-destination,596237,262733
+2018-09-01,Hôtels,Sous-destination,75905,39523
+2018-09-01,Industrie,Sous-destination,331213,211066
+2018-10-01,Commerce et services,Destination,628645,458316
+2018-10-01,Exploitation agricole ou forestière,Destination,716607,627855
+2018-10-01,"Industrie, entrepôts et bureaux",Destination,1415079,1092410
+2018-10-01,Équipements publics,Destination,542204,401298
+2018-10-01,Bureaux,Sous-destination,468798,400764
+2018-10-01,Entrepôts,Sous-destination,550095,348890
+2018-10-01,Hôtels,Sous-destination,95005,61340
+2018-10-01,Industrie,Sous-destination,341117,284751
+2018-11-01,Commerce et services,Destination,635452,291923
+2018-11-01,Exploitation agricole ou forestière,Destination,731739,583614
+2018-11-01,"Industrie, entrepôts et bureaux",Destination,1285478,830341
+2018-11-01,Équipements publics,Destination,474088,384466
+2018-11-01,Bureaux,Sous-destination,429314,309523
+2018-11-01,Entrepôts,Sous-destination,584008,294752
+2018-11-01,Hôtels,Sous-destination,131268,23527
+2018-11-01,Industrie,Sous-destination,306639,239396
+2018-12-01,Commerce et services,Destination,594055,368159
+2018-12-01,Exploitation agricole ou forestière,Destination,775824,543818
+2018-12-01,"Industrie, entrepôts et bureaux",Destination,1424269,970987
+2018-12-01,Équipements publics,Destination,509185,380855
+2018-12-01,Bureaux,Sous-destination,435661,369112
+2018-12-01,Entrepôts,Sous-destination,615712,400323
+2018-12-01,Hôtels,Sous-destination,128718,100179
+2018-12-01,Industrie,Sous-destination,339449,211152
+2019-01-01,Commerce et services,Destination,618138,420280
+2019-01-01,Exploitation agricole ou forestière,Destination,964972,577558
+2019-01-01,"Industrie, entrepôts et bureaux",Destination,1712039,1150346
+2019-01-01,Équipements publics,Destination,578318,420703
+2019-01-01,Bureaux,Sous-destination,501307,407536
+2019-01-01,Entrepôts,Sous-destination,956864,423814
+2019-01-01,Hôtels,Sous-destination,111578,78339
+2019-01-01,Industrie,Sous-destination,358483,257714
+2019-02-01,Commerce et services,Destination,556778,377696
+2019-02-01,Exploitation agricole ou forestière,Destination,832998,443529
+2019-02-01,"Industrie, entrepôts et bureaux",Destination,2142973,892603
+2019-02-01,Équipements publics,Destination,464956,376763
+2019-02-01,Bureaux,Sous-destination,528822,230729
+2019-02-01,Entrepôts,Sous-destination,1043987,471231
+2019-02-01,Hôtels,Sous-destination,98109,50595
+2019-02-01,Industrie,Sous-destination,408106,207739
+2019-03-01,Commerce et services,Destination,539382,421695
+2019-03-01,Exploitation agricole ou forestière,Destination,740148,499769
+2019-03-01,"Industrie, entrepôts et bureaux",Destination,1565285,1211790
+2019-03-01,Équipements publics,Destination,448582,341783
+2019-03-01,Bureaux,Sous-destination,429547,308065
+2019-03-01,Entrepôts,Sous-destination,833019,574948
+2019-03-01,Hôtels,Sous-destination,96315,57479
+2019-03-01,Industrie,Sous-destination,310910,264382
+2019-04-01,Commerce et services,Destination,562391,340452
+2019-04-01,Exploitation agricole ou forestière,Destination,800722,499648
+2019-04-01,"Industrie, entrepôts et bureaux",Destination,1676315,889614
+2019-04-01,Équipements publics,Destination,468727,281691
+2019-04-01,Bureaux,Sous-destination,570128,333151
+2019-04-01,Entrepôts,Sous-destination,730749,230227
+2019-04-01,Hôtels,Sous-destination,80265,56188
+2019-04-01,Industrie,Sous-destination,435201,334902
+2019-05-01,Commerce et services,Destination,759124,382970
+2019-05-01,Exploitation agricole ou forestière,Destination,970499,588784
+2019-05-01,"Industrie, entrepôts et bureaux",Destination,1718855,862915
+2019-05-01,Équipements publics,Destination,476287,379339
+2019-05-01,Bureaux,Sous-destination,513910,274533
+2019-05-01,Entrepôts,Sous-destination,864148,370189
+2019-05-01,Hôtels,Sous-destination,114648,67499
+2019-05-01,Industrie,Sous-destination,397319,270352
+2019-06-01,Commerce et services,Destination,520155,361713
+2019-06-01,Exploitation agricole ou forestière,Destination,798684,530780
+2019-06-01,"Industrie, entrepôts et bureaux",Destination,1539204,880854
+2019-06-01,Équipements publics,Destination,510691,368380
+2019-06-01,Bureaux,Sous-destination,486010,323459
+2019-06-01,Entrepôts,Sous-destination,779143,333216
+2019-06-01,Hôtels,Sous-destination,100640,60381
+2019-06-01,Industrie,Sous-destination,287409,206106
+2019-07-01,Commerce et services,Destination,664489,528861
+2019-07-01,Exploitation agricole ou forestière,Destination,876285,455133
+2019-07-01,"Industrie, entrepôts et bureaux",Destination,1657965,1173528
+2019-07-01,Équipements publics,Destination,838567,437847
+2019-07-01,Bureaux,Sous-destination,527593,388454
+2019-07-01,Entrepôts,Sous-destination,706031,593216
+2019-07-01,Hôtels,Sous-destination,148584,105469
+2019-07-01,Industrie,Sous-destination,307720,242978
+2019-08-01,Commerce et services,Destination,617196,349363
+2019-08-01,Exploitation agricole ou forestière,Destination,626098,481558
+2019-08-01,"Industrie, entrepôts et bureaux",Destination,1119338,783122
+2019-08-01,Équipements publics,Destination,363869,327016
+2019-08-01,Bureaux,Sous-destination,543790,309376
+2019-08-01,Entrepôts,Sous-destination,384561,285314
+2019-08-01,Hôtels,Sous-destination,100490,35290
+2019-08-01,Industrie,Sous-destination,241764,206286
+2019-09-01,Commerce et services,Destination,594402,428492
+2019-09-01,Exploitation agricole ou forestière,Destination,739924,642534
+2019-09-01,"Industrie, entrepôts et bureaux",Destination,1289411,994956
+2019-09-01,Équipements publics,Destination,460389,364721
+2019-09-01,Bureaux,Sous-destination,413600,299506
+2019-09-01,Entrepôts,Sous-destination,524732,452418
+2019-09-01,Hôtels,Sous-destination,115072,60315
+2019-09-01,Industrie,Sous-destination,319427,235415
+2019-10-01,Commerce et services,Destination,591041,425173
+2019-10-01,Exploitation agricole ou forestière,Destination,738852,483300
+2019-10-01,"Industrie, entrepôts et bureaux",Destination,1519048,949223
+2019-10-01,Équipements publics,Destination,528407,470060
+2019-10-01,Bureaux,Sous-destination,453254,340525
+2019-10-01,Entrepôts,Sous-destination,693635,340747
+2019-10-01,Hôtels,Sous-destination,90817,55798
+2019-10-01,Industrie,Sous-destination,337325,209344
+2019-11-01,Commerce et services,Destination,596488,423275
+2019-11-01,Exploitation agricole ou forestière,Destination,731987,492431
+2019-11-01,"Industrie, entrepôts et bureaux",Destination,1561325,1657652
+2019-11-01,Équipements publics,Destination,555287,341771
+2019-11-01,Bureaux,Sous-destination,560940,421334
+2019-11-01,Entrepôts,Sous-destination,727460,1049154
+2019-11-01,Hôtels,Sous-destination,88998,90569
+2019-11-01,Industrie,Sous-destination,335457,205081
+2019-12-01,Commerce et services,Destination,565970,289571
+2019-12-01,Exploitation agricole ou forestière,Destination,815693,464487
+2019-12-01,"Industrie, entrepôts et bureaux",Destination,1558470,1022413
+2019-12-01,Équipements publics,Destination,490640,322624
+2019-12-01,Bureaux,Sous-destination,438024,304928
+2019-12-01,Entrepôts,Sous-destination,796211,429120
+2019-12-01,Hôtels,Sous-destination,109674,52695
+2019-12-01,Industrie,Sous-destination,326660,301414
+2020-01-01,Commerce et services,Destination,544387,351508
+2020-01-01,Exploitation agricole ou forestière,Destination,727629,654194
+2020-01-01,"Industrie, entrepôts et bureaux",Destination,1420228,1047225
+2020-01-01,Équipements publics,Destination,489937,394536
+2020-01-01,Bureaux,Sous-destination,533224,310530
+2020-01-01,Entrepôts,Sous-destination,600580,438208
+2020-01-01,Hôtels,Sous-destination,65594,53262
+2020-01-01,Industrie,Sous-destination,353480,238210
+2020-02-01,Commerce et services,Destination,661699,365736
+2020-02-01,Exploitation agricole ou forestière,Destination,778031,537950
+2020-02-01,"Industrie, entrepôts et bureaux",Destination,1515896,1109010
+2020-02-01,Équipements publics,Destination,607907,401023
+2020-02-01,Bureaux,Sous-destination,504854,271914
+2020-02-01,Entrepôts,Sous-destination,582280,498458
+2020-02-01,Hôtels,Sous-destination,129954,94107
+2020-02-01,Industrie,Sous-destination,360568,411853
+2020-03-01,Commerce et services,Destination,449812,198224
+2020-03-01,Exploitation agricole ou forestière,Destination,601143,195500
+2020-03-01,"Industrie, entrepôts et bureaux",Destination,832574,478123
+2020-03-01,Équipements publics,Destination,560676,258176
+2020-03-01,Bureaux,Sous-destination,296618,184999
+2020-03-01,Entrepôts,Sous-destination,355693,164203
+2020-03-01,Hôtels,Sous-destination,87907,23025
+2020-03-01,Industrie,Sous-destination,159433,104716
+2020-04-01,Commerce et services,Destination,277547,109422
+2020-04-01,Exploitation agricole ou forestière,Destination,519935,244319
+2020-04-01,"Industrie, entrepôts et bureaux",Destination,750190,608544
+2020-04-01,Équipements publics,Destination,284774,121573
+2020-04-01,Bureaux,Sous-destination,216815,136015
+2020-04-01,Entrepôts,Sous-destination,372071,402011
+2020-04-01,Hôtels,Sous-destination,39126,16391
+2020-04-01,Industrie,Sous-destination,152300,109275
+2020-05-01,Commerce et services,Destination,458712,210735
+2020-05-01,Exploitation agricole ou forestière,Destination,526744,361166
+2020-05-01,"Industrie, entrepôts et bureaux",Destination,744557,514582
+2020-05-01,Équipements publics,Destination,313073,246070
+2020-05-01,Bureaux,Sous-destination,278962,190509
+2020-05-01,Entrepôts,Sous-destination,331914,192218
+2020-05-01,Hôtels,Sous-destination,98839,30193
+2020-05-01,Industrie,Sous-destination,177911,128697
+2020-06-01,Commerce et services,Destination,465305,299513
+2020-06-01,Exploitation agricole ou forestière,Destination,608815,585558
+2020-06-01,"Industrie, entrepôts et bureaux",Destination,1480015,923541
+2020-06-01,Équipements publics,Destination,374103,550507
+2020-06-01,Bureaux,Sous-destination,502366,261957
+2020-06-01,Entrepôts,Sous-destination,674494,407661
+2020-06-01,Hôtels,Sous-destination,77466,58903
+2020-06-01,Industrie,Sous-destination,327998,246541
+2020-07-01,Commerce et services,Destination,565874,410119
+2020-07-01,Exploitation agricole ou forestière,Destination,790338,525677
+2020-07-01,"Industrie, entrepôts et bureaux",Destination,1230437,807319
+2020-07-01,Équipements publics,Destination,522254,281253
+2020-07-01,Bureaux,Sous-destination,315597,222418
+2020-07-01,Entrepôts,Sous-destination,589357,518386
+2020-07-01,Hôtels,Sous-destination,73299,53360
+2020-07-01,Industrie,Sous-destination,273396,140461
+2020-08-01,Commerce et services,Destination,492922,317722
+2020-08-01,Exploitation agricole ou forestière,Destination,815960,462031
+2020-08-01,"Industrie, entrepôts et bureaux",Destination,1169320,948070
+2020-08-01,Équipements publics,Destination,431099,319819
+2020-08-01,Bureaux,Sous-destination,335057,315121
+2020-08-01,Entrepôts,Sous-destination,521524,473659
+2020-08-01,Hôtels,Sous-destination,75940,35458
+2020-08-01,Industrie,Sous-destination,353537,195566
+2020-09-01,Commerce et services,Destination,523747,311451
+2020-09-01,Exploitation agricole ou forestière,Destination,717129,438292
+2020-09-01,"Industrie, entrepôts et bureaux",Destination,1629170,883273
+2020-09-01,Équipements publics,Destination,413832,286799
+2020-09-01,Bureaux,Sous-destination,387062,273487
+2020-09-01,Entrepôts,Sous-destination,870419,456386
+2020-09-01,Hôtels,Sous-destination,91149,48449
+2020-09-01,Industrie,Sous-destination,340776,150295
+2020-10-01,Commerce et services,Destination,560799,370454
+2020-10-01,Exploitation agricole ou forestière,Destination,778090,612302
+2020-10-01,"Industrie, entrepôts et bureaux",Destination,1230453,1068068
+2020-10-01,Équipements publics,Destination,379002,372221
+2020-10-01,Bureaux,Sous-destination,482982,335608
+2020-10-01,Entrepôts,Sous-destination,470155,434714
+2020-10-01,Hôtels,Sous-destination,125216,44514
+2020-10-01,Industrie,Sous-destination,254499,227770
+2020-11-01,Commerce et services,Destination,470866,356606
+2020-11-01,Exploitation agricole ou forestière,Destination,769640,517771
+2020-11-01,"Industrie, entrepôts et bureaux",Destination,1346775,1033396
+2020-11-01,Équipements publics,Destination,450320,340932
+2020-11-01,Bureaux,Sous-destination,525214,231072
+2020-11-01,Entrepôts,Sous-destination,581461,671941
+2020-11-01,Hôtels,Sous-destination,51349,43976
+2020-11-01,Industrie,Sous-destination,309597,170251
+2020-12-01,Commerce et services,Destination,495272,368450
+2020-12-01,Exploitation agricole ou forestière,Destination,579267,442677
+2020-12-01,"Industrie, entrepôts et bureaux",Destination,1408438,988669
+2020-12-01,Équipements publics,Destination,438443,351628
+2020-12-01,Bureaux,Sous-destination,485250,329954
+2020-12-01,Entrepôts,Sous-destination,593080,455108
+2020-12-01,Hôtels,Sous-destination,90894,129317
+2020-12-01,Industrie,Sous-destination,294449,225100
+2021-01-01,Commerce et services,Destination,515438,291743
+2021-01-01,Exploitation agricole ou forestière,Destination,588605,428265
+2021-01-01,"Industrie, entrepôts et bureaux",Destination,1236532,523146
+2021-01-01,Équipements publics,Destination,428398,302755
+2021-01-01,Bureaux,Sous-destination,338424,208355
+2021-01-01,Entrepôts,Sous-destination,624731,136814
+2021-01-01,Hôtels,Sous-destination,71416,38171
+2021-01-01,Industrie,Sous-destination,311605,164735
+2021-02-01,Commerce et services,Destination,493780,348719
+2021-02-01,Exploitation agricole ou forestière,Destination,546029,455918
+2021-02-01,"Industrie, entrepôts et bureaux",Destination,1354688,860883
+2021-02-01,Équipements publics,Destination,374719,289392
+2021-02-01,Bureaux,Sous-destination,329509,368463
+2021-02-01,Entrepôts,Sous-destination,679758,297020
+2021-02-01,Hôtels,Sous-destination,68724,37470
+2021-02-01,Industrie,Sous-destination,233203,210677
+2021-03-01,Commerce et services,Destination,445123,364484
+2021-03-01,Exploitation agricole ou forestière,Destination,567019,484327
+2021-03-01,"Industrie, entrepôts et bureaux",Destination,1411400,826533
+2021-03-01,Équipements publics,Destination,488323,278075
+2021-03-01,Bureaux,Sous-destination,363445,271936
+2021-03-01,Entrepôts,Sous-destination,704804,332561
+2021-03-01,Hôtels,Sous-destination,32412,45091
+2021-03-01,Industrie,Sous-destination,302411,182640
+2021-04-01,Commerce et services,Destination,476734,428228
+2021-04-01,Exploitation agricole ou forestière,Destination,702914,458314
+2021-04-01,"Industrie, entrepôts et bureaux",Destination,1154101,817503
+2021-04-01,Équipements publics,Destination,542961,399756
+2021-04-01,Bureaux,Sous-destination,363354,289253
+2021-04-01,Entrepôts,Sous-destination,544558,350576
+2021-04-01,Hôtels,Sous-destination,108399,43476
+2021-04-01,Industrie,Sous-destination,226313,198042
+2021-05-01,Commerce et services,Destination,542753,383794
+2021-05-01,Exploitation agricole ou forestière,Destination,688233,374277
+2021-05-01,"Industrie, entrepôts et bureaux",Destination,1516380,1189752
+2021-05-01,Équipements publics,Destination,436808,330906
+2021-05-01,Bureaux,Sous-destination,500676,433491
+2021-05-01,Entrepôts,Sous-destination,740738,535496
+2021-05-01,Hôtels,Sous-destination,82141,96050
+2021-05-01,Industrie,Sous-destination,394898,264643
+2021-06-01,Commerce et services,Destination,551476,289281
+2021-06-01,Exploitation agricole ou forestière,Destination,780860,364928
+2021-06-01,"Industrie, entrepôts et bureaux",Destination,1352886,828652
+2021-06-01,Équipements publics,Destination,494927,338571
+2021-06-01,Bureaux,Sous-destination,358025,311667
+2021-06-01,Entrepôts,Sous-destination,651449,287130
+2021-06-01,Hôtels,Sous-destination,84465,43542
+2021-06-01,Industrie,Sous-destination,349293,235095
+2021-07-01,Commerce et services,Destination,536799,342453
+2021-07-01,Exploitation agricole ou forestière,Destination,738515,394573
+2021-07-01,"Industrie, entrepôts et bureaux",Destination,1490597,726905
+2021-07-01,Équipements publics,Destination,428412,348434
+2021-07-01,Bureaux,Sous-destination,395114,234013
+2021-07-01,Entrepôts,Sous-destination,789118,350051
+2021-07-01,Hôtels,Sous-destination,108355,45635
+2021-07-01,Industrie,Sous-destination,274993,171403
+2021-08-01,Commerce et services,Destination,530043,404462
+2021-08-01,Exploitation agricole ou forestière,Destination,735735,314750
+2021-08-01,"Industrie, entrepôts et bureaux",Destination,1747948,1355064
+2021-08-01,Équipements publics,Destination,513681,368165
+2021-08-01,Bureaux,Sous-destination,372661,360708
+2021-08-01,Entrepôts,Sous-destination,1061009,770506
+2021-08-01,Hôtels,Sous-destination,75741,63434
+2021-08-01,Industrie,Sous-destination,356742,267307
+2021-09-01,Commerce et services,Destination,559946,345977
+2021-09-01,Exploitation agricole ou forestière,Destination,826466,458014
+2021-09-01,"Industrie, entrepôts et bureaux",Destination,1459191,1037072
+2021-09-01,Équipements publics,Destination,532203,388217
+2021-09-01,Bureaux,Sous-destination,413576,355525
+2021-09-01,Entrepôts,Sous-destination,708213,479070
+2021-09-01,Hôtels,Sous-destination,89408,63024
+2021-09-01,Industrie,Sous-destination,330299,246742
+2021-10-01,Commerce et services,Destination,503819,418872
+2021-10-01,Exploitation agricole ou forestière,Destination,753314,249278
+2021-10-01,"Industrie, entrepôts et bureaux",Destination,1389307,1108876
+2021-10-01,Équipements publics,Destination,435749,317272
+2021-10-01,Bureaux,Sous-destination,330915,299155
+2021-10-01,Entrepôts,Sous-destination,591765,455158
+2021-10-01,Hôtels,Sous-destination,81778,97631
+2021-10-01,Industrie,Sous-destination,442919,248190
+2021-11-01,Commerce et services,Destination,561131,368713
+2021-11-01,Exploitation agricole ou forestière,Destination,772615,359844
+2021-11-01,"Industrie, entrepôts et bureaux",Destination,1495804,1027436
+2021-11-01,Équipements publics,Destination,354290,360707
+2021-11-01,Bureaux,Sous-destination,338203,325125
+2021-11-01,Entrepôts,Sous-destination,837198,402902
+2021-11-01,Hôtels,Sous-destination,82799,39279
+2021-11-01,Industrie,Sous-destination,400287,295448
+2021-12-01,Commerce et services,Destination,544623,367161
+2021-12-01,Exploitation agricole ou forestière,Destination,512708,454553
+2021-12-01,"Industrie, entrepôts et bureaux",Destination,1477001,1013790
+2021-12-01,Équipements publics,Destination,542072,321526
+2021-12-01,Bureaux,Sous-destination,468184,227424
+2021-12-01,Entrepôts,Sous-destination,672315,654081
+2021-12-01,Hôtels,Sous-destination,99625,50202
+2021-12-01,Industrie,Sous-destination,313332,215478
+2022-01-01,Commerce et services,Destination,612721,304215
+2022-01-01,Exploitation agricole ou forestière,Destination,525329,429984
+2022-01-01,"Industrie, entrepôts et bureaux",Destination,1419108,1441894
+2022-01-01,Équipements publics,Destination,347247,335111
+2022-01-01,Bureaux,Sous-destination,375248,251672
+2022-01-01,Entrepôts,Sous-destination,721037,728603
+2022-01-01,Hôtels,Sous-destination,91755,31771
+2022-01-01,Industrie,Sous-destination,330223,316501
+2022-02-01,Commerce et services,Destination,600684,396094
+2022-02-01,Exploitation agricole ou forestière,Destination,585190,264923
+2022-02-01,"Industrie, entrepôts et bureaux",Destination,1393726,1106112
+2022-02-01,Équipements publics,Destination,400366,348689
+2022-02-01,Bureaux,Sous-destination,312685,267432
+2022-02-01,Entrepôts,Sous-destination,586487,590417
+2022-02-01,Hôtels,Sous-destination,68478,49738
+2022-02-01,Industrie,Sous-destination,404096,258997
+2022-03-01,Commerce et services,Destination,698481,355307
+2022-03-01,Exploitation agricole ou forestière,Destination,633986,395530
+2022-03-01,"Industrie, entrepôts et bureaux",Destination,1554364,902524
+2022-03-01,Équipements publics,Destination,510715,538686
+2022-03-01,Bureaux,Sous-destination,381332,275448
+2022-03-01,Entrepôts,Sous-destination,673114,355571
+2022-03-01,Hôtels,Sous-destination,115905,39784
+2022-03-01,Industrie,Sous-destination,393875,254222
+2022-04-01,Commerce et services,Destination,591711,594153
+2022-04-01,Exploitation agricole ou forestière,Destination,704173,577093
+2022-04-01,"Industrie, entrepôts et bureaux",Destination,1861507,1405487
+2022-04-01,Équipements publics,Destination,413031,417289
+2022-04-01,Bureaux,Sous-destination,628331,324269
+2022-04-01,Entrepôts,Sous-destination,794062,662563
+2022-04-01,Hôtels,Sous-destination,73785,75064
+2022-04-01,Industrie,Sous-destination,424751,382850
+2022-05-01,Commerce et services,Destination,557278,423886
+2022-05-01,Exploitation agricole ou forestière,Destination,649221,414029
+2022-05-01,"Industrie, entrepôts et bureaux",Destination,1471247,1211680
+2022-05-01,Équipements publics,Destination,587336,285640
+2022-05-01,Bureaux,Sous-destination,490444,287876
+2022-05-01,Entrepôts,Sous-destination,742185,774521
+2022-05-01,Hôtels,Sous-destination,95609,58327
+2022-05-01,Industrie,Sous-destination,359462,233115
+2022-06-01,Commerce et services,Destination,616620,438224
+2022-06-01,Exploitation agricole ou forestière,Destination,532648,364101
+2022-06-01,"Industrie, entrepôts et bureaux",Destination,1463798,1052919
+2022-06-01,Équipements publics,Destination,412073,289233
+2022-06-01,Bureaux,Sous-destination,477312,293499
+2022-06-01,Entrepôts,Sous-destination,603543,590773
+2022-06-01,Hôtels,Sous-destination,100521,65202
+2022-06-01,Industrie,Sous-destination,368644,199967
+2022-07-01,Commerce et services,Destination,568109,311332
+2022-07-01,Exploitation agricole ou forestière,Destination,544506,282058
+2022-07-01,"Industrie, entrepôts et bureaux",Destination,1535865,929593
+2022-07-01,Équipements publics,Destination,382219,201932
+2022-07-01,Bureaux,Sous-destination,338207,310764
+2022-07-01,Entrepôts,Sous-destination,770233,371494
+2022-07-01,Hôtels,Sous-destination,79985,50900
+2022-07-01,Industrie,Sous-destination,420083,237703
+2022-08-01,Commerce et services,Destination,651321,322543
+2022-08-01,Exploitation agricole ou forestière,Destination,543106,358098
+2022-08-01,"Industrie, entrepôts et bureaux",Destination,1555306,1024198
+2022-08-01,Équipements publics,Destination,548468,338660
+2022-08-01,Bureaux,Sous-destination,702244,310507
+2022-08-01,Entrepôts,Sous-destination,605306,513571
+2022-08-01,Hôtels,Sous-destination,102070,38468
+2022-08-01,Industrie,Sous-destination,381078,230475
+2022-09-01,Commerce et services,Destination,603275,379865
+2022-09-01,Exploitation agricole ou forestière,Destination,637103,251733
+2022-09-01,"Industrie, entrepôts et bureaux",Destination,1544830,981257
+2022-09-01,Équipements publics,Destination,536100,314209
+2022-09-01,Bureaux,Sous-destination,437588,282221
+2022-09-01,Entrepôts,Sous-destination,774263,487146
+2022-09-01,Hôtels,Sous-destination,109523,83356
+2022-09-01,Industrie,Sous-destination,360215,249541
+2022-10-01,Commerce et services,Destination,685349,356567
+2022-10-01,Exploitation agricole ou forestière,Destination,655655,293930
+2022-10-01,"Industrie, entrepôts et bureaux",Destination,1702610,903738
+2022-10-01,Équipements publics,Destination,573574,436447
+2022-10-01,Bureaux,Sous-destination,413507,255165
+2022-10-01,Entrepôts,Sous-destination,985631,388130
+2022-10-01,Hôtels,Sous-destination,134124,44140
+2022-10-01,Industrie,Sous-destination,342396,183948
+2022-11-01,Commerce et services,Destination,626828,351298
+2022-11-01,Exploitation agricole ou forestière,Destination,650416,349014
+2022-11-01,"Industrie, entrepôts et bureaux",Destination,1985836,908258
+2022-11-01,Équipements publics,Destination,529525,330387
+2022-11-01,Bureaux,Sous-destination,431966,237711
+2022-11-01,Entrepôts,Sous-destination,1142743,401231
+2022-11-01,Hôtels,Sous-destination,103442,40132
+2022-11-01,Industrie,Sous-destination,443952,292894
+2022-12-01,Commerce et services,Destination,499102,408479
+2022-12-01,Exploitation agricole ou forestière,Destination,635351,354843
+2022-12-01,"Industrie, entrepôts et bureaux",Destination,1440770,874421
+2022-12-01,Équipements publics,Destination,511963,382884
+2022-12-01,Bureaux,Sous-destination,369532,319601
+2022-12-01,Entrepôts,Sous-destination,657180,305716
+2022-12-01,Hôtels,Sous-destination,76228,82816
+2022-12-01,Industrie,Sous-destination,405318,262797
+2023-01-01,Commerce et services,Destination,564776,382964
+2023-01-01,Exploitation agricole ou forestière,Destination,650742,333468
+2023-01-01,"Industrie, entrepôts et bureaux",Destination,1459260,851345
+2023-01-01,Équipements publics,Destination,607080,370389
+2023-01-01,Bureaux,Sous-destination,431016,239980
+2023-01-01,Entrepôts,Sous-destination,697065,357437
+2023-01-01,Hôtels,Sous-destination,81776,71858
+2023-01-01,Industrie,Sous-destination,333014,216776
+2023-02-01,Commerce et services,Destination,627616,294108
+2023-02-01,Exploitation agricole ou forestière,Destination,534181,337822
+2023-02-01,"Industrie, entrepôts et bureaux",Destination,1401033,854526
+2023-02-01,Équipements publics,Destination,495553,389670
+2023-02-01,Bureaux,Sous-destination,344691,268207
+2023-02-01,Entrepôts,Sous-destination,569243,398556
+2023-02-01,Hôtels,Sous-destination,81312,31425
+2023-02-01,Industrie,Sous-destination,398319,188939
+2023-03-01,Commerce et services,Destination,522177,377237
+2023-03-01,Exploitation agricole ou forestière,Destination,518035,341843
+2023-03-01,"Industrie, entrepôts et bureaux",Destination,1512528,971797
+2023-03-01,Équipements publics,Destination,500135,352285
+2023-03-01,Bureaux,Sous-destination,402106,263607
+2023-03-01,Entrepôts,Sous-destination,570070,439402
+2023-03-01,Hôtels,Sous-destination,82033,81677
+2023-03-01,Industrie,Sous-destination,422698,250055
+2023-04-01,Commerce et services,Destination,570321,241616
+2023-04-01,Exploitation agricole ou forestière,Destination,493737,355205
+2023-04-01,"Industrie, entrepôts et bureaux",Destination,1476305,940275
+2023-04-01,Équipements publics,Destination,452738,313611
+2023-04-01,Bureaux,Sous-destination,348556,290671
+2023-04-01,Entrepôts,Sous-destination,756125,405161
+2023-04-01,Hôtels,Sous-destination,56102,20804
+2023-04-01,Industrie,Sous-destination,377721,237356
+2023-05-01,Commerce et services,Destination,609027,258238
+2023-05-01,Exploitation agricole ou forestière,Destination,454365,259886
+2023-05-01,"Industrie, entrepôts et bureaux",Destination,1599700,644403
+2023-05-01,Équipements publics,Destination,564137,316135
+2023-05-01,Bureaux,Sous-destination,373274,214436
+2023-05-01,Entrepôts,Sous-destination,825388,258565
+2023-05-01,Hôtels,Sous-destination,92916,63640
+2023-05-01,Industrie,Sous-destination,561230,185726
+2023-06-01,Commerce et services,Destination,557836,416297
+2023-06-01,Exploitation agricole ou forestière,Destination,488820,301430
+2023-06-01,"Industrie, entrepôts et bureaux",Destination,1584810,904126
+2023-06-01,Équipements publics,Destination,503392,353296
+2023-06-01,Bureaux,Sous-destination,372966,277352
+2023-06-01,Entrepôts,Sous-destination,794568,395998
+2023-06-01,Hôtels,Sous-destination,55969,86424
+2023-06-01,Industrie,Sous-destination,387357,257683
+2023-07-01,Commerce et services,Destination,571827,263194
+2023-07-01,Exploitation agricole ou forestière,Destination,559085,276890
+2023-07-01,"Industrie, entrepôts et bureaux",Destination,1729890,815396
+2023-07-01,Équipements publics,Destination,465590,293538
+2023-07-01,Bureaux,Sous-destination,353602,263221
+2023-07-01,Entrepôts,Sous-destination,835262,285069
+2023-07-01,Hôtels,Sous-destination,87481,25363
+2023-07-01,Industrie,Sous-destination,529838,295412
+2023-08-01,Commerce et services,Destination,493717,368365
+2023-08-01,Exploitation agricole ou forestière,Destination,569946,294195
+2023-08-01,"Industrie, entrepôts et bureaux",Destination,1320784,782341
+2023-08-01,Équipements publics,Destination,384911,290462
+2023-08-01,Bureaux,Sous-destination,370618,242135
+2023-08-01,Entrepôts,Sous-destination,741056,389251
+2023-08-01,Hôtels,Sous-destination,109779,36484
+2023-08-01,Industrie,Sous-destination,334434,193252
+2023-09-01,Commerce et services,Destination,585159,289024
+2023-09-01,Exploitation agricole ou forestière,Destination,701463,302209
+2023-09-01,"Industrie, entrepôts et bureaux",Destination,1381693,899481
+2023-09-01,Équipements publics,Destination,483308,287707
+2023-09-01,Bureaux,Sous-destination,323446,221786
+2023-09-01,Entrepôts,Sous-destination,723492,383677
+2023-09-01,Hôtels,Sous-destination,117755,72464
+2023-09-01,Industrie,Sous-destination,330185,283293
+2023-10-01,Commerce et services,Destination,549729,308889
+2023-10-01,Exploitation agricole ou forestière,Destination,766727,299039
+2023-10-01,"Industrie, entrepôts et bureaux",Destination,1320443,1035282
+2023-10-01,Équipements publics,Destination,549738,300475
+2023-10-01,Bureaux,Sous-destination,334972,256917
+2023-10-01,Entrepôts,Sous-destination,683576,423224
+2023-10-01,Hôtels,Sous-destination,73604,25757
+2023-10-01,Industrie,Sous-destination,355284,263566
+2023-11-01,Commerce et services,Destination,540461,286602
+2023-11-01,Exploitation agricole ou forestière,Destination,475435,287432
+2023-11-01,"Industrie, entrepôts et bureaux",Destination,1243766,1080952
+2023-11-01,Équipements publics,Destination,484764,477611
+2023-11-01,Bureaux,Sous-destination,291934,259422
+2023-11-01,Entrepôts,Sous-destination,657949,639341
+2023-11-01,Hôtels,Sous-destination,69318,30877
+2023-11-01,Industrie,Sous-destination,307189,213246
+2023-12-01,Commerce et services,Destination,579701,236232
+2023-12-01,Exploitation agricole ou forestière,Destination,607562,277438
+2023-12-01,"Industrie, entrepôts et bureaux",Destination,1480895,722446
+2023-12-01,Équipements publics,Destination,416834,271138
+2023-12-01,Bureaux,Sous-destination,337698,197173
+2023-12-01,Entrepôts,Sous-destination,808307,293177
+2023-12-01,Hôtels,Sous-destination,72984,14776
+2023-12-01,Industrie,Sous-destination,349003,216524
+2024-01-01,Commerce et services,Destination,522899,318472
+2024-01-01,Exploitation agricole ou forestière,Destination,480827,255137
+2024-01-01,"Industrie, entrepôts et bureaux",Destination,1514529,697161
+2024-01-01,Équipements publics,Destination,456230,299158
+2024-01-01,Bureaux,Sous-destination,299579,242378
+2024-01-01,Entrepôts,Sous-destination,833069,237851
+2024-01-01,Hôtels,Sous-destination,44227,49308
+2024-01-01,Industrie,Sous-destination,366152,195698
+2024-02-01,Commerce et services,Destination,572569,337787
+2024-02-01,Exploitation agricole ou forestière,Destination,587597,368933
+2024-02-01,"Industrie, entrepôts et bureaux",Destination,1351697,1049989
+2024-02-01,Équipements publics,Destination,584017,318501
+2024-02-01,Bureaux,Sous-destination,368095,215184
+2024-02-01,Entrepôts,Sous-destination,642691,620713
+2024-02-01,Hôtels,Sous-destination,124666,35255
+2024-02-01,Industrie,Sous-destination,284241,295209
+2024-03-01,Commerce et services,Destination,596065,282200
+2024-03-01,Exploitation agricole ou forestière,Destination,613954,319262
+2024-03-01,"Industrie, entrepôts et bureaux",Destination,1415040,762028
+2024-03-01,Équipements publics,Destination,489759,342363
+2024-03-01,Bureaux,Sous-destination,377235,245201
+2024-03-01,Entrepôts,Sous-destination,603365,323126
+2024-03-01,Hôtels,Sous-destination,97433,19595
+2024-03-01,Industrie,Sous-destination,324945,157498
+2024-04-01,Commerce et services,Destination,557867,257251
+2024-04-01,Exploitation agricole ou forestière,Destination,621715,280675
+2024-04-01,"Industrie, entrepôts et bureaux",Destination,1237779,656788
+2024-04-01,Équipements publics,Destination,494202,317845
+2024-04-01,Bureaux,Sous-destination,297508,152671
+2024-04-01,Entrepôts,Sous-destination,596571,293710
+2024-04-01,Hôtels,Sous-destination,65096,30599
+2024-04-01,Industrie,Sous-destination,345053,218959
+2024-05-01,Commerce et services,Destination,525313,270484
+2024-05-01,Exploitation agricole ou forestière,Destination,587599,257590
+2024-05-01,"Industrie, entrepôts et bureaux",Destination,1288635,738320
+2024-05-01,Équipements publics,Destination,548557,357448
+2024-05-01,Bureaux,Sous-destination,375569,204913
+2024-05-01,Entrepôts,Sous-destination,701521,247227
+2024-05-01,Hôtels,Sous-destination,91797,33079
+2024-05-01,Industrie,Sous-destination,294084,340166
+2024-06-01,Commerce et services,Destination,583254,252497
+2024-06-01,Exploitation agricole ou forestière,Destination,675253,290105
+2024-06-01,"Industrie, entrepôts et bureaux",Destination,1272243,729155
+2024-06-01,Équipements publics,Destination,588238,332138
+2024-06-01,Bureaux,Sous-destination,332411,197910
+2024-06-01,Entrepôts,Sous-destination,577370,318494
+2024-06-01,Hôtels,Sous-destination,87609,38351
+2024-06-01,Industrie,Sous-destination,322069,187168
+2024-07-01,Commerce et services,Destination,607994,370770
+2024-07-01,Exploitation agricole ou forestière,Destination,644609,271682
+2024-07-01,"Industrie, entrepôts et bureaux",Destination,1366699,801633
+2024-07-01,Équipements publics,Destination,548525,354717
+2024-07-01,Bureaux,Sous-destination,305428,197307
+2024-07-01,Entrepôts,Sous-destination,686749,360887
+2024-07-01,Hôtels,Sous-destination,117987,57687
+2024-07-01,Industrie,Sous-destination,374452,268975
+2024-08-01,Commerce et services,Destination,483784,234022
+2024-08-01,Exploitation agricole ou forestière,Destination,568142,256153
+2024-08-01,"Industrie, entrepôts et bureaux",Destination,1693221,571070
+2024-08-01,Équipements publics,Destination,436986,231709
+2024-08-01,Bureaux,Sous-destination,298045,171425
+2024-08-01,Entrepôts,Sous-destination,958291,221416
+2024-08-01,Hôtels,Sous-destination,96301,12077
+2024-08-01,Industrie,Sous-destination,596083,217457
+2024-09-01,Commerce et services,Destination,564345,273975
+2024-09-01,Exploitation agricole ou forestière,Destination,560531,288336
+2024-09-01,"Industrie, entrepôts et bureaux",Destination,1461238,716087
+2024-09-01,Équipements publics,Destination,439118,348024
+2024-09-01,Bureaux,Sous-destination,337845,168937
+2024-09-01,Entrepôts,Sous-destination,673784,253678
+2024-09-01,Hôtels,Sous-destination,130078,44518
+2024-09-01,Industrie,Sous-destination,455688,292978
+2024-10-01,Commerce et services,Destination,505452,283128
+2024-10-01,Exploitation agricole ou forestière,Destination,629697,324114
+2024-10-01,"Industrie, entrepôts et bureaux",Destination,1425844,793172
+2024-10-01,Équipements publics,Destination,457180,316450
+2024-10-01,Bureaux,Sous-destination,421294,191949
+2024-10-01,Entrepôts,Sous-destination,621530,363511
+2024-10-01,Hôtels,Sous-destination,78391,44238
+2024-10-01,Industrie,Sous-destination,401348,185334
+2024-11-01,Commerce et services,Destination,498019,296354
+2024-11-01,Exploitation agricole ou forestière,Destination,707915,189598
+2024-11-01,"Industrie, entrepôts et bureaux",Destination,1344211,713160
+2024-11-01,Équipements publics,Destination,459096,303947
+2024-11-01,Bureaux,Sous-destination,292186,277904
+2024-11-01,Entrepôts,Sous-destination,707334,240234
+2024-11-01,Hôtels,Sous-destination,74698,43289
+2024-11-01,Industrie,Sous-destination,335569,206871
+2024-12-01,Commerce et services,Destination,560342,308321
+2024-12-01,Exploitation agricole ou forestière,Destination,675483,315757
+2024-12-01,"Industrie, entrepôts et bureaux",Destination,2202443,623969
+2024-12-01,Équipements publics,Destination,522556,267129
+2024-12-01,Bureaux,Sous-destination,269978,164139
+2024-12-01,Entrepôts,Sous-destination,830612,358042
+2024-12-01,Hôtels,Sous-destination,58450,39621
+2024-12-01,Industrie,Sous-destination,1152583,99385
+2025-01-01,Commerce et services,Destination,552289,366411
+2025-01-01,Exploitation agricole ou forestière,Destination,900143,378680
+2025-01-01,"Industrie, entrepôts et bureaux",Destination,1476281,914110
+2025-01-01,Équipements publics,Destination,544135,374407
+2025-01-01,Bureaux,Sous-destination,313961,216969
+2025-01-01,Entrepôts,Sous-destination,674085,420559
+2025-01-01,Hôtels,Sous-destination,70341,67254
+2025-01-01,Industrie,Sous-destination,450690,245878
+2025-02-01,Commerce et services,Destination,542901,284224
+2025-02-01,Exploitation agricole ou forestière,Destination,792330,297870
+2025-02-01,"Industrie, entrepôts et bureaux",Destination,1608879,723593
+2025-02-01,Équipements publics,Destination,502052,293019
+2025-02-01,Bureaux,Sous-destination,294735,188209
+2025-02-01,Entrepôts,Sous-destination,825542,296976
+2025-02-01,Hôtels,Sous-destination,93553,33467
+2025-02-01,Industrie,Sous-destination,376035,229673
+2025-03-01,Commerce et services,Destination,552516,313317
+2025-03-01,Exploitation agricole ou forestière,Destination,586747,268790
+2025-03-01,"Industrie, entrepôts et bureaux",Destination,1335151,791012
+2025-03-01,Équipements publics,Destination,537774,307053
+2025-03-01,Bureaux,Sous-destination,248535,198160
+2025-03-01,Entrepôts,Sous-destination,743604,330983
+2025-03-01,Hôtels,Sous-destination,77591,29684
+2025-03-01,Industrie,Sous-destination,250704,225771
+2025-04-01,Commerce et services,Destination,574521,329651
+2025-04-01,Exploitation agricole ou forestière,Destination,702958,342082
+2025-04-01,"Industrie, entrepôts et bureaux",Destination,1300927,649654
+2025-04-01,Équipements publics,Destination,550425,263133
+2025-04-01,Bureaux,Sous-destination,326932,163424
+2025-04-01,Entrepôts,Sous-destination,591347,318664
+2025-04-01,Hôtels,Sous-destination,128846,69270
+2025-04-01,Industrie,Sous-destination,404343,168221
+2025-05-01,Commerce et services,Destination,520951,279160
+2025-05-01,Exploitation agricole ou forestière,Destination,686557,281534
+2025-05-01,"Industrie, entrepôts et bureaux",Destination,1227260,773659
+2025-05-01,Équipements publics,Destination,472031,278359
+2025-05-01,Bureaux,Sous-destination,259818,228119
+2025-05-01,Entrepôts,Sous-destination,648116,357887
+2025-05-01,Hôtels,Sous-destination,64433,38260
+2025-05-01,Industrie,Sous-destination,368808,223700
+2025-06-01,Commerce et services,Destination,508463,327784
+2025-06-01,Exploitation agricole ou forestière,Destination,736001,325181
+2025-06-01,"Industrie, entrepôts et bureaux",Destination,1254812,657152
+2025-06-01,Équipements publics,Destination,506110,302100
+2025-06-01,Bureaux,Sous-destination,239909,183770
+2025-06-01,Entrepôts,Sous-destination,559165,199536
+2025-06-01,Hôtels,Sous-destination,63054,57340
+2025-06-01,Industrie,Sous-destination,413977,228472
+2025-07-01,Commerce et services,Destination,586840,323683
+2025-07-01,Exploitation agricole ou forestière,Destination,761357,347153
+2025-07-01,"Industrie, entrepôts et bureaux",Destination,1225516,806486
+2025-07-01,Équipements publics,Destination,637357,273556
+2025-07-01,Bureaux,Sous-destination,295315,193697
+2025-07-01,Entrepôts,Sous-destination,590729,475374
+2025-07-01,Hôtels,Sous-destination,137065,52978
+2025-07-01,Industrie,Sous-destination,326261,186243
+2025-08-01,Commerce et services,Destination,564774,273222
+2025-08-01,Exploitation agricole ou forestière,Destination,710884,314786
+2025-08-01,"Industrie, entrepôts et bureaux",Destination,1155090,782415
+2025-08-01,Équipements publics,Destination,557407,292769
+2025-08-01,Bureaux,Sous-destination,266057,174370
+2025-08-01,Entrepôts,Sous-destination,581041,456532
+2025-08-01,Hôtels,Sous-destination,56042,19516
+2025-08-01,Industrie,Sous-destination,384125,176570
+2025-09-01,Commerce et services,Destination,614444,361588
+2025-09-01,Exploitation agricole ou forestière,Destination,681841,408858
+2025-09-01,"Industrie, entrepôts et bureaux",Destination,1235493,740255
+2025-09-01,Équipements publics,Destination,755268,424177
+2025-09-01,Bureaux,Sous-destination,228160,245496
+2025-09-01,Entrepôts,Sous-destination,646711,354728
+2025-09-01,Hôtels,Sous-destination,71545,41439
+2025-09-01,Industrie,Sous-destination,316754,155854
+2025-10-01,Commerce et services,Destination,541711,358100
+2025-10-01,Exploitation agricole ou forestière,Destination,796132,352806
+2025-10-01,"Industrie, entrepôts et bureaux",Destination,1386273,673315
+2025-10-01,Équipements publics,Destination,497822,362392
+2025-10-01,Bureaux,Sous-destination,251025,145916
+2025-10-01,Entrepôts,Sous-destination,630888,290379
+2025-10-01,Hôtels,Sous-destination,72635,40611
+2025-10-01,Industrie,Sous-destination,527633,203362
+2025-11-01,Commerce et services,Destination,555282,339634
+2025-11-01,Exploitation agricole ou forestière,Destination,706846,387532
+2025-11-01,"Industrie, entrepôts et bureaux",Destination,1190286,711039
+2025-11-01,Équipements publics,Destination,475155,322386
+2025-11-01,Bureaux,Sous-destination,263554,161333
+2025-11-01,Entrepôts,Sous-destination,529594,396865
+2025-11-01,Hôtels,Sous-destination,93313,43849
+2025-11-01,Industrie,Sous-destination,403941,161672
+2025-12-01,Commerce et services,Destination,614145,349590
+2025-12-01,Exploitation agricole ou forestière,Destination,689409,287862
+2025-12-01,"Industrie, entrepôts et bureaux",Destination,1075305,824047
+2025-12-01,Équipements publics,Destination,574194,410879
+2025-12-01,Bureaux,Sous-destination,261426,243922
+2025-12-01,Entrepôts,Sous-destination,475975,357882
+2025-12-01,Hôtels,Sous-destination,142167,51871
+2025-12-01,Industrie,Sous-destination,370138,168851
+2026-01-01,Commerce et services,Destination,535227,333584
+2026-01-01,Exploitation agricole ou forestière,Destination,768350,347215
+2026-01-01,"Industrie, entrepôts et bureaux",Destination,1015152,734484
+2026-01-01,Équipements publics,Destination,407286,430602
+2026-01-01,Bureaux,Sous-destination,268483,175645
+2026-01-01,Entrepôts,Sous-destination,482041,312924
+2026-01-01,Hôtels,Sous-destination,43082,37782
+2026-01-01,Industrie,Sous-destination,247588,197420
+2026-02-01,Commerce et services,Destination,607693,282917
+2026-02-01,Exploitation agricole ou forestière,Destination,684494,207328
+2026-02-01,"Industrie, entrepôts et bureaux",Destination,1451070,666409
+2026-02-01,Équipements publics,Destination,455549,334862
+2026-02-01,Bureaux,Sous-destination,302101,184533
+2026-02-01,Entrepôts,Sous-destination,670964,330649
+2026-02-01,Hôtels,Sous-destination,67550,34367
+2026-02-01,Industrie,Sous-destination,491632,151831
+2026-03-01,Commerce et services,Destination,714561,349041
+2026-03-01,Exploitation agricole ou forestière,Destination,802650,375190
+2026-03-01,"Industrie, entrepôts et bureaux",Destination,1431017,768967
+2026-03-01,Équipements publics,Destination,322457,392026
+2026-03-01,Bureaux,Sous-destination,287372,177701
+2026-03-01,Entrepôts,Sous-destination,614772,371575
+2026-03-01,Hôtels,Sous-destination,82920,37420
+2026-03-01,Industrie,Sous-destination,418433,200392
+2026-04-01,Commerce et services,Destination,437534,371669
+2026-04-01,Exploitation agricole ou forestière,Destination,632526,283433
+2026-04-01,"Industrie, entrepôts et bureaux",Destination,1377426,788695
+2026-04-01,Équipements publics,Destination,539277,387587
+2026-04-01,Bureaux,Sous-destination,271642,223259
+2026-04-01,Entrepôts,Sous-destination,695798,390127
+2026-04-01,Hôtels,Sous-destination,37202,91169
+2026-04-01,Industrie,Sous-destination,457661,203589
+2026-05-01,Commerce et services,Destination,522648,277673
+2026-05-01,Exploitation agricole ou forestière,Destination,757938,294963
+2026-05-01,"Industrie, entrepôts et bureaux",Destination,1131905,656682
+2026-05-01,Équipements publics,Destination,255295,257965
+2026-05-01,Bureaux,Sous-destination,222699,161410
+2026-05-01,Entrepôts,Sous-destination,506890,344685
+2026-05-01,Hôtels,Sous-destination,35390,48176
+2026-05-01,Industrie,Sous-destination,422969,194637
+2026-06-01,Commerce et services,Destination,531107,283893
+2026-06-01,Exploitation agricole ou forestière,Destination,612857,388192
+2026-06-01,"Industrie, entrepôts et bureaux",Destination,1218463,751191
+2026-06-01,Équipements publics,Destination,358173,349906
+2026-06-01,Bureaux,Sous-destination,251975,156663
+2026-06-01,Entrepôts,Sous-destination,607838,351071
+2026-06-01,Hôtels,Sous-destination,104762,32959
+2026-06-01,Industrie,Sous-destination,331095,181284
+2026-07-01,Commerce et services,Destination,525694,293945
+2026-07-01,Exploitation agricole ou forestière,Destination,721793,394102
+2026-07-01,"Industrie, entrepôts et bureaux",Destination,1271325,641022
+2026-07-01,Équipements publics,Destination,300170,363026
+2026-07-01,Bureaux,Sous-destination,248849,149591
+2026-07-01,Entrepôts,Sous-destination,566986,348220
+2026-07-01,Hôtels,Sous-destination,91258,34992
+2026-07-01,Industrie,Sous-destination,445237,203525

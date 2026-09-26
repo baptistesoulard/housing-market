@@ -1,0 +1,2935 @@
+"ANNEE";"MOIS";"NAT_SERIES";"DESTINATION";"SDP_AUT";"SDP_COM"
+2026;7;"Brute";"Ensemble des locaux non-residentiels";3229606;1829881
+2026;7;"Brute";"Exploitation agricole";864863;444570
+2026;7;"Brute";"Commerce";597454;257556
+2026;7;"Brute";"Commerce - hotels";91258;34992
+2026;7;"Brute";"Services publics";316310;351855
+2026;7;"Brute";"Autres activites";1450975;775899
+2026;7;"Brute";"Autres activites - industrie";478150;233856
+2026;7;"Brute";"Autres activites - entrepot";684556;378934
+2026;7;"Brute";"Autres activites - bureau";282224;162927
+2026;7;"CVS-CJO";"Ensemble des locaux non-residentiels";2818982;1692095
+2026;7;"CVS-CJO";"Exploitation agricole";721793;394102
+2026;7;"CVS-CJO";"Commerce";525694;293945
+2026;7;"CVS-CJO";"Commerce - hotels";91258;34992
+2026;7;"CVS-CJO";"Services publics";300170;363026
+2026;7;"CVS-CJO";"Autres activites";1271325;641022
+2026;7;"CVS-CJO";"Autres activites - industrie";445237;203525
+2026;7;"CVS-CJO";"Autres activites - entrepot";566986;348220
+2026;7;"CVS-CJO";"Autres activites - bureau";248849;149591
+2026;6;"Brute";"Ensemble des locaux non-residentiels";2809043;1830877
+2026;6;"Brute";"Exploitation agricole";694258;412191
+2026;6;"Brute";"Commerce";583429;294043
+2026;6;"Brute";"Commerce - hotels";104762;32959
+2026;6;"Brute";"Services publics";372934;379642
+2026;6;"Brute";"Autres activites";1158426;745001
+2026;6;"Brute";"Autres activites - industrie";321591;192091
+2026;6;"Brute";"Autres activites - entrepot";581632;391771
+2026;6;"Brute";"Autres activites - bureau";251433;161139
+2026;6;"CVS-CJO";"Ensemble des locaux non-residentiels";2720600;1773182
+2026;6;"CVS-CJO";"Exploitation agricole";612857;388192
+2026;6;"CVS-CJO";"Commerce";531107;283893
+2026;6;"CVS-CJO";"Commerce - hotels";104762;32959
+2026;6;"CVS-CJO";"Services publics";358173;349906
+2026;6;"CVS-CJO";"Autres activites";1218463;751191
+2026;6;"CVS-CJO";"Autres activites - industrie";331095;181284
+2026;6;"CVS-CJO";"Autres activites - entrepot";607838;351071
+2026;6;"CVS-CJO";"Autres activites - bureau";251975;156663
+2026;5;"Brute";"Ensemble des locaux non-residentiels";2382985;1427678
+2026;5;"Brute";"Exploitation agricole";714601;266408
+2026;5;"Brute";"Commerce";446410;311159
+2026;5;"Brute";"Commerce - hotels";35390;48176
+2026;5;"Brute";"Services publics";243330;256885
+2026;5;"Brute";"Autres activites";978646;593226
+2026;5;"Brute";"Autres activites - industrie";333890;186427
+2026;5;"Brute";"Autres activites - entrepot";449283;280331
+2026;5;"Brute";"Autres activites - bureau";193824;126201
+2026;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2667786;1487283
+2026;5;"CVS-CJO";"Exploitation agricole";757938;294963
+2026;5;"CVS-CJO";"Commerce";522648;277673
+2026;5;"CVS-CJO";"Commerce - hotels";35390;48176
+2026;5;"CVS-CJO";"Services publics";255295;257965
+2026;5;"CVS-CJO";"Autres activites";1131905;656682
+2026;5;"CVS-CJO";"Autres activites - industrie";422969;194637
+2026;5;"CVS-CJO";"Autres activites - entrepot";506890;344685
+2026;5;"CVS-CJO";"Autres activites - bureau";222699;161410
+2026;4;"Brute";"Ensemble des locaux non-residentiels";2772010;1721511
+2026;4;"Brute";"Exploitation agricole";650920;222274
+2026;4;"Brute";"Commerce";432533;374946
+2026;4;"Brute";"Commerce - hotels";37202;91169
+2026;4;"Brute";"Services publics";472195;343223
+2026;4;"Brute";"Autres activites";1216363;781068
+2026;4;"Brute";"Autres activites - industrie";454903;172839
+2026;4;"Brute";"Autres activites - entrepot";533932;368637
+2026;4;"Brute";"Autres activites - bureau";223598;238599
+2026;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2986763;1831384
+2026;4;"CVS-CJO";"Exploitation agricole";632526;283433
+2026;4;"CVS-CJO";"Commerce";437534;371669
+2026;4;"CVS-CJO";"Commerce - hotels";37202;91169
+2026;4;"CVS-CJO";"Services publics";539277;387587
+2026;4;"CVS-CJO";"Autres activites";1377426;788695
+2026;4;"CVS-CJO";"Autres activites - industrie";457661;203589
+2026;4;"CVS-CJO";"Autres activites - entrepot";695798;390127
+2026;4;"CVS-CJO";"Autres activites - bureau";271642;223259
+2026;3;"Brute";"Ensemble des locaux non-residentiels";3306006;2055407
+2026;3;"Brute";"Exploitation agricole";857974;391415
+2026;3;"Brute";"Commerce";702529;368134
+2026;3;"Brute";"Commerce - hotels";82920;37420
+2026;3;"Brute";"Services publics";302493;431857
+2026;3;"Brute";"Autres activites";1443006;864001
+2026;3;"Brute";"Autres activites - industrie";495119;261921
+2026;3;"Brute";"Autres activites - entrepot";628055;375024
+2026;3;"Brute";"Autres activites - bureau";317712;226421
+2026;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3270685;1885224
+2026;3;"CVS-CJO";"Exploitation agricole";802650;375190
+2026;3;"CVS-CJO";"Commerce";714561;349041
+2026;3;"CVS-CJO";"Commerce - hotels";82920;37420
+2026;3;"CVS-CJO";"Services publics";322457;392026
+2026;3;"CVS-CJO";"Autres activites";1431017;768967
+2026;3;"CVS-CJO";"Autres activites - industrie";418433;200392
+2026;3;"CVS-CJO";"Autres activites - entrepot";614772;371575
+2026;3;"CVS-CJO";"Autres activites - bureau";287372;177701
+2026;2;"Brute";"Ensemble des locaux non-residentiels";2874112;1462451
+2026;2;"Brute";"Exploitation agricole";540819;247983
+2026;2;"Brute";"Commerce";536097;281576
+2026;2;"Brute";"Commerce - hotels";67550;34367
+2026;2;"Brute";"Services publics";403308;328839
+2026;2;"Brute";"Autres activites";1393889;604053
+2026;2;"Brute";"Autres activites - industrie";393374;141031
+2026;2;"Brute";"Autres activites - entrepot";740828;293091
+2026;2;"Brute";"Autres activites - bureau";258375;169931
+2026;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3198806;1491516
+2026;2;"CVS-CJO";"Exploitation agricole";684494;207328
+2026;2;"CVS-CJO";"Commerce";607693;282917
+2026;2;"CVS-CJO";"Commerce - hotels";67550;34367
+2026;2;"CVS-CJO";"Services publics";455549;334862
+2026;2;"CVS-CJO";"Autres activites";1451070;666409
+2026;2;"CVS-CJO";"Autres activites - industrie";491632;151831
+2026;2;"CVS-CJO";"Autres activites - entrepot";670964;330649
+2026;2;"CVS-CJO";"Autres activites - bureau";302101;184533
+2026;1;"Brute";"Ensemble des locaux non-residentiels";2476394;1797533
+2026;1;"Brute";"Exploitation agricole";721735;300615
+2026;1;"Brute";"Commerce";461401;325925
+2026;1;"Brute";"Commerce - hotels";43082;37782
+2026;1;"Brute";"Services publics";355505;443844
+2026;1;"Brute";"Autres activites";937756;727149
+2026;1;"Brute";"Autres activites - industrie";246435;184662
+2026;1;"Brute";"Autres activites - entrepot";444503;375303
+2026;1;"Brute";"Autres activites - bureau";246817;167185
+2026;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2726015;1845885
+2026;1;"CVS-CJO";"Exploitation agricole";768350;347215
+2026;1;"CVS-CJO";"Commerce";535227;333584
+2026;1;"CVS-CJO";"Commerce - hotels";43082;37782
+2026;1;"CVS-CJO";"Services publics";407286;430602
+2026;1;"CVS-CJO";"Autres activites";1015152;734484
+2026;1;"CVS-CJO";"Autres activites - industrie";247588;197420
+2026;1;"CVS-CJO";"Autres activites - entrepot";482041;312924
+2026;1;"CVS-CJO";"Autres activites - bureau";268483;175645
+2025;12;"Brute";"Ensemble des locaux non-residentiels";2963967;1729063
+2025;12;"Brute";"Exploitation agricole";580808;268038
+2025;12;"Brute";"Commerce";682596;390505
+2025;12;"Brute";"Commerce - hotels";142167;51871
+2025;12;"Brute";"Services publics";605987;410906
+2025;12;"Brute";"Autres activites";1094574;659614
+2025;12;"Brute";"Autres activites - industrie";320957;132539
+2025;12;"Brute";"Autres activites - entrepot";483233;280386
+2025;12;"Brute";"Autres activites - bureau";290384;246689
+2025;12;"CVS-CJO";"Ensemble des locaux non-residentiels";2953053;1872378
+2025;12;"CVS-CJO";"Exploitation agricole";689409;287862
+2025;12;"CVS-CJO";"Commerce";614145;349590
+2025;12;"CVS-CJO";"Commerce - hotels";142167;51871
+2025;12;"CVS-CJO";"Services publics";574194;410879
+2025;12;"CVS-CJO";"Autres activites";1075305;824047
+2025;12;"CVS-CJO";"Autres activites - industrie";370138;168851
+2025;12;"CVS-CJO";"Autres activites - entrepot";475975;357882
+2025;12;"CVS-CJO";"Autres activites - bureau";261426;243922
+2025;11;"Brute";"Ensemble des locaux non-residentiels";2823253;1779256
+2025;11;"Brute";"Exploitation agricole";686771;372699
+2025;11;"Brute";"Commerce";514104;331765
+2025;11;"Brute";"Commerce - hotels";93313;43849
+2025;11;"Brute";"Services publics";485351;296177
+2025;11;"Brute";"Autres activites";1137028;778615
+2025;11;"Brute";"Autres activites - industrie";372534;160828
+2025;11;"Brute";"Autres activites - entrepot";510646;437565
+2025;11;"Brute";"Autres activites - bureau";253665;180222
+2025;11;"CVS-CJO";"Ensemble des locaux non-residentiels";2927569;1760591
+2025;11;"CVS-CJO";"Exploitation agricole";706846;387532
+2025;11;"CVS-CJO";"Commerce";555282;339634
+2025;11;"CVS-CJO";"Commerce - hotels";93313;43849
+2025;11;"CVS-CJO";"Services publics";475155;322386
+2025;11;"CVS-CJO";"Autres activites";1190286;711039
+2025;11;"CVS-CJO";"Autres activites - industrie";403941;161672
+2025;11;"CVS-CJO";"Autres activites - entrepot";529594;396865
+2025;11;"CVS-CJO";"Autres activites - bureau";263554;161333
+2025;10;"Brute";"Ensemble des locaux non-residentiels";3604680;1764257
+2025;10;"Brute";"Exploitation agricole";832959;367012
+2025;10;"Brute";"Commerce";578717;334479
+2025;10;"Brute";"Commerce - hotels";72635;40611
+2025;10;"Brute";"Services publics";619091;367906
+2025;10;"Brute";"Autres activites";1573914;694860
+2025;10;"Brute";"Autres activites - industrie";691635;227957
+2025;10;"Brute";"Autres activites - entrepot";592420;300022
+2025;10;"Brute";"Autres activites - bureau";289859;166881
+2025;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3221938;1746613
+2025;10;"CVS-CJO";"Exploitation agricole";796132;352806
+2025;10;"CVS-CJO";"Commerce";541711;358100
+2025;10;"CVS-CJO";"Commerce - hotels";72635;40611
+2025;10;"CVS-CJO";"Services publics";497822;362392
+2025;10;"CVS-CJO";"Autres activites";1386273;673315
+2025;10;"CVS-CJO";"Autres activites - industrie";527633;203362
+2025;10;"CVS-CJO";"Autres activites - entrepot";630888;290379
+2025;10;"CVS-CJO";"Autres activites - bureau";251025;145916
+2025;9;"Brute";"Ensemble des locaux non-residentiels";3750420;2145084
+2025;9;"Brute";"Exploitation agricole";763434;463972
+2025;9;"Brute";"Commerce";709284;384359
+2025;9;"Brute";"Commerce - hotels";71545;41439
+2025;9;"Brute";"Services publics";828963;459260
+2025;9;"Brute";"Autres activites";1448740;837493
+2025;9;"Brute";"Autres activites - industrie";359023;193957
+2025;9;"Brute";"Autres activites - entrepot";815543;413369
+2025;9;"Brute";"Autres activites - bureau";274174;230167
+2025;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3287046;1934878
+2025;9;"CVS-CJO";"Exploitation agricole";681841;408858
+2025;9;"CVS-CJO";"Commerce";614444;361588
+2025;9;"CVS-CJO";"Commerce - hotels";71545;41439
+2025;9;"CVS-CJO";"Services publics";755268;424177
+2025;9;"CVS-CJO";"Autres activites";1235493;740255
+2025;9;"CVS-CJO";"Autres activites - industrie";316754;155854
+2025;9;"CVS-CJO";"Autres activites - entrepot";646711;354728
+2025;9;"CVS-CJO";"Autres activites - bureau";228160;245496
+2025;8;"Brute";"Ensemble des locaux non-residentiels";2842783;1445449
+2025;8;"Brute";"Exploitation agricole";633700;295801
+2025;8;"Brute";"Commerce";516111;229676
+2025;8;"Brute";"Commerce - hotels";56042;19516
+2025;8;"Brute";"Services publics";549621;269656
+2025;8;"Brute";"Autres activites";1143352;650313
+2025;8;"Brute";"Autres activites - industrie";364241;122755
+2025;8;"Brute";"Autres activites - entrepot";546525;393643
+2025;8;"Brute";"Autres activites - bureau";232586;133915
+2025;8;"CVS-CJO";"Ensemble des locaux non-residentiels";2988155;1663192
+2025;8;"CVS-CJO";"Exploitation agricole";710884;314786
+2025;8;"CVS-CJO";"Commerce";564774;273222
+2025;8;"CVS-CJO";"Commerce - hotels";56042;19516
+2025;8;"CVS-CJO";"Services publics";557407;292769
+2025;8;"CVS-CJO";"Autres activites";1155090;782415
+2025;8;"CVS-CJO";"Autres activites - industrie";384125;176570
+2025;8;"CVS-CJO";"Autres activites - entrepot";581041;456532
+2025;8;"CVS-CJO";"Autres activites - bureau";266057;174370
+2025;7;"Brute";"Ensemble des locaux non-residentiels";3630672;1903398
+2025;7;"Brute";"Exploitation agricole";894486;411208
+2025;7;"Brute";"Commerce";660395;308029
+2025;7;"Brute";"Commerce - hotels";137065;52978
+2025;7;"Brute";"Services publics";666653;282569
+2025;7;"Brute";"Autres activites";1409134;901592
+2025;7;"Brute";"Autres activites - industrie";355920;206721
+2025;7;"Brute";"Autres activites - entrepot";719252;505799
+2025;7;"Brute";"Autres activites - bureau";333962;189072
+2025;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3211070;1750878
+2025;7;"CVS-CJO";"Exploitation agricole";761357;347153
+2025;7;"CVS-CJO";"Commerce";586840;323683
+2025;7;"CVS-CJO";"Commerce - hotels";137065;52978
+2025;7;"CVS-CJO";"Services publics";637357;273556
+2025;7;"CVS-CJO";"Autres activites";1225516;806486
+2025;7;"CVS-CJO";"Autres activites - industrie";326261;186243
+2025;7;"CVS-CJO";"Autres activites - entrepot";590729;475374
+2025;7;"CVS-CJO";"Autres activites - bureau";295315;193697
+2025;6;"Brute";"Ensemble des locaux non-residentiels";2967740;1678840
+2025;6;"Brute";"Exploitation agricole";751562;344901
+2025;6;"Brute";"Commerce";509476;341621
+2025;6;"Brute";"Commerce - hotels";63054;57340
+2025;6;"Brute";"Services publics";520910;328903
+2025;6;"Brute";"Autres activites";1185796;663415
+2025;6;"Brute";"Autres activites - industrie";402761;241130
+2025;6;"Brute";"Autres activites - entrepot";543324;219760
+2025;6;"Brute";"Autres activites - bureau";239711;202525
+2025;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3005386;1612217
+2025;6;"CVS-CJO";"Exploitation agricole";736001;325181
+2025;6;"CVS-CJO";"Commerce";508463;327784
+2025;6;"CVS-CJO";"Commerce - hotels";63054;57340
+2025;6;"CVS-CJO";"Services publics";506110;302100
+2025;6;"CVS-CJO";"Autres activites";1254812;657152
+2025;6;"CVS-CJO";"Autres activites - industrie";413977;228472
+2025;6;"CVS-CJO";"Autres activites - entrepot";559165;199536
+2025;6;"CVS-CJO";"Autres activites - bureau";239909;183770
+2025;5;"Brute";"Ensemble des locaux non-residentiels";2750510;1557660
+2025;5;"Brute";"Exploitation agricole";714644;254559
+2025;5;"Brute";"Commerce";492964;316348
+2025;5;"Brute";"Commerce - hotels";64433;38260
+2025;5;"Brute";"Services publics";450293;276327
+2025;5;"Brute";"Autres activites";1092612;710426
+2025;5;"Brute";"Autres activites - industrie";291468;214658
+2025;5;"Brute";"Autres activites - entrepot";574483;305240
+2025;5;"Brute";"Autres activites - bureau";226661;190528
+2025;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2906799;1612712
+2025;5;"CVS-CJO";"Exploitation agricole";686557;281534
+2025;5;"CVS-CJO";"Commerce";520951;279160
+2025;5;"CVS-CJO";"Commerce - hotels";64433;38260
+2025;5;"CVS-CJO";"Services publics";472031;278359
+2025;5;"CVS-CJO";"Autres activites";1227260;773659
+2025;5;"CVS-CJO";"Autres activites - industrie";368808;223700
+2025;5;"CVS-CJO";"Autres activites - entrepot";648116;357887
+2025;5;"CVS-CJO";"Autres activites - bureau";259818;228119
+2025;4;"Brute";"Ensemble des locaux non-residentiels";2868843;1492441
+2025;4;"Brute";"Exploitation agricole";720330;298763
+2025;4;"Brute";"Commerce";557519;342062
+2025;4;"Brute";"Commerce - hotels";128846;69270
+2025;4;"Brute";"Services publics";476621;238669
+2025;4;"Brute";"Autres activites";1114375;612947
+2025;4;"Brute";"Autres activites - industrie";397803;142843
+2025;4;"Brute";"Autres activites - entrepot";450489;302123
+2025;4;"Brute";"Autres activites - bureau";266083;167981
+2025;4;"CVS-CJO";"Ensemble des locaux non-residentiels";3128831;1584520
+2025;4;"CVS-CJO";"Exploitation agricole";702958;342082
+2025;4;"CVS-CJO";"Commerce";574521;329651
+2025;4;"CVS-CJO";"Commerce - hotels";128846;69270
+2025;4;"CVS-CJO";"Services publics";550425;263133
+2025;4;"CVS-CJO";"Autres activites";1300927;649654
+2025;4;"CVS-CJO";"Autres activites - industrie";404343;168221
+2025;4;"CVS-CJO";"Autres activites - entrepot";591347;318664
+2025;4;"CVS-CJO";"Autres activites - bureau";326932;163424
+2025;3;"Brute";"Ensemble des locaux non-residentiels";2966207;1809771
+2025;3;"Brute";"Exploitation agricole";597002;283615
+2025;3;"Brute";"Commerce";517229;331357
+2025;3;"Brute";"Commerce - hotels";77591;29684
+2025;3;"Brute";"Services publics";510200;341185
+2025;3;"Brute";"Autres activites";1341776;853608
+2025;3;"Brute";"Autres activites - industrie";302274;294024
+2025;3;"Brute";"Autres activites - entrepot";766355;326319
+2025;3;"Brute";"Autres activites - bureau";273147;233265
+2025;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3012188;1680172
+2025;3;"CVS-CJO";"Exploitation agricole";586747;268790
+2025;3;"CVS-CJO";"Commerce";552516;313317
+2025;3;"CVS-CJO";"Commerce - hotels";77591;29684
+2025;3;"CVS-CJO";"Services publics";537774;307053
+2025;3;"CVS-CJO";"Autres activites";1335151;791012
+2025;3;"CVS-CJO";"Autres activites - industrie";250704;225771
+2025;3;"CVS-CJO";"Autres activites - entrepot";743604;330983
+2025;3;"CVS-CJO";"Autres activites - bureau";248535;198160
+2025;2;"Brute";"Ensemble des locaux non-residentiels";2927480;1566342
+2025;2;"Brute";"Exploitation agricole";600681;348654
+2025;2;"Brute";"Commerce";458874;279249
+2025;2;"Brute";"Commerce - hotels";93553;33467
+2025;2;"Brute";"Services publics";425143;286941
+2025;2;"Brute";"Autres activites";1442785;651498
+2025;2;"Brute";"Autres activites - industrie";295365;217293
+2025;2;"Brute";"Autres activites - entrepot";899417;261150
+2025;2;"Brute";"Autres activites - bureau";248003;173055
+2025;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3446162;1598706
+2025;2;"CVS-CJO";"Exploitation agricole";792330;297870
+2025;2;"CVS-CJO";"Commerce";542901;284224
+2025;2;"CVS-CJO";"Commerce - hotels";93553;33467
+2025;2;"CVS-CJO";"Services publics";502052;293019
+2025;2;"CVS-CJO";"Autres activites";1608879;723593
+2025;2;"CVS-CJO";"Autres activites - industrie";376035;229673
+2025;2;"CVS-CJO";"Autres activites - entrepot";825542;296976
+2025;2;"CVS-CJO";"Autres activites - bureau";294735;188209
+2025;1;"Brute";"Ensemble des locaux non-residentiels";3172535;1967773
+2025;1;"Brute";"Exploitation agricole";862379;310351
+2025;1;"Brute";"Commerce";494505;331840
+2025;1;"Brute";"Commerce - hotels";70341;67254
+2025;1;"Brute";"Services publics";466329;361693
+2025;1;"Brute";"Autres activites";1349321;963889
+2025;1;"Brute";"Autres activites - industrie";437692;228843
+2025;1;"Brute";"Autres activites - entrepot";624998;514790
+2025;1;"Brute";"Autres activites - bureau";286631;220256
+2025;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3472848;2033608
+2025;1;"CVS-CJO";"Exploitation agricole";900143;378680
+2025;1;"CVS-CJO";"Commerce";552289;366411
+2025;1;"CVS-CJO";"Commerce - hotels";70341;67254
+2025;1;"CVS-CJO";"Services publics";544135;374407
+2025;1;"CVS-CJO";"Autres activites";1476281;914110
+2025;1;"CVS-CJO";"Autres activites - industrie";450690;245878
+2025;1;"CVS-CJO";"Autres activites - entrepot";674085;420559
+2025;1;"CVS-CJO";"Autres activites - bureau";313961;216969
+2024;12;"Brute";"Ensemble des locaux non-residentiels";3744894;1444852
+2024;12;"Brute";"Exploitation agricole";520853;308497
+2024;12;"Brute";"Commerce";563721;345790
+2024;12;"Brute";"Commerce - hotels";58450;39621
+2024;12;"Brute";"Services publics";525537;261843
+2024;12;"Brute";"Autres activites";2134780;528722
+2024;12;"Brute";"Autres activites - industrie";988628;80180
+2024;12;"Brute";"Autres activites - entrepot";841721;284684
+2024;12;"Brute";"Autres activites - bureau";304431;163858
+2024;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3960824;1515176
+2024;12;"CVS-CJO";"Exploitation agricole";675483;315757
+2024;12;"CVS-CJO";"Commerce";560342;308321
+2024;12;"CVS-CJO";"Commerce - hotels";58450;39621
+2024;12;"CVS-CJO";"Services publics";522556;267129
+2024;12;"CVS-CJO";"Autres activites";2202443;623969
+2024;12;"CVS-CJO";"Autres activites - industrie";1152583;99385
+2024;12;"CVS-CJO";"Autres activites - entrepot";830612;358042
+2024;12;"CVS-CJO";"Autres activites - bureau";269978;164139
+2024;11;"Brute";"Ensemble des locaux non-residentiels";2899880;1545990
+2024;11;"Brute";"Exploitation agricole";683516;192738
+2024;11;"Brute";"Commerce";459000;311853
+2024;11;"Brute";"Commerce - hotels";74698;43289
+2024;11;"Brute";"Services publics";469435;297073
+2024;11;"Brute";"Autres activites";1287933;744321
+2024;11;"Brute";"Autres activites - industrie";317110;205758
+2024;11;"Brute";"Autres activites - entrepot";684226;267464
+2024;11;"Brute";"Autres activites - bureau";286597;271099
+2024;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3009241;1503059
+2024;11;"CVS-CJO";"Exploitation agricole";707915;189598
+2024;11;"CVS-CJO";"Commerce";498019;296354
+2024;11;"CVS-CJO";"Commerce - hotels";74698;43289
+2024;11;"CVS-CJO";"Services publics";459096;303947
+2024;11;"CVS-CJO";"Autres activites";1344211;713160
+2024;11;"CVS-CJO";"Autres activites - industrie";335569;206871
+2024;11;"CVS-CJO";"Autres activites - entrepot";707334;240234
+2024;11;"CVS-CJO";"Autres activites - bureau";292186;277904
+2024;10;"Brute";"Ensemble des locaux non-residentiels";3353474;1739563
+2024;10;"Brute";"Exploitation agricole";655334;342819
+2024;10;"Brute";"Commerce";541772;270985
+2024;10;"Brute";"Commerce - hotels";78391;44238
+2024;10;"Brute";"Services publics";562304;334798
+2024;10;"Brute";"Autres activites";1594059;790960
+2024;10;"Brute";"Autres activites - industrie";526789;209918
+2024;10;"Brute";"Autres activites - entrepot";578308;371337
+2024;10;"Brute";"Autres activites - bureau";488962;209705
+2024;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3018173;1716864
+2024;10;"CVS-CJO";"Exploitation agricole";629697;324114
+2024;10;"CVS-CJO";"Commerce";505452;283128
+2024;10;"CVS-CJO";"Commerce - hotels";78391;44238
+2024;10;"CVS-CJO";"Services publics";457180;316450
+2024;10;"CVS-CJO";"Autres activites";1425844;793172
+2024;10;"CVS-CJO";"Autres activites - industrie";401348;185334
+2024;10;"CVS-CJO";"Autres activites - entrepot";621530;363511
+2024;10;"CVS-CJO";"Autres activites - bureau";421294;191949
+2024;9;"Brute";"Ensemble des locaux non-residentiels";3508269;1811996
+2024;9;"Brute";"Exploitation agricole";626688;331976
+2024;9;"Brute";"Commerce";633727;289706
+2024;9;"Brute";"Commerce - hotels";130078;44518
+2024;9;"Brute";"Services publics";491483;369605
+2024;9;"Brute";"Autres activites";1756369;820708
+2024;9;"Brute";"Autres activites - industrie";512670;357840
+2024;9;"Brute";"Autres activites - entrepot";836786;297054
+2024;9;"Brute";"Autres activites - bureau";406913;165814
+2024;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3025232;1626422
+2024;9;"CVS-CJO";"Exploitation agricole";560531;288336
+2024;9;"CVS-CJO";"Commerce";564345;273975
+2024;9;"CVS-CJO";"Commerce - hotels";130078;44518
+2024;9;"CVS-CJO";"Services publics";439118;348024
+2024;9;"CVS-CJO";"Autres activites";1461238;716087
+2024;9;"CVS-CJO";"Autres activites - industrie";455688;292978
+2024;9;"CVS-CJO";"Autres activites - entrepot";673784;253678
+2024;9;"CVS-CJO";"Autres activites - bureau";337845;168937
+2024;8;"Brute";"Ensemble des locaux non-residentiels";3194092;1092790
+2024;8;"Brute";"Exploitation agricole";542988;221590
+2024;8;"Brute";"Commerce";473361;183817
+2024;8;"Brute";"Commerce - hotels";96301;12077
+2024;8;"Brute";"Services publics";442116;207736
+2024;8;"Brute";"Autres activites";1735626;479647
+2024;8;"Brute";"Autres activites - industrie";570172;154548
+2024;8;"Brute";"Autres activites - entrepot";906696;186648
+2024;8;"Brute";"Autres activites - bureau";258758;138451
+2024;8;"CVS-CJO";"Ensemble des locaux non-residentiels";3182133;1292954
+2024;8;"CVS-CJO";"Exploitation agricole";568142;256153
+2024;8;"CVS-CJO";"Commerce";483784;234022
+2024;8;"CVS-CJO";"Commerce - hotels";96301;12077
+2024;8;"CVS-CJO";"Services publics";436986;231709
+2024;8;"CVS-CJO";"Autres activites";1693221;571070
+2024;8;"CVS-CJO";"Autres activites - industrie";596083;217457
+2024;8;"CVS-CJO";"Autres activites - entrepot";958291;221416
+2024;8;"CVS-CJO";"Autres activites - bureau";298045;171425
+2024;7;"Brute";"Ensemble des locaux non-residentiels";3663465;1895527
+2024;7;"Brute";"Exploitation agricole";780152;313172
+2024;7;"Brute";"Commerce";716866;354957
+2024;7;"Brute";"Commerce - hotels";117987;57687
+2024;7;"Brute";"Services publics";579214;364479
+2024;7;"Brute";"Autres activites";1587233;862919
+2024;7;"Brute";"Autres activites - industrie";407112;288275
+2024;7;"Brute";"Autres activites - entrepot";835794;381874
+2024;7;"Brute";"Autres activites - bureau";344327;192770
+2024;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3167827;1798802
+2024;7;"CVS-CJO";"Exploitation agricole";644609;271682
+2024;7;"CVS-CJO";"Commerce";607994;370770
+2024;7;"CVS-CJO";"Commerce - hotels";117987;57687
+2024;7;"CVS-CJO";"Services publics";548525;354717
+2024;7;"CVS-CJO";"Autres activites";1366699;801633
+2024;7;"CVS-CJO";"Autres activites - industrie";374452;268975
+2024;7;"CVS-CJO";"Autres activites - entrepot";686749;360887
+2024;7;"CVS-CJO";"Autres activites - bureau";305428;197307
+2024;6;"Brute";"Ensemble des locaux non-residentiels";3138157;1709010
+2024;6;"Brute";"Exploitation agricole";703456;313545
+2024;6;"Brute";"Commerce";592806;282133
+2024;6;"Brute";"Commerce - hotels";87609;38351
+2024;6;"Brute";"Services publics";612090;373035
+2024;6;"Brute";"Autres activites";1229802;740297
+2024;6;"Brute";"Autres activites - industrie";322844;197473
+2024;6;"Brute";"Autres activites - entrepot";575998;344419
+2024;6;"Brute";"Autres activites - bureau";330960;198405
+2024;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3118988;1603895
+2024;6;"CVS-CJO";"Exploitation agricole";675253;290105
+2024;6;"CVS-CJO";"Commerce";583254;252497
+2024;6;"CVS-CJO";"Commerce - hotels";87609;38351
+2024;6;"CVS-CJO";"Services publics";588238;332138
+2024;6;"CVS-CJO";"Autres activites";1272243;729155
+2024;6;"CVS-CJO";"Autres activites - industrie";322069;187168
+2024;6;"CVS-CJO";"Autres activites - entrepot";577370;318494
+2024;6;"CVS-CJO";"Autres activites - bureau";332411;197910
+2024;5;"Brute";"Ensemble des locaux non-residentiels";2795807;1595799
+2024;5;"Brute";"Exploitation agricole";601568;230655
+2024;5;"Brute";"Commerce";497783;297434
+2024;5;"Brute";"Commerce - hotels";91797;33079
+2024;5;"Brute";"Services publics";513514;342994
+2024;5;"Brute";"Autres activites";1182937;724705
+2024;5;"Brute";"Autres activites - industrie";237531;327164
+2024;5;"Brute";"Autres activites - entrepot";619474;215171
+2024;5;"Brute";"Autres activites - bureau";325932;182370
+2024;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2950104;1623842
+2024;5;"CVS-CJO";"Exploitation agricole";587599;257590
+2024;5;"CVS-CJO";"Commerce";525313;270484
+2024;5;"CVS-CJO";"Commerce - hotels";91797;33079
+2024;5;"CVS-CJO";"Services publics";548557;357448
+2024;5;"CVS-CJO";"Autres activites";1288635;738320
+2024;5;"CVS-CJO";"Autres activites - industrie";294084;340166
+2024;5;"CVS-CJO";"Autres activites - entrepot";701521;247227
+2024;5;"CVS-CJO";"Autres activites - bureau";375569;204913
+2024;4;"Brute";"Ensemble des locaux non-residentiels";2617575;1414197
+2024;4;"Brute";"Exploitation agricole";641507;240652
+2024;4;"Brute";"Commerce";534740;256386
+2024;4;"Brute";"Commerce - hotels";65096;30599
+2024;4;"Brute";"Services publics";424608;301749
+2024;4;"Brute";"Autres activites";1016725;615410
+2024;4;"Brute";"Autres activites - industrie";326698;187599
+2024;4;"Brute";"Autres activites - entrepot";449655;276066
+2024;4;"Brute";"Autres activites - bureau";240372;151745
+2024;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2911563;1512559
+2024;4;"CVS-CJO";"Exploitation agricole";621715;280675
+2024;4;"CVS-CJO";"Commerce";557867;257251
+2024;4;"CVS-CJO";"Commerce - hotels";65096;30599
+2024;4;"CVS-CJO";"Services publics";494202;317845
+2024;4;"CVS-CJO";"Autres activites";1237779;656788
+2024;4;"CVS-CJO";"Autres activites - industrie";345053;218959
+2024;4;"CVS-CJO";"Autres activites - entrepot";596571;293710
+2024;4;"CVS-CJO";"Autres activites - bureau";297508;152671
+2024;3;"Brute";"Ensemble des locaux non-residentiels";3113531;1809070
+2024;3;"Brute";"Exploitation agricole";632469;327829
+2024;3;"Brute";"Commerce";565909;300474
+2024;3;"Brute";"Commerce - hotels";97433;19595
+2024;3;"Brute";"Services publics";476062;360915
+2024;3;"Brute";"Autres activites";1439092;819852
+2024;3;"Brute";"Autres activites - industrie";398735;205289
+2024;3;"Brute";"Autres activites - entrepot";627877;320790
+2024;3;"Brute";"Autres activites - bureau";412480;293774
+2024;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3114818;1705853
+2024;3;"CVS-CJO";"Exploitation agricole";613954;319262
+2024;3;"CVS-CJO";"Commerce";596065;282200
+2024;3;"CVS-CJO";"Commerce - hotels";97433;19595
+2024;3;"CVS-CJO";"Services publics";489759;342363
+2024;3;"CVS-CJO";"Autres activites";1415040;762028
+2024;3;"CVS-CJO";"Autres activites - industrie";324945;157498
+2024;3;"CVS-CJO";"Autres activites - entrepot";603365;323126
+2024;3;"CVS-CJO";"Autres activites - bureau";377235;245201
+2024;2;"Brute";"Ensemble des locaux non-residentiels";2743448;2026748
+2024;2;"Brute";"Exploitation agricole";480714;395062
+2024;2;"Brute";"Commerce";520089;302211
+2024;2;"Brute";"Commerce - hotels";124666;35255
+2024;2;"Brute";"Services publics";519262;289224
+2024;2;"Brute";"Autres activites";1223382;1040251
+2024;2;"Brute";"Autres activites - industrie";215095;282766
+2024;2;"Brute";"Autres activites - entrepot";698582;549952
+2024;2;"Brute";"Autres activites - bureau";309704;207533
+2024;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3095880;2075210
+2024;2;"CVS-CJO";"Exploitation agricole";587597;368933
+2024;2;"CVS-CJO";"Commerce";572569;337787
+2024;2;"CVS-CJO";"Commerce - hotels";124666;35255
+2024;2;"CVS-CJO";"Services publics";584017;318501
+2024;2;"CVS-CJO";"Autres activites";1351697;1049989
+2024;2;"CVS-CJO";"Autres activites - industrie";284241;295209
+2024;2;"CVS-CJO";"Autres activites - entrepot";642691;620713
+2024;2;"CVS-CJO";"Autres activites - bureau";368095;215184
+2024;1;"Brute";"Ensemble des locaux non-residentiels";2731272;1523383
+2024;1;"Brute";"Exploitation agricole";458141;214404
+2024;1;"Brute";"Commerce";476080;304542
+2024;1;"Brute";"Commerce - hotels";44227;49308
+2024;1;"Brute";"Services publics";398774;296349
+2024;1;"Brute";"Autres activites";1398278;708080
+2024;1;"Brute";"Autres activites - industrie";344083;180492
+2024;1;"Brute";"Autres activites - entrepot";780719;294730
+2024;1;"Brute";"Autres activites - bureau";273476;232858
+2024;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2974485;1569928
+2024;1;"CVS-CJO";"Exploitation agricole";480827;255137
+2024;1;"CVS-CJO";"Commerce";522899;318472
+2024;1;"CVS-CJO";"Commerce - hotels";44227;49308
+2024;1;"CVS-CJO";"Services publics";456230;299158
+2024;1;"CVS-CJO";"Autres activites";1514529;697161
+2024;1;"CVS-CJO";"Autres activites - industrie";366152;195698
+2024;1;"CVS-CJO";"Autres activites - entrepot";833069;237851
+2024;1;"CVS-CJO";"Autres activites - bureau";299579;242378
+2023;12;"Brute";"Ensemble des locaux non-residentiels";2975174;1433029
+2023;12;"Brute";"Exploitation agricole";470433;280939
+2023;12;"Brute";"Commerce";576277;270907
+2023;12;"Brute";"Commerce - hotels";72984;14776
+2023;12;"Brute";"Services publics";434028;266730
+2023;12;"Brute";"Autres activites";1494437;614300
+2023;12;"Brute";"Autres activites - industrie";296491;179454
+2023;12;"Brute";"Autres activites - entrepot";816395;234953
+2023;12;"Brute";"Autres activites - bureau";381551;199893
+2023;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3084992;1507254
+2023;12;"CVS-CJO";"Exploitation agricole";607562;277438
+2023;12;"CVS-CJO";"Commerce";579701;236232
+2023;12;"CVS-CJO";"Commerce - hotels";72984;14776
+2023;12;"CVS-CJO";"Services publics";416834;271138
+2023;12;"CVS-CJO";"Autres activites";1480895;722446
+2023;12;"CVS-CJO";"Autres activites - industrie";349003;216524
+2023;12;"CVS-CJO";"Autres activites - entrepot";808307;293177
+2023;12;"CVS-CJO";"Autres activites - bureau";337698;197173
+2023;11;"Brute";"Ensemble des locaux non-residentiels";2789639;2191366
+2023;11;"Brute";"Exploitation agricole";510046;260331
+2023;11;"Brute";"Commerce";551849;274506
+2023;11;"Brute";"Commerce - hotels";69318;30877
+2023;11;"Brute";"Services publics";504825;429661
+2023;11;"Brute";"Autres activites";1222918;1226788
+2023;11;"Brute";"Autres activites - industrie";299327;211012
+2023;11;"Brute";"Autres activites - entrepot";632024;714959
+2023;11;"Brute";"Autres activites - bureau";291567;300817
+2023;11;"CVS-CJO";"Ensemble des locaux non-residentiels";2744426;2132597
+2023;11;"CVS-CJO";"Exploitation agricole";475435;287432
+2023;11;"CVS-CJO";"Commerce";540461;286602
+2023;11;"CVS-CJO";"Commerce - hotels";69318;30877
+2023;11;"CVS-CJO";"Services publics";484764;477611
+2023;11;"CVS-CJO";"Autres activites";1243766;1080952
+2023;11;"CVS-CJO";"Autres activites - industrie";307189;213246
+2023;11;"CVS-CJO";"Autres activites - entrepot";657949;639341
+2023;11;"CVS-CJO";"Autres activites - bureau";291934;259422
+2023;10;"Brute";"Ensemble des locaux non-residentiels";3534998;1987809
+2023;10;"Brute";"Exploitation agricole";772448;329118
+2023;10;"Brute";"Commerce";582982;302046
+2023;10;"Brute";"Commerce - hotels";73604;25757
+2023;10;"Brute";"Services publics";689944;332816
+2023;10;"Brute";"Autres activites";1489626;1023606
+2023;10;"Brute";"Autres activites - industrie";462063;302525
+2023;10;"Brute";"Autres activites - entrepot";635625;427813
+2023;10;"Brute";"Autres activites - bureau";391938;293268
+2023;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3186637;1943685
+2023;10;"CVS-CJO";"Exploitation agricole";766727;299039
+2023;10;"CVS-CJO";"Commerce";549729;308889
+2023;10;"CVS-CJO";"Commerce - hotels";73604;25757
+2023;10;"CVS-CJO";"Services publics";549738;300475
+2023;10;"CVS-CJO";"Autres activites";1320443;1035282
+2023;10;"CVS-CJO";"Autres activites - industrie";355284;263566
+2023;10;"CVS-CJO";"Autres activites - entrepot";683576;423224
+2023;10;"CVS-CJO";"Autres activites - bureau";334972;256917
+2023;9;"Brute";"Ensemble des locaux non-residentiels";3593239;1943765
+2023;9;"Brute";"Exploitation agricole";783562;337931
+2023;9;"Brute";"Commerce";639668;309168
+2023;9;"Brute";"Commerce - hotels";117755;72464
+2023;9;"Brute";"Services publics";522235;306046
+2023;9;"Brute";"Autres activites";1647777;990618
+2023;9;"Brute";"Autres activites - industrie";379862;338785
+2023;9;"Brute";"Autres activites - entrepot";879213;448911
+2023;9;"Brute";"Autres activites - bureau";388702;202922
+2023;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3151623;1778421
+2023;9;"CVS-CJO";"Exploitation agricole";701463;302209
+2023;9;"CVS-CJO";"Commerce";585159;289024
+2023;9;"CVS-CJO";"Commerce - hotels";117755;72464
+2023;9;"CVS-CJO";"Services publics";483308;287707
+2023;9;"CVS-CJO";"Autres activites";1381693;899481
+2023;9;"CVS-CJO";"Autres activites - industrie";330185;283293
+2023;9;"CVS-CJO";"Autres activites - entrepot";723492;383677
+2023;9;"CVS-CJO";"Autres activites - bureau";323446;221786
+2023;8;"Brute";"Ensemble des locaux non-residentiels";2806721;1472906
+2023;8;"Brute";"Exploitation agricole";565516;239043
+2023;8;"Brute";"Commerce";499990;303126
+2023;8;"Brute";"Commerce - hotels";109779;36484
+2023;8;"Brute";"Services publics";381907;265014
+2023;8;"Brute";"Autres activites";1359310;665723
+2023;8;"Brute";"Autres activites - industrie";327891;139584
+2023;8;"Brute";"Autres activites - entrepot";711189;320932
+2023;8;"Brute";"Autres activites - bureau";320230;205207
+2023;8;"CVS-CJO";"Ensemble des locaux non-residentiels";2769358;1735363
+2023;8;"CVS-CJO";"Exploitation agricole";569946;294195
+2023;8;"CVS-CJO";"Commerce";493717;368365
+2023;8;"CVS-CJO";"Commerce - hotels";109779;36484
+2023;8;"CVS-CJO";"Services publics";384911;290462
+2023;8;"CVS-CJO";"Autres activites";1320784;782341
+2023;8;"CVS-CJO";"Autres activites - industrie";334434;193252
+2023;8;"CVS-CJO";"Autres activites - entrepot";741056;389251
+2023;8;"CVS-CJO";"Autres activites - bureau";370618;242135
+2023;7;"Brute";"Ensemble des locaux non-residentiels";3609075;1741405
+2023;7;"Brute";"Exploitation agricole";568276;318784
+2023;7;"Brute";"Commerce";577463;258406
+2023;7;"Brute";"Commerce - hotels";87481;25363
+2023;7;"Brute";"Services publics";492714;315370
+2023;7;"Brute";"Autres activites";1970619;848839
+2023;7;"Brute";"Autres activites - industrie";570685;308555
+2023;7;"Brute";"Autres activites - entrepot";1002050;301569
+2023;7;"Brute";"Autres activites - bureau";397884;238715
+2023;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3326392;1649018
+2023;7;"CVS-CJO";"Exploitation agricole";559085;276890
+2023;7;"CVS-CJO";"Commerce";571827;263194
+2023;7;"CVS-CJO";"Commerce - hotels";87481;25363
+2023;7;"CVS-CJO";"Services publics";465590;293538
+2023;7;"CVS-CJO";"Autres activites";1729890;815396
+2023;7;"CVS-CJO";"Autres activites - industrie";529838;295412
+2023;7;"CVS-CJO";"Autres activites - entrepot";835262;285069
+2023;7;"CVS-CJO";"Autres activites - bureau";353602;263221
+2023;6;"Brute";"Ensemble des locaux non-residentiels";3336741;2109456
+2023;6;"Brute";"Exploitation agricole";581089;298480
+2023;6;"Brute";"Commerce";635600;434520
+2023;6;"Brute";"Commerce - hotels";55969;86424
+2023;6;"Brute";"Services publics";534801;370876
+2023;6;"Brute";"Autres activites";1585251;1005580
+2023;6;"Brute";"Autres activites - industrie";400128;270976
+2023;6;"Brute";"Autres activites - entrepot";816923;424162
+2023;6;"Brute";"Autres activites - bureau";368200;310442
+2023;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3134858;1975149
+2023;6;"CVS-CJO";"Exploitation agricole";488820;301430
+2023;6;"CVS-CJO";"Commerce";557836;416297
+2023;6;"CVS-CJO";"Commerce - hotels";55969;86424
+2023;6;"CVS-CJO";"Services publics";503392;353296
+2023;6;"CVS-CJO";"Autres activites";1584810;904126
+2023;6;"CVS-CJO";"Autres activites - industrie";387357;257683
+2023;6;"CVS-CJO";"Autres activites - entrepot";794568;395998
+2023;6;"CVS-CJO";"Autres activites - bureau";372966;277352
+2023;5;"Brute";"Ensemble des locaux non-residentiels";3057999;1485137
+2023;5;"Brute";"Exploitation agricole";460610;273907
+2023;5;"Brute";"Commerce";579272;306866
+2023;5;"Brute";"Commerce - hotels";92916;63640
+2023;5;"Brute";"Services publics";520456;318394
+2023;5;"Brute";"Autres activites";1497663;585827
+2023;5;"Brute";"Autres activites - industrie";454419;177463
+2023;5;"Brute";"Autres activites - entrepot";723169;226590
+2023;5;"Brute";"Autres activites - bureau";320075;181774
+2023;5;"CVS-CJO";"Ensemble des locaux non-residentiels";3227229;1478662
+2023;5;"CVS-CJO";"Exploitation agricole";454365;259886
+2023;5;"CVS-CJO";"Commerce";609027;258238
+2023;5;"CVS-CJO";"Commerce - hotels";92916;63640
+2023;5;"CVS-CJO";"Services publics";564137;316135
+2023;5;"CVS-CJO";"Autres activites";1599700;644403
+2023;5;"CVS-CJO";"Autres activites - industrie";561230;185726
+2023;5;"CVS-CJO";"Autres activites - entrepot";825388;258565
+2023;5;"CVS-CJO";"Autres activites - bureau";373274;214436
+2023;4;"Brute";"Ensemble des locaux non-residentiels";2574864;1725805
+2023;4;"Brute";"Exploitation agricole";477809;321719
+2023;4;"Brute";"Commerce";509225;235901
+2023;4;"Brute";"Commerce - hotels";56102;20804
+2023;4;"Brute";"Services publics";397645;317833
+2023;4;"Brute";"Autres activites";1190187;850352
+2023;4;"Brute";"Autres activites - industrie";336745;205850
+2023;4;"Brute";"Autres activites - entrepot";573406;373632
+2023;4;"Brute";"Autres activites - bureau";280036;270870
+2023;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2993101;1850707
+2023;4;"CVS-CJO";"Exploitation agricole";493737;355205
+2023;4;"CVS-CJO";"Commerce";570321;241616
+2023;4;"CVS-CJO";"Commerce - hotels";56102;20804
+2023;4;"CVS-CJO";"Services publics";452738;313611
+2023;4;"CVS-CJO";"Autres activites";1476305;940275
+2023;4;"CVS-CJO";"Autres activites - industrie";377721;237356
+2023;4;"CVS-CJO";"Autres activites - entrepot";756125;405161
+2023;4;"CVS-CJO";"Autres activites - bureau";348556;290671
+2023;3;"Brute";"Ensemble des locaux non-residentiels";3190386;2148214
+2023;3;"Brute";"Exploitation agricole";589964;330496
+2023;3;"Brute";"Commerce";545458;371971
+2023;3;"Brute";"Commerce - hotels";82033;81677
+2023;3;"Brute";"Services publics";492622;340886
+2023;3;"Brute";"Autres activites";1562342;1104832
+2023;3;"Brute";"Autres activites - industrie";524475;326961
+2023;3;"Brute";"Autres activites - entrepot";597998;443311
+2023;3;"Brute";"Autres activites - bureau";439869;334560
+2023;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3052875;2043162
+2023;3;"CVS-CJO";"Exploitation agricole";518035;341843
+2023;3;"CVS-CJO";"Commerce";522177;377237
+2023;3;"CVS-CJO";"Commerce - hotels";82033;81677
+2023;3;"CVS-CJO";"Services publics";500135;352285
+2023;3;"CVS-CJO";"Autres activites";1512528;971797
+2023;3;"CVS-CJO";"Autres activites - industrie";422698;250055
+2023;3;"CVS-CJO";"Autres activites - entrepot";570070;439402
+2023;3;"CVS-CJO";"Autres activites - bureau";402106;263607
+2023;2;"Brute";"Ensemble des locaux non-residentiels";2594563;1872558
+2023;2;"Brute";"Exploitation agricole";413905;403234
+2023;2;"Brute";"Commerce";539826;289618
+2023;2;"Brute";"Commerce - hotels";81312;31425
+2023;2;"Brute";"Services publics";437038;395221
+2023;2;"Brute";"Autres activites";1203794;784482
+2023;2;"Brute";"Autres activites - industrie";294641;183795
+2023;2;"Brute";"Autres activites - entrepot";614695;358082
+2023;2;"Brute";"Autres activites - bureau";294458;242605
+2023;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3058383;1876126
+2023;2;"CVS-CJO";"Exploitation agricole";534181;337822
+2023;2;"CVS-CJO";"Commerce";627616;294108
+2023;2;"CVS-CJO";"Commerce - hotels";81312;31425
+2023;2;"CVS-CJO";"Services publics";495553;389670
+2023;2;"CVS-CJO";"Autres activites";1401033;854526
+2023;2;"CVS-CJO";"Autres activites - industrie";398319;188939
+2023;2;"CVS-CJO";"Autres activites - entrepot";569243;398556
+2023;2;"CVS-CJO";"Autres activites - bureau";344691;268207
+2023;1;"Brute";"Ensemble des locaux non-residentiels";3029304;1882897
+2023;1;"Brute";"Exploitation agricole";611555;293785
+2023;1;"Brute";"Commerce";518785;363803
+2023;1;"Brute";"Commerce - hotels";81776;71858
+2023;1;"Brute";"Services publics";537752;345161
+2023;1;"Brute";"Autres activites";1361210;880148
+2023;1;"Brute";"Autres activites - industrie";305013;198252
+2023;1;"Brute";"Autres activites - entrepot";658741;452567
+2023;1;"Brute";"Autres activites - bureau";397456;229329
+2023;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3281858;1938166
+2023;1;"CVS-CJO";"Exploitation agricole";650742;333468
+2023;1;"CVS-CJO";"Commerce";564776;382964
+2023;1;"CVS-CJO";"Commerce - hotels";81776;71858
+2023;1;"CVS-CJO";"Services publics";607080;370389
+2023;1;"CVS-CJO";"Autres activites";1459260;851345
+2023;1;"CVS-CJO";"Autres activites - industrie";333014;216776
+2023;1;"CVS-CJO";"Autres activites - entrepot";697065;357437
+2023;1;"CVS-CJO";"Autres activites - bureau";431016;239980
+2022;12;"Brute";"Ensemble des locaux non-residentiels";2987645;1923282
+2022;12;"Brute";"Exploitation agricole";534471;344975
+2022;12;"Brute";"Commerce";525809;429055
+2022;12;"Brute";"Commerce - hotels";76228;82816
+2022;12;"Brute";"Services publics";511566;361990
+2022;12;"Brute";"Autres activites";1415794;787262
+2022;12;"Brute";"Autres activites - industrie";344526;222222
+2022;12;"Brute";"Autres activites - entrepot";656995;248171
+2022;12;"Brute";"Autres activites - bureau";414273;316869
+2022;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3087186;2020627
+2022;12;"CVS-CJO";"Exploitation agricole";635351;354843
+2022;12;"CVS-CJO";"Commerce";499102;408479
+2022;12;"CVS-CJO";"Commerce - hotels";76228;82816
+2022;12;"CVS-CJO";"Services publics";511963;382884
+2022;12;"CVS-CJO";"Autres activites";1440770;874421
+2022;12;"CVS-CJO";"Autres activites - industrie";405318;262797
+2022;12;"CVS-CJO";"Autres activites - entrepot";657180;305716
+2022;12;"CVS-CJO";"Autres activites - bureau";369532;319601
+2022;11;"Brute";"Ensemble des locaux non-residentiels";3759929;2011653
+2022;11;"Brute";"Exploitation agricole";646477;340724
+2022;11;"Brute";"Commerce";606610;365714
+2022;11;"Brute";"Commerce - hotels";103442;40132
+2022;11;"Brute";"Services publics";547858;327498
+2022;11;"Brute";"Autres activites";1958985;977707
+2022;11;"Brute";"Autres activites - industrie";445693;289530
+2022;11;"Brute";"Autres activites - entrepot";1078975;439756
+2022;11;"Brute";"Autres activites - bureau";434317;248422
+2022;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3792605;1938957
+2022;11;"CVS-CJO";"Exploitation agricole";650416;349014
+2022;11;"CVS-CJO";"Commerce";626828;351298
+2022;11;"CVS-CJO";"Commerce - hotels";103442;40132
+2022;11;"CVS-CJO";"Services publics";529525;330387
+2022;11;"CVS-CJO";"Autres activites";1985836;908258
+2022;11;"CVS-CJO";"Autres activites - industrie";443952;292894
+2022;11;"CVS-CJO";"Autres activites - entrepot";1142743;401231
+2022;11;"CVS-CJO";"Autres activites - bureau";431966;237711
+2022;10;"Brute";"Ensemble des locaux non-residentiels";3882570;2044651
+2022;10;"Brute";"Exploitation agricole";616188;333198
+2022;10;"Brute";"Commerce";690913;349771
+2022;10;"Brute";"Commerce - hotels";134124;44140
+2022;10;"Brute";"Services publics";711047;474455
+2022;10;"Brute";"Autres activites";1864423;887092
+2022;10;"Brute";"Autres activites - industrie";445239;212911
+2022;10;"Brute";"Autres activites - entrepot";936271;391951
+2022;10;"Brute";"Autres activites - bureau";482913;282230
+2022;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3617188;1990682
+2022;10;"CVS-CJO";"Exploitation agricole";655655;293930
+2022;10;"CVS-CJO";"Commerce";685349;356567
+2022;10;"CVS-CJO";"Commerce - hotels";134124;44140
+2022;10;"CVS-CJO";"Services publics";573574;436447
+2022;10;"CVS-CJO";"Autres activites";1702610;903738
+2022;10;"CVS-CJO";"Autres activites - industrie";342396;183948
+2022;10;"CVS-CJO";"Autres activites - entrepot";985631;388130
+2022;10;"CVS-CJO";"Autres activites - bureau";413507;255165
+2022;9;"Brute";"Ensemble des locaux non-residentiels";3931371;2102316
+2022;9;"Brute";"Exploitation agricole";775520;267458
+2022;9;"Brute";"Commerce";698501;384906
+2022;9;"Brute";"Commerce - hotels";109523;83356
+2022;9;"Brute";"Services publics";579762;312557
+2022;9;"Brute";"Autres activites";1877587;1137356
+2022;9;"Brute";"Autres activites - industrie";422096;293259
+2022;9;"Brute";"Autres activites - entrepot";931072;568036
+2022;9;"Brute";"Autres activites - bureau";524419;276061
+2022;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3321308;1927064
+2022;9;"CVS-CJO";"Exploitation agricole";637103;251733
+2022;9;"CVS-CJO";"Commerce";603275;379865
+2022;9;"CVS-CJO";"Commerce - hotels";109523;83356
+2022;9;"CVS-CJO";"Services publics";536100;314209
+2022;9;"CVS-CJO";"Autres activites";1544830;981257
+2022;9;"CVS-CJO";"Autres activites - industrie";360215;249541
+2022;9;"CVS-CJO";"Autres activites - entrepot";774263;487146
+2022;9;"CVS-CJO";"Autres activites - bureau";437588;282221
+2022;8;"Brute";"Ensemble des locaux non-residentiels";3290266;1780746
+2022;8;"Brute";"Exploitation agricole";532439;322313
+2022;8;"Brute";"Commerce";648929;273473
+2022;8;"Brute";"Commerce - hotels";102070;38468
+2022;8;"Brute";"Services publics";528455;346044
+2022;8;"Brute";"Autres activites";1580443;838914
+2022;8;"Brute";"Autres activites - industrie";377232;169512
+2022;8;"Brute";"Autres activites - entrepot";596972;413939
+2022;8;"Brute";"Autres activites - bureau";606239;255463
+2022;8;"CVS-CJO";"Ensemble des locaux non-residentiels";3298201;2043499
+2022;8;"CVS-CJO";"Exploitation agricole";543106;358098
+2022;8;"CVS-CJO";"Commerce";651321;322543
+2022;8;"CVS-CJO";"Commerce - hotels";102070;38468
+2022;8;"CVS-CJO";"Services publics";548468;338660
+2022;8;"CVS-CJO";"Autres activites";1555306;1024198
+2022;8;"CVS-CJO";"Autres activites - industrie";381078;230475
+2022;8;"CVS-CJO";"Autres activites - entrepot";605306;513571
+2022;8;"CVS-CJO";"Autres activites - bureau";702244;310507
+2022;7;"Brute";"Ensemble des locaux non-residentiels";3246946;1792814
+2022;7;"Brute";"Exploitation agricole";549700;313048
+2022;7;"Brute";"Commerce";567519;312720
+2022;7;"Brute";"Commerce - hotels";79985;50900
+2022;7;"Brute";"Services publics";408191;219098
+2022;7;"Brute";"Autres activites";1721534;947932
+2022;7;"Brute";"Autres activites - industrie";440608;241056
+2022;7;"Brute";"Autres activites - entrepot";897625;390618
+2022;7;"Brute";"Autres activites - bureau";383301;316258
+2022;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3030699;1724915
+2022;7;"CVS-CJO";"Exploitation agricole";544506;282058
+2022;7;"CVS-CJO";"Commerce";568109;311332
+2022;7;"CVS-CJO";"Commerce - hotels";79985;50900
+2022;7;"CVS-CJO";"Services publics";382219;201932
+2022;7;"CVS-CJO";"Autres activites";1535865;929593
+2022;7;"CVS-CJO";"Autres activites - industrie";420083;237703
+2022;7;"CVS-CJO";"Autres activites - entrepot";770233;371494
+2022;7;"CVS-CJO";"Autres activites - bureau";338207;310764
+2022;6;"Brute";"Ensemble des locaux non-residentiels";3204228;2329383
+2022;6;"Brute";"Exploitation agricole";609146;366388
+2022;6;"Brute";"Commerce";670158;478931
+2022;6;"Brute";"Commerce - hotels";100521;65202
+2022;6;"Brute";"Services publics";432869;321141
+2022;6;"Brute";"Autres activites";1492057;1162863
+2022;6;"Brute";"Autres activites - industrie";392244;211164
+2022;6;"Brute";"Autres activites - entrepot";629555;632410
+2022;6;"Brute";"Autres activites - bureau";470258;319289
+2022;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3025139;2144477
+2022;6;"CVS-CJO";"Exploitation agricole";532648;364101
+2022;6;"CVS-CJO";"Commerce";616620;438224
+2022;6;"CVS-CJO";"Commerce - hotels";100521;65202
+2022;6;"CVS-CJO";"Services publics";412073;289233
+2022;6;"CVS-CJO";"Autres activites";1463798;1052919
+2022;6;"CVS-CJO";"Autres activites - industrie";368644;199967
+2022;6;"CVS-CJO";"Autres activites - entrepot";603543;590773
+2022;6;"CVS-CJO";"Autres activites - bureau";477312;293499
+2022;5;"Brute";"Ensemble des locaux non-residentiels";3171341;2351289
+2022;5;"Brute";"Exploitation agricole";701611;463017
+2022;5;"Brute";"Commerce";568810;481101
+2022;5;"Brute";"Commerce - hotels";95609;58327
+2022;5;"Brute";"Services publics";527534;273179
+2022;5;"Brute";"Autres activites";1373385;1133666
+2022;5;"Brute";"Autres activites - industrie";299607;221377
+2022;5;"Brute";"Autres activites - entrepot";653546;676241
+2022;5;"Brute";"Autres activites - bureau";420232;236050
+2022;5;"CVS-CJO";"Ensemble des locaux non-residentiels";3265082;2335235
+2022;5;"CVS-CJO";"Exploitation agricole";649221;414029
+2022;5;"CVS-CJO";"Commerce";557278;423886
+2022;5;"CVS-CJO";"Commerce - hotels";95609;58327
+2022;5;"CVS-CJO";"Services publics";587336;285640
+2022;5;"CVS-CJO";"Autres activites";1471247;1211680
+2022;5;"CVS-CJO";"Autres activites - industrie";359462;233115
+2022;5;"CVS-CJO";"Autres activites - entrepot";742185;774521
+2022;5;"CVS-CJO";"Autres activites - bureau";490444;287876
+2022;4;"Brute";"Ensemble des locaux non-residentiels";3089869;2718536
+2022;4;"Brute";"Exploitation agricole";713490;514364
+2022;4;"Brute";"Commerce";553071;561489
+2022;4;"Brute";"Commerce - hotels";73785;75064
+2022;4;"Brute";"Services publics";364972;404838
+2022;4;"Brute";"Autres activites";1458336;1236776
+2022;4;"Brute";"Autres activites - industrie";354875;336129
+2022;4;"Brute";"Autres activites - entrepot";599659;595490
+2022;4;"Brute";"Autres activites - bureau";503802;305157
+2022;4;"CVS-CJO";"Ensemble des locaux non-residentiels";3570422;2994022
+2022;4;"CVS-CJO";"Exploitation agricole";704173;577093
+2022;4;"CVS-CJO";"Commerce";591711;594153
+2022;4;"CVS-CJO";"Commerce - hotels";73785;75064
+2022;4;"CVS-CJO";"Services publics";413031;417289
+2022;4;"CVS-CJO";"Autres activites";1861507;1405487
+2022;4;"CVS-CJO";"Autres activites - industrie";424751;382850
+2022;4;"CVS-CJO";"Autres activites - entrepot";794062;662563
+2022;4;"CVS-CJO";"Autres activites - bureau";628331;324269
+2022;3;"Brute";"Ensemble des locaux non-residentiels";3536915;2311795
+2022;3;"Brute";"Exploitation agricole";708000;399679
+2022;3;"Brute";"Commerce";723830;364628
+2022;3;"Brute";"Commerce - hotels";115905;39784
+2022;3;"Brute";"Services publics";505725;527329
+2022;3;"Brute";"Autres activites";1599360;1019911
+2022;3;"Brute";"Autres activites - industrie";484001;328718
+2022;3;"Brute";"Autres activites - entrepot";705397;375406
+2022;3;"Brute";"Autres activites - bureau";409962;315787
+2022;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3397546;2192047
+2022;3;"CVS-CJO";"Exploitation agricole";633986;395530
+2022;3;"CVS-CJO";"Commerce";698481;355307
+2022;3;"CVS-CJO";"Commerce - hotels";115905;39784
+2022;3;"CVS-CJO";"Services publics";510715;538686
+2022;3;"CVS-CJO";"Autres activites";1554364;902524
+2022;3;"CVS-CJO";"Autres activites - industrie";393875;254222
+2022;3;"CVS-CJO";"Autres activites - entrepot";673114;355571
+2022;3;"CVS-CJO";"Autres activites - bureau";381332;275448
+2022;2;"Brute";"Ensemble des locaux non-residentiels";2554651;2114672
+2022;2;"Brute";"Exploitation agricole";468117;322459
+2022;2;"Brute";"Commerce";522382;398677
+2022;2;"Brute";"Commerce - hotels";68478;49738
+2022;2;"Brute";"Services publics";362811;359854
+2022;2;"Brute";"Autres activites";1201339;1033592
+2022;2;"Brute";"Autres activites - industrie";300905;258793
+2022;2;"Brute";"Autres activites - entrepot";630631;534050
+2022;2;"Brute";"Autres activites - bureau";269803;240749
+2022;2;"CVS-CJO";"Ensemble des locaux non-residentiels";2979966;2115818
+2022;2;"CVS-CJO";"Exploitation agricole";585190;264923
+2022;2;"CVS-CJO";"Commerce";600684;396094
+2022;2;"CVS-CJO";"Commerce - hotels";68478;49738
+2022;2;"CVS-CJO";"Services publics";400366;348689
+2022;2;"CVS-CJO";"Autres activites";1393726;1106112
+2022;2;"CVS-CJO";"Autres activites - industrie";404096;258997
+2022;2;"CVS-CJO";"Autres activites - entrepot";586487;590417
+2022;2;"CVS-CJO";"Autres activites - bureau";312685;267432
+2022;1;"Brute";"Ensemble des locaux non-residentiels";2648922;2417175
+2022;1;"Brute";"Exploitation agricole";466387;379568
+2022;1;"Brute";"Commerce";541807;278297
+2022;1;"Brute";"Commerce - hotels";91755;31771
+2022;1;"Brute";"Services publics";310790;283863
+2022;1;"Brute";"Autres activites";1329935;1475389
+2022;1;"Brute";"Autres activites - industrie";294621;286001
+2022;1;"Brute";"Autres activites - entrepot";688800;935479
+2022;1;"Brute";"Autres activites - bureau";346514;253909
+2022;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2904405;2511204
+2022;1;"CVS-CJO";"Exploitation agricole";525329;429984
+2022;1;"CVS-CJO";"Commerce";612721;304215
+2022;1;"CVS-CJO";"Commerce - hotels";91755;31771
+2022;1;"CVS-CJO";"Services publics";347247;335111
+2022;1;"CVS-CJO";"Autres activites";1419108;1441894
+2022;1;"CVS-CJO";"Autres activites - industrie";330223;316501
+2022;1;"CVS-CJO";"Autres activites - entrepot";721037;728603
+2022;1;"CVS-CJO";"Autres activites - bureau";375248;251672
+2021;12;"Brute";"Ensemble des locaux non-residentiels";3058168;2079291
+2021;12;"Brute";"Exploitation agricole";464137;417039
+2021;12;"Brute";"Commerce";602408;369380
+2021;12;"Brute";"Commerce - hotels";99625;50202
+2021;12;"Brute";"Services publics";536239;286846
+2021;12;"Brute";"Autres activites";1455383;1005961
+2021;12;"Brute";"Autres activites - industrie";271591;183976
+2021;12;"Brute";"Autres activites - entrepot";660696;539603
+2021;12;"Brute";"Autres activites - bureau";523096;282381
+2021;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3076404;2157030
+2021;12;"CVS-CJO";"Exploitation agricole";512708;454553
+2021;12;"CVS-CJO";"Commerce";544623;367161
+2021;12;"CVS-CJO";"Commerce - hotels";99625;50202
+2021;12;"CVS-CJO";"Services publics";542072;321526
+2021;12;"CVS-CJO";"Autres activites";1477001;1013790
+2021;12;"CVS-CJO";"Autres activites - industrie";313332;215478
+2021;12;"CVS-CJO";"Autres activites - entrepot";672315;654081
+2021;12;"CVS-CJO";"Autres activites - bureau";468184;227424
+2021;11;"Brute";"Ensemble des locaux non-residentiels";3231904;2207698
+2021;11;"Brute";"Exploitation agricole";772025;365904
+2021;11;"Brute";"Commerce";555561;397259
+2021;11;"Brute";"Commerce - hotels";82799;39279
+2021;11;"Brute";"Services publics";376800;378928
+2021;11;"Brute";"Autres activites";1527520;1065607
+2021;11;"Brute";"Autres activites - industrie";409126;293399
+2021;11;"Brute";"Autres activites - entrepot";777501;427719
+2021;11;"Brute";"Autres activites - bureau";340893;344488
+2021;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3183840;2116700
+2021;11;"CVS-CJO";"Exploitation agricole";772615;359844
+2021;11;"CVS-CJO";"Commerce";561131;368713
+2021;11;"CVS-CJO";"Commerce - hotels";82799;39279
+2021;11;"CVS-CJO";"Services publics";354290;360707
+2021;11;"CVS-CJO";"Autres activites";1495804;1027436
+2021;11;"CVS-CJO";"Autres activites - industrie";400287;295448
+2021;11;"CVS-CJO";"Autres activites - entrepot";837198;402902
+2021;11;"CVS-CJO";"Autres activites - bureau";338203;325125
+2021;10;"Brute";"Ensemble des locaux non-residentiels";3313753;2194058
+2021;10;"Brute";"Exploitation agricole";706062;308554
+2021;10;"Brute";"Commerce";522105;405802
+2021;10;"Brute";"Commerce - hotels";81778;97631
+2021;10;"Brute";"Services publics";547516;372356
+2021;10;"Brute";"Autres activites";1538069;1106829
+2021;10;"Brute";"Autres activites - industrie";571282;287704
+2021;10;"Brute";"Autres activites - entrepot";580277;467048
+2021;10;"Brute";"Autres activites - bureau";386510;352077
+2021;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3082189;2094298
+2021;10;"CVS-CJO";"Exploitation agricole";753314;249278
+2021;10;"CVS-CJO";"Commerce";503819;418872
+2021;10;"CVS-CJO";"Commerce - hotels";81778;97631
+2021;10;"CVS-CJO";"Services publics";435749;317272
+2021;10;"CVS-CJO";"Autres activites";1389307;1108876
+2021;10;"CVS-CJO";"Autres activites - industrie";442919;248190
+2021;10;"CVS-CJO";"Autres activites - entrepot";591765;455158
+2021;10;"CVS-CJO";"Autres activites - bureau";330915;299155
+2021;9;"Brute";"Ensemble des locaux non-residentiels";3934591;2370010
+2021;9;"Brute";"Exploitation agricole";996153;457541
+2021;9;"Brute";"Commerce";630205;354936
+2021;9;"Brute";"Commerce - hotels";89408;63024
+2021;9;"Brute";"Services publics";557542;385534
+2021;9;"Brute";"Autres activites";1750692;1171997
+2021;9;"Brute";"Autres activites - industrie";399494;286688
+2021;9;"Brute";"Autres activites - entrepot";848138;552049
+2021;9;"Brute";"Autres activites - bureau";503060;333260
+2021;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3377806;2229280
+2021;9;"CVS-CJO";"Exploitation agricole";826466;458014
+2021;9;"CVS-CJO";"Commerce";559946;345977
+2021;9;"CVS-CJO";"Commerce - hotels";89408;63024
+2021;9;"CVS-CJO";"Services publics";532203;388217
+2021;9;"CVS-CJO";"Autres activites";1459191;1037072
+2021;9;"CVS-CJO";"Autres activites - industrie";330299;246742
+2021;9;"CVS-CJO";"Autres activites - entrepot";708213;479070
+2021;9;"CVS-CJO";"Autres activites - bureau";413576;355525
+2021;8;"Brute";"Ensemble des locaux non-residentiels";3469734;2100754
+2021;8;"Brute";"Exploitation agricole";709656;265925
+2021;8;"Brute";"Commerce";521727;356583
+2021;8;"Brute";"Commerce - hotels";75741;63434
+2021;8;"Brute";"Services publics";483631;371538
+2021;8;"Brute";"Autres activites";1754720;1106708
+2021;8;"Brute";"Autres activites - industrie";354849;203732
+2021;8;"Brute";"Autres activites - entrepot";1080449;612118
+2021;8;"Brute";"Autres activites - bureau";319422;290858
+2021;8;"CVS-CJO";"Ensemble des locaux non-residentiels";3527407;2442441
+2021;8;"CVS-CJO";"Exploitation agricole";735735;314750
+2021;8;"CVS-CJO";"Commerce";530043;404462
+2021;8;"CVS-CJO";"Commerce - hotels";75741;63434
+2021;8;"CVS-CJO";"Services publics";513681;368165
+2021;8;"CVS-CJO";"Autres activites";1747948;1355064
+2021;8;"CVS-CJO";"Autres activites - industrie";356742;267307
+2021;8;"CVS-CJO";"Autres activites - entrepot";1061009;770506
+2021;8;"CVS-CJO";"Autres activites - bureau";372661;360708
+2021;7;"Brute";"Ensemble des locaux non-residentiels";3437572;1836342
+2021;7;"Brute";"Exploitation agricole";793014;401566
+2021;7;"Brute";"Commerce";557701;320058
+2021;7;"Brute";"Commerce - hotels";108355;45635
+2021;7;"Brute";"Services publics";458915;360278
+2021;7;"Brute";"Autres activites";1627942;754347
+2021;7;"Brute";"Autres activites - industrie";285396;168368
+2021;7;"Brute";"Autres activites - entrepot";893878;356166
+2021;7;"Brute";"Autres activites - bureau";448668;229813
+2021;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3194323;1812365
+2021;7;"CVS-CJO";"Exploitation agricole";738515;394573
+2021;7;"CVS-CJO";"Commerce";536799;342453
+2021;7;"CVS-CJO";"Commerce - hotels";108355;45635
+2021;7;"CVS-CJO";"Services publics";428412;348434
+2021;7;"CVS-CJO";"Autres activites";1490597;726905
+2021;7;"CVS-CJO";"Autres activites - industrie";274993;171403
+2021;7;"CVS-CJO";"Autres activites - entrepot";789118;350051
+2021;7;"CVS-CJO";"Autres activites - bureau";395114;234013
+2021;6;"Brute";"Ensemble des locaux non-residentiels";3536149;1972453
+2021;6;"Brute";"Exploitation agricole";959323;370450
+2021;6;"Brute";"Commerce";638465;339381
+2021;6;"Brute";"Commerce - hotels";84465;43542
+2021;6;"Brute";"Services publics";522983;373911
+2021;6;"Brute";"Autres activites";1415376;888711
+2021;6;"Brute";"Autres activites - industrie";373062;251333
+2021;6;"Brute";"Autres activites - entrepot";688393;313950
+2021;6;"Brute";"Autres activites - bureau";353921;323428
+2021;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3180149;1821432
+2021;6;"CVS-CJO";"Exploitation agricole";780860;364928
+2021;6;"CVS-CJO";"Commerce";551476;289281
+2021;6;"CVS-CJO";"Commerce - hotels";84465;43542
+2021;6;"CVS-CJO";"Services publics";494927;338571
+2021;6;"CVS-CJO";"Autres activites";1352886;828652
+2021;6;"CVS-CJO";"Autres activites - industrie";349293;235095
+2021;6;"CVS-CJO";"Autres activites - entrepot";651449;287130
+2021;6;"CVS-CJO";"Autres activites - bureau";358025;311667
+2021;5;"Brute";"Ensemble des locaux non-residentiels";2999688;2313748
+2021;5;"Brute";"Exploitation agricole";687372;441481
+2021;5;"Brute";"Commerce";508295;430064
+2021;5;"Brute";"Commerce - hotels";82141;96050
+2021;5;"Brute";"Services publics";397750;304449
+2021;5;"Brute";"Autres activites";1406269;1137754
+2021;5;"Brute";"Autres activites - industrie";327323;248473
+2021;5;"Brute";"Autres activites - entrepot";648780;465181
+2021;5;"Brute";"Autres activites - bureau";430166;424100
+2021;5;"CVS-CJO";"Ensemble des locaux non-residentiels";3184174;2278729
+2021;5;"CVS-CJO";"Exploitation agricole";688233;374277
+2021;5;"CVS-CJO";"Commerce";542753;383794
+2021;5;"CVS-CJO";"Commerce - hotels";82141;96050
+2021;5;"CVS-CJO";"Services publics";436808;330906
+2021;5;"CVS-CJO";"Autres activites";1516380;1189752
+2021;5;"CVS-CJO";"Autres activites - industrie";394898;264643
+2021;5;"CVS-CJO";"Autres activites - entrepot";740738;535496
+2021;5;"CVS-CJO";"Autres activites - bureau";500676;433491
+2021;4;"Brute";"Ensemble des locaux non-residentiels";2518712;1903205
+2021;4;"Brute";"Exploitation agricole";713103;369916
+2021;4;"Brute";"Commerce";452053;382618
+2021;4;"Brute";"Commerce - hotels";108399;43476
+2021;4;"Brute";"Services publics";467659;372644
+2021;4;"Brute";"Autres activites";885899;778027
+2021;4;"Brute";"Autres activites - industrie";181977;175470
+2021;4;"Brute";"Autres activites - entrepot";415475;312122
+2021;4;"Brute";"Autres activites - bureau";288447;290435
+2021;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2876710;2103801
+2021;4;"CVS-CJO";"Exploitation agricole";702914;458314
+2021;4;"CVS-CJO";"Commerce";476734;428228
+2021;4;"CVS-CJO";"Commerce - hotels";108399;43476
+2021;4;"CVS-CJO";"Services publics";542961;399756
+2021;4;"CVS-CJO";"Autres activites";1154101;817503
+2021;4;"CVS-CJO";"Autres activites - industrie";226313;198042
+2021;4;"CVS-CJO";"Autres activites - entrepot";544558;350576
+2021;4;"CVS-CJO";"Autres activites - bureau";363354;289253
+2021;3;"Brute";"Ensemble des locaux non-residentiels";3058522;2032977
+2021;3;"Brute";"Exploitation agricole";628499;489101
+2021;3;"Brute";"Commerce";464052;365459
+2021;3;"Brute";"Commerce - hotels";32412;45091
+2021;3;"Brute";"Services publics";490852;276764
+2021;3;"Brute";"Autres activites";1475117;901406
+2021;3;"Brute";"Autres activites - industrie";359159;232215
+2021;3;"Brute";"Autres activites - entrepot";730183;362549
+2021;3;"Brute";"Autres activites - bureau";385774;306643
+2021;3;"CVS-CJO";"Ensemble des locaux non-residentiels";2911865;1953419
+2021;3;"CVS-CJO";"Exploitation agricole";567019;484327
+2021;3;"CVS-CJO";"Commerce";445123;364484
+2021;3;"CVS-CJO";"Commerce - hotels";32412;45091
+2021;3;"CVS-CJO";"Services publics";488323;278075
+2021;3;"CVS-CJO";"Autres activites";1411400;826533
+2021;3;"CVS-CJO";"Autres activites - industrie";302411;182640
+2021;3;"CVS-CJO";"Autres activites - entrepot";704804;332561
+2021;3;"CVS-CJO";"Autres activites - bureau";363445;271936
+2021;2;"Brute";"Ensemble des locaux non-residentiels";2416521;1977659
+2021;2;"Brute";"Exploitation agricole";451862;504999
+2021;2;"Brute";"Commerce";432406;354320
+2021;2;"Brute";"Commerce - hotels";68724;37470
+2021;2;"Brute";"Services publics";346372;299332
+2021;2;"Brute";"Autres activites";1185880;819008
+2021;2;"Brute";"Autres activites - industrie";182902;214551
+2021;2;"Brute";"Autres activites - entrepot";717394;268649
+2021;2;"Brute";"Autres activites - bureau";285584;335808
+2021;2;"CVS-CJO";"Ensemble des locaux non-residentiels";2769216;1954912
+2021;2;"CVS-CJO";"Exploitation agricole";546029;455918
+2021;2;"CVS-CJO";"Commerce";493780;348719
+2021;2;"CVS-CJO";"Commerce - hotels";68724;37470
+2021;2;"CVS-CJO";"Services publics";374719;289392
+2021;2;"CVS-CJO";"Autres activites";1354688;860883
+2021;2;"CVS-CJO";"Autres activites - industrie";233203;210677
+2021;2;"CVS-CJO";"Autres activites - entrepot";679758;297020
+2021;2;"CVS-CJO";"Autres activites - bureau";329509;368463
+2021;1;"Brute";"Ensemble des locaux non-residentiels";2527508;1479051
+2021;1;"Brute";"Exploitation agricole";504370;409892
+2021;1;"Brute";"Commerce";447493;286211
+2021;1;"Brute";"Commerce - hotels";71416;38171
+2021;1;"Brute";"Services publics";389605;267206
+2021;1;"Brute";"Autres activites";1186041;515742
+2021;1;"Brute";"Autres activites - industrie";273938;146995
+2021;1;"Brute";"Autres activites - entrepot";601936;177042
+2021;1;"Brute";"Autres activites - bureau";310167;191705
+2021;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2768973;1545909
+2021;1;"CVS-CJO";"Exploitation agricole";588605;428265
+2021;1;"CVS-CJO";"Commerce";515438;291743
+2021;1;"CVS-CJO";"Commerce - hotels";71416;38171
+2021;1;"CVS-CJO";"Services publics";428398;302755
+2021;1;"CVS-CJO";"Autres activites";1236532;523146
+2021;1;"CVS-CJO";"Autres activites - industrie";311605;164735
+2021;1;"CVS-CJO";"Autres activites - entrepot";624731;136814
+2021;1;"CVS-CJO";"Autres activites - bureau";338424;208355
+2020;12;"Brute";"Ensemble des locaux non-residentiels";2833787;2047855
+2020;12;"Brute";"Exploitation agricole";504503;413236
+2020;12;"Brute";"Commerce";520905;387059
+2020;12;"Brute";"Commerce - hotels";90894;129317
+2020;12;"Brute";"Services publics";427935;338319
+2020;12;"Brute";"Autres activites";1380445;909228
+2020;12;"Brute";"Autres activites - industrie";265966;194816
+2020;12;"Brute";"Autres activites - entrepot";575456;376799
+2020;12;"Brute";"Autres activites - bureau";539023;337613
+2020;12;"CVS-CJO";"Ensemble des locaux non-residentiels";2921420;2151424
+2020;12;"CVS-CJO";"Exploitation agricole";579267;442677
+2020;12;"CVS-CJO";"Commerce";495272;368450
+2020;12;"CVS-CJO";"Commerce - hotels";90894;129317
+2020;12;"CVS-CJO";"Services publics";438443;351628
+2020;12;"CVS-CJO";"Autres activites";1408438;988669
+2020;12;"CVS-CJO";"Autres activites - industrie";294449;225100
+2020;12;"CVS-CJO";"Autres activites - entrepot";593080;455108
+2020;12;"CVS-CJO";"Autres activites - bureau";485250;329954
+2020;11;"Brute";"Ensemble des locaux non-residentiels";3094665;2338034
+2020;11;"Brute";"Exploitation agricole";755302;499004
+2020;11;"Brute";"Commerce";471615;370959
+2020;11;"Brute";"Commerce - hotels";51349;43976
+2020;11;"Brute";"Services publics";488547;346664
+2020;11;"Brute";"Autres activites";1379202;1121392
+2020;11;"Brute";"Autres activites - industrie";316168;170604
+2020;11;"Brute";"Autres activites - entrepot";534080;699763
+2020;11;"Brute";"Autres activites - bureau";528954;251025
+2020;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3037601;2248705
+2020;11;"CVS-CJO";"Exploitation agricole";769640;517771
+2020;11;"CVS-CJO";"Commerce";470866;356606
+2020;11;"CVS-CJO";"Commerce - hotels";51349;43976
+2020;11;"CVS-CJO";"Services publics";450320;340932
+2020;11;"CVS-CJO";"Autres activites";1346775;1033396
+2020;11;"CVS-CJO";"Autres activites - industrie";309597;170251
+2020;11;"CVS-CJO";"Autres activites - entrepot";581461;671941
+2020;11;"CVS-CJO";"Autres activites - bureau";525214;231072
+2020;10;"Brute";"Ensemble des locaux non-residentiels";3226654;2518795
+2020;10;"Brute";"Exploitation agricole";756128;655593
+2020;10;"Brute";"Commerce";616438;346982
+2020;10;"Brute";"Commerce - hotels";125216;44514
+2020;10;"Brute";"Services publics";476043;415765
+2020;10;"Brute";"Autres activites";1378041;1099764
+2020;10;"Brute";"Autres activites - industrie";331401;263542
+2020;10;"Brute";"Autres activites - entrepot";481116;449392
+2020;10;"Brute";"Autres activites - bureau";565524;386829
+2020;10;"CVS-CJO";"Ensemble des locaux non-residentiels";2948344;2423045
+2020;10;"CVS-CJO";"Exploitation agricole";778090;612302
+2020;10;"CVS-CJO";"Commerce";560799;370454
+2020;10;"CVS-CJO";"Commerce - hotels";125216;44514
+2020;10;"CVS-CJO";"Services publics";379002;372221
+2020;10;"CVS-CJO";"Autres activites";1230453;1068068
+2020;10;"CVS-CJO";"Autres activites - industrie";254499;227770
+2020;10;"CVS-CJO";"Autres activites - entrepot";470155;434714
+2020;10;"CVS-CJO";"Autres activites - bureau";482982;335608
+2020;9;"Brute";"Ensemble des locaux non-residentiels";3776928;2050207
+2020;9;"Brute";"Exploitation agricole";848279;454807
+2020;9;"Brute";"Commerce";570346;336872
+2020;9;"Brute";"Commerce - hotels";91149;48449
+2020;9;"Brute";"Services publics";428093;306490
+2020;9;"Brute";"Autres activites";1930208;952007
+2020;9;"Brute";"Autres activites - industrie";417662;171651
+2020;9;"Brute";"Autres activites - entrepot";1033295;531626
+2020;9;"Brute";"Autres activites - bureau";479252;248730
+2020;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3283878;1919815
+2020;9;"CVS-CJO";"Exploitation agricole";717129;438292
+2020;9;"CVS-CJO";"Commerce";523747;311451
+2020;9;"CVS-CJO";"Commerce - hotels";91149;48449
+2020;9;"CVS-CJO";"Services publics";413832;286799
+2020;9;"CVS-CJO";"Autres activites";1629170;883273
+2020;9;"CVS-CJO";"Autres activites - industrie";340776;150295
+2020;9;"CVS-CJO";"Autres activites - entrepot";870419;456386
+2020;9;"CVS-CJO";"Autres activites - bureau";387062;273487
+2020;8;"Brute";"Ensemble des locaux non-residentiels";2802029;1783127
+2020;8;"Brute";"Exploitation agricole";751844;422144
+2020;8;"Brute";"Commerce";467825;260813
+2020;8;"Brute";"Commerce - hotels";75940;35458
+2020;8;"Brute";"Services publics";406355;306095
+2020;8;"Brute";"Autres activites";1176005;793849
+2020;8;"Brute";"Autres activites - industrie";347524;154051
+2020;8;"Brute";"Autres activites - entrepot";541157;374119
+2020;8;"Brute";"Autres activites - bureau";287324;265679
+2020;8;"CVS-CJO";"Ensemble des locaux non-residentiels";2909301;2047642
+2020;8;"CVS-CJO";"Exploitation agricole";815960;462031
+2020;8;"CVS-CJO";"Commerce";492922;317722
+2020;8;"CVS-CJO";"Commerce - hotels";75940;35458
+2020;8;"CVS-CJO";"Services publics";431099;319819
+2020;8;"CVS-CJO";"Autres activites";1169320;948070
+2020;8;"CVS-CJO";"Autres activites - industrie";353537;195566
+2020;8;"CVS-CJO";"Autres activites - entrepot";521524;473659
+2020;8;"CVS-CJO";"Autres activites - bureau";335057;315121
+2020;7;"Brute";"Ensemble des locaux non-residentiels";3356775;2067329
+2020;7;"Brute";"Exploitation agricole";904848;516132
+2020;7;"Brute";"Commerce";607732;375024
+2020;7;"Brute";"Commerce - hotels";73299;53360
+2020;7;"Brute";"Services publics";550417;283252
+2020;7;"Brute";"Autres activites";1293779;892920
+2020;7;"Brute";"Autres activites - industrie";278191;133280
+2020;7;"Brute";"Autres activites - entrepot";654560;505647
+2020;7;"Brute";"Autres activites - bureau";361028;253993
+2020;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3108903;2024368
+2020;7;"CVS-CJO";"Exploitation agricole";790338;525677
+2020;7;"CVS-CJO";"Commerce";565874;410119
+2020;7;"CVS-CJO";"Commerce - hotels";73299;53360
+2020;7;"CVS-CJO";"Services publics";522254;281253
+2020;7;"CVS-CJO";"Autres activites";1230437;807319
+2020;7;"CVS-CJO";"Autres activites - industrie";273396;140461
+2020;7;"CVS-CJO";"Autres activites - entrepot";589357;518386
+2020;7;"CVS-CJO";"Autres activites - bureau";315597;222418
+2020;6;"Brute";"Ensemble des locaux non-residentiels";3217134;2540245
+2020;6;"Brute";"Exploitation agricole";731012;595938
+2020;6;"Brute";"Commerce";519095;354670
+2020;6;"Brute";"Commerce - hotels";77466;58903
+2020;6;"Brute";"Services publics";392970;594842
+2020;6;"Brute";"Autres activites";1574057;994780
+2020;6;"Brute";"Autres activites - industrie";349024;273749
+2020;6;"Brute";"Autres activites - entrepot";723545;448941
+2020;6;"Brute";"Autres activites - bureau";501489;272090
+2020;6;"CVS-CJO";"Ensemble des locaux non-residentiels";2928238;2359119
+2020;6;"CVS-CJO";"Exploitation agricole";608815;585558
+2020;6;"CVS-CJO";"Commerce";465305;299513
+2020;6;"CVS-CJO";"Commerce - hotels";77466;58903
+2020;6;"CVS-CJO";"Services publics";374103;550507
+2020;6;"CVS-CJO";"Autres activites";1480015;923541
+2020;6;"CVS-CJO";"Autres activites - industrie";327998;246541
+2020;6;"CVS-CJO";"Autres activites - entrepot";674494;407661
+2020;6;"CVS-CJO";"Autres activites - bureau";502366;261957
+2020;5;"Brute";"Ensemble des locaux non-residentiels";1872558;1360440
+2020;5;"Brute";"Exploitation agricole";504112;452281
+2020;5;"Brute";"Commerce";405975;253379
+2020;5;"Brute";"Commerce - hotels";98839;30193
+2020;5;"Brute";"Services publics";283762;220583
+2020;5;"Brute";"Autres activites";678712;434186
+2020;5;"Brute";"Autres activites - industrie";149243;119581
+2020;5;"Brute";"Autres activites - entrepot";290557;164684
+2020;5;"Brute";"Autres activites - bureau";238912;149921
+2020;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2043086;1332553
+2020;5;"CVS-CJO";"Exploitation agricole";526744;361166
+2020;5;"CVS-CJO";"Commerce";458712;210735
+2020;5;"CVS-CJO";"Commerce - hotels";98839;30193
+2020;5;"CVS-CJO";"Services publics";313073;246070
+2020;5;"CVS-CJO";"Autres activites";744557;514582
+2020;5;"CVS-CJO";"Autres activites - industrie";177911;128697
+2020;5;"CVS-CJO";"Autres activites - entrepot";331914;192218
+2020;5;"CVS-CJO";"Autres activites - bureau";278962;190509
+2020;4;"Brute";"Ensemble des locaux non-residentiels";1571929;942143
+2020;4;"Brute";"Exploitation agricole";500065;170265
+2020;4;"Brute";"Commerce";257247;79983
+2020;4;"Brute";"Commerce - hotels";39126;16391
+2020;4;"Brute";"Services publics";239032;103001
+2020;4;"Brute";"Autres activites";575586;588894
+2020;4;"Brute";"Autres activites - industrie";120215;97732
+2020;4;"Brute";"Autres activites - entrepot";284497;361046
+2020;4;"Brute";"Autres activites - bureau";170874;130116
+2020;4;"CVS-CJO";"Ensemble des locaux non-residentiels";1832446;1083858
+2020;4;"CVS-CJO";"Exploitation agricole";519935;244319
+2020;4;"CVS-CJO";"Commerce";277547;109422
+2020;4;"CVS-CJO";"Commerce - hotels";39126;16391
+2020;4;"CVS-CJO";"Services publics";284774;121573
+2020;4;"CVS-CJO";"Autres activites";750190;608544
+2020;4;"CVS-CJO";"Autres activites - industrie";152300;109275
+2020;4;"CVS-CJO";"Autres activites - entrepot";372071;402011
+2020;4;"CVS-CJO";"Autres activites - bureau";216815;136015
+2020;3;"Brute";"Ensemble des locaux non-residentiels";2480266;1196948
+2020;3;"Brute";"Exploitation agricole";619573;221932
+2020;3;"Brute";"Commerce";446079;201346
+2020;3;"Brute";"Commerce - hotels";87907;23025
+2020;3;"Brute";"Services publics";562283;258481
+2020;3;"Brute";"Autres activites";852330;515189
+2020;3;"Brute";"Autres activites - industrie";181053;130248
+2020;3;"Brute";"Autres activites - entrepot";363643;183045
+2020;3;"Brute";"Autres activites - bureau";307634;201896
+2020;3;"CVS-CJO";"Ensemble des locaux non-residentiels";2444205;1130023
+2020;3;"CVS-CJO";"Exploitation agricole";601143;195500
+2020;3;"CVS-CJO";"Commerce";449812;198224
+2020;3;"CVS-CJO";"Commerce - hotels";87907;23025
+2020;3;"CVS-CJO";"Services publics";560676;258176
+2020;3;"CVS-CJO";"Autres activites";832574;478123
+2020;3;"CVS-CJO";"Autres activites - industrie";159433;104716
+2020;3;"CVS-CJO";"Autres activites - entrepot";355693;164203
+2020;3;"CVS-CJO";"Autres activites - bureau";296618;184999
+2020;2;"Brute";"Ensemble des locaux non-residentiels";3099324;2445187
+2020;2;"Brute";"Exploitation agricole";646347;557789
+2020;2;"Brute";"Commerce";560104;366835
+2020;2;"Brute";"Commerce - hotels";129954;94107
+2020;2;"Brute";"Services publics";556309;398229
+2020;2;"Brute";"Autres activites";1336564;1122334
+2020;2;"Brute";"Autres activites - industrie";292614;418926
+2020;2;"Brute";"Autres activites - entrepot";607671;460479
+2020;2;"Brute";"Autres activites - bureau";436279;242929
+2020;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3563533;2413719
+2020;2;"CVS-CJO";"Exploitation agricole";778031;537950
+2020;2;"CVS-CJO";"Commerce";661699;365736
+2020;2;"CVS-CJO";"Commerce - hotels";129954;94107
+2020;2;"CVS-CJO";"Services publics";607907;401023
+2020;2;"CVS-CJO";"Autres activites";1515896;1109010
+2020;2;"CVS-CJO";"Autres activites - industrie";360568;411853
+2020;2;"CVS-CJO";"Autres activites - entrepot";582280;498458
+2020;2;"CVS-CJO";"Autres activites - bureau";504854;271914
+2020;1;"Brute";"Ensemble des locaux non-residentiels";3049758;2350964
+2020;1;"Brute";"Exploitation agricole";695407;590803
+2020;1;"Brute";"Commerce";529322;325269
+2020;1;"Brute";"Commerce - hotels";65594;53262
+2020;1;"Brute";"Services publics";453270;336836
+2020;1;"Brute";"Autres activites";1371759;1097972
+2020;1;"Brute";"Autres activites - industrie";311681;212364
+2020;1;"Brute";"Autres activites - entrepot";575738;565939
+2020;1;"Brute";"Autres activites - bureau";484340;319669
+2020;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3182181;2447463
+2020;1;"CVS-CJO";"Exploitation agricole";727629;654194
+2020;1;"CVS-CJO";"Commerce";544387;351508
+2020;1;"CVS-CJO";"Commerce - hotels";65594;53262
+2020;1;"CVS-CJO";"Services publics";489937;394536
+2020;1;"CVS-CJO";"Autres activites";1420228;1047225
+2020;1;"CVS-CJO";"Autres activites - industrie";353480;238210
+2020;1;"CVS-CJO";"Autres activites - entrepot";600580;438208
+2020;1;"CVS-CJO";"Autres activites - bureau";533224;310530
+2019;12;"Brute";"Ensemble des locaux non-residentiels";3340064;2008798
+2019;12;"Brute";"Exploitation agricole";695876;427523
+2019;12;"Brute";"Commerce";580627;309860
+2019;12;"Brute";"Commerce - hotels";109674;52695
+2019;12;"Brute";"Services publics";494316;323739
+2019;12;"Brute";"Autres activites";1569244;947675
+2019;12;"Brute";"Autres activites - industrie";313954;260896
+2019;12;"Brute";"Autres activites - entrepot";770538;352298
+2019;12;"Brute";"Autres activites - bureau";484752;334480
+2019;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3430773;2099095
+2019;12;"CVS-CJO";"Exploitation agricole";815693;464487
+2019;12;"CVS-CJO";"Commerce";565970;289571
+2019;12;"CVS-CJO";"Commerce - hotels";109674;52695
+2019;12;"CVS-CJO";"Services publics";490640;322624
+2019;12;"CVS-CJO";"Autres activites";1558470;1022413
+2019;12;"CVS-CJO";"Autres activites - industrie";326660;301414
+2019;12;"CVS-CJO";"Autres activites - entrepot";796211;429120
+2019;12;"CVS-CJO";"Autres activites - bureau";438024;304928
+2019;11;"Brute";"Ensemble des locaux non-residentiels";3394230;3045756
+2019;11;"Brute";"Exploitation agricole";665616;498541
+2019;11;"Brute";"Commerce";564963;466214
+2019;11;"Brute";"Commerce - hotels";88998;90569
+2019;11;"Brute";"Services publics";600847;371523
+2019;11;"Brute";"Autres activites";1562800;1709380
+2019;11;"Brute";"Autres activites - industrie";330790;208541
+2019;11;"Brute";"Autres activites - entrepot";669910;1076138
+2019;11;"Brute";"Autres activites - bureau";562100;424702
+2019;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3445087;2915129
+2019;11;"CVS-CJO";"Exploitation agricole";731987;492431
+2019;11;"CVS-CJO";"Commerce";596488;423275
+2019;11;"CVS-CJO";"Commerce - hotels";88998;90569
+2019;11;"CVS-CJO";"Services publics";555287;341771
+2019;11;"CVS-CJO";"Autres activites";1561325;1657652
+2019;11;"CVS-CJO";"Autres activites - industrie";335457;205081
+2019;11;"CVS-CJO";"Autres activites - entrepot";727460;1049154
+2019;11;"CVS-CJO";"Autres activites - bureau";560940;421334
+2019;10;"Brute";"Ensemble des locaux non-residentiels";3767292;2473110
+2019;10;"Brute";"Exploitation agricole";728962;569897
+2019;10;"Brute";"Commerce";677100;402242
+2019;10;"Brute";"Commerce - hotels";90817;55798
+2019;10;"Brute";"Services publics";646640;507082
+2019;10;"Brute";"Autres activites";1714593;993819
+2019;10;"Brute";"Autres activites - industrie";440008;241239
+2019;10;"Brute";"Autres activites - entrepot";741435;352679
+2019;10;"Brute";"Autres activites - bureau";533150;399901
+2019;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3377348;2327756
+2019;10;"CVS-CJO";"Exploitation agricole";738852;483300
+2019;10;"CVS-CJO";"Commerce";591041;425173
+2019;10;"CVS-CJO";"Commerce - hotels";90817;55798
+2019;10;"CVS-CJO";"Services publics";528407;470060
+2019;10;"CVS-CJO";"Autres activites";1519048;949223
+2019;10;"CVS-CJO";"Autres activites - industrie";337325;209344
+2019;10;"CVS-CJO";"Autres activites - entrepot";693635;340747
+2019;10;"CVS-CJO";"Autres activites - bureau";453254;340525
+2019;9;"Brute";"Ensemble des locaux non-residentiels";3414581;2552139
+2019;9;"Brute";"Exploitation agricole";804857;636286
+2019;9;"Brute";"Commerce";599384;441700
+2019;9;"Brute";"Commerce - hotels";115072;60315
+2019;9;"Brute";"Services publics";475721;389781
+2019;9;"Brute";"Autres activites";1534620;1084369
+2019;9;"Brute";"Autres activites - industrie";402769;263819
+2019;9;"Brute";"Autres activites - entrepot";607533;534955
+2019;9;"Brute";"Autres activites - bureau";524318;285594
+2019;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3084126;2430703
+2019;9;"CVS-CJO";"Exploitation agricole";739924;642534
+2019;9;"CVS-CJO";"Commerce";594402;428492
+2019;9;"CVS-CJO";"Commerce - hotels";115072;60315
+2019;9;"CVS-CJO";"Services publics";460389;364721
+2019;9;"CVS-CJO";"Autres activites";1289411;994956
+2019;9;"CVS-CJO";"Autres activites - industrie";319427;235415
+2019;9;"CVS-CJO";"Autres activites - entrepot";524732;452418
+2019;9;"CVS-CJO";"Autres activites - bureau";413600;299506
+2019;8;"Brute";"Ensemble des locaux non-residentiels";2588528;1688167
+2019;8;"Brute";"Exploitation agricole";569167;452590
+2019;8;"Brute";"Commerce";580010;296902
+2019;8;"Brute";"Commerce - hotels";100490;35290
+2019;8;"Brute";"Services publics";336510;299695
+2019;8;"Brute";"Autres activites";1102840;638673
+2019;8;"Brute";"Autres activites - industrie";238522;169501
+2019;8;"Brute";"Autres activites - entrepot";398597;226519
+2019;8;"Brute";"Autres activites - bureau";465721;242653
+2019;8;"CVS-CJO";"Ensemble des locaux non-residentiels";2726501;1941059
+2019;8;"CVS-CJO";"Exploitation agricole";626098;481558
+2019;8;"CVS-CJO";"Commerce";617196;349363
+2019;8;"CVS-CJO";"Commerce - hotels";100490;35290
+2019;8;"CVS-CJO";"Services publics";363869;327016
+2019;8;"CVS-CJO";"Autres activites";1119338;783122
+2019;8;"CVS-CJO";"Autres activites - industrie";241764;206286
+2019;8;"CVS-CJO";"Autres activites - entrepot";384561;285314
+2019;8;"CVS-CJO";"Autres activites - bureau";543790;309376
+2019;7;"Brute";"Ensemble des locaux non-residentiels";4411089;2607351
+2019;7;"Brute";"Exploitation agricole";1088073;459716
+2019;7;"Brute";"Commerce";750795;514135
+2019;7;"Brute";"Commerce - hotels";148584;105469
+2019;7;"Brute";"Services publics";880883;452284
+2019;7;"Brute";"Autres activites";1691338;1181216
+2019;7;"Brute";"Autres activites - industrie";309192;223098
+2019;7;"Brute";"Autres activites - entrepot";770320;562262
+2019;7;"Brute";"Autres activites - bureau";611826;395856
+2019;7;"CVS-CJO";"Ensemble des locaux non-residentiels";4037306;2595369
+2019;7;"CVS-CJO";"Exploitation agricole";876285;455133
+2019;7;"CVS-CJO";"Commerce";664489;528861
+2019;7;"CVS-CJO";"Commerce - hotels";148584;105469
+2019;7;"CVS-CJO";"Services publics";838567;437847
+2019;7;"CVS-CJO";"Autres activites";1657965;1173528
+2019;7;"CVS-CJO";"Autres activites - industrie";307720;242978
+2019;7;"CVS-CJO";"Autres activites - entrepot";706031;593216
+2019;7;"CVS-CJO";"Autres activites - bureau";527593;388454
+2019;6;"Brute";"Ensemble des locaux non-residentiels";3603426;2304009
+2019;6;"Brute";"Exploitation agricole";889654;541772
+2019;6;"Brute";"Commerce";532806;422896
+2019;6;"Brute";"Commerce - hotels";100640;60381
+2019;6;"Brute";"Services publics";535587;413606
+2019;6;"Brute";"Autres activites";1645379;925719
+2019;6;"Brute";"Autres activites - industrie";301382;236544
+2019;6;"Brute";"Autres activites - entrepot";851886;366182
+2019;6;"Brute";"Autres activites - bureau";492111;322993
+2019;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3368734;2141727
+2019;6;"CVS-CJO";"Exploitation agricole";798684;530780
+2019;6;"CVS-CJO";"Commerce";520155;361713
+2019;6;"CVS-CJO";"Commerce - hotels";100640;60381
+2019;6;"CVS-CJO";"Services publics";510691;368380
+2019;6;"CVS-CJO";"Autres activites";1539204;880854
+2019;6;"CVS-CJO";"Autres activites - industrie";287409;206106
+2019;6;"CVS-CJO";"Autres activites - entrepot";779143;333216
+2019;6;"CVS-CJO";"Autres activites - bureau";486010;323459
+2019;5;"Brute";"Ensemble des locaux non-residentiels";3681044;2248592
+2019;5;"Brute";"Exploitation agricole";1024185;666719
+2019;5;"Brute";"Commerce";722334;417829
+2019;5;"Brute";"Commerce - hotels";114648;67499
+2019;5;"Brute";"Services publics";423968;345346
+2019;5;"Brute";"Autres activites";1510557;818698
+2019;5;"Brute";"Autres activites - industrie";327871;249811
+2019;5;"Brute";"Autres activites - entrepot";751945;314063
+2019;5;"Brute";"Autres activites - bureau";430741;254824
+2019;5;"CVS-CJO";"Ensemble des locaux non-residentiels";3924765;2214008
+2019;5;"CVS-CJO";"Exploitation agricole";970499;588784
+2019;5;"CVS-CJO";"Commerce";759124;382970
+2019;5;"CVS-CJO";"Commerce - hotels";114648;67499
+2019;5;"CVS-CJO";"Services publics";476287;379339
+2019;5;"CVS-CJO";"Autres activites";1718855;862915
+2019;5;"CVS-CJO";"Autres activites - industrie";397319;270352
+2019;5;"CVS-CJO";"Autres activites - entrepot";864148;370189
+2019;5;"CVS-CJO";"Autres activites - bureau";513910;274533
+2019;4;"Brute";"Ensemble des locaux non-residentiels";3078113;1809911
+2019;4;"Brute";"Exploitation agricole";772174;429217
+2019;4;"Brute";"Commerce";534535;313557
+2019;4;"Brute";"Commerce - hotels";80265;56188
+2019;4;"Brute";"Services publics";402727;256970
+2019;4;"Brute";"Autres activites";1368676;810156
+2019;4;"Brute";"Autres activites - industrie";346952;301435
+2019;4;"Brute";"Autres activites - entrepot";574995;207663
+2019;4;"Brute";"Autres activites - bureau";446729;301058
+2019;4;"CVS-CJO";"Ensemble des locaux non-residentiels";3508155;2011405
+2019;4;"CVS-CJO";"Exploitation agricole";800722;499648
+2019;4;"CVS-CJO";"Commerce";562391;340452
+2019;4;"CVS-CJO";"Commerce - hotels";80265;56188
+2019;4;"CVS-CJO";"Services publics";468727;281691
+2019;4;"CVS-CJO";"Autres activites";1676315;889614
+2019;4;"CVS-CJO";"Autres activites - industrie";435201;334902
+2019;4;"CVS-CJO";"Autres activites - entrepot";730749;230227
+2019;4;"CVS-CJO";"Autres activites - bureau";570128;333151
+2019;3;"Brute";"Ensemble des locaux non-residentiels";3338181;2595108
+2019;3;"Brute";"Exploitation agricole";740103;536244
+2019;3;"Brute";"Commerce";524841;421303
+2019;3;"Brute";"Commerce - hotels";96315;57479
+2019;3;"Brute";"Services publics";461785;352999
+2019;3;"Brute";"Autres activites";1611451;1284469
+2019;3;"Brute";"Autres activites - industrie";334341;325176
+2019;3;"Brute";"Autres activites - entrepot";842450;637971
+2019;3;"Brute";"Autres activites - bureau";434660;321323
+2019;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3293397;2475037
+2019;3;"CVS-CJO";"Exploitation agricole";740148;499769
+2019;3;"CVS-CJO";"Commerce";539382;421695
+2019;3;"CVS-CJO";"Commerce - hotels";96315;57479
+2019;3;"CVS-CJO";"Services publics";448582;341783
+2019;3;"CVS-CJO";"Autres activites";1565285;1211790
+2019;3;"CVS-CJO";"Autres activites - industrie";310910;264382
+2019;3;"CVS-CJO";"Autres activites - entrepot";833019;574948
+2019;3;"CVS-CJO";"Autres activites - bureau";429547;308065
+2019;2;"Brute";"Ensemble des locaux non-residentiels";3492561;2110846
+2019;2;"Brute";"Exploitation agricole";717325;466530
+2019;2;"Brute";"Commerce";470204;392304
+2019;2;"Brute";"Commerce - hotels";98109;50595
+2019;2;"Brute";"Services publics";418318;375849
+2019;2;"Brute";"Autres activites";1886713;876163
+2019;2;"Brute";"Autres activites - industrie";337540;209259
+2019;2;"Brute";"Autres activites - entrepot";1093059;454357
+2019;2;"Brute";"Autres activites - bureau";456114;212547
+2019;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3997705;2090591
+2019;2;"CVS-CJO";"Exploitation agricole";832998;443529
+2019;2;"CVS-CJO";"Commerce";556778;377696
+2019;2;"CVS-CJO";"Commerce - hotels";98109;50595
+2019;2;"CVS-CJO";"Services publics";464956;376763
+2019;2;"CVS-CJO";"Autres activites";2142973;892603
+2019;2;"CVS-CJO";"Autres activites - industrie";408106;207739
+2019;2;"CVS-CJO";"Autres activites - entrepot";1043987;471231
+2019;2;"CVS-CJO";"Autres activites - bureau";528822;230729
+2019;1;"Brute";"Ensemble des locaux non-residentiels";3760682;2481413
+2019;1;"Brute";"Exploitation agricole";928331;531814
+2019;1;"Brute";"Commerce";612152;391526
+2019;1;"Brute";"Commerce - hotels";111578;78339
+2019;1;"Brute";"Services publics";543336;376923
+2019;1;"Brute";"Autres activites";1676861;1181081
+2019;1;"Brute";"Autres activites - industrie";321873;230354
+2019;1;"Brute";"Autres activites - entrepot";904242;544653
+2019;1;"Brute";"Autres activites - bureau";450746;406074
+2019;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3873467;2568887
+2019;1;"CVS-CJO";"Exploitation agricole";964972;577558
+2019;1;"CVS-CJO";"Commerce";618138;420280
+2019;1;"CVS-CJO";"Commerce - hotels";111578;78339
+2019;1;"CVS-CJO";"Services publics";578318;420703
+2019;1;"CVS-CJO";"Autres activites";1712039;1150346
+2019;1;"CVS-CJO";"Autres activites - industrie";358483;257714
+2019;1;"CVS-CJO";"Autres activites - entrepot";956864;423814
+2019;1;"CVS-CJO";"Autres activites - bureau";501307;407536
+2018;12;"Brute";"Ensemble des locaux non-residentiels";3129959;2167578
+2018;12;"Brute";"Exploitation agricole";617956;489318
+2018;12;"Brute";"Commerce";575654;383062
+2018;12;"Brute";"Commerce - hotels";128718;100179
+2018;12;"Brute";"Services publics";513950;381935
+2018;12;"Brute";"Autres activites";1422400;913240
+2018;12;"Brute";"Autres activites - industrie";345631;179748
+2018;12;"Brute";"Autres activites - entrepot";593273;324868
+2018;12;"Brute";"Autres activites - bureau";483496;408624
+2018;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3303333;2263819
+2018;12;"CVS-CJO";"Exploitation agricole";775824;543818
+2018;12;"CVS-CJO";"Commerce";594055;368159
+2018;12;"CVS-CJO";"Commerce - hotels";128718;100179
+2018;12;"CVS-CJO";"Services publics";509185;380855
+2018;12;"CVS-CJO";"Autres activites";1424269;970987
+2018;12;"CVS-CJO";"Autres activites - industrie";339449;211152
+2018;12;"CVS-CJO";"Autres activites - entrepot";615712;400323
+2018;12;"CVS-CJO";"Autres activites - bureau";435661;369112
+2018;11;"Brute";"Ensemble des locaux non-residentiels";3139136;2162710
+2018;11;"Brute";"Exploitation agricole";712360;551073
+2018;11;"Brute";"Commerce";659796;318582
+2018;11;"Brute";"Commerce - hotels";131268;23527
+2018;11;"Brute";"Services publics";512487;398955
+2018;11;"Brute";"Autres activites";1254495;894051
+2018;11;"Brute";"Autres activites - industrie";289834;243155
+2018;11;"Brute";"Autres activites - entrepot";536153;297839
+2018;11;"Brute";"Autres activites - bureau";428508;353057
+2018;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3126757;2090344
+2018;11;"CVS-CJO";"Exploitation agricole";731739;583614
+2018;11;"CVS-CJO";"Commerce";635452;291923
+2018;11;"CVS-CJO";"Commerce - hotels";131268;23527
+2018;11;"CVS-CJO";"Services publics";474088;384466
+2018;11;"CVS-CJO";"Autres activites";1285478;830341
+2018;11;"CVS-CJO";"Autres activites - industrie";306639;239396
+2018;11;"CVS-CJO";"Autres activites - entrepot";584008;294752
+2018;11;"CVS-CJO";"Autres activites - bureau";429314;309523
+2018;10;"Brute";"Ensemble des locaux non-residentiels";3674814;2803036
+2018;10;"Brute";"Exploitation agricole";688403;735777
+2018;10;"Brute";"Commerce";714404;455329
+2018;10;"Brute";"Commerce - hotels";95005;61340
+2018;10;"Brute";"Services publics";646509;447986
+2018;10;"Brute";"Autres activites";1625497;1163842
+2018;10;"Brute";"Autres activites - industrie";456733;334609
+2018;10;"Brute";"Autres activites - entrepot";607993;358674
+2018;10;"Brute";"Autres activites - bureau";560771;470559
+2018;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3302535;2579879
+2018;10;"CVS-CJO";"Exploitation agricole";716607;627855
+2018;10;"CVS-CJO";"Commerce";628645;458316
+2018;10;"CVS-CJO";"Commerce - hotels";95005;61340
+2018;10;"CVS-CJO";"Services publics";542204;401298
+2018;10;"CVS-CJO";"Autres activites";1415079;1092410
+2018;10;"CVS-CJO";"Autres activites - industrie";341117;284751
+2018;10;"CVS-CJO";"Autres activites - entrepot";550095;348890
+2018;10;"CVS-CJO";"Autres activites - bureau";468798;400764
+2018;9;"Brute";"Ensemble des locaux non-residentiels";3719082;1979503
+2018;9;"Brute";"Exploitation agricole";943563;436631
+2018;9;"Brute";"Commerce";629206;342744
+2018;9;"Brute";"Commerce - hotels";75905;39523
+2018;9;"Brute";"Services publics";492384;395590
+2018;9;"Brute";"Autres activites";1653928;804420
+2018;9;"Brute";"Autres activites - industrie";422261;229441
+2018;9;"Brute";"Autres activites - entrepot";673123;314176
+2018;9;"Brute";"Autres activites - bureau";558544;260803
+2018;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3459812;1846297
+2018;9;"CVS-CJO";"Exploitation agricole";934342;423151
+2018;9;"CVS-CJO";"Commerce";664195;316478
+2018;9;"CVS-CJO";"Commerce - hotels";75905;39523
+2018;9;"CVS-CJO";"Services publics";472019;336473
+2018;9;"CVS-CJO";"Autres activites";1389256;770195
+2018;9;"CVS-CJO";"Autres activites - industrie";331213;211066
+2018;9;"CVS-CJO";"Autres activites - entrepot";596237;262733
+2018;9;"CVS-CJO";"Autres activites - bureau";436189;294521
+2018;8;"Brute";"Ensemble des locaux non-residentiels";2916886;1384459
+2018;8;"Brute";"Exploitation agricole";621970;353306
+2018;8;"Brute";"Commerce";530668;207020
+2018;8;"Brute";"Commerce - hotels";90740;43573
+2018;8;"Brute";"Services publics";388267;241575
+2018;8;"Brute";"Autres activites";1375978;582323
+2018;8;"Brute";"Autres activites - industrie";309294;114512
+2018;8;"Brute";"Autres activites - entrepot";701721;263397
+2018;8;"Brute";"Autres activites - bureau";364963;204414
+2018;8;"CVS-CJO";"Ensemble des locaux non-residentiels";3028000;1594312
+2018;8;"CVS-CJO";"Exploitation agricole";646875;386123
+2018;8;"CVS-CJO";"Commerce";539267;273978
+2018;8;"CVS-CJO";"Commerce - hotels";90740;43573
+2018;8;"CVS-CJO";"Services publics";423264;293122
+2018;8;"CVS-CJO";"Autres activites";1418594;641089
+2018;8;"CVS-CJO";"Autres activites - industrie";322493;133372
+2018;8;"CVS-CJO";"Autres activites - entrepot";681037;325003
+2018;8;"CVS-CJO";"Autres activites - bureau";429467;244298
+2018;7;"Brute";"Ensemble des locaux non-residentiels";3505615;2399556
+2018;7;"Brute";"Exploitation agricole";950619;698594
+2018;7;"Brute";"Commerce";564354;379494
+2018;7;"Brute";"Commerce - hotels";119146;34377
+2018;7;"Brute";"Services publics";666063;437324
+2018;7;"Brute";"Autres activites";1324582;884123
+2018;7;"Brute";"Autres activites - industrie";380082;221452
+2018;7;"Brute";"Autres activites - entrepot";412108;316499
+2018;7;"Brute";"Autres activites - bureau";532391;346171
+2018;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3269061;2402212
+2018;7;"CVS-CJO";"Exploitation agricole";792243;694605
+2018;7;"CVS-CJO";"Commerce";524309;409921
+2018;7;"CVS-CJO";"Commerce - hotels";119146;34377
+2018;7;"CVS-CJO";"Services publics";633405;443127
+2018;7;"CVS-CJO";"Autres activites";1319104;854559
+2018;7;"CVS-CJO";"Autres activites - industrie";382105;248335
+2018;7;"CVS-CJO";"Autres activites - entrepot";385521;328030
+2018;7;"CVS-CJO";"Autres activites - bureau";448835;306122
+2018;6;"Brute";"Ensemble des locaux non-residentiels";3404546;2212527
+2018;6;"Brute";"Exploitation agricole";924837;452298
+2018;6;"Brute";"Commerce";610340;516783
+2018;6;"Brute";"Commerce - hotels";74782;94989
+2018;6;"Brute";"Services publics";487345;378021
+2018;6;"Brute";"Autres activites";1382021;865409
+2018;6;"Brute";"Autres activites - industrie";329583;267279
+2018;6;"Brute";"Autres activites - entrepot";664975;353959
+2018;6;"Brute";"Autres activites - bureau";387463;244173
+2018;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3119561;2065283
+2018;6;"CVS-CJO";"Exploitation agricole";762466;458881
+2018;6;"CVS-CJO";"Commerce";560408;472084
+2018;6;"CVS-CJO";"Commerce - hotels";74782;94989
+2018;6;"CVS-CJO";"Services publics";477903;334651
+2018;6;"CVS-CJO";"Autres activites";1318784;799667
+2018;6;"CVS-CJO";"Autres activites - industrie";318711;225196
+2018;6;"CVS-CJO";"Autres activites - entrepot";594983;326235
+2018;6;"CVS-CJO";"Autres activites - bureau";379312;237604
+2018;5;"Brute";"Ensemble des locaux non-residentiels";2688680;2402297
+2018;5;"Brute";"Exploitation agricole";734189;588123
+2018;5;"Brute";"Commerce";593670;482176
+2018;5;"Brute";"Commerce - hotels";60630;82334
+2018;5;"Brute";"Services publics";429268;496840
+2018;5;"Brute";"Autres activites";931555;834272
+2018;5;"Brute";"Autres activites - industrie";215214;212367
+2018;5;"Brute";"Autres activites - entrepot";405889;293527
+2018;5;"Brute";"Autres activites - bureau";310452;328378
+2018;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2950558;2431213
+2018;5;"CVS-CJO";"Exploitation agricole";723233;538742
+2018;5;"CVS-CJO";"Commerce";658654;458718
+2018;5;"CVS-CJO";"Commerce - hotels";60630;82334
+2018;5;"CVS-CJO";"Services publics";492999;536964
+2018;5;"CVS-CJO";"Autres activites";1075672;896789
+2018;5;"CVS-CJO";"Autres activites - industrie";258142;228901
+2018;5;"CVS-CJO";"Autres activites - entrepot";463811;353432
+2018;5;"CVS-CJO";"Autres activites - bureau";383984;337151
+2018;4;"Brute";"Ensemble des locaux non-residentiels";2574168;1592759
+2018;4;"Brute";"Exploitation agricole";608210;281579
+2018;4;"Brute";"Commerce";426007;328417
+2018;4;"Brute";"Commerce - hotels";84268;66478
+2018;4;"Brute";"Services publics";410098;229019
+2018;4;"Brute";"Autres activites";1129849;753489
+2018;4;"Brute";"Autres activites - industrie";261009;225928
+2018;4;"Brute";"Autres activites - entrepot";516369;196881
+2018;4;"Brute";"Autres activites - bureau";352471;330681
+2018;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2972549;1775301
+2018;4;"CVS-CJO";"Exploitation agricole";672404;338911
+2018;4;"CVS-CJO";"Commerce";471431;353371
+2018;4;"CVS-CJO";"Commerce - hotels";84268;66478
+2018;4;"CVS-CJO";"Services publics";480837;264330
+2018;4;"CVS-CJO";"Autres activites";1347877;818689
+2018;4;"CVS-CJO";"Autres activites - industrie";317890;253295
+2018;4;"CVS-CJO";"Autres activites - entrepot";646263;218540
+2018;4;"CVS-CJO";"Autres activites - bureau";453647;361561
+2018;3;"Brute";"Ensemble des locaux non-residentiels";3690571;2469179
+2018;3;"Brute";"Exploitation agricole";732301;591924
+2018;3;"Brute";"Commerce";657620;377386
+2018;3;"Brute";"Commerce - hotels";121180;47408
+2018;3;"Brute";"Services publics";632367;512115
+2018;3;"Brute";"Autres activites";1668283;987019
+2018;3;"Brute";"Autres activites - industrie";301519;285368
+2018;3;"Brute";"Autres activites - entrepot";773934;368502
+2018;3;"Brute";"Autres activites - bureau";592830;333149
+2018;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3602958;2335173
+2018;3;"CVS-CJO";"Exploitation agricole";694429;550828
+2018;3;"CVS-CJO";"Commerce";639772;377075
+2018;3;"CVS-CJO";"Commerce - hotels";121180;47408
+2018;3;"CVS-CJO";"Services publics";611422;511564
+2018;3;"CVS-CJO";"Autres activites";1657335;895706
+2018;3;"CVS-CJO";"Autres activites - industrie";290468;233225
+2018;3;"CVS-CJO";"Autres activites - entrepot";768071;333728
+2018;3;"CVS-CJO";"Autres activites - bureau";601664;333109
+2018;2;"Brute";"Ensemble des locaux non-residentiels";3044381;2289896
+2018;2;"Brute";"Exploitation agricole";709116;542025
+2018;2;"Brute";"Commerce";524170;431945
+2018;2;"Brute";"Commerce - hotels";73406;37924
+2018;2;"Brute";"Services publics";608712;325668
+2018;2;"Brute";"Autres activites";1202383;990165
+2018;2;"Brute";"Autres activites - industrie";339444;311197
+2018;2;"Brute";"Autres activites - entrepot";367683;317550
+2018;2;"Brute";"Autres activites - bureau";495256;361418
+2018;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3310389;2319191
+2018;2;"CVS-CJO";"Exploitation agricole";762800;540514
+2018;2;"CVS-CJO";"Commerce";598061;423378
+2018;2;"CVS-CJO";"Commerce - hotels";73406;37924
+2018;2;"CVS-CJO";"Services publics";650518;340595
+2018;2;"CVS-CJO";"Autres activites";1299010;1014704
+2018;2;"CVS-CJO";"Autres activites - industrie";412215;311126
+2018;2;"CVS-CJO";"Autres activites - entrepot";346111;317068
+2018;2;"CVS-CJO";"Autres activites - bureau";564139;393008
+2018;1;"Brute";"Ensemble des locaux non-residentiels";3382311;2210929
+2018;1;"Brute";"Exploitation agricole";1137774;465481
+2018;1;"Brute";"Commerce";540927;378869
+2018;1;"Brute";"Commerce - hotels";118201;57345
+2018;1;"Brute";"Services publics";427641;401223
+2018;1;"Brute";"Autres activites";1275967;965339
+2018;1;"Brute";"Autres activites - industrie";284433;170349
+2018;1;"Brute";"Autres activites - entrepot";507177;509693
+2018;1;"Brute";"Autres activites - bureau";484357;285297
+2018;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3493014;2248313
+2018;1;"CVS-CJO";"Exploitation agricole";1190411;472529
+2018;1;"CVS-CJO";"Commerce";542288;385813
+2018;1;"CVS-CJO";"Commerce - hotels";118201;57345
+2018;1;"CVS-CJO";"Services publics";445958;405608
+2018;1;"CVS-CJO";"Autres activites";1314357;984363
+2018;1;"CVS-CJO";"Autres activites - industrie";315017;191805
+2018;1;"CVS-CJO";"Autres activites - entrepot";553041;407652
+2018;1;"CVS-CJO";"Autres activites - bureau";541486;292383
+2017;12;"Brute";"Ensemble des locaux non-residentiels";3132186;2040139
+2017;12;"Brute";"Exploitation agricole";617730;393149
+2017;12;"Brute";"Commerce";735245;374905
+2017;12;"Brute";"Commerce - hotels";150875;56350
+2017;12;"Brute";"Services publics";463848;379869
+2017;12;"Brute";"Autres activites";1315360;892129
+2017;12;"Brute";"Autres activites - industrie";395830;215368
+2017;12;"Brute";"Autres activites - entrepot";446423;338976
+2017;12;"Brute";"Autres activites - bureau";473107;337784
+2017;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3290420;2147095
+2017;12;"CVS-CJO";"Exploitation agricole";789689;446074
+2017;12;"CVS-CJO";"Commerce";747122;355058
+2017;12;"CVS-CJO";"Commerce - hotels";150875;56350
+2017;12;"CVS-CJO";"Services publics";451273;370348
+2017;12;"CVS-CJO";"Autres activites";1302336;975615
+2017;12;"CVS-CJO";"Autres activites - industrie";377673;257426
+2017;12;"CVS-CJO";"Autres activites - entrepot";462664;422737
+2017;12;"CVS-CJO";"Autres activites - bureau";426142;293458
+2017;11;"Brute";"Ensemble des locaux non-residentiels";3222543;2307035
+2017;11;"Brute";"Exploitation agricole";714809;414365
+2017;11;"Brute";"Commerce";750472;481585
+2017;11;"Brute";"Commerce - hotels";152197;56152
+2017;11;"Brute";"Services publics";607478;395184
+2017;11;"Brute";"Autres activites";1149781;1015901
+2017;11;"Brute";"Autres activites - industrie";305719;334665
+2017;11;"Brute";"Autres activites - entrepot";375272;284111
+2017;11;"Brute";"Autres activites - bureau";468790;397124
+2017;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3271542;2254003
+2017;11;"CVS-CJO";"Exploitation agricole";760665;465605
+2017;11;"CVS-CJO";"Commerce";734098;473744
+2017;11;"CVS-CJO";"Commerce - hotels";152197;56152
+2017;11;"CVS-CJO";"Services publics";567027;391418
+2017;11;"CVS-CJO";"Autres activites";1209752;923236
+2017;11;"CVS-CJO";"Autres activites - industrie";336263;333293
+2017;11;"CVS-CJO";"Autres activites - entrepot";412069;283984
+2017;11;"CVS-CJO";"Autres activites - bureau";469053;332763
+2017;10;"Brute";"Ensemble des locaux non-residentiels";3970303;2359403
+2017;10;"Brute";"Exploitation agricole";834394;632176
+2017;10;"Brute";"Commerce";757245;386558
+2017;10;"Brute";"Commerce - hotels";91436;40130
+2017;10;"Brute";"Services publics";640046;349726
+2017;10;"Brute";"Autres activites";1738620;990872
+2017;10;"Brute";"Autres activites - industrie";279570;276304
+2017;10;"Brute";"Autres activites - entrepot";934091;473984
+2017;10;"Brute";"Autres activites - bureau";524959;240584
+2017;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3622463;2182303
+2017;10;"CVS-CJO";"Exploitation agricole";918446;532975
+2017;10;"CVS-CJO";"Commerce";692860;388608
+2017;10;"CVS-CJO";"Commerce - hotels";91436;40130
+2017;10;"CVS-CJO";"Services publics";544501;316235
+2017;10;"CVS-CJO";"Autres activites";1466656;944485
+2017;10;"CVS-CJO";"Autres activites - industrie";204371;230887
+2017;10;"CVS-CJO";"Autres activites - entrepot";815562;456833
+2017;10;"CVS-CJO";"Autres activites - bureau";431566;206199
+2017;9;"Brute";"Ensemble des locaux non-residentiels";3775242;2767979
+2017;9;"Brute";"Exploitation agricole";866335;495733
+2017;9;"Brute";"Commerce";651352;471177
+2017;9;"Brute";"Commerce - hotels";118172;50293
+2017;9;"Brute";"Services publics";487658;439372
+2017;9;"Brute";"Autres activites";1769898;1361501
+2017;9;"Brute";"Autres activites - industrie";391369;216839
+2017;9;"Brute";"Autres activites - entrepot";840979;886144
+2017;9;"Brute";"Autres activites - bureau";537550;258518
+2017;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3469289;2604455
+2017;9;"CVS-CJO";"Exploitation agricole";839701;492427
+2017;9;"CVS-CJO";"Commerce";666810;447707
+2017;9;"CVS-CJO";"Commerce - hotels";118172;50293
+2017;9;"CVS-CJO";"Services publics";470492;368758
+2017;9;"CVS-CJO";"Autres activites";1492286;1295563
+2017;9;"CVS-CJO";"Autres activites - industrie";306632;203118
+2017;9;"CVS-CJO";"Autres activites - entrepot";759901;742318
+2017;9;"CVS-CJO";"Autres activites - bureau";419129;280500
+2017;8;"Brute";"Ensemble des locaux non-residentiels";3955370;2217732
+2017;8;"Brute";"Exploitation agricole";833759;529230
+2017;8;"Brute";"Commerce";814538;485645
+2017;8;"Brute";"Commerce - hotels";136237;51674
+2017;8;"Brute";"Services publics";577034;446267
+2017;8;"Brute";"Autres activites";1730039;755796
+2017;8;"Brute";"Autres activites - industrie";590496;190125
+2017;8;"Brute";"Autres activites - entrepot";776832;317077
+2017;8;"Brute";"Autres activites - bureau";362711;248593
+2017;8;"CVS-CJO";"Ensemble des locaux non-residentiels";4125357;2461437
+2017;8;"CVS-CJO";"Exploitation agricole";851974;551314
+2017;8;"CVS-CJO";"Commerce";824949;553505
+2017;8;"CVS-CJO";"Commerce - hotels";136237;51674
+2017;8;"CVS-CJO";"Services publics";634152;508915
+2017;8;"CVS-CJO";"Autres activites";1814282;847703
+2017;8;"CVS-CJO";"Autres activites - industrie";628777;211840
+2017;8;"CVS-CJO";"Autres activites - entrepot";756291;383207
+2017;8;"CVS-CJO";"Autres activites - bureau";434195;315435
+2017;7;"Brute";"Ensemble des locaux non-residentiels";3399456;1513395
+2017;7;"Brute";"Exploitation agricole";917751;332133
+2017;7;"Brute";"Commerce";698318;301402
+2017;7;"Brute";"Commerce - hotels";102935;34157
+2017;7;"Brute";"Services publics";537112;244835
+2017;7;"Brute";"Autres activites";1246273;634996
+2017;7;"Brute";"Autres activites - industrie";314367;156802
+2017;7;"Brute";"Autres activites - entrepot";461519;178577
+2017;7;"Brute";"Autres activites - bureau";470387;299617
+2017;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3289707;1529252
+2017;7;"CVS-CJO";"Exploitation agricole";834178;318303
+2017;7;"CVS-CJO";"Commerce";708407;316037
+2017;7;"CVS-CJO";"Commerce - hotels";102935;34157
+2017;7;"CVS-CJO";"Services publics";504446;254306
+2017;7;"CVS-CJO";"Autres activites";1242676;640606
+2017;7;"CVS-CJO";"Autres activites - industrie";311644;178474
+2017;7;"CVS-CJO";"Autres activites - entrepot";444326;179108
+2017;7;"CVS-CJO";"Autres activites - bureau";389913;318455
+2017;6;"Brute";"Ensemble des locaux non-residentiels";3672070;2316315
+2017;6;"Brute";"Exploitation agricole";988206;487253
+2017;6;"Brute";"Commerce";950700;397319
+2017;6;"Brute";"Commerce - hotels";85432;80211
+2017;6;"Brute";"Services publics";435538;423504
+2017;6;"Brute";"Autres activites";1297625;1008048
+2017;6;"Brute";"Autres activites - industrie";305157;239628
+2017;6;"Brute";"Autres activites - entrepot";550327;484499
+2017;6;"Brute";"Autres activites - bureau";442141;283921
+2017;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3335886;2175021
+2017;6;"CVS-CJO";"Exploitation agricole";805281;520194
+2017;6;"CVS-CJO";"Commerce";880719;374866
+2017;6;"CVS-CJO";"Commerce - hotels";85432;80211
+2017;6;"CVS-CJO";"Services publics";427186;389858
+2017;6;"CVS-CJO";"Autres activites";1222700;890103
+2017;6;"CVS-CJO";"Autres activites - industrie";292968;198743
+2017;6;"CVS-CJO";"Autres activites - entrepot";484668;443104
+2017;6;"CVS-CJO";"Autres activites - bureau";427071;249218
+2017;5;"Brute";"Ensemble des locaux non-residentiels";3161392;1712648
+2017;5;"Brute";"Exploitation agricole";884955;421739
+2017;5;"Brute";"Commerce";600229;351792
+2017;5;"Brute";"Commerce - hotels";70318;38991
+2017;5;"Brute";"Services publics";540975;297248
+2017;5;"Brute";"Autres activites";1135231;641809
+2017;5;"Brute";"Autres activites - industrie";270101;166209
+2017;5;"Brute";"Autres activites - entrepot";505728;227594
+2017;5;"Brute";"Autres activites - bureau";359402;248006
+2017;5;"CVS-CJO";"Ensemble des locaux non-residentiels";3328344;1770069
+2017;5;"CVS-CJO";"Exploitation agricole";795237;377460
+2017;5;"CVS-CJO";"Commerce";623112;321039
+2017;5;"CVS-CJO";"Commerce - hotels";70318;38991
+2017;5;"CVS-CJO";"Services publics";607634;329261
+2017;5;"CVS-CJO";"Autres activites";1302361;742309
+2017;5;"CVS-CJO";"Autres activites - industrie";330955;179320
+2017;5;"CVS-CJO";"Autres activites - entrepot";576601;287641
+2017;5;"CVS-CJO";"Autres activites - bureau";457965;266790
+2017;4;"Brute";"Ensemble des locaux non-residentiels";2697686;2074018
+2017;4;"Brute";"Exploitation agricole";643596;500714
+2017;4;"Brute";"Commerce";587457;368244
+2017;4;"Brute";"Commerce - hotels";162704;68382
+2017;4;"Brute";"Services publics";449242;365419
+2017;4;"Brute";"Autres activites";1017389;839614
+2017;4;"Brute";"Autres activites - industrie";216531;166040
+2017;4;"Brute";"Autres activites - entrepot";294818;472514
+2017;4;"Brute";"Autres activites - bureau";506040;201060
+2017;4;"CVS-CJO";"Ensemble des locaux non-residentiels";3059112;2251036
+2017;4;"CVS-CJO";"Exploitation agricole";726990;523398
+2017;4;"CVS-CJO";"Commerce";666614;370802
+2017;4;"CVS-CJO";"Commerce - hotels";162704;68382
+2017;4;"CVS-CJO";"Services publics";519102;390940
+2017;4;"CVS-CJO";"Autres activites";1146406;965896
+2017;4;"CVS-CJO";"Autres activites - industrie";251941;188152
+2017;4;"CVS-CJO";"Autres activites - entrepot";360394;527229
+2017;4;"CVS-CJO";"Autres activites - bureau";655268;249100
+2017;3;"Brute";"Ensemble des locaux non-residentiels";3475001;2333362
+2017;3;"Brute";"Exploitation agricole";1014256;584381
+2017;3;"Brute";"Commerce";750722;301988
+2017;3;"Brute";"Commerce - hotels";129830;41836
+2017;3;"Brute";"Services publics";560224;276357
+2017;3;"Brute";"Autres activites";1149801;1170636
+2017;3;"Brute";"Autres activites - industrie";319830;192900
+2017;3;"Brute";"Autres activites - entrepot";531878;595588
+2017;3;"Brute";"Autres activites - bureau";298093;382146
+2017;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3241399;2194735
+2017;3;"CVS-CJO";"Exploitation agricole";892308;562261
+2017;3;"CVS-CJO";"Commerce";676517;310710
+2017;3;"CVS-CJO";"Commerce - hotels";129830;41836
+2017;3;"CVS-CJO";"Services publics";529395;274549
+2017;3;"CVS-CJO";"Autres activites";1143179;1047215
+2017;3;"CVS-CJO";"Autres activites - industrie";318198;157011
+2017;3;"CVS-CJO";"Autres activites - entrepot";534508;535771
+2017;3;"CVS-CJO";"Autres activites - bureau";309586;347652
+2017;2;"Brute";"Ensemble des locaux non-residentiels";2636491;1873414
+2017;2;"Brute";"Exploitation agricole";757338;433477
+2017;2;"Brute";"Commerce";443546;385843
+2017;2;"Brute";"Commerce - hotels";60128;64185
+2017;2;"Brute";"Services publics";360647;343625
+2017;2;"Brute";"Autres activites";1074960;710267
+2017;2;"Brute";"Autres activites - industrie";204081;220868
+2017;2;"Brute";"Autres activites - entrepot";645871;252666
+2017;2;"Brute";"Autres activites - bureau";225008;236732
+2017;2;"CVS-CJO";"Ensemble des locaux non-residentiels";2831810;1922111
+2017;2;"CVS-CJO";"Exploitation agricole";790676;441933
+2017;2;"CVS-CJO";"Commerce";503821;383717
+2017;2;"CVS-CJO";"Commerce - hotels";60128;64185
+2017;2;"CVS-CJO";"Services publics";382587;368577
+2017;2;"CVS-CJO";"Autres activites";1154726;727884
+2017;2;"CVS-CJO";"Autres activites - industrie";251841;221664
+2017;2;"CVS-CJO";"Autres activites - entrepot";600362;243452
+2017;2;"CVS-CJO";"Autres activites - bureau";249867;259069
+2017;1;"Brute";"Ensemble des locaux non-residentiels";2874476;1960330
+2017;1;"Brute";"Exploitation agricole";771324;490146
+2017;1;"Brute";"Commerce";640567;439005
+2017;1;"Brute";"Commerce - hotels";80913;35240
+2017;1;"Brute";"Services publics";459598;361344
+2017;1;"Brute";"Autres activites";1002983;669761
+2017;1;"Brute";"Autres activites - industrie";249252;171630
+2017;1;"Brute";"Autres activites - entrepot";453522;240580
+2017;1;"Brute";"Autres activites - bureau";300209;257550
+2017;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2969752;1955742
+2017;1;"CVS-CJO";"Exploitation agricole";823450;489641
+2017;1;"CVS-CJO";"Commerce";633673;440179
+2017;1;"CVS-CJO";"Commerce - hotels";80913;35240
+2017;1;"CVS-CJO";"Services publics";467986;341809
+2017;1;"CVS-CJO";"Autres activites";1044643;684113
+2017;1;"CVS-CJO";"Autres activites - industrie";273149;194400
+2017;1;"CVS-CJO";"Autres activites - entrepot";504901;199547
+2017;1;"CVS-CJO";"Autres activites - bureau";337436;264392
+2016;12;"Brute";"Ensemble des locaux non-residentiels";3064909;2213757
+2016;12;"Brute";"Exploitation agricole";628072;472849
+2016;12;"Brute";"Commerce";665157;472994
+2016;12;"Brute";"Commerce - hotels";104480;91047
+2016;12;"Brute";"Services publics";478919;431963
+2016;12;"Brute";"Autres activites";1292761;833879
+2016;12;"Brute";"Autres activites - industrie";372254;258317
+2016;12;"Brute";"Autres activites - entrepot";483535;262349
+2016;12;"Brute";"Autres activites - bureau";436972;313213
+2016;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3111935;2332600
+2016;12;"CVS-CJO";"Exploitation agricole";756141;547185
+2016;12;"CVS-CJO";"Commerce";614433;470277
+2016;12;"CVS-CJO";"Commerce - hotels";104480;91047
+2016;12;"CVS-CJO";"Services publics";467193;441684
+2016;12;"CVS-CJO";"Autres activites";1274168;873454
+2016;12;"CVS-CJO";"Autres activites - industrie";359633;316047
+2016;12;"CVS-CJO";"Autres activites - entrepot";500353;331513
+2016;12;"CVS-CJO";"Autres activites - bureau";395916;275850
+2016;11;"Brute";"Ensemble des locaux non-residentiels";2868002;1846815
+2016;11;"Brute";"Exploitation agricole";675960;446837
+2016;11;"Brute";"Commerce";506898;323857
+2016;11;"Brute";"Commerce - hotels";63512;25428
+2016;11;"Brute";"Services publics";497694;367000
+2016;11;"Brute";"Autres activites";1187448;708823
+2016;11;"Brute";"Autres activites - industrie";235251;180046
+2016;11;"Brute";"Autres activites - entrepot";571423;277635
+2016;11;"Brute";"Autres activites - bureau";380774;251143
+2016;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3033325;1821763
+2016;11;"CVS-CJO";"Exploitation agricole";780284;482646
+2016;11;"CVS-CJO";"Commerce";524335;291465
+2016;11;"CVS-CJO";"Commerce - hotels";63512;25428
+2016;11;"CVS-CJO";"Services publics";468674;338339
+2016;11;"CVS-CJO";"Autres activites";1260032;709313
+2016;11;"CVS-CJO";"Autres activites - industrie";261629;181883
+2016;11;"CVS-CJO";"Autres activites - entrepot";630450;283406
+2016;11;"CVS-CJO";"Autres activites - bureau";382832;234036
+2016;10;"Brute";"Ensemble des locaux non-residentiels";3446200;2346430
+2016;10;"Brute";"Exploitation agricole";651379;606570
+2016;10;"Brute";"Commerce";711143;334384
+2016;10;"Brute";"Commerce - hotels";75213;46486
+2016;10;"Brute";"Services publics";558353;358147
+2016;10;"Brute";"Autres activites";1525323;1046930
+2016;10;"Brute";"Autres activites - industrie";388332;177669
+2016;10;"Brute";"Autres activites - entrepot";744111;630819
+2016;10;"Brute";"Autres activites - bureau";392879;238442
+2016;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3172212;2172280
+2016;10;"CVS-CJO";"Exploitation agricole";750938;520398
+2016;10;"CVS-CJO";"Commerce";681629;324455
+2016;10;"CVS-CJO";"Commerce - hotels";75213;46486
+2016;10;"CVS-CJO";"Services publics";478952;335285
+2016;10;"CVS-CJO";"Autres activites";1260693;992142
+2016;10;"CVS-CJO";"Autres activites - industrie";271827;147180
+2016;10;"CVS-CJO";"Autres activites - entrepot";631031;599445
+2016;10;"CVS-CJO";"Autres activites - bureau";318726;219818
+2016;9;"Brute";"Ensemble des locaux non-residentiels";3542356;2069746
+2016;9;"Brute";"Exploitation agricole";860303;514177
+2016;9;"Brute";"Commerce";599679;337801
+2016;9;"Brute";"Commerce - hotels";81717;38197
+2016;9;"Brute";"Services publics";493076;466119
+2016;9;"Brute";"Autres activites";1589296;748098
+2016;9;"Brute";"Autres activites - industrie";379781;217980
+2016;9;"Brute";"Autres activites - entrepot";669739;285151
+2016;9;"Brute";"Autres activites - bureau";539776;244967
+2016;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3258280;1916780
+2016;9;"CVS-CJO";"Exploitation agricole";811530;526535
+2016;9;"CVS-CJO";"Commerce";597502;327584
+2016;9;"CVS-CJO";"Commerce - hotels";81717;38197
+2016;9;"CVS-CJO";"Services publics";481370;396216
+2016;9;"CVS-CJO";"Autres activites";1367878;666445
+2016;9;"CVS-CJO";"Autres activites - industrie";301959;205514
+2016;9;"CVS-CJO";"Autres activites - entrepot";613198;238673
+2016;9;"CVS-CJO";"Autres activites - bureau";420946;244579
+2016;8;"Brute";"Ensemble des locaux non-residentiels";3557120;1818961
+2016;8;"Brute";"Exploitation agricole";944931;497067
+2016;8;"Brute";"Commerce";898484;410201
+2016;8;"Brute";"Commerce - hotels";83308;61398
+2016;8;"Brute";"Services publics";513093;297203
+2016;8;"Brute";"Autres activites";1200612;614450
+2016;8;"Brute";"Autres activites - industrie";313024;195487
+2016;8;"Brute";"Autres activites - entrepot";597028;247032
+2016;8;"Brute";"Autres activites - bureau";290560;171931
+2016;8;"CVS-CJO";"Ensemble des locaux non-residentiels";3796473;1968856
+2016;8;"CVS-CJO";"Exploitation agricole";964832;475316
+2016;8;"CVS-CJO";"Commerce";928048;453404
+2016;8;"CVS-CJO";"Commerce - hotels";83308;61398
+2016;8;"CVS-CJO";"Services publics";582344;345788
+2016;8;"CVS-CJO";"Autres activites";1321249;694348
+2016;8;"CVS-CJO";"Autres activites - industrie";341475;211376
+2016;8;"CVS-CJO";"Autres activites - entrepot";580464;291209
+2016;8;"CVS-CJO";"Autres activites - bureau";351652;231344
+2016;7;"Brute";"Ensemble des locaux non-residentiels";2878403;1346292
+2016;7;"Brute";"Exploitation agricole";789569;335794
+2016;7;"Brute";"Commerce";620133;204473
+2016;7;"Brute";"Commerce - hotels";63922;14389
+2016;7;"Brute";"Services publics";410273;238119
+2016;7;"Brute";"Autres activites";1058427;567498
+2016;7;"Brute";"Autres activites - industrie";226550;149892
+2016;7;"Brute";"Autres activites - entrepot";515002;188879
+2016;7;"Brute";"Autres activites - bureau";316875;228727
+2016;7;"CVS-CJO";"Ensemble des locaux non-residentiels";2733400;1363419
+2016;7;"CVS-CJO";"Exploitation agricole";705719;306183
+2016;7;"CVS-CJO";"Commerce";621431;231471
+2016;7;"CVS-CJO";"Commerce - hotels";63922;14389
+2016;7;"CVS-CJO";"Services publics";380567;254389
+2016;7;"CVS-CJO";"Autres activites";1025683;571376
+2016;7;"CVS-CJO";"Autres activites - industrie";224719;169457
+2016;7;"CVS-CJO";"Autres activites - entrepot";508852;184976
+2016;7;"CVS-CJO";"Autres activites - bureau";257918;219909
+2016;6;"Brute";"Ensemble des locaux non-residentiels";3200902;2216334
+2016;6;"Brute";"Exploitation agricole";932263;519870
+2016;6;"Brute";"Commerce";669827;386015
+2016;6;"Brute";"Commerce - hotels";133802;57618
+2016;6;"Brute";"Services publics";464665;396969
+2016;6;"Brute";"Autres activites";1134148;912008
+2016;6;"Brute";"Autres activites - industrie";272551;260754
+2016;6;"Brute";"Autres activites - entrepot";500004;402682
+2016;6;"Brute";"Autres activites - bureau";361593;248572
+2016;6;"CVS-CJO";"Ensemble des locaux non-residentiels";2830958;2104216
+2016;6;"CVS-CJO";"Exploitation agricole";717782;558913
+2016;6;"CVS-CJO";"Commerce";599175;372677
+2016;6;"CVS-CJO";"Commerce - hotels";133802;57618
+2016;6;"CVS-CJO";"Services publics";453993;358103
+2016;6;"CVS-CJO";"Autres activites";1060008;814523
+2016;6;"CVS-CJO";"Autres activites - industrie";259813;212709
+2016;6;"CVS-CJO";"Autres activites - entrepot";439770;362330
+2016;6;"CVS-CJO";"Autres activites - bureau";346150;227221
+2016;5;"Brute";"Ensemble des locaux non-residentiels";2644429;2066069
+2016;5;"Brute";"Exploitation agricole";753367;533607
+2016;5;"Brute";"Commerce";544993;371085
+2016;5;"Brute";"Commerce - hotels";74611;40108
+2016;5;"Brute";"Services publics";440011;294987
+2016;5;"Brute";"Autres activites";906055;865839
+2016;5;"Brute";"Autres activites - industrie";242959;187819
+2016;5;"Brute";"Autres activites - entrepot";347813;382808
+2016;5;"Brute";"Autres activites - bureau";315282;295211
+2016;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2749671;2181448
+2016;5;"CVS-CJO";"Exploitation agricole";664825;510440
+2016;5;"CVS-CJO";"Commerce";565576;349237
+2016;5;"CVS-CJO";"Commerce - hotels";74611;40108
+2016;5;"CVS-CJO";"Services publics";487398;331746
+2016;5;"CVS-CJO";"Autres activites";1031872;990025
+2016;5;"CVS-CJO";"Autres activites - industrie";299196;202305
+2016;5;"CVS-CJO";"Autres activites - entrepot";390754;509154
+2016;5;"CVS-CJO";"Autres activites - bureau";408432;314085
+2016;4;"Brute";"Ensemble des locaux non-residentiels";3206020;1835979
+2016;4;"Brute";"Exploitation agricole";1106098;493949
+2016;4;"Brute";"Commerce";553785;437049
+2016;4;"Brute";"Commerce - hotels";82146;40694
+2016;4;"Brute";"Services publics";348994;305611
+2016;4;"Brute";"Autres activites";1197145;598766
+2016;4;"Brute";"Autres activites - industrie";279841;170847
+2016;4;"Brute";"Autres activites - entrepot";455443;211459
+2016;4;"Brute";"Autres activites - bureau";461861;216460
+2016;4;"CVS-CJO";"Ensemble des locaux non-residentiels";3430344;1928965
+2016;4;"CVS-CJO";"Exploitation agricole";1116180;502773
+2016;4;"CVS-CJO";"Commerce";571557;430415
+2016;4;"CVS-CJO";"Commerce - hotels";82146;40694
+2016;4;"CVS-CJO";"Services publics";404990;335785
+2016;4;"CVS-CJO";"Autres activites";1337617;659992
+2016;4;"CVS-CJO";"Autres activites - industrie";316746;195155
+2016;4;"CVS-CJO";"Autres activites - entrepot";546533;238597
+2016;4;"CVS-CJO";"Autres activites - bureau";601906;267082
+2016;3;"Brute";"Ensemble des locaux non-residentiels";2936540;2199497
+2016;3;"Brute";"Exploitation agricole";1036892;648277
+2016;3;"Brute";"Commerce";484985;374259
+2016;3;"Brute";"Commerce - hotels";65599;33369
+2016;3;"Brute";"Services publics";460927;383577
+2016;3;"Brute";"Autres activites";953735;792903
+2016;3;"Brute";"Autres activites - industrie";243748;226564
+2016;3;"Brute";"Autres activites - entrepot";399271;316337
+2016;3;"Brute";"Autres activites - bureau";310716;250005
+2016;3;"CVS-CJO";"Ensemble des locaux non-residentiels";2787119;2072110
+2016;3;"CVS-CJO";"Exploitation agricole";948895;599896
+2016;3;"CVS-CJO";"Commerce";450424;368638
+2016;3;"CVS-CJO";"Commerce - hotels";65599;33369
+2016;3;"CVS-CJO";"Services publics";434141;376276
+2016;3;"CVS-CJO";"Autres activites";953659;727300
+2016;3;"CVS-CJO";"Autres activites - industrie";244153;185177
+2016;3;"CVS-CJO";"Autres activites - entrepot";409124;278910
+2016;3;"CVS-CJO";"Autres activites - bureau";329609;242485
+2016;2;"Brute";"Ensemble des locaux non-residentiels";2932210;1758939
+2016;2;"Brute";"Exploitation agricole";938770;507054
+2016;2;"Brute";"Commerce";602088;305268
+2016;2;"Brute";"Commerce - hotels";123036;32665
+2016;2;"Brute";"Services publics";425148;260580
+2016;2;"Brute";"Autres activites";966206;685429
+2016;2;"Brute";"Autres activites - industrie";204912;139152
+2016;2;"Brute";"Autres activites - entrepot";476613;243983
+2016;2;"Brute";"Autres activites - bureau";284681;302294
+2016;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3105968;1839325
+2016;2;"CVS-CJO";"Exploitation agricole";945560;555838
+2016;2;"CVS-CJO";"Commerce";665848;328157
+2016;2;"CVS-CJO";"Commerce - hotels";123036;32665
+2016;2;"CVS-CJO";"Services publics";452251;313612
+2016;2;"CVS-CJO";"Autres activites";1042309;641718
+2016;2;"CVS-CJO";"Autres activites - industrie";262906;142426
+2016;2;"CVS-CJO";"Autres activites - entrepot";440195;229944
+2016;2;"CVS-CJO";"Autres activites - bureau";308516;310675
+2016;1;"Brute";"Ensemble des locaux non-residentiels";2837897;2400693
+2016;1;"Brute";"Exploitation agricole";748920;542973
+2016;1;"Brute";"Commerce";654840;472741
+2016;1;"Brute";"Commerce - hotels";58636;78565
+2016;1;"Brute";"Services publics";399611;390404
+2016;1;"Brute";"Autres activites";1034525;994249
+2016;1;"Brute";"Autres activites - industrie";267758;180605
+2016;1;"Brute";"Autres activites - entrepot";484510;425715
+2016;1;"Brute";"Autres activites - bureau";282257;387930
+2016;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3071292;2380958
+2016;1;"CVS-CJO";"Exploitation agricole";894040;529891
+2016;1;"CVS-CJO";"Commerce";692968;451565
+2016;1;"CVS-CJO";"Commerce - hotels";58636;78565
+2016;1;"CVS-CJO";"Services publics";394910;347481
+2016;1;"CVS-CJO";"Autres activites";1089374;1052021
+2016;1;"CVS-CJO";"Autres activites - industrie";282555;205567
+2016;1;"CVS-CJO";"Autres activites - entrepot";547648;365271
+2016;1;"CVS-CJO";"Autres activites - bureau";319073;413272
+2015;12;"Brute";"Ensemble des locaux non-residentiels";2780161;1583367
+2015;12;"Brute";"Exploitation agricole";732187;387328
+2015;12;"Brute";"Commerce";593015;360843
+2015;12;"Brute";"Commerce - hotels";145646;33240
+2015;12;"Brute";"Services publics";482775;260882
+2015;12;"Brute";"Autres activites";972181;574135
+2015;12;"Brute";"Autres activites - industrie";182757;146808
+2015;12;"Brute";"Autres activites - entrepot";477147;196415
+2015;12;"Brute";"Autres activites - bureau";312276;230912
+2015;12;"CVS-CJO";"Ensemble des locaux non-residentiels";2813570;1669580
+2015;12;"CVS-CJO";"Exploitation agricole";891373;448517
+2015;12;"CVS-CJO";"Commerce";534852;348091
+2015;12;"CVS-CJO";"Commerce - hotels";145646;33240
+2015;12;"CVS-CJO";"Services publics";461930;263621
+2015;12;"CVS-CJO";"Autres activites";925415;609351
+2015;12;"CVS-CJO";"Autres activites - industrie";182842;184942
+2015;12;"CVS-CJO";"Autres activites - entrepot";495174;252662
+2015;12;"CVS-CJO";"Autres activites - bureau";286271;200866
+2015;11;"Brute";"Ensemble des locaux non-residentiels";2840522;2166555
+2015;11;"Brute";"Exploitation agricole";783164;486130
+2015;11;"Brute";"Commerce";614509;495273
+2015;11;"Brute";"Commerce - hotels";100802;94439
+2015;11;"Brute";"Services publics";484712;423973
+2015;11;"Brute";"Autres activites";958137;758406
+2015;11;"Brute";"Autres activites - industrie";262139;194884
+2015;11;"Brute";"Autres activites - entrepot";399455;247066
+2015;11;"Brute";"Autres activites - bureau";296542;316453
+2015;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3002020;2146982
+2015;11;"CVS-CJO";"Exploitation agricole";916509;530193
+2015;11;"CVS-CJO";"Commerce";634791;471660
+2015;11;"CVS-CJO";"Commerce - hotels";100802;94439
+2015;11;"CVS-CJO";"Services publics";456443;397098
+2015;11;"CVS-CJO";"Autres activites";994277;748031
+2015;11;"CVS-CJO";"Autres activites - industrie";293156;196046
+2015;11;"CVS-CJO";"Autres activites - entrepot";443570;258319
+2015;11;"CVS-CJO";"Autres activites - bureau";303319;288887
+2015;10;"Brute";"Ensemble des locaux non-residentiels";3484013;1904934
+2015;10;"Brute";"Exploitation agricole";866138;510855
+2015;10;"Brute";"Commerce";639154;322991
+2015;10;"Brute";"Commerce - hotels";113485;21369
+2015;10;"Brute";"Services publics";505574;392338
+2015;10;"Brute";"Autres activites";1473149;678174
+2015;10;"Brute";"Autres activites - industrie";467970;200549
+2015;10;"Brute";"Autres activites - entrepot";527991;257950
+2015;10;"Brute";"Autres activites - bureau";477188;219676
+2015;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3171927;1785602
+2015;10;"CVS-CJO";"Exploitation agricole";944614;456859
+2015;10;"CVS-CJO";"Commerce";585192;320347
+2015;10;"CVS-CJO";"Commerce - hotels";113485;21369
+2015;10;"CVS-CJO";"Services publics";434976;390147
+2015;10;"CVS-CJO";"Autres activites";1207145;618249
+2015;10;"CVS-CJO";"Autres activites - industrie";318843;165712
+2015;10;"CVS-CJO";"Autres activites - entrepot";433655;240803
+2015;10;"CVS-CJO";"Autres activites - bureau";384089;203155
+2015;9;"Brute";"Ensemble des locaux non-residentiels";3269585;2237939
+2015;9;"Brute";"Exploitation agricole";882018;639203
+2015;9;"Brute";"Commerce";560918;384627
+2015;9;"Brute";"Commerce - hotels";100044;38687
+2015;9;"Brute";"Services publics";533948;451161
+2015;9;"Brute";"Autres activites";1292700;760948
+2015;9;"Brute";"Autres activites - industrie";379177;182509
+2015;9;"Brute";"Autres activites - entrepot";394057;375369
+2015;9;"Brute";"Autres activites - bureau";519466;203069
+2015;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3053609;2076937
+2015;9;"CVS-CJO";"Exploitation agricole";840804;628298
+2015;9;"CVS-CJO";"Commerce";564889;361047
+2015;9;"CVS-CJO";"Commerce - hotels";100044;38687
+2015;9;"CVS-CJO";"Services publics";519106;358399
+2015;9;"CVS-CJO";"Autres activites";1128810;729193
+2015;9;"CVS-CJO";"Autres activites - industrie";304546;171464
+2015;9;"CVS-CJO";"Autres activites - entrepot";361368;313566
+2015;9;"CVS-CJO";"Autres activites - bureau";401403;213288
+2015;8;"Brute";"Ensemble des locaux non-residentiels";2520812;1465677
+2015;8;"Brute";"Exploitation agricole";896135;454456
+2015;8;"Brute";"Commerce";523475;246609
+2015;8;"Brute";"Commerce - hotels";52601;20950
+2015;8;"Brute";"Services publics";352410;292608
+2015;8;"Brute";"Autres activites";748793;471201
+2015;8;"Brute";"Autres activites - industrie";187062;112364
+2015;8;"Brute";"Autres activites - entrepot";234631;195608
+2015;8;"Brute";"Autres activites - bureau";327100;163229
+2015;8;"CVS-CJO";"Ensemble des locaux non-residentiels";2776772;1597748
+2015;8;"CVS-CJO";"Exploitation agricole";942475;435360
+2015;8;"CVS-CJO";"Commerce";569514;310609
+2015;8;"CVS-CJO";"Commerce - hotels";52601;20950
+2015;8;"CVS-CJO";"Services publics";406705;346999
+2015;8;"CVS-CJO";"Autres activites";858078;504780
+2015;8;"CVS-CJO";"Autres activites - industrie";203546;118640
+2015;8;"CVS-CJO";"Autres activites - entrepot";228774;223632
+2015;8;"CVS-CJO";"Autres activites - bureau";397377;218742
+2015;7;"Brute";"Ensemble des locaux non-residentiels";3378749;1921006
+2015;7;"Brute";"Exploitation agricole";1122155;519509
+2015;7;"Brute";"Commerce";588280;255517
+2015;7;"Brute";"Commerce - hotels";81634;18348
+2015;7;"Brute";"Services publics";390550;332158
+2015;7;"Brute";"Autres activites";1277762;812236
+2015;7;"Brute";"Autres activites - industrie";300289;191123
+2015;7;"Brute";"Autres activites - entrepot";524564;375395
+2015;7;"Brute";"Autres activites - bureau";452909;245719
+2015;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3111695;1953332
+2015;7;"CVS-CJO";"Exploitation agricole";927925;505848
+2015;7;"CVS-CJO";"Commerce";555578;319237
+2015;7;"CVS-CJO";"Commerce - hotels";81634;18348
+2015;7;"CVS-CJO";"Services publics";376144;385498
+2015;7;"CVS-CJO";"Autres activites";1252048;742749
+2015;7;"CVS-CJO";"Autres activites - industrie";300271;213357
+2015;7;"CVS-CJO";"Autres activites - entrepot";526913;368277
+2015;7;"CVS-CJO";"Autres activites - bureau";362658;212461
+2015;6;"Brute";"Ensemble des locaux non-residentiels";3479706;2114529
+2015;6;"Brute";"Exploitation agricole";1284271;495876
+2015;6;"Brute";"Commerce";572015;412005
+2015;6;"Brute";"Commerce - hotels";69884;32337
+2015;6;"Brute";"Services publics";413814;473453
+2015;6;"Brute";"Autres activites";1209606;732631
+2015;6;"Brute";"Autres activites - industrie";336725;275350
+2015;6;"Brute";"Autres activites - entrepot";521050;210313
+2015;6;"Brute";"Autres activites - bureau";351830;246967
+2015;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3079499;2021613
+2015;6;"CVS-CJO";"Exploitation agricole";1003324;516878
+2015;6;"CVS-CJO";"Commerce";522442;392821
+2015;6;"CVS-CJO";"Commerce - hotels";69884;32337
+2015;6;"CVS-CJO";"Services publics";411747;426685
+2015;6;"CVS-CJO";"Autres activites";1141986;685229
+2015;6;"CVS-CJO";"Autres activites - industrie";317844;220412
+2015;6;"CVS-CJO";"Autres activites - entrepot";460615;185523
+2015;6;"CVS-CJO";"Autres activites - bureau";332081;232957
+2015;5;"Brute";"Ensemble des locaux non-residentiels";2553516;1481003
+2015;5;"Brute";"Exploitation agricole";970170;454093
+2015;5;"Brute";"Commerce";389184;230493
+2015;5;"Brute";"Commerce - hotels";50347;6184
+2015;5;"Brute";"Services publics";314228;284065
+2015;5;"Brute";"Autres activites";879936;511598
+2015;5;"Brute";"Autres activites - industrie";215622;146847
+2015;5;"Brute";"Autres activites - entrepot";429474;165157
+2015;5;"Brute";"Autres activites - bureau";234841;199595
+2015;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2801912;1585938
+2015;5;"CVS-CJO";"Exploitation agricole";985943;437428
+2015;5;"CVS-CJO";"Commerce";468686;213743
+2015;5;"CVS-CJO";"Commerce - hotels";50347;6184
+2015;5;"CVS-CJO";"Services publics";343631;315533
+2015;5;"CVS-CJO";"Autres activites";1003652;619234
+2015;5;"CVS-CJO";"Autres activites - industrie";271740;159516
+2015;5;"CVS-CJO";"Autres activites - entrepot";476290;228332
+2015;5;"CVS-CJO";"Autres activites - bureau";307637;223118
+2015;4;"Brute";"Ensemble des locaux non-residentiels";2626911;1701626
+2015;4;"Brute";"Exploitation agricole";996663;461312
+2015;4;"Brute";"Commerce";528870;265789
+2015;4;"Brute";"Commerce - hotels";95987;28052
+2015;4;"Brute";"Services publics";326773;293355
+2015;4;"Brute";"Autres activites";774603;680085
+2015;4;"Brute";"Autres activites - industrie";222503;224262
+2015;4;"Brute";"Autres activites - entrepot";321430;262311
+2015;4;"Brute";"Autres activites - bureau";230670;193512
+2015;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2765325;1752306
+2015;4;"CVS-CJO";"Exploitation agricole";985796;466524
+2015;4;"CVS-CJO";"Commerce";540880;255973
+2015;4;"CVS-CJO";"Commerce - hotels";95987;28052
+2015;4;"CVS-CJO";"Services publics";378645;326639
+2015;4;"CVS-CJO";"Autres activites";860004;703170
+2015;4;"CVS-CJO";"Autres activites - industrie";245268;259606
+2015;4;"CVS-CJO";"Autres activites - entrepot";376588;293562
+2015;4;"CVS-CJO";"Autres activites - bureau";302892;225328
+2015;3;"Brute";"Ensemble des locaux non-residentiels";2894310;1772545
+2015;3;"Brute";"Exploitation agricole";850122;497423
+2015;3;"Brute";"Commerce";583422;355338
+2015;3;"Brute";"Commerce - hotels";96332;39700
+2015;3;"Brute";"Services publics";398268;336243
+2015;3;"Brute";"Autres activites";1062499;582260
+2015;3;"Brute";"Autres activites - industrie";305794;154974
+2015;3;"Brute";"Autres activites - entrepot";416639;208952
+2015;3;"Brute";"Autres activites - bureau";340064;218333
+2015;3;"CVS-CJO";"Ensemble des locaux non-residentiels";2761878;1650863
+2015;3;"CVS-CJO";"Exploitation agricole";782393;444033
+2015;3;"CVS-CJO";"Commerce";536221;346649
+2015;3;"CVS-CJO";"Commerce - hotels";96332;39700
+2015;3;"CVS-CJO";"Services publics";374720;321991
+2015;3;"CVS-CJO";"Autres activites";1068544;538190
+2015;3;"CVS-CJO";"Autres activites - industrie";310224;127930
+2015;3;"CVS-CJO";"Autres activites - entrepot";437214;184785
+2015;3;"CVS-CJO";"Autres activites - bureau";367682;211678
+2015;2;"Brute";"Ensemble des locaux non-residentiels";2605901;1790069
+2015;2;"Brute";"Exploitation agricole";797440;359788
+2015;2;"Brute";"Commerce";390708;388253
+2015;2;"Brute";"Commerce - hotels";55023;24229
+2015;2;"Brute";"Services publics";473379;371235
+2015;2;"Brute";"Autres activites";944371;668956
+2015;2;"Brute";"Autres activites - industrie";193730;135923
+2015;2;"Brute";"Autres activites - entrepot";443963;342455
+2015;2;"Brute";"Autres activites - bureau";306678;190577
+2015;2;"CVS-CJO";"Ensemble des locaux non-residentiels";2819394;1901054
+2015;2;"CVS-CJO";"Exploitation agricole";836383;383690
+2015;2;"CVS-CJO";"Commerce";446802;398744
+2015;2;"CVS-CJO";"Commerce - hotels";55023;24229
+2015;2;"CVS-CJO";"Services publics";507773;418147
+2015;2;"CVS-CJO";"Autres activites";1028436;700473
+2015;2;"CVS-CJO";"Autres activites - industrie";255560;141001
+2015;2;"CVS-CJO";"Autres activites - entrepot";411562;316667
+2015;2;"CVS-CJO";"Autres activites - bureau";330451;207933
+2015;1;"Brute";"Ensemble des locaux non-residentiels";2166709;2099825
+2015;1;"Brute";"Exploitation agricole";583322;546562
+2015;1;"Brute";"Commerce";424623;359216
+2015;1;"Brute";"Commerce - hotels";58267;29927
+2015;1;"Brute";"Services publics";414141;400010
+2015;1;"Brute";"Autres activites";744624;792586
+2015;1;"Brute";"Autres activites - industrie";184546;152329
+2015;1;"Brute";"Autres activites - entrepot";282203;258996
+2015;1;"Brute";"Autres activites - bureau";277875;381261
+2015;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2355172;2087238
+2015;1;"CVS-CJO";"Exploitation agricole";697996;547787
+2015;1;"CVS-CJO";"Commerce";435324;340531
+2015;1;"CVS-CJO";"Commerce - hotels";58267;29927
+2015;1;"CVS-CJO";"Services publics";415392;356081
+2015;1;"CVS-CJO";"Autres activites";806460;842839
+2015;1;"CVS-CJO";"Autres activites - industrie";184857;173210
+2015;1;"CVS-CJO";"Autres activites - entrepot";326480;227770
+2015;1;"CVS-CJO";"Autres activites - bureau";317125;396274
+2014;12;"Brute";"Ensemble des locaux non-residentiels";2792030;1566250
+2014;12;"Brute";"Exploitation agricole";607049;443545
+2014;12;"Brute";"Commerce";593092;374198
+2014;12;"Brute";"Commerce - hotels";75815;67033
+2014;12;"Brute";"Services publics";512544;218829
+2014;12;"Brute";"Autres activites";1079345;528865
+2014;12;"Brute";"Autres activites - industrie";233376;108423
+2014;12;"Brute";"Autres activites - entrepot";512992;145662
+2014;12;"Brute";"Autres activites - bureau";332978;274781
+2014;12;"CVS-CJO";"Ensemble des locaux non-residentiels";2885257;1675366
+2014;12;"CVS-CJO";"Exploitation agricole";775240;501293
+2014;12;"CVS-CJO";"Commerce";551371;356345
+2014;12;"CVS-CJO";"Commerce - hotels";75815;67033
+2014;12;"CVS-CJO";"Services publics";506020;224976
+2014;12;"CVS-CJO";"Autres activites";1052626;592752
+2014;12;"CVS-CJO";"Autres activites - industrie";245180;141496
+2014;12;"CVS-CJO";"Autres activites - entrepot";533431;190395
+2014;12;"CVS-CJO";"Autres activites - bureau";305039;223553
+2014;11;"Brute";"Ensemble des locaux non-residentiels";2214983;2275796
+2014;11;"Brute";"Exploitation agricole";560510;674876
+2014;11;"Brute";"Commerce";386931;424420
+2014;11;"Brute";"Commerce - hotels";39580;55328
+2014;11;"Brute";"Services publics";363268;371800
+2014;11;"Brute";"Autres activites";904276;803151
+2014;11;"Brute";"Autres activites - industrie";329018;282511
+2014;11;"Brute";"Autres activites - entrepot";345446;276795
+2014;11;"Brute";"Autres activites - bureau";229812;243842
+2014;11;"CVS-CJO";"Ensemble des locaux non-residentiels";2421370;2263842
+2014;11;"CVS-CJO";"Exploitation agricole";706670;728565
+2014;11;"CVS-CJO";"Commerce";429161;400857
+2014;11;"CVS-CJO";"Commerce - hotels";39580;55328
+2014;11;"CVS-CJO";"Services publics";352302;343340
+2014;11;"CVS-CJO";"Autres activites";933237;791080
+2014;11;"CVS-CJO";"Autres activites - industrie";364899;281534
+2014;11;"CVS-CJO";"Autres activites - entrepot";382025;295884
+2014;11;"CVS-CJO";"Autres activites - bureau";239755;210907
+2014;10;"Brute";"Ensemble des locaux non-residentiels";3057482;2048565
+2014;10;"Brute";"Exploitation agricole";844581;554098
+2014;10;"Brute";"Commerce";549268;357464
+2014;10;"Brute";"Commerce - hotels";59070;49980
+2014;10;"Brute";"Services publics";499288;346025
+2014;10;"Brute";"Autres activites";1164347;789106
+2014;10;"Brute";"Autres activites - industrie";251896;227198
+2014;10;"Brute";"Autres activites - entrepot";570234;289667
+2014;10;"Brute";"Autres activites - bureau";342217;272243
+2014;10;"CVS-CJO";"Ensemble des locaux non-residentiels";2659840;1968093
+2014;10;"CVS-CJO";"Exploitation agricole";846267;544593
+2014;10;"CVS-CJO";"Commerce";468942;368858
+2014;10;"CVS-CJO";"Commerce - hotels";59070;49980
+2014;10;"CVS-CJO";"Services publics";420543;356686
+2014;10;"CVS-CJO";"Autres activites";924088;697956
+2014;10;"CVS-CJO";"Autres activites - industrie";166521;187893
+2014;10;"CVS-CJO";"Autres activites - entrepot";455697;266094
+2014;10;"CVS-CJO";"Autres activites - bureau";274153;235130
+2014;9;"Brute";"Ensemble des locaux non-residentiels";3120536;2131061
+2014;9;"Brute";"Exploitation agricole";877010;533191
+2014;9;"Brute";"Commerce";598584;363686
+2014;9;"Brute";"Commerce - hotels";64597;87432
+2014;9;"Brute";"Services publics";583774;436725
+2014;9;"Brute";"Autres activites";1061171;794156
+2014;9;"Brute";"Autres activites - industrie";299621;220983
+2014;9;"Brute";"Autres activites - entrepot";365635;311969
+2014;9;"Brute";"Autres activites - bureau";395917;261204
+2014;9;"CVS-CJO";"Ensemble des locaux non-residentiels";2966241;1959937
+2014;9;"CVS-CJO";"Exploitation agricole";841532;521809
+2014;9;"CVS-CJO";"Commerce";610417;342250
+2014;9;"CVS-CJO";"Commerce - hotels";64597;87432
+2014;9;"CVS-CJO";"Services publics";560164;344188
+2014;9;"CVS-CJO";"Autres activites";954128;751690
+2014;9;"CVS-CJO";"Autres activites - industrie";243461;205957
+2014;9;"CVS-CJO";"Autres activites - entrepot";333010;259173
+2014;9;"CVS-CJO";"Autres activites - bureau";301730;273034
+2014;8;"Brute";"Ensemble des locaux non-residentiels";2582705;1868344
+2014;8;"Brute";"Exploitation agricole";872837;534505
+2014;8;"Brute";"Commerce";508711;341488
+2014;8;"Brute";"Commerce - hotels";55607;32476
+2014;8;"Brute";"Services publics";404163;252362
+2014;8;"Brute";"Autres activites";796994;739034
+2014;8;"Brute";"Autres activites - industrie";217382;191767
+2014;8;"Brute";"Autres activites - entrepot";316252;395294
+2014;8;"Brute";"Autres activites - bureau";263359;151968
+2014;8;"CVS-CJO";"Ensemble des locaux non-residentiels";2899413;1970917
+2014;8;"CVS-CJO";"Exploitation agricole";937460;487851
+2014;8;"CVS-CJO";"Commerce";570142;380526
+2014;8;"CVS-CJO";"Commerce - hotels";55607;32476
+2014;8;"CVS-CJO";"Services publics";458704;299539
+2014;8;"CVS-CJO";"Autres activites";933107;803001
+2014;8;"CVS-CJO";"Autres activites - industrie";239982;196832
+2014;8;"CVS-CJO";"Autres activites - entrepot";312342;437254
+2014;8;"CVS-CJO";"Autres activites - bureau";321840;225183
+2014;7;"Brute";"Ensemble des locaux non-residentiels";3581276;2310436
+2014;7;"Brute";"Exploitation agricole";1022456;567932
+2014;7;"Brute";"Commerce";615081;510022
+2014;7;"Brute";"Commerce - hotels";84398;39548
+2014;7;"Brute";"Services publics";507588;471477
+2014;7;"Brute";"Autres activites";1436150;758160
+2014;7;"Brute";"Autres activites - industrie";311961;272141
+2014;7;"Brute";"Autres activites - entrepot";688350;225739
+2014;7;"Brute";"Autres activites - bureau";435840;260280
+2014;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3234428;2343825
+2014;7;"CVS-CJO";"Exploitation agricole";823087;517015
+2014;7;"CVS-CJO";"Commerce";570994;564689
+2014;7;"CVS-CJO";"Commerce - hotels";84398;39548
+2014;7;"CVS-CJO";"Services publics";489839;505366
+2014;7;"CVS-CJO";"Autres activites";1350508;756755
+2014;7;"CVS-CJO";"Autres activites - industrie";315842;302954
+2014;7;"CVS-CJO";"Autres activites - entrepot";688487;223353
+2014;7;"CVS-CJO";"Autres activites - bureau";343755;251990
+2014;6;"Brute";"Ensemble des locaux non-residentiels";3458337;2234733
+2014;6;"Brute";"Exploitation agricole";1007349;530414
+2014;6;"Brute";"Commerce";641536;360241
+2014;6;"Brute";"Commerce - hotels";75560;35679
+2014;6;"Brute";"Services publics";532449;483106
+2014;6;"Brute";"Autres activites";1277003;859261
+2014;6;"Brute";"Autres activites - industrie";330279;250884
+2014;6;"Brute";"Autres activites - entrepot";521152;234229
+2014;6;"Brute";"Autres activites - bureau";425571;374148
+2014;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3102657;2104471
+2014;6;"CVS-CJO";"Exploitation agricole";831981;541512
+2014;6;"CVS-CJO";"Commerce";612773;341708
+2014;6;"CVS-CJO";"Commerce - hotels";75560;35679
+2014;6;"CVS-CJO";"Services publics";504434;432959
+2014;6;"CVS-CJO";"Autres activites";1153469;788292
+2014;6;"CVS-CJO";"Autres activites - industrie";313463;196644
+2014;6;"CVS-CJO";"Autres activites - entrepot";465763;203682
+2014;6;"CVS-CJO";"Autres activites - bureau";394125;327776
+2014;5;"Brute";"Ensemble des locaux non-residentiels";2485553;1586100
+2014;5;"Brute";"Exploitation agricole";820976;404114
+2014;5;"Brute";"Commerce";443517;368158
+2014;5;"Brute";"Commerce - hotels";47111;76435
+2014;5;"Brute";"Services publics";388451;348676
+2014;5;"Brute";"Autres activites";832607;463256
+2014;5;"Brute";"Autres activites - industrie";193453;137994
+2014;5;"Brute";"Autres activites - entrepot";417946;119853
+2014;5;"Brute";"Autres activites - bureau";221207;205405
+2014;5;"CVS-CJO";"Ensemble des locaux non-residentiels";2582227;1709857
+2014;5;"CVS-CJO";"Exploitation agricole";744053;401575
+2014;5;"CVS-CJO";"Commerce";490609;365411
+2014;5;"CVS-CJO";"Commerce - hotels";47111;76435
+2014;5;"CVS-CJO";"Services publics";416429;388148
+2014;5;"CVS-CJO";"Autres activites";931136;554723
+2014;5;"CVS-CJO";"Autres activites - industrie";246089;150154
+2014;5;"CVS-CJO";"Autres activites - entrepot";456715;170028
+2014;5;"CVS-CJO";"Autres activites - bureau";291060;209596
+2014;4;"Brute";"Ensemble des locaux non-residentiels";2571174;1730862
+2014;4;"Brute";"Exploitation agricole";757900;463906
+2014;4;"Brute";"Commerce";420810;402221
+2014;4;"Brute";"Commerce - hotels";39948;35225
+2014;4;"Brute";"Services publics";360872;309993
+2014;4;"Brute";"Autres activites";1031594;553291
+2014;4;"Brute";"Autres activites - industrie";287564;160473
+2014;4;"Brute";"Autres activites - entrepot";449589;232638
+2014;4;"Brute";"Autres activites - bureau";294441;160180
+2014;4;"CVS-CJO";"Ensemble des locaux non-residentiels";2692490;1796836
+2014;4;"CVS-CJO";"Exploitation agricole";726386;462625
+2014;4;"CVS-CJO";"Commerce";419958;372023
+2014;4;"CVS-CJO";"Commerce - hotels";39948;35225
+2014;4;"CVS-CJO";"Services publics";410893;344464
+2014;4;"CVS-CJO";"Autres activites";1135253;617724
+2014;4;"CVS-CJO";"Autres activites - industrie";311313;190228
+2014;4;"CVS-CJO";"Autres activites - entrepot";521574;253499
+2014;4;"CVS-CJO";"Autres activites - bureau";391500;193474
+2014;3;"Brute";"Ensemble des locaux non-residentiels";2947964;2308738
+2014;3;"Brute";"Exploitation agricole";854607;604769
+2014;3;"Brute";"Commerce";581815;490811
+2014;3;"Brute";"Commerce - hotels";73234;40923
+2014;3;"Brute";"Services publics";597608;458129
+2014;3;"Brute";"Autres activites";913934;753290
+2014;3;"Brute";"Autres activites - industrie";259653;305972
+2014;3;"Brute";"Autres activites - entrepot";335022;230269
+2014;3;"Brute";"Autres activites - bureau";319259;217050
+2014;3;"CVS-CJO";"Ensemble des locaux non-residentiels";2899965;2208723
+2014;3;"CVS-CJO";"Exploitation agricole";843480;565626
+2014;3;"CVS-CJO";"Commerce";562985;481795
+2014;3;"CVS-CJO";"Commerce - hotels";73234;40923
+2014;3;"CVS-CJO";"Services publics";571296;446606
+2014;3;"CVS-CJO";"Autres activites";922204;714696
+2014;3;"CVS-CJO";"Autres activites - industrie";263892;255068
+2014;3;"CVS-CJO";"Autres activites - entrepot";360060;207507
+2014;3;"CVS-CJO";"Autres activites - bureau";352939;222966
+2014;2;"Brute";"Ensemble des locaux non-residentiels";2648906;2060374
+2014;2;"Brute";"Exploitation agricole";591977;551811
+2014;2;"Brute";"Commerce";593084;327283
+2014;2;"Brute";"Commerce - hotels";92042;59120
+2014;2;"Brute";"Services publics";411187;400131
+2014;2;"Brute";"Autres activites";1052655;778575
+2014;2;"Brute";"Autres activites - industrie";217877;217315
+2014;2;"Brute";"Autres activites - entrepot";510744;352126
+2014;2;"Brute";"Autres activites - bureau";324034;209134
+2014;2;"CVS-CJO";"Ensemble des locaux non-residentiels";2837983;2203927
+2014;2;"CVS-CJO";"Exploitation agricole";612494;584434
+2014;2;"CVS-CJO";"Commerce";661502;343564
+2014;2;"CVS-CJO";"Commerce - hotels";92042;59120
+2014;2;"CVS-CJO";"Services publics";437479;452078
+2014;2;"CVS-CJO";"Autres activites";1126508;823851
+2014;2;"CVS-CJO";"Autres activites - industrie";289950;229712
+2014;2;"CVS-CJO";"Autres activites - entrepot";472979;322408
+2014;2;"CVS-CJO";"Autres activites - bureau";351845;226630
+2014;1;"Brute";"Ensemble des locaux non-residentiels";2800219;2062170
+2014;1;"Brute";"Exploitation agricole";632154;524340
+2014;1;"Brute";"Commerce";553627;362085
+2014;1;"Brute";"Commerce - hotels";72960;40834
+2014;1;"Brute";"Services publics";545576;536177
+2014;1;"Brute";"Autres activites";1068865;634928
+2014;1;"Brute";"Autres activites - industrie";304333;189283
+2014;1;"Brute";"Autres activites - entrepot";324962;240414
+2014;1;"Brute";"Autres activites - bureau";439570;205237
+2014;1;"CVS-CJO";"Ensemble des locaux non-residentiels";2986067;2026907
+2014;1;"CVS-CJO";"Exploitation agricole";739653;543051
+2014;1;"CVS-CJO";"Commerce";539427;348260
+2014;1;"CVS-CJO";"Commerce - hotels";72960;40834
+2014;1;"CVS-CJO";"Services publics";546044;501655
+2014;1;"CVS-CJO";"Autres activites";1160943;633941
+2014;1;"CVS-CJO";"Autres activites - industrie";291589;214590
+2014;1;"CVS-CJO";"Autres activites - entrepot";385897;219112
+2014;1;"CVS-CJO";"Autres activites - bureau";512048;199299
+2013;12;"Brute";"Ensemble des locaux non-residentiels";3185814;2021575
+2013;12;"Brute";"Exploitation agricole";646531;489807
+2013;12;"Brute";"Commerce";633316;375575
+2013;12;"Brute";"Commerce - hotels";71677;63108
+2013;12;"Brute";"Services publics";495057;492651
+2013;12;"Brute";"Autres activites";1410907;659501
+2013;12;"Brute";"Autres activites - industrie";213324;150632
+2013;12;"Brute";"Autres activites - entrepot";388944;186283
+2013;12;"Brute";"Autres activites - bureau";808640;322583
+2013;12;"CVS-CJO";"Ensemble des locaux non-residentiels";3327950;2146777
+2013;12;"CVS-CJO";"Exploitation agricole";866870;551915
+2013;12;"CVS-CJO";"Commerce";613859;358933
+2013;12;"CVS-CJO";"Commerce - hotels";71677;63108
+2013;12;"CVS-CJO";"Services publics";482389;504891
+2013;12;"CVS-CJO";"Autres activites";1364832;731038
+2013;12;"CVS-CJO";"Autres activites - industrie";232926;201308
+2013;12;"CVS-CJO";"Autres activites - entrepot";399334;249099
+2013;12;"CVS-CJO";"Autres activites - bureau";733228;265626
+2013;11;"Brute";"Ensemble des locaux non-residentiels";2843689;2074961
+2013;11;"Brute";"Exploitation agricole";644741;518846
+2013;11;"Brute";"Commerce";556375;365422
+2013;11;"Brute";"Commerce - hotels";67245;48821
+2013;11;"Brute";"Services publics";495654;514488
+2013;11;"Brute";"Autres activites";1146921;671642
+2013;11;"Brute";"Autres activites - industrie";253635;204218
+2013;11;"Brute";"Autres activites - entrepot";464417;247685
+2013;11;"Brute";"Autres activites - bureau";428869;219741
+2013;11;"CVS-CJO";"Ensemble des locaux non-residentiels";3137871;2067037
+2013;11;"CVS-CJO";"Exploitation agricole";824978;544094
+2013;11;"CVS-CJO";"Commerce";632951;329865
+2013;11;"CVS-CJO";"Commerce - hotels";67245;48821
+2013;11;"CVS-CJO";"Services publics";492437;474667
+2013;11;"CVS-CJO";"Autres activites";1187505;718411
+2013;11;"CVS-CJO";"Autres activites - industrie";281855;202925
+2013;11;"CVS-CJO";"Autres activites - entrepot";503467;261889
+2013;11;"CVS-CJO";"Autres activites - bureau";450546;219697
+2013;10;"Brute";"Ensemble des locaux non-residentiels";3984239;2454218
+2013;10;"Brute";"Exploitation agricole";908852;538451
+2013;10;"Brute";"Commerce";890432;462993
+2013;10;"Brute";"Commerce - hotels";112689;70460
+2013;10;"Brute";"Services publics";747079;481104
+2013;10;"Brute";"Autres activites";1437877;967882
+2013;10;"Brute";"Autres activites - industrie";446281;303984
+2013;10;"Brute";"Autres activites - entrepot";450421;295398
+2013;10;"Brute";"Autres activites - bureau";541176;368494
+2013;10;"CVS-CJO";"Ensemble des locaux non-residentiels";3563100;2346623
+2013;10;"CVS-CJO";"Exploitation agricole";941242;518024
+2013;10;"CVS-CJO";"Commerce";784843;465056
+2013;10;"CVS-CJO";"Commerce - hotels";112689;70460
+2013;10;"CVS-CJO";"Services publics";654500;479736
+2013;10;"CVS-CJO";"Autres activites";1182515;883807
+2013;10;"CVS-CJO";"Autres activites - industrie";291179;251144
+2013;10;"CVS-CJO";"Autres activites - entrepot";358079;270499
+2013;10;"CVS-CJO";"Autres activites - bureau";428751;351244
+2013;9;"Brute";"Ensemble des locaux non-residentiels";3605528;2354273
+2013;9;"Brute";"Exploitation agricole";1211883;535243
+2013;9;"Brute";"Commerce";617783;421012
+2013;9;"Brute";"Commerce - hotels";61329;55221
+2013;9;"Brute";"Services publics";596787;551385
+2013;9;"Brute";"Autres activites";1179079;840181
+2013;9;"Brute";"Autres activites - industrie";306184;226301
+2013;9;"Brute";"Autres activites - entrepot";493989;338603
+2013;9;"Brute";"Autres activites - bureau";378910;275273
+2013;9;"CVS-CJO";"Ensemble des locaux non-residentiels";3499553;2144834
+2013;9;"CVS-CJO";"Exploitation agricole";1212287;521260
+2013;9;"CVS-CJO";"Commerce";657170;400195
+2013;9;"CVS-CJO";"Commerce - hotels";61329;55221
+2013;9;"CVS-CJO";"Services publics";557744;458130
+2013;9;"CVS-CJO";"Autres activites";1072352;765249
+2013;9;"CVS-CJO";"Autres activites - industrie";250559;209217
+2013;9;"CVS-CJO";"Autres activites - entrepot";454215;278244
+2013;9;"CVS-CJO";"Autres activites - bureau";285898;270693
+2013;8;"Brute";"Ensemble des locaux non-residentiels";2970419;1948506
+2013;8;"Brute";"Exploitation agricole";975973;480271
+2013;8;"Brute";"Commerce";567130;311911
+2013;8;"Brute";"Commerce - hotels";91214;32849
+2013;8;"Brute";"Services publics";541865;369011
+2013;8;"Brute";"Autres activites";885453;783755
+2013;8;"Brute";"Autres activites - industrie";257058;257754
+2013;8;"Brute";"Autres activites - entrepot";387174;337992
+2013;8;"Brute";"Autres activites - bureau";241219;188014
+2013;8;"CVS-CJO";"Ensemble des locaux non-residentiels";3310402;2033376
+2013;8;"CVS-CJO";"Exploitation agricole";1004820;449935
+2013;8;"CVS-CJO";"Commerce";616385;356498
+2013;8;"CVS-CJO";"Commerce - hotels";91214;32849
+2013;8;"CVS-CJO";"Services publics";620823;412591
+2013;8;"CVS-CJO";"Autres activites";1068374;814352
+2013;8;"CVS-CJO";"Autres activites - industrie";288540;258781
+2013;8;"CVS-CJO";"Autres activites - entrepot";394278;363620
+2013;8;"CVS-CJO";"Autres activites - bureau";297261;270980
+2013;7;"Brute";"Ensemble des locaux non-residentiels";3833435;2177929
+2013;7;"Brute";"Exploitation agricole";1418725;589551
+2013;7;"Brute";"Commerce";655335;356626
+2013;7;"Brute";"Commerce - hotels";74939;37576
+2013;7;"Brute";"Services publics";593145;451181
+2013;7;"Brute";"Autres activites";1166230;775194
+2013;7;"Brute";"Autres activites - industrie";244200;182666
+2013;7;"Brute";"Autres activites - entrepot";431402;406369
+2013;7;"Brute";"Autres activites - bureau";490628;186158
+2013;7;"CVS-CJO";"Ensemble des locaux non-residentiels";3353337;2191388
+2013;7;"CVS-CJO";"Exploitation agricole";1090851;524646
+2013;7;"CVS-CJO";"Commerce";585725;419615
+2013;7;"CVS-CJO";"Commerce - hotels";74939;37576
+2013;7;"CVS-CJO";"Services publics";586980;477490
+2013;7;"CVS-CJO";"Autres activites";1089781;769637
+2013;7;"CVS-CJO";"Autres activites - industrie";245572;202414
+2013;7;"CVS-CJO";"Autres activites - entrepot";421758;398860
+2013;7;"CVS-CJO";"Autres activites - bureau";383019;181960
+2013;6;"Brute";"Ensemble des locaux non-residentiels";3646707;2393781
+2013;6;"Brute";"Exploitation agricole";1189127;536577
+2013;6;"Brute";"Commerce";630552;454450
+2013;6;"Brute";"Commerce - hotels";104086;59107
+2013;6;"Brute";"Services publics";711610;486546
+2013;6;"Brute";"Autres activites";1115421;908767
+2013;6;"Brute";"Autres activites - industrie";233616;232274
+2013;6;"Brute";"Autres activites - entrepot";475226;364622
+2013;6;"Brute";"Autres activites - bureau";406581;311871
+2013;6;"CVS-CJO";"Ensemble des locaux non-residentiels";3281078;2268234
+2013;6;"CVS-CJO";"Exploitation agricole";989452;538085
+2013;6;"CVS-CJO";"Commerce";608240;439099
+2013;6;"CVS-CJO";"Commerce - hotels";104086;59107
+2013;6;"CVS-CJO";"Services publics";671910;430115
+2013;6;"CVS-CJO";"Autres activites";1011476;860935
+2013;6;"CVS-CJO";"Autres activites - industrie";220220;179789
+2013;6;"CVS-CJO";"Autres activites - entrepot";423825;317405
+2013;6;"CVS-CJO";"Autres activites - bureau";371480;295119
+2013;5;"Brute";"Ensemble des locaux non-residentiels";3386485;2460549
+2013;5;"Brute";"Exploitation agricole";1127881;528789
+2013;5;"Brute";"Commerce";592789;504206
+2013;5;"Brute";"Commerce - hotels";69235;64440
+2013;5;"Brute";"Services publics";594700;488989
+2013;5;"Brute";"Autres activites";1071113;929717
+2013;5;"Brute";"Autres activites - industrie";239516;260609
+2013;5;"Brute";"Autres activites - entrepot";443315;240311
+2013;5;"Brute";"Autres activites - bureau";388284;428800
+2013;5;"CVS-CJO";"Ensemble des locaux non-residentiels";3560763;2675939
+2013;5;"CVS-CJO";"Exploitation agricole";1029285;553652
+2013;5;"CVS-CJO";"Commerce";671024;536123
+2013;5;"CVS-CJO";"Commerce - hotels";69235;64440
+2013;5;"CVS-CJO";"Services publics";644818;560437
+2013;5;"CVS-CJO";"Autres activites";1215636;1025727
+2013;5;"CVS-CJO";"Autres activites - industrie";310946;283507
+2013;5;"CVS-CJO";"Autres activites - entrepot";478685;346510
+2013;5;"CVS-CJO";"Autres activites - bureau";516742;401393
+2013;4;"Brute";"Ensemble des locaux non-residentiels";3055966;2036199
+2013;4;"Brute";"Exploitation agricole";1014223;461837
+2013;4;"Brute";"Commerce";602481;511636
+2013;4;"Brute";"Commerce - hotels";71862;74474
+2013;4;"Brute";"Services publics";512540;441834
+2013;4;"Brute";"Autres activites";926721;615074
+2013;4;"Brute";"Autres activites - industrie";295903;159396
+2013;4;"Brute";"Autres activites - entrepot";373276;233162
+2013;4;"Brute";"Autres activites - bureau";257541;222512
+2013;4;"CVS-CJO";"Ensemble des locaux non-residentiels";3221267;2110256
+2013;4;"CVS-CJO";"Exploitation agricole";980818;466964
+2013;4;"CVS-CJO";"Commerce";607172;473081
+2013;4;"CVS-CJO";"Commerce - hotels";71862;74474
+2013;4;"CVS-CJO";"Services publics";596363;480600
+2013;4;"CVS-CJO";"Autres activites";1036914;689611
+2013;4;"CVS-CJO";"Autres activites - industrie";317468;193315
+2013;4;"CVS-CJO";"Autres activites - entrepot";426970;250068
+2013;4;"CVS-CJO";"Autres activites - bureau";347077;276036
+2013;3;"Brute";"Ensemble des locaux non-residentiels";3458161;2366939
+2013;3;"Brute";"Exploitation agricole";952137;406536
+2013;3;"Brute";"Commerce";621957;455769
+2013;3;"Brute";"Commerce - hotels";88790;27635
+2013;3;"Brute";"Services publics";578585;641836
+2013;3;"Brute";"Autres activites";1305480;845594
+2013;3;"Brute";"Autres activites - industrie";319115;281107
+2013;3;"Brute";"Autres activites - entrepot";640063;256100
+2013;3;"Brute";"Autres activites - bureau";346301;308386
+2013;3;"CVS-CJO";"Ensemble des locaux non-residentiels";3396379;2247592
+2013;3;"CVS-CJO";"Exploitation agricole";945566;370601
+2013;3;"CVS-CJO";"Commerce";597419;438358
+2013;3;"CVS-CJO";"Commerce - hotels";88790;27635
+2013;3;"CVS-CJO";"Services publics";555490;630747
+2013;3;"CVS-CJO";"Autres activites";1297904;807886
+2013;3;"CVS-CJO";"Autres activites - industrie";325226;233228
+2013;3;"CVS-CJO";"Autres activites - entrepot";698682;241081
+2013;3;"CVS-CJO";"Autres activites - bureau";386098;304223
+2013;2;"Brute";"Ensemble des locaux non-residentiels";3078442;1699119
+2013;2;"Brute";"Exploitation agricole";864924;326260
+2013;2;"Brute";"Commerce";592992;378197
+2013;2;"Brute";"Commerce - hotels";66182;31919
+2013;2;"Brute";"Services publics";567096;338532
+2013;2;"Brute";"Autres activites";1053432;648720
+2013;2;"Brute";"Autres activites - industrie";277107;181508
+2013;2;"Brute";"Autres activites - entrepot";328056;241999
+2013;2;"Brute";"Autres activites - bureau";448270;225212
+2013;2;"CVS-CJO";"Ensemble des locaux non-residentiels";3313251;1840096
+2013;2;"CVS-CJO";"Exploitation agricole";905214;358447
+2013;2;"CVS-CJO";"Commerce";659852;400327
+2013;2;"CVS-CJO";"Commerce - hotels";66182;31919
+2013;2;"CVS-CJO";"Services publics";610710;391607
+2013;2;"CVS-CJO";"Autres activites";1137475;689715
+2013;2;"CVS-CJO";"Autres activites - industrie";367018;197778
+2013;2;"CVS-CJO";"Autres activites - entrepot";304803;216750
+2013;2;"CVS-CJO";"Autres activites - bureau";489199;245709
+2013;1;"Brute";"Ensemble des locaux non-residentiels";3414459;1831871
+2013;1;"Brute";"Exploitation agricole";821510;275842
+2013;1;"Brute";"Commerce";738132;425876
+2013;1;"Brute";"Commerce - hotels";107055;62870
+2013;1;"Brute";"Services publics";633663;459796
+2013;1;"Brute";"Autres activites";1221158;657795
+2013;1;"Brute";"Autres activites - industrie";522149;181797
+2013;1;"Brute";"Autres activites - entrepot";355608;211036
+2013;1;"Brute";"Autres activites - bureau";343399;264962
+2013;1;"CVS-CJO";"Ensemble des locaux non-residentiels";3684266;1829598
+2013;1;"CVS-CJO";"Exploitation agricole";986247;292693
+2013;1;"CVS-CJO";"Commerce";722683;421760
+2013;1;"CVS-CJO";"Commerce - hotels";107055;62870
+2013;1;"CVS-CJO";"Services publics";634621;424823
+2013;1;"CVS-CJO";"Autres activites";1340715;690322
+2013;1;"CVS-CJO";"Autres activites - industrie";492186;205111
+2013;1;"CVS-CJO";"Autres activites - entrepot";431069;196353
+2013;1;"CVS-CJO";"Autres activites - bureau";403958;268625

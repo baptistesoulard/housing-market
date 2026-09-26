@@ -58,7 +58,7 @@ def test_empty_optional_frame_passes():
 
 
 def test_all_known_datasets_have_a_schema():
-    expected = {"sitadel", "ventes_ancien", "macro", "ecln", "dvf", "territoires"}
+    expected = {"sitadel", "ventes_ancien", "macro", "ecln", "dvf", "territoires", "locaux"}
     assert set(S.SCHEMAS) == expected
 
 
@@ -279,3 +279,18 @@ def test_territoires_est_le_second_dataset_par_departement():
         hd.validate("territoires", _ligne_territoires(Department="France"), lazy=False)
     with pytest.raises(Exception):      # un ratio a 130 % est une erreur de calcul, pas une donnee
         hd.validate("territoires", _ligne_territoires(TauxVacance=130.0), lazy=False)
+
+
+def test_locaux_porte_deux_niveaux_et_refuse_un_libelle_inconnu():
+    """Le contrat des locaux non résidentiels : une destination ou une sous-destination,
+    rien d'autre. Un libellé hors vocabulaire est le symptôme d'une nomenclature SDES qui
+    a bougé — il doit casser ici, pas produire une cinquième courbe sans nom."""
+    import pandas as pd
+    ligne = pd.DataFrame({"Date": ["2026-07-01"], "Type": ["Entrepôts"],
+                          "Niveau": ["Sous-destination"], "SurfacePermis": [610000],
+                          "SurfaceChantiers": [360000]})
+    assert hd.validate("locaux", ligne) is not None
+    with pytest.raises(Exception):
+        hd.validate("locaux", ligne.assign(Type=["Ensemble des locaux"]), lazy=False)
+    with pytest.raises(Exception):
+        hd.validate("locaux", ligne.assign(Niveau=["Total"]), lazy=False)

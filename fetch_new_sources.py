@@ -199,6 +199,39 @@ def build_sitadel():
     _write_if_changed(path, raw, rows=raw.count(chr(10)), label="sitadel")
 
 
+#: Les neuf libelles DESTINATION du fichier « Locaux » du SDES : l'ensemble, les quatre
+#: destinations du code de l'urbanisme et quatre sous-destinations. data_manager les
+#: traduit (LOCAUX_LIBELLES) ; un libelle qui disparait ou change doit donc arreter la
+#: collecte ICI, avant que le fichier precedent ne soit ecrase par une nomenclature que
+#: plus rien ne sait lire.
+LOCAUX_DESTINATIONS_SDES = (
+    "Ensemble des locaux non-residentiels", "Exploitation agricole", "Commerce",
+    "Commerce - hotels", "Services publics", "Autres activites",
+    "Autres activites - industrie", "Autres activites - entrepot",
+    "Autres activites - bureau",
+)
+
+
+def build_locaux():
+    """SIT@DEL2, locaux NON residentiels : surfaces autorisees et commencees, mensuel
+    national, brut et CVS-CJO, depuis 2013. Meme API DiDo que build_sitadel, jumeau exact
+    du fichier logements a une difference pres, qui compte : ces series sont en DATE DE
+    PRISE EN COMPTE (date d'enregistrement administratif), pas en date reelle estimee
+    comme les logements. Voir DataManager.build_locaux_from_manual_input."""
+    url = ("https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/"
+           "datafiles/375988c5-9886-4cdc-9c09-1594d4ec27c4/csv")
+    raw = _get(url).decode("utf-8", "replace")
+    header = raw.splitlines()[0] if raw else ""
+    for col in ("ANNEE", "MOIS", "NAT_SERIES", "DESTINATION", "SDP_AUT", "SDP_COM"):
+        if col not in header:
+            raise ValueError(f"en-tête DiDo inattendu (colonne '{col}' absente) : {header!r}")
+    absents = [d for d in LOCAUX_DESTINATIONS_SDES if f'"{d}"' not in raw]
+    if absents:
+        raise ValueError(f"nomenclature des locaux modifiée (libellés absents : {absents})")
+    path = os.path.join(OUT_DIR, "Donnees-mensuelles-nationales-Locaux.csv")
+    _write_if_changed(path, raw, rows=raw.count(chr(10)), label="locaux")
+
+
 def build_igedd():
     """IGEDD existing-home sales workbook — stable direct URL on cgedd.fr (the IGEDD
     page 'prix-immobilier-evolution-a-long-terme-a1048' links to it). Saved as-is; the
@@ -741,6 +774,7 @@ def build_territoires(force=False):
 
 BUILDERS = [
     build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
+    build_locaux,           # SIT@DEL2, locaux non residentiels (meme API)
     build_dvf,              # DVF (DGFiP) - CONDITIONNEL : ne descend le corpus que si la
                             #   source a ete republiee (voir la garde dans le builder)
     build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)

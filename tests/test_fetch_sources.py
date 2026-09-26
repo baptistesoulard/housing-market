@@ -117,7 +117,8 @@ def test_builders_registry_covers_every_source():
     (see `_dvf_publication`), which is what makes it cheap enough to belong here."""
     names = {b.__name__ for b in fns.BUILDERS}
     assert names == {
-        "build_sitadel", "build_dvf", "build_igedd", "build_macro_core", "build_prices",
+        "build_sitadel", "build_locaux", "build_dvf", "build_igedd", "build_macro_core",
+        "build_prices",
         "build_neuf_price", "build_credit_volume", "build_credit_demand_bls",
         "build_ecln", "build_renovation", "build_territoires",
     }

@@ -42,6 +42,23 @@ TERRITOIRES_MILLESIMES = {2012: 2007, 2017: 2012, 2023: 2017}
 # --- SIT@DEL construction data ---
 SITADEL_MANUAL_CSV = os.path.join("data_manual_input",
                                   "Donnees-mensuelles-nationales-Logements.csv")
+# --- SIT@DEL, locaux NON résidentiels (voir DataManager.ensure_locaux) ---
+LOCAUX_MANUAL_CSV = os.path.join("data_manual_input",
+                                 "Donnees-mensuelles-nationales-Locaux.csv")
+#: Libellé SDES -> (libellé du site, niveau). L'ensemble publié n'y figure pas : il se
+#: déduit EXACTEMENT de la somme des quatre destinations (vérifié au parse). Le vocabulaire
+#: du site est celui du contrat (housing_data.schema.LOCAUX_*), qui refuse tout autre nom.
+LOCAUX_LIBELLES = {
+    "Exploitation agricole": ("Exploitation agricole ou forestière", "Destination"),
+    "Commerce": ("Commerce et services", "Destination"),
+    "Services publics": ("Équipements publics", "Destination"),
+    "Autres activites": ("Industrie, entrepôts et bureaux", "Destination"),
+    "Commerce - hotels": ("Hôtels", "Sous-destination"),
+    "Autres activites - industrie": ("Industrie", "Sous-destination"),
+    "Autres activites - entrepot": ("Entrepôts", "Sous-destination"),
+    "Autres activites - bureau": ("Bureaux", "Sous-destination"),
+}
+LOCAUX_ENSEMBLE_SDES = "Ensemble des locaux non-residentiels"
 
 # --- Macro indicators (real, national) ---
 # Household confidence: INSEE monthly synthetic confidence indicator (CVS, base 100 =
@@ -359,6 +376,9 @@ class DataManager:
             # Profil INSEE des départements (voir ensure_territoires). Comme dvf, un
             # dataset par département : lu par SQL seulement, jamais dans read_frames().
             "territoires": os.path.join(self.data_dir, "territoires.csv"),
+            # Surfaces de locaux non résidentiels (voir ensure_locaux). National, mais
+            # même régime que les deux précédents : SQL seulement, hors du tuple.
+            "locaux": os.path.join(self.data_dir, "locaux.csv"),
         }
         
     def load_or_generate_all(self, force_regenerate=False):
@@ -398,11 +418,13 @@ class DataManager:
         # 2026-09-20 : une republication DGFiP n'aurait jamais atteint data/dvf.csv.
         self.ensure_dvf(force_rebuild=force_regenerate)
         self.ensure_territoires(force_rebuild=force_regenerate)
+        # Les locaux non résidentiels : même régime, hors du tuple, SQL seulement.
+        self.ensure_locaux(force_rebuild=force_regenerate)
         frames = {
             "sitadel": df_sitadel, "ventes_ancien": df_ventes_ancien, "macro": df_macro,
             "ecln": df_ecln,
         }
-        for key in ("dvf", "territoires"):
+        for key in ("dvf", "territoires", "locaux"):
             if os.path.exists(self.paths[key]):
                 # dtype=str sur Department : « 01 » perdrait son zéro, « 2A » n'est pas
                 # numérique — le contrat pandera le refuserait dans les deux cas.
@@ -723,6 +745,79 @@ class DataManager:
         return True, (f"Profil INSEE des départements assemblé : {len(t)} lignes, "
                       f"{t['Department'].nunique()} départements, millésimes "
                       f"{t['Millesime'].min()}-{t['Millesime'].max()}.")
+
+    @staticmethod
+    def build_locaux_from_manual_input(path=LOCAUX_MANUAL_CSV):
+        """Surfaces de locaux non résidentiels (SIT@DEL2), CVS-CJO, au format du site :
+        [Date, Type, Niveau, SurfacePermis, SurfaceChantiers], une ligne par mois et par
+        destination ou sous-destination.
+
+        Trois différences avec le fichier logements, et chacune se paie à la lecture :
+
+        * **date de prise en compte**, pas date réelle estimée. Le SDES date un
+          événement du jour où l'administration l'enregistre ; or une déclaration
+          d'ouverture de chantier remonte « généralement dans les dix-huit mois » (note
+          méthodologique Sitadel). Les m² commencés d'un mois sont donc des chantiers
+          ouverts au fil de l'année écoulée : un signal en RETARD et lissé. Les m²
+          autorisés, qui remontent vite, sont le signal frais. Et la série n'est pas
+          révisée : ce qui est publié reste ;
+        * **bruit** : les m² commencés varient de 19 % d'un mois à l'autre, contre 8,5 %
+          pour les m² de logements. Le séquentiel à 3 mois y vaut ±12,5 points : la
+          lecture est le cumul 12 mois (voir page_locaux) ;
+        * **additivité** : contrairement aux surfaces de LOGEMENTS (dont la somme des
+          types s'écarte de 0,8 % du total publié), la somme des quatre destinations
+          reproduit EXACTEMENT l'ensemble publié, CVS-CJO compris. C'est vérifié ici :
+          un écart signalerait une destination ajoutée ou renommée par le SDES, et un
+          total faux sur tout le site.
+
+        Les sous-destinations, elles, ne s'additionnent pas exactement à leur destination
+        en CVS-CJO (industrie + entrepôts + bureaux s'écartent jusqu'à 5 % des « autres
+        activités » sur un mois isolé, 0,7 % en cumul 12 mois) : chacune est désaisonnalisée
+        pour elle-même. Elles servent au ZOOM, jamais à reconstituer un total.
+        """
+        raw = pd.read_csv(path, sep=";")
+        raw = raw[raw["NAT_SERIES"] == "CVS-CJO"].copy()
+        raw["Date"] = pd.to_datetime(raw["ANNEE"].astype(str) + "-"
+                                     + raw["MOIS"].astype(str).str.zfill(2) + "-01")
+
+        ens = raw[raw["DESTINATION"] == LOCAUX_ENSEMBLE_SDES].set_index("Date")
+        dest = raw[raw["DESTINATION"].isin(
+            [k for k, (_, niv) in LOCAUX_LIBELLES.items() if niv == "Destination"])]
+        somme = dest.groupby("Date")[["SDP_AUT", "SDP_COM"]].sum()
+        for col in ("SDP_AUT", "SDP_COM"):
+            ecart = (somme[col] / ens[col].reindex(somme.index) - 1).abs().max()
+            if not ecart < 0.001:
+                raise ValueError(f"locaux : la somme des destinations s'écarte de "
+                                 f"{ecart:.2%} de l'ensemble publié ({col}) — nomenclature "
+                                 "SDES modifiée ?")
+
+        df = raw[raw["DESTINATION"].isin(LOCAUX_LIBELLES)].copy()
+        df["Type"] = df["DESTINATION"].map(lambda d: LOCAUX_LIBELLES[d][0])
+        df["Niveau"] = df["DESTINATION"].map(lambda d: LOCAUX_LIBELLES[d][1])
+        df = df.rename(columns={"SDP_AUT": "SurfacePermis", "SDP_COM": "SurfaceChantiers"})
+        return df[["Date", "Type", "Niveau", "SurfacePermis", "SurfaceChantiers"]] \
+            .sort_values(["Date", "Niveau", "Type"]).reset_index(drop=True)
+
+    def ensure_locaux(self, force_rebuild=False):
+        """Garantit data/locaux.csv à partir du fichier SDES, avec la même garde de
+        fraîcheur mtime-aware que les autres dérivés. Renvoie (succès, message) ;
+        l'absence de la source n'est pas une erreur (la page dit alors l'indisponibilité),
+        une nomenclature qui a bougé en est une — et l'ancien dérivé reste en place."""
+        cible = self.paths["locaux"]
+        if not os.path.exists(LOCAUX_MANUAL_CSV):
+            return True, (f"Fichier locaux introuvable (« {LOCAUX_MANUAL_CSV} ») : "
+                          "surfaces non résidentielles indisponibles.")
+        if os.path.exists(cible) and not force_rebuild:
+            if os.path.getmtime(LOCAUX_MANUAL_CSV) <= os.path.getmtime(cible):
+                return True, "Locaux non résidentiels déjà à jour."
+        try:
+            df = self.build_locaux_from_manual_input(LOCAUX_MANUAL_CSV)
+        except (ValueError, KeyError) as e:
+            return False, f"Locaux non résidentiels non reconstruits : {e}"
+        df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
+        df.to_csv(cible, index=False, encoding="utf-8")
+        return True, (f"Locaux non résidentiels importés : {df['Date'].nunique()} mois "
+                      f"({df['Date'].min()[:7]} → {df['Date'].max()[:7]}).")
 
     def ensure_ventes_ancien(self, force_rebuild=False):
         """

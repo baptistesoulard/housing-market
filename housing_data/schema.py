@@ -201,6 +201,35 @@ TERRITOIRES = DataFrameSchema(
     unique=["Department", "Millesime"],
 )
 
+# --- Locaux non residentiels (SIT@DEL2) : surfaces autorisees et commencees ---------
+# Deux NIVEAUX dans une meme colonne Type, et c'est le piege du dataset : les quatre
+# DESTINATIONS partitionnent l'ensemble (leur somme reproduit exactement le total publie
+# par le SDES, CVS-CJO compris), les SOUS-destinations sont DEJA COMPTEES dans leur
+# destination (hotels dans le commerce ; industrie, entrepots et bureaux forment les
+# « autres activites »). Sommer toutes les lignes compterait ces m2 deux fois : un total
+# se lit TOUJOURS sur `Niveau = 'Destination'`. Pas de ligne « Ensemble » stockee — elle
+# se deduit exactement.
+LOCAUX_DESTINATIONS = [
+    "Exploitation agricole ou forestière",
+    "Commerce et services",
+    "Équipements publics",
+    "Industrie, entrepôts et bureaux",
+]
+LOCAUX_SOUS_DESTINATIONS = ["Hôtels", "Industrie", "Entrepôts", "Bureaux"]
+LOCAUX = DataFrameSchema(
+    {
+        "Date": _DATE,
+        "Type": Column(str, Check.isin(LOCAUX_DESTINATIONS + LOCAUX_SOUS_DESTINATIONS),
+                       nullable=False, coerce=True),
+        "Niveau": Column(str, Check.isin(["Destination", "Sous-destination"]),
+                         nullable=False, coerce=True),
+        "SurfacePermis": _COUNT("Surface de plancher autorisee, m2 (SDP_AUT)"),
+        "SurfaceChantiers": _COUNT("Surface de plancher commencee, m2 (SDP_COM)"),
+    },
+    strict=False, coerce=True, name="locaux",
+    unique=["Date", "Type"],
+)
+
 SCHEMAS: dict[str, DataFrameSchema] = {
     "sitadel": SITADEL,
     "ventes_ancien": VENTES_ANCIEN,
@@ -208,6 +237,7 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "ecln": ECLN,
     "dvf": DVF,
     "territoires": TERRITOIRES,
+    "locaux": LOCAUX,
 }
 
 

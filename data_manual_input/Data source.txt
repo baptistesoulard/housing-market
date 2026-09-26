@@ -20,6 +20,15 @@ Statut : régénéré par fetch_new_sources.build_sitadel() via l'API DiDo (data
 
 
 
+Locaux non résidentiels autorisés et commencés : HousingMarket_v3\data_manual_input\Donnees-mensuelles-nationales-Locaux.csv
+Source : SDES — SIT@DEL2 (surfaces de plancher de locaux autorisées / commencées, séries mensuelles nationales, brutes et CVS-CJO, 4 destinations et 4 sous-destinations : hôtels, industrie, entrepôt, bureau)
+https://www.data.gouv.fr/datasets/locaux-non-residentiels-autorises-et-commences-series-mensuelles
+Statut : régénéré par fetch_new_sources.build_locaux() via l'API DiDo (datafile 375988c5-9886-4cdc-9c09-1594d4ec27c4) : https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/375988c5-9886-4cdc-9c09-1594d4ec27c4/csv
+Couverture : mensuel, 2013-01 -> 2026-07 (ajouté le 2026-09-26).
+⚠️ Données en DATE DE PRISE EN COMPTE (enregistrement administratif), pas en date réelle estimée comme les logements : les m² commencés arrivent en retard (une déclaration d'ouverture de chantier remonte en général dans les 18 mois) et ne sont pas révisés. Voir DataManager.build_locaux_from_manual_input.
+
+
+
 Indice de confiance des ménages : HousingMarket_v3\data_manual_input\insee-confiance-menages.csv
 Source : INSEE — Enquête mensuelle de conjoncture auprès des ménages, indicateur synthétique de confiance des ménages (CVS, base 100 = moyenne de longue période)
 idbank : 001587668
