@@ -684,3 +684,87 @@ site est fabriqué ». Un terme qui apparaît seulement dans du contenu JS-rendu
 libellés de cartes KPI, par exemple `R²`) n'est PAS annoté : le composant `dfn()`
 envisagé au départ a été abandonné une fois vérifié que la quasi-totalité du jargon vit
 dans des chapeaux statiques, où un `<abbr>` brut suffit sans dépendance JS.
+
+## Les m² — logements (lot B) et locaux non résidentiels (lot C), 2026-09-26
+
+**Pourquoi.** Un des publics du site fabrique des matériaux : il vend au m², pas au
+logement ni à la transaction. Demande de l'auteur, avec le tertiaire en priorité. Deux lots
+restés au backlog depuis le 2026-08-31 (plus haut) ont donc été livrés ensemble. Chiffres
+ci-dessous : données SIT@DEL à juillet 2026, millésime DiDo 2026-08.
+
+**Ce qui a été écarté d'abord : les m² dans l'ancien.** Mesuré sur DVF (surface
+approchée par prix médian ÷ prix médian au m², pondérée par les ventes, par type) : la
+surface moyenne d'une vente reste entre 70,3 et 73,5 m² de 2014 à 2025. Des « m² vendus »
+vaudraient donc les ventes × ~72 à ±2 % près — une courbe qui recopierait celle des
+ventes. Et des m² VENDUS ne sont pas des m² RÉNOVÉS : le signal rénovation du site reste
+l'enquête INSEE second œuvre (page Environnement). Pas de m² sur la page de l'ancien.
+
+**Lot B — les m² de logements, section « En m² : ce que voient les matériaux » du neuf.**
+Sur 12 mois contre 2010-19 : −30,7 % en m² commencés contre −22,8 % en logements ; en
+permis −27,7 % contre −18,0 %. `mesures.decomposition_surface` factorise EXACTEMENT
+M1/M0 = volume × mix × taille, convertis en points enchaînés : chantiers −22,8 / −5,3 /
+−2,6 pt, permis −18,0 / −4,1 / −5,5 pt. Deux lectures à retenir : sur les chantiers,
+l'écart invisible (≈ 8 pt) est aux deux tiers un effet de MIX — l'individuel pur passe de
+32,9 % à 25,1 % des logements commencés, les résidences de 6,8 % à 14,6 % — ce qui
+confirme la correction du 2026-08-31 ; sur les PERMIS, en revanche, la TAILLE domine
+(l'individuel pur autorisé passe de 121 à 106 m² par logement). La phrase publiée est
+rédigée par l'export, dans le sens de la donnée : « recule de 30,7 % » et non « recule
+de -30,7 % » (double négation relevée au premier rendu), la glose sur la maison
+individuelle n'est dite que si ce type porte la contribution la plus négative au mix
+(vérifié, pas supposé), et les libellés des barres sont neutres (« Mix — répartition
+entre les types ») pour ne pas mentir le jour où un effet change de signe. La section
+ignore le sélecteur de types, exprès : elle mesure leur mélange. Les indices (base 100 =
+2015) sont exportés en colonnes : une ligne par point faisait passer neuf.json de 602 à
+766 Ko, 639 Ko en colonnes.
+
+**Lot C — les locaux, page dédiée « Construction non résidentielle » (`/non-residentiel`).**
+Page et non section du neuf : le neuf parle du logement, et ni son taux de transformation
+ni l'ECLN ne s'appliquent aux locaux. Source : DiDo `375988c5-…`, même API que les
+logements (`fetch_new_sources.build_locaux`), dataset `locaux`, SQL seulement, hors du
+tuple de `read_frames()`. Ce qu'elle dit à juillet 2026 : 21,0 M m² de locaux commencés
+sur 12 mois contre 22,6 pour les logements, soit **48 % de la surface neuve** (45 % en
+moyenne 2013-19) ; −16 % sous la normale 2013-19 ; entrepôts **+12 %**, bureaux −33 %,
+agricole −33 %, industrie −13 % en chantiers mais **+34,5 % en autorisations**.
+
+Les choix, tous mesurés sur la source avant d'écrire une ligne :
+
+* **Date de prise en compte**, pas date réelle estimée (description DiDo). La note
+  méthodologique Sitadel : les déclarations d'ouverture de chantier remontent « généralement
+  dans les dix-huit mois ». Les m² commencés d'un mois sont donc des chantiers de l'année
+  écoulée, un signal en retard et lissé ; les m² autorisés sont le signal frais. La page
+  compare logements et locaux en cumul 12 mois seulement, et le dit.
+* **Régime 12 mois contre 12 précédents**, pas le séquentiel des pages logement : écart-type
+  mensuel des m² commencés 19,2 % (8,5 % pour les m² de logements), séquentiel à 3 mois
+  ±12,5 pt. `ana.RAW_TWELVE_MONTHS` réutilisé, son commentaire élargi aux séries CVS trop
+  bruitées.
+* **Référence 2013-19** (`page_locaux.REF_LOCAUX`) : la série démarre en 2013.
+* **Additivité — l'inverse des logements.** La somme des 4 destinations reproduit
+  l'ensemble publié à 0,00 %, CVS-CJO compris (vérifié à chaque parse : un écart > 0,1 %
+  casse la reconstruction et garde l'ancien dérivé). Les sous-destinations, elles, ne
+  s'additionnent pas exactement à leur destination en CVS-CJO (jusqu'à 5 % sur un mois,
+  0,7 % en cumul 12 mois) : zoom seulement. Le dataset porte `Niveau` ; un total se lit sur
+  `Niveau = 'Destination'`, jamais en sommant toutes les lignes (tests/test_locaux.py).
+* **Pas de taux de transformation** : m² commencés / m² autorisés = 66 % en 2013-19 pour
+  les locaux, contre 87 % pour les m² de logements. Projets abandonnés ou ouvertures jamais
+  déclarées : ces données ne séparent pas les deux. Non publié, et la page dit pourquoi.
+* **Pas de prévision.** Corrélation des taux de croissance 12 mois, chantiers(t) ~
+  autorisations(t−k) : pic à k = 0-3 mois sur l'ensemble (0,66), 6 mois sur les
+  entrepôts (0,53), 9 mois sur l'agricole (0,53). Suggestif, sur ~12 années
+  indépendantes, et JAMAIS passé par la porte d'entrée (erreur évitée hors échantillon) :
+  une piste, pas un résultat. À mesurer avant toute phrase qui parle d'avance.
+
+**Deux modes de panne rencontrés au rendu, tous deux silencieux au build :**
+
+1. Une entrée réactive (`Generators.input`, `view`) lue dans la cellule qui la définit y
+   vaut le GÉNÉRATEUR : `filterYears(rows, rangeL)` comparait des années à NaN, deux
+   graphiques sur trois sortaient sans une courbe. Garde ajoutée :
+   `test_une_entree_reactive_n_est_pas_lue_dans_sa_propre_cellule`.
+2. Le framework RETIRE « ² » des ancres (« En m² » → `en-m-…`), là où le `_ancre` des
+   tests, en NFKD, écrivait `en-m2`. Et contrairement à ce que ce fichier et le README
+   disaient, le build VALIDE les fragments des liens internes — par un simple
+   avertissement (« 1 broken link »), sans échouer. `_ancre` passe en NFD, la valeur
+   observée est figée dans `test_l_ancre_reproduit_le_build`.
+
+**Compteur.** Neuf JSON nationaux désormais : l'export doit annoncer `0/9`. La première
+régénération a touché `previsions.json` — attendu : il porte la liste des datasets de
+l'entrepôt (diagnostic), où `locaux` est apparu.

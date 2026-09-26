@@ -13,7 +13,9 @@ contradictoires. Une mesure datée va au journal.
 
 Site public **barometre-logement.com** (« Baromètre du Logement ») : conjoncture du
 logement en France, prévision des ventes anciennes à 12-18 mois, archive des prévisions
-face au réel, 101 pages départementales. Tout vient de sources publiques.
+face au réel, 101 pages départementales, et la construction non résidentielle en m² (un
+des publics fabrique des matériaux : il compte en m², pas en logements). Tout vient de
+sources publiques.
 
 ```
 fetch_new_sources.py ─► data_manual_input/ ─► DataManager ─► data/*.csv (versionnés) + *.parquet (non)
@@ -40,7 +42,7 @@ fetch_new_sources.py ─► data_manual_input/ ─► DataManager ─► data/*.
 
 ```bash
 python -m pytest tests/ -q                  # tout ; parité SQL sautée sans entrepôt, JS/SEO sans Node, API sans Flask
-python web/export/web_export.py             # doit annoncer 0/8 et 0/102 si rien n'a bougé
+python web/export/web_export.py             # doit annoncer 0/9 et 0/102 si rien n'a bougé
 python web/export/fond_de_carte.py          # réseau ; fond de carte des départements, à la main (rare)
 npm --prefix web/observable run build       # → dist/ (observable build + scripts/postbuild.mjs)
 npm --prefix web/observable run dev         # préversion ; ne sert PAS /data/departements/
@@ -55,9 +57,9 @@ python forecast_archive.py --calibrate      # recalibre la bande (deux passes, v
 |---|---|
 | `web_export.py` | orchestration seule : charger, un constructeur par page, écrire ce qui a changé |
 | `page_synthese.py` | `faits()` (seule fonction qui lit l'entrepôt) → `rediger()` (phrases, pastilles) |
-| `page_marches.py`, `page_contexte.py`, `page_previsions.py`, `page_archive.py`, `page_departements.py`, `page_carte.py` | une page (ou deux jumelles) chacun |
+| `page_marches.py`, `page_locaux.py`, `page_contexte.py`, `page_previsions.py`, `page_archive.py`, `page_departements.py`, `page_carte.py` | une page (ou deux jumelles) chacun |
 | `commun.py` | mise en forme FR (`pct`, `pt`, `milliers`, `abrege`, `mois_annee`), palette, chemins |
-| `mesures.py` | faits partagés entre pages (stock neuf, taux de transformation) — un calcul, un chiffre |
+| `mesures.py` | faits calculés une fois (stock neuf, taux de transformation, décomposition volume/mix/taille des m²) |
 | `verdict.py` | verdict du modèle et sa fiabilité, partagés par Synthèse, Prévision et accueil |
 | `reperes.py` | **tout ce que rien ne régénère** : repères saisis à la main et mesures datées |
 | `ecriture.py` | point d'écriture unique : arrondi à 9 chiffres significatifs, garde de contenu |
@@ -66,8 +68,8 @@ python forecast_archive.py --calibrate      # recalibre la bande (deux passes, v
 
 Règles :
 
-- **Le compteur « n/8 fichier(s) modifié(s) » est une alarme.** Un diff inattendu sur un
-  JSON national signale une divergence de calcul. Un refactor doit laisser `0/8` et
+- **Le compteur « n/9 fichier(s) modifié(s) » est une alarme.** Un diff inattendu sur un
+  JSON national signale une divergence de calcul. Un refactor doit laisser `0/9` et
   `0/102` ; une régénération délibérée se dit dans le commit. Les départements et le
   Markdown réécrit sont comptés à part, exprès.
 - **L'arrondi (`ecriture.arrondir_flottants`) est ce qui rend ce compteur fiable** entre
@@ -115,9 +117,9 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
   `warehouse.resolve()` ne retient un Parquet que s'il est au moins aussi récent que son
   CSV (un `git pull` qui apporte des CSV frais bascule donc en repli CSV — voulu).
 - **`read_frames()` / `load_or_generate_all()` rendent QUATRE frames, déballées par
-  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf` et `territoires` ne rejoignent
-  jamais ce tuple : SQL uniquement (l'export les relit à part pour le tableau des
-  sources). Ajouter ou retirer un dataset du tuple oblige à relire tous les déballages
+  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf`, `territoires` et `locaux` ne
+  rejoignent jamais ce tuple : SQL uniquement (l'export les relit à part pour le tableau
+  des sources). Ajouter ou retirer un dataset du tuple oblige à relire tous les déballages
   (`web_export.load_frames`, `forecast_archive` et `api/engine` qui lisent `[2]`). Les
   ventes second œuvre synthétiques (`sales`) et les ventes société (`company_sales`) en
   sont sorties le 2026-09-23, faute de consommateur (journal 01).
@@ -139,6 +141,15 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
 - **`DelaiEcoulement` (ECLN) est en TRIMESTRES** : ×3 pour des mois.
 - **Surfaces SIT@DEL** : les séries CVS de surface ne sont pas additives ; l'entrepôt garde
   la somme des 4 types (≈ 0,8 % sous le total SDES, voulu).
+- **Locaux non résidentiels (`locaux`)** : deux niveaux dans `Type`. Les 4 destinations
+  s'additionnent exactement au total SDES (vérifié au parse) ; les sous-destinations sont
+  DÉJÀ dans la leur. Un total se lit sur `Niveau = 'Destination'`, jamais en sommant tout.
+  Séries en **date de prise en compte** (chantiers en retard, non révisés) : on ne les
+  compare aux logements qu'en cumul 12 mois. Lecture 12 mois vs 12 précédents (trop
+  bruitées pour le séquentiel), niveau vs **2013-19** (la série démarre en 2013), et pas
+  de taux de transformation (journal 05).
+- **Pas de m² dans l'ancien** : la surface moyenne d'une vente ne bouge pas (des m²
+  vendus recopieraient les ventes) et m² vendus ≠ m² rénovés (journal 05).
 - **Ce qui reste en pandas y reste exprès** : `forecast.build_target` (référence),
   `tx12.resample("QS")` (transformation du modèle), les `groupby("Date").sum()` défensifs
   de `fit_tx_to_monthly`.
@@ -195,11 +206,14 @@ Détail et mesures : journal 06.
   aussi la **locale française de d3** (graduations « 1 000 », mois « janv. »). Vignettes :
   `{...TIP}` en option de marque, jamais en CSS. `multiLine` pose sa légende dès deux
   séries.
-- **Cinq façons de faire disparaître du contenu sans que le build le dise**, toutes
+- **Six façons de faire disparaître du contenu sans que le build le dise**, toutes
   couvertes par `tests/test_web_structure.py` : `viewof` (syntaxe notebook), erreur de
   syntaxe dans une cellule, identifiant non importé, bloc ```` ```js ```` collé sous un
-  `<div>` sans ligne vide, `display()` d'un `` html`` `` vide (affiche `null`). Et un
-  `${…}` n'est interpolé que dans le CONTENU d'un élément, jamais dans un attribut brut.
+  `<div>` sans ligne vide, `display()` d'un `` html`` `` vide (affiche `null`), une entrée
+  `view()`/`Generators.input()` lue dans SA propre cellule (elle y vaut le générateur).
+  Et un `${…}` n'est interpolé que dans le CONTENU d'un élément, jamais dans un attribut
+  brut. Une ancre morte, elle, sort en simple AVERTISSEMENT du build (« broken link ») :
+  le lire ; le framework retire « ² » et « œ » des ancres.
 - **Accent grave dans un littéral gabarit** (le CSS de `observablehq.config.js`, un
   commentaire HTML dans une cellule) : il referme la chaîne. Ne jamais citer un
   identifiant entre accents graves à ces endroits.
@@ -247,9 +261,9 @@ Détail et mesures : journal 06.
   de clé de cache à Streamlit) ; il reste testé.
 - **Chapeaux et `how_to_read`** (chaînes littérales de l'export) n'ont aucune garde contre
   la dérive, hors le seuil de mots.
-- **Surfaces SIT@DEL** dans l'entrepôt mais pas publiées (lot B : publier l'effet de mix,
-  pas le seul total) ; **tertiaire** non intégré (lot C, lecture SQL seulement, fenêtre
-  depuis 2013). Détails : journal 05.
+- **Locaux non résidentiels** : national seulement (le SDES publie région et
+  département, non branchés) ; le lien autorisations → chantiers par destination
+  (entrepôts, agricole) est une piste jamais passée par la porte d'entrée. Journal 05.
 
 ## Branches
 
@@ -264,7 +278,7 @@ Une seule branche, `main`. Pour savoir s'il reste quelque chose à fusionner, se
 | `02-invariants-historique.md` | l'histoire des invariants : concurrence, base 100, arrondi du JSON |
 | `03-api-http.md` | l'API, puis son abandon côté pages ; retrait du benchmark de CA |
 | `04-app-streamlit.md` | les onglets retirés en août, puis le retrait de l'app |
-| `05-site-public.md` | site public, SEO, Synthèse, pages de marché, audits de rédaction |
+| `05-site-public.md` | site public, SEO, Synthèse, pages de marché, audits de rédaction, m² et locaux |
 | `06-prevision-et-archive.md` | modèle, archive, bande, étage 1, prédicteurs testés, page de prévision |
 | `07-pages-departementales.md` | DVF, filtre, budget, courbe nationale, module Territoires |
 | `08-verification-et-branches.md` | recettes de parité, historique des branches |

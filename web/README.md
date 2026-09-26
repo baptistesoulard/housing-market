@@ -448,16 +448,16 @@ puisque la copie n'a lieu qu'au build. Vérifier sur `dist/`.
 
 ## Les pages et leurs contrôles
 
-Neuf pages de données (Synthèse, Marché du neuf, Marché de l'ancien, Carte des
-départements, Environnement & Financement, Actualités & Aides, Prévision & Scénarios,
-Prévisions passées, Données & Sources), trois pages rédigées (accueil, À propos, mentions
-légales) et les 101 pages départementales.
+Dix pages de données (Synthèse, Marché du neuf, Marché de l'ancien, Carte des
+départements, Construction non résidentielle, Environnement & Financement, Actualités &
+Aides, Prévision & Scénarios, Prévisions passées, Données & Sources), trois pages rédigées
+(accueil, À propos, mentions légales) et les 101 pages départementales.
 
 *Marché du neuf* et *Marché de l'ancien* sont **jumelles** : elles ouvrent sur les mêmes
 sections, portant le même intitulé et dans le même ordre, puis chacune ajoute ce qui lui
 est propre. Chaque section du socle renvoie à sa jumelle d'en face.
-`tests/test_web_structure.py` verrouille ce parallèle — le build, lui, ne valide pas les
-fragments d'URL et laisserait passer une ancre morte.
+`tests/test_web_structure.py` verrouille ce parallèle — le build, lui, ne signale une
+ancre morte que par un avertissement (« broken link »), sans échouer.
 
 - **Filtre de période** — une **frise à deux poignées dans la barre latérale**
   (`src/components/period.js`), montée sur **toutes** les pages. Son domaine vient de
