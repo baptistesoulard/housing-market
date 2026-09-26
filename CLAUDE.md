@@ -117,9 +117,9 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
   `warehouse.resolve()` ne retient un Parquet que s'il est au moins aussi récent que son
   CSV (un `git pull` qui apporte des CSV frais bascule donc en repli CSV — voulu).
 - **`read_frames()` / `load_or_generate_all()` rendent QUATRE frames, déballées par
-  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf`, `territoires` et `locaux` ne
-  rejoignent jamais ce tuple : SQL uniquement (l'export les relit à part pour le tableau
-  des sources). Ajouter ou retirer un dataset du tuple oblige à relire tous les déballages
+  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf`, `territoires`, `locaux` et
+  `locaux_departements` ne rejoignent jamais ce tuple : SQL uniquement (l'export les relit
+  à part pour le tableau des sources). Ajouter ou retirer un dataset du tuple oblige à relire tous les déballages
   (`web_export.load_frames`, `forecast_archive` et `api/engine` qui lisent `[2]`). Les
   ventes second œuvre synthétiques (`sales`) et les ventes société (`company_sales`) en
   sont sorties le 2026-09-23, faute de consommateur (journal 01).
@@ -148,6 +148,12 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
   compare aux logements qu'en cumul 12 mois. Lecture 12 mois vs 12 précédents (trop
   bruitées pour le séquentiel), niveau vs **2013-19** (la série démarre en 2013), et pas
   de taux de transformation (journal 05).
+- **Locaux par département (`locaux_departements`)** : BRUT seulement (le SDES ne publie
+  pas mieux), format large, une valeur mensuelle peut être négative. Les régions ne sont
+  PAS stockées : elles se recalculent en SQL (`queries.locaux_territoires`), exactes — le
+  fichier régional sert de contrôle à la collecte, un écart d'un m² l'arrête. Le niveau
+  de référence y a la définition de `analysis.level_context`, sinon deux « écarts à
+  2013-19 » différents s'affichent pour la même série (test de parité).
 - **Pas de m² dans l'ancien** : la surface moyenne d'une vente ne bouge pas (des m²
   vendus recopieraient les ventes) et m² vendus ≠ m² rénovés (journal 05).
 - **Ce qui reste en pandas y reste exprès** : `forecast.build_target` (référence),
@@ -222,9 +228,12 @@ Détail et mesures : journal 06.
   sens gagne.
 - **Pages départementales** : une route paramétrée (`src/departement/[code].md`) ;
   `FileAttachment` n'y marche pas (vérifié), les données sont copiées par `postbuild.mjs` à
-  `/data/departements/<code>.json` et lues par `fetch()`. Budget 10 Ko par fichier ; les 4
-  départements hors DVF (57, 67, 68, 976) ont une page qui explique l'absence. Pas de
-  prévision régionalisée.
+  `/data/departements/<code>.json` et lues par `fetch()`. Budget 10 Ko par fichier, écrits
+  en JSON COMPACT (`ecrire_si_change(compact=True)`), budget testé (`test_carte.py`) ; les 4
+  départements hors DVF (57, 67, 68, 976) ont une page qui explique l'absence — et
+  reçoivent quand même le profil INSEE et les locaux, qui ne dépendent pas de DVF. Les
+  repères partagés avec la carte (par habitant, rang) viennent des MÊMES fonctions
+  (`mesures.locaux_indicateurs`, `mesures.percentiles`). Pas de prévision régionalisée.
 - **Carte des départements** (`carte.md`, `page_carte.py`, `carteDepartements` et
   `nuageDepartements` dans `hm.js`) : elle DÉCRIT, elle ne classe pas — pas de score, pas
   de « gagnants » (la porte Territoires a été manquée, journal 07 ; la page le montre).
@@ -261,9 +270,10 @@ Détail et mesures : journal 06.
   de clé de cache à Streamlit) ; il reste testé.
 - **Chapeaux et `how_to_read`** (chaînes littérales de l'export) n'ont aucune garde contre
   la dérive, hors le seuil de mots.
-- **Locaux non résidentiels** : national seulement (le SDES publie région et
-  département, non branchés) ; le lien autorisations → chantiers par destination
-  (entrepôts, agricole) est une piste jamais passée par la porte d'entrée. Journal 05.
+- **Locaux non résidentiels** : le lien autorisations → chantiers par destination
+  (entrepôts, agricole) est une piste jamais passée par la porte d'entrée ; les séries
+  CVS-CJO régionales du SDES ne sont pas utilisées (le site ne lit le local qu'en cumul
+  12 mois brut). Journal 05.
 
 ## Branches
 

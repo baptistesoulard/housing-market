@@ -353,3 +353,19 @@ est descriptive, et elle montre la réfutation au lieu de la taire.
 * **Tableau statique** des 101 départements (prix au m², évolution sur un an), écrit par
   `postbuild.mjs` entre les marqueurs `hm:tableau-departements` : texte chiffré pour les
   robots, vue en tableau de la carte, et maillage interne vers les 101 pages.
+
+## JSON compact et bloc « locaux », 2026-09-26
+
+Le plus gros fichier départemental pesait 9,95 Ko pour un budget de 10 : plus rien n'y
+entrait. L'indentation en pesait près de la moitié. `ecrire_si_change(compact=True)` pour
+les 101 fichiers et l'annuaire : 919 → 476 Ko à contenu égal, puis 552 Ko avec le bloc des
+locaux non résidentiels (6,0 Ko au plus). La garde de contenu réécrit un fichier dont seul
+le FORMAT change, une fois (les 102 fichiers ont donc été régénérés d'un coup, à dessein).
+Le budget n'était qu'un avertissement de l'export ; il est désormais testé
+(`test_chaque_fichier_departemental_tient_son_budget`).
+
+Le bloc « Ce qui se construit ici, hors logement » vient du dataset `locaux_departements`
+(voir journal 05) et couvre les 101, y compris les quatre hors DVF : pour l'Alsace-Moselle,
+ce sont les premiers chiffres d'activité de la page. Le repère par habitant et son rang
+sont calculés par les mêmes fonctions que la carte (`mesures.locaux_indicateurs`,
+`mesures.percentiles`, déplacée de `page_carte`).

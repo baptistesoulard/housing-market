@@ -768,3 +768,41 @@ Les choix, tous mesurés sur la source avant d'écrire une ligne :
 **Compteur.** Neuf JSON nationaux désormais : l'export doit annoncer `0/9`. La première
 régénération a touché `previsions.json` — attendu : il porte la liste des datasets de
 l'entrepôt (diagnostic), où `locaux` est apparu.
+
+## Les locaux par région et par département, 2026-09-26 (suite)
+
+**Ce qui a été branché.** Les deux autres fichiers DiDo du jeu « Locaux non
+résidentiels » : départemental (`a301bf87-…`, 9 Mo, **brut seulement**) et régional
+(`b4da5bf2-…`, brut et CVS-CJO). Section « Par région » sur la page non résidentielle,
+trois mesures sur la carte (m² commencés pour 1 000 habitants, écart à 2013-19,
+entrepôts pour 1 000 habitants), un bloc sur les 101 pages départementales.
+
+**Les mesures qui ont décidé de l'architecture :**
+
+* Les régions valent EXACTEMENT la somme de leurs départements : 26 406 cellules (mois ×
+  région × destination), zéro écart ; et les 101 départements redonnent le national brut
+  au m² près, chaque année. D'où un seul dataset stocké, `locaux_departements`, les régions
+  recalculées en SQL, et le fichier régional utilisé comme CONTRÔLE à la collecte : un
+  écart d'un m² arrête `build_locaux_territoires`, le fichier précédent reste en place.
+  (Une première comparaison avait trouvé −12 % à +24 % d'écart au national : elle
+  cumulait sur un fichier national trié du plus récent au plus ancien. Trier avant de
+  cumuler.)
+* Le brut ne s'écarte du CVS-CJO national, en cumul 12 mois, que de 1,5 % au plus
+  (0,2 % aujourd'hui) : lire le local en cumul 12 mois brut est cohérent avec les cartes
+  nationales. La page ne pose pas de ligne « France » dans le tableau régional, qui
+  répéterait à un dixième près un chiffre déjà affiché plus haut.
+* Le niveau de référence doit avoir la définition de `ana.level_context` (moyenne des
+  cumuls 12 mois finissant en 2013-2019). La moyenne des années civiles, plus simple,
+  donnait −16,4 % quand la carte de tête dit −15,5 % : deux chiffres pour une même série.
+  Avec la bonne définition, la somme des régions (brut) dit −15,6 %. Test de parité.
+* Un département est BRUITÉ : sur 12 mois contre les 12 précédents, déciles à −35 % et
+  +80 % (médiane +9 %) ; Loire-Atlantique +67 % sur un an pour −5,5 % face à 2013-19. Le
+  coefficient de variation annuel médian d'un département vaut 26 %. Les pages mettent donc
+  le NIVEAU (vs 2013-19, et les années civiles en barres) devant la variation annuelle, et
+  la carte porte une note sur l'écart à 2013-19.
+* Le fichier départemental réduit (une ligne par mois × département, une colonne par
+  destination et par mesure) pèse 1,6 Mo au lieu de 9 ; trié par date, un mois nouveau
+  s'ajoute en fin de fichier. Une valeur mensuelle négative existe (−433 m² autorisés,
+  mai 2026 : une annulation) — le contrat n'a pas de borne basse.
+* Repères par habitant : rapport de SOMMES (France 308 m² commencés pour 1 000 habitants
+  sur 12 mois), Mayotte sans recensement dans ces jeux, donc hachurée sur ces mesures.
