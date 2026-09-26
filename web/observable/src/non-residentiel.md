@@ -24,8 +24,9 @@ Les logements ne sont qu'une partie de la construction neuve. L'autre, ce sont l
 entrepôts logistiques, bâtiments industriels et agricoles, commerces et hôtels, bureaux,
 écoles et hôpitaux. Leur cycle obéit à d'autres moteurs que celui du logement :
 l'investissement des entreprises, le commerce en ligne, la commande publique, les revenus
-agricoles, plutôt que le crédit immobilier des ménages. Cette page suit, destination par destination, les surfaces
-de locaux autorisées et mises en chantier en France, publiées chaque mois par le SDES
+agricoles, plutôt que le crédit immobilier des ménages. Cette page suit, destination par destination puis région
+par région, les surfaces de locaux autorisées et mises en chantier en France, publiées
+chaque mois par le SDES
 (<abbr title="Fichier du SDES qui recense les permis de construire et les mises en chantier — voir « Le vocabulaire » sur la page À propos">SIT@DEL</abbr>).
 
 Tout y est compté en mètres carrés de surface de plancher. Il n'y a pas d'autre unité pour
@@ -176,6 +177,61 @@ if (L.available) display(multiLine({
 if (L.available) display(tableau(SOUS, false));
 ```
 
+## 🗺️ Par région
+
+<div class="hm-caption">Les mêmes surfaces, région par région. Le SDES ne publie le détail géographique qu'en données brutes, non corrigées des variations saisonnières : sur douze mois cumulés, la différence avec les séries corrigées utilisées plus haut reste marginale, mais elle existe, et les totaux ne se recoupent donc pas au dixième près. Chaque région est exactement la somme de ses départements. Rapportée au nombre d'habitants, la surface dit l'intensité de la construction de locaux, que le seul volume confondrait avec la taille de la région.</div>
+
+<div class="hm-shortcuts"><a class="hm-shortcut" href="./carte">🗺️ les 101 départements sur la carte — mesures « Construction non résidentielle »</a></div>
+
+```js
+// Barres empilées par destination, régions triées par volume : l'empilement est exact
+// (les destinations partitionnent le total), et le tri ne classe rien — il range.
+const R = L.available ? L.regions : null;
+function regionsBarres() {
+  const noms = R.destinations.map((d) => d.type);
+  const rows = R.lignes.flatMap((l) => noms.map((n, i) => ({region: l.nom, type: n, value: (l.dest[i] ?? 0) / 1e6})));
+  const plot = Plot.plot({
+    width, height: 30 + 24 * R.lignes.length, marginLeft: 200, marginRight: 30,
+    x: {label: `Millions de m² commencés sur 12 mois, jusqu'à ${R.periode}`, grid: true},
+    y: {label: null, domain: R.lignes.map((l) => l.nom)},
+    color: {domain: noms, range: R.destinations.map((d) => d.color)},
+    marks: [
+      Plot.barX(rows, {y: "region", x: "value", fill: "type", order: noms, fillOpacity: 0.85,
+        title: (d) => `${d.region}\n${d.type} : ${nf1.format(d.value)} M m²`, tip: {...TIP}}),
+      Plot.ruleX([0]),
+    ]});
+  return html`<div>${legendStatic(R.destinations.map((d) => ({name: d.type, color: d.color})))}${withCsvExport(plot, rows, "locaux-par-region-destination")}</div>`;
+}
+function regionsTableau() {
+  return html`<div style="overflow-x:auto"><table class="hm-table">
+    <thead><tr><th>Région</th><th>Commencées, 12 mois</th><th>vs 12 mois précédents</th>
+      <th>vs ${L.ref_label}</th><th>Pour 1 000 habitants</th><th>Part de la France</th>
+      <th>Autorisées, 12 mois</th><th>vs ${L.ref_label}</th></tr></thead>
+    <tbody>${R.lignes.map((l) => html`<tr><td>${l.nom}</td>
+      <td>${l.SurfaceChantiers.val12_txt}</td><td>${l.SurfaceChantiers.yoy_txt}</td>
+      <td>${l.SurfaceChantiers.ecart_ref_txt}</td><td>${l.hab_txt}</td>
+      <td>${l.part == null ? "—" : nf1.format(l.part) + " %"}</td>
+      <td>${l.SurfacePermis.val12_txt}</td><td>${l.SurfacePermis.ecart_ref_txt}</td></tr>`)}</tbody>
+  </table></div>`;
+}
+```
+
+```js
+if (R) display(regionsBarres());
+```
+
+```js
+if (R) display(regionsTableau());
+```
+
+```js
+if (R) display(html`<div class="hm-caption">Données brutes par région, cumul des douze mois
+  jusqu'à ${R.periode} ; niveau comparé à la moyenne ${L.ref_label}, habitants du dernier
+  recensement (Mayotte n'y figure pas). Dans une petite région, un seul grand chantier
+  suffit à faire varier fortement la tendance : c'est le niveau, sur plusieurs années,
+  qui se lit le mieux.</div>`);
+```
+
 ## ⚠️ Ce que ces chiffres ne disent pas
 
 <div class="hm-caption">
@@ -183,7 +239,7 @@ if (L.available) display(tableau(SOUS, false));
 <p><b>Un taux de transformation.</b> La page du neuf rapporte les logements commencés aux logements autorisés. Pour les locaux, ce rapport existe, mais ces données ne permettent pas de dire ce qu'il mesure : une autorisation qui ne se retrouve pas en chantier peut être un projet abandonné, ou une ouverture de chantier jamais déclarée. Un ratio dont on ne sait pas ce qu'il mesure n'est pas publié.</p>
 <p><b>Une prévision.</b> Aucun modèle n'a été mesuré sur ces séries. La règle du site vaut ici comme ailleurs : pas de prévision publiée tant qu'un modèle n'a pas battu, sur des données qu'il n'a jamais vues, la simple prolongation du dernier niveau connu.</p>
 <p><b>L'entretien et la rénovation.</b> Seules figurent les surfaces de plancher créées par des travaux soumis à autorisation d'urbanisme. L'entretien, la rénovation ou le réaménagement de locaux existants n'y apparaissent pas.</p>
-<p><b>Le détail régional.</b> Le SDES publie aussi ces séries par région et par département ; cette page s'en tient au national, comme les autres pages de marché.</p>
+<p><b>Le détail local, à la même précision.</b> Les régions et les départements ne sont publiés qu'en données brutes, et un département compte assez peu de grands chantiers pour qu'un seul fasse varier son chiffre d'une année sur l'autre. Leur détail se lit en niveau et sur plusieurs années, pas comme une tendance.</p>
 </div>
 
 <div class="hm-meta">Source : ${L.source ?? "SDES — SIT@DEL2"} · dernier point : ${L.last_month ?? "—"} · période affichée : ${Math.min(...rangeL)}–${Math.max(...rangeL)}</div>

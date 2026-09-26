@@ -1,6 +1,534 @@
 {
-  "generated_at": "2026-09-26T09:05:37+00:00",
+  "generated_at": "2026-09-26T20:19:00+00:00",
   "available": true,
+  "regions": {
+    "date": "2026-07-01",
+    "periode": "juillet 2026",
+    "destinations": [
+      {
+        "type": "Exploitation agricole ou forestière",
+        "color": "#388E3C"
+      },
+      {
+        "type": "Commerce et services",
+        "color": "#E64A19"
+      },
+      {
+        "type": "Équipements publics",
+        "color": "#6A4C93"
+      },
+      {
+        "type": "Industrie, entrepôts et bureaux",
+        "color": "#1F78B4"
+      }
+    ],
+    "lignes": [
+      {
+        "nom": "Île-de-France",
+        "SurfaceChantiers": {
+          "val12": 2470448.0,
+          "val12_txt": "2,5 M m²",
+          "yoy": -1.3399361,
+          "yoy_txt": "-1,3 %",
+          "ecart_ref": -23.4500079,
+          "ecart_ref_txt": "-23,5 %"
+        },
+        "SurfacePermis": {
+          "val12": 4016996.0,
+          "val12_txt": "4,0 M m²",
+          "yoy": 11.6003343,
+          "yoy_txt": "+11,6 %",
+          "ecart_ref": -16.3146146,
+          "ecart_ref_txt": "-16,3 %"
+        },
+        "hab": 198.2,
+        "hab_txt": "198 m²",
+        "part": 11.8,
+        "dest": [
+          59689.0,
+          428176.0,
+          993444.0,
+          989139.0
+        ]
+      },
+      {
+        "nom": "Auvergne-Rhône-Alpes",
+        "SurfaceChantiers": {
+          "val12": 2292032.0,
+          "val12_txt": "2,3 M m²",
+          "yoy": -14.3245037,
+          "yoy_txt": "-14,3 %",
+          "ecart_ref": -28.6557737,
+          "ecart_ref_txt": "-28,7 %"
+        },
+        "SurfacePermis": {
+          "val12": 4124120.0,
+          "val12_txt": "4,1 M m²",
+          "yoy": -2.62799949,
+          "yoy_txt": "-2,6 %",
+          "ecart_ref": -15.2081671,
+          "ecart_ref_txt": "-15,2 %"
+        },
+        "hab": 279.3,
+        "hab_txt": "279 m²",
+        "part": 10.9,
+        "dest": [
+          287785.0,
+          554668.0,
+          458105.0,
+          991474.0
+        ]
+      },
+      {
+        "nom": "Nouvelle-Aquitaine",
+        "SurfaceChantiers": {
+          "val12": 2249779.0,
+          "val12_txt": "2,2 M m²",
+          "yoy": 24.018791,
+          "yoy_txt": "+24,0 %",
+          "ecart_ref": -15.4453404,
+          "ecart_ref_txt": "-15,4 %"
+        },
+        "SurfacePermis": {
+          "val12": 3821664.0,
+          "val12_txt": "3,8 M m²",
+          "yoy": 6.63886706,
+          "yoy_txt": "+6,6 %",
+          "ecart_ref": -4.92936139,
+          "ecart_ref_txt": "-4,9 %"
+        },
+        "hab": 365.8,
+        "hab_txt": "366 m²",
+        "part": 10.7,
+        "dest": [
+          594687.0,
+          468136.0,
+          396233.0,
+          790723.0
+        ]
+      },
+      {
+        "nom": "Pays de la Loire",
+        "SurfaceChantiers": {
+          "val12": 2241267.0,
+          "val12_txt": "2,2 M m²",
+          "yoy": 19.5774792,
+          "yoy_txt": "+19,6 %",
+          "ecart_ref": -8.6283278,
+          "ecart_ref_txt": "-8,6 %"
+        },
+        "SurfacePermis": {
+          "val12": 3053895.0,
+          "val12_txt": "3,1 M m²",
+          "yoy": -4.71344563,
+          "yoy_txt": "-4,7 %",
+          "ecart_ref": -8.37731062,
+          "ecart_ref_txt": "-8,4 %"
+        },
+        "hab": 573.6,
+        "hab_txt": "574 m²",
+        "part": 10.7,
+        "dest": [
+          620412.0,
+          355770.0,
+          308076.0,
+          957009.0
+        ]
+      },
+      {
+        "nom": "Occitanie",
+        "SurfaceChantiers": {
+          "val12": 2049982.0,
+          "val12_txt": "2,0 M m²",
+          "yoy": 11.0194546,
+          "yoy_txt": "+11,0 %",
+          "ecart_ref": -8.18553088,
+          "ecart_ref_txt": "-8,2 %"
+        },
+        "SurfacePermis": {
+          "val12": 3684691.0,
+          "val12_txt": "3,7 M m²",
+          "yoy": -8.36556972,
+          "yoy_txt": "-8,4 %",
+          "ecart_ref": 3.36472528,
+          "ecart_ref_txt": "+3,4 %"
+        },
+        "hab": 334.7,
+        "hab_txt": "335 m²",
+        "part": 9.8,
+        "dest": [
+          657055.0,
+          365967.0,
+          440483.0,
+          586477.0
+        ]
+      },
+      {
+        "nom": "Hauts-de-France",
+        "SurfaceChantiers": {
+          "val12": 1810976.0,
+          "val12_txt": "1,8 M m²",
+          "yoy": 12.1162012,
+          "yoy_txt": "+12,1 %",
+          "ecart_ref": -11.0853041,
+          "ecart_ref_txt": "-11,1 %"
+        },
+        "SurfacePermis": {
+          "val12": 3368576.0,
+          "val12_txt": "3,4 M m²",
+          "yoy": -27.6061416,
+          "yoy_txt": "-27,6 %",
+          "ecart_ref": -2.41996155,
+          "ecart_ref_txt": "-2,4 %"
+        },
+        "hab": 302.2,
+        "hab_txt": "302 m²",
+        "part": 8.6,
+        "dest": [
+          293631.0,
+          332139.0,
+          342851.0,
+          842355.0
+        ]
+      },
+      {
+        "nom": "Grand Est",
+        "SurfaceChantiers": {
+          "val12": 1760569.0,
+          "val12_txt": "1,8 M m²",
+          "yoy": 15.6254761,
+          "yoy_txt": "+15,6 %",
+          "ecart_ref": -8.80041487,
+          "ecart_ref_txt": "-8,8 %"
+        },
+        "SurfacePermis": {
+          "val12": 2621422.0,
+          "val12_txt": "2,6 M m²",
+          "yoy": -15.6768792,
+          "yoy_txt": "-15,7 %",
+          "ecart_ref": -6.38144985,
+          "ecart_ref_txt": "-6,4 %"
+        },
+        "hab": 316.5,
+        "hab_txt": "316 m²",
+        "part": 8.4,
+        "dest": [
+          238297.0,
+          302622.0,
+          248240.0,
+          971410.0
+        ]
+      },
+      {
+        "nom": "Bretagne",
+        "SurfaceChantiers": {
+          "val12": 1488994.0,
+          "val12_txt": "1,5 M m²",
+          "yoy": 1.22744723,
+          "yoy_txt": "+1,2 %",
+          "ecart_ref": -23.4383765,
+          "ecart_ref_txt": "-23,4 %"
+        },
+        "SurfacePermis": {
+          "val12": 2642046.0,
+          "val12_txt": "2,6 M m²",
+          "yoy": -2.80599576,
+          "yoy_txt": "-2,8 %",
+          "ecart_ref": -5.07523092,
+          "ecart_ref_txt": "-5,1 %"
+        },
+        "hab": 431.7,
+        "hab_txt": "432 m²",
+        "part": 7.1,
+        "dest": [
+          480292.0,
+          247036.0,
+          262687.0,
+          498978.0
+        ]
+      },
+      {
+        "nom": "Provence-Alpes-Côte d'Azur",
+        "SurfaceChantiers": {
+          "val12": 1249794.0,
+          "val12_txt": "1,2 M m²",
+          "yoy": 1.76083402,
+          "yoy_txt": "+1,8 %",
+          "ecart_ref": -4.19338287,
+          "ecart_ref_txt": "-4,2 %"
+        },
+        "SurfacePermis": {
+          "val12": 2273026.0,
+          "val12_txt": "2,3 M m²",
+          "yoy": -12.044775,
+          "yoy_txt": "-12,0 %",
+          "ecart_ref": 5.60689042,
+          "ecart_ref_txt": "+5,6 %"
+        },
+        "hab": 239.5,
+        "hab_txt": "240 m²",
+        "part": 6.0,
+        "dest": [
+          281889.0,
+          231533.0,
+          273498.0,
+          462874.0
+        ]
+      },
+      {
+        "nom": "Centre-Val de Loire",
+        "SurfaceChantiers": {
+          "val12": 1110761.0,
+          "val12_txt": "1,1 M m²",
+          "yoy": 27.8941854,
+          "yoy_txt": "+27,9 %",
+          "ecart_ref": 16.8575269,
+          "ecart_ref_txt": "+16,9 %"
+        },
+        "SurfacePermis": {
+          "val12": 1776902.0,
+          "val12_txt": "1,8 M m²",
+          "yoy": -10.7825062,
+          "yoy_txt": "-10,8 %",
+          "ecart_ref": 27.0189311,
+          "ecart_ref_txt": "+27,0 %"
+        },
+        "hab": 429.4,
+        "hab_txt": "429 m²",
+        "part": 5.3,
+        "dest": [
+          136597.0,
+          141642.0,
+          122002.0,
+          710517.0
+        ]
+      },
+      {
+        "nom": "Normandie",
+        "SurfaceChantiers": {
+          "val12": 955012.0,
+          "val12_txt": "955 000 m²",
+          "yoy": -13.6231339,
+          "yoy_txt": "-13,6 %",
+          "ecart_ref": -29.8110265,
+          "ecart_ref_txt": "-29,8 %"
+        },
+        "SurfacePermis": {
+          "val12": 1849693.0,
+          "val12_txt": "1,8 M m²",
+          "yoy": -3.56222077,
+          "yoy_txt": "-3,6 %",
+          "ecart_ref": -7.91284044,
+          "ecart_ref_txt": "-7,9 %"
+        },
+        "hab": 285.4,
+        "hab_txt": "285 m²",
+        "part": 4.6,
+        "dest": [
+          185669.0,
+          172484.0,
+          176126.0,
+          420733.0
+        ]
+      },
+      {
+        "nom": "Bourgogne-Franche-Comté",
+        "SurfaceChantiers": {
+          "val12": 831695.0,
+          "val12_txt": "832 000 m²",
+          "yoy": 13.3371217,
+          "yoy_txt": "+13,3 %",
+          "ecart_ref": -22.6727939,
+          "ecart_ref_txt": "-22,7 %"
+        },
+        "SurfacePermis": {
+          "val12": 1616628.0,
+          "val12_txt": "1,6 M m²",
+          "yoy": 9.42089019,
+          "yoy_txt": "+9,4 %",
+          "ecart_ref": 1.00939774,
+          "ecart_ref_txt": "+1,0 %"
+        },
+        "hab": 296.8,
+        "hab_txt": "297 m²",
+        "part": 4.0,
+        "dest": [
+          170196.0,
+          134951.0,
+          204119.0,
+          322429.0
+        ]
+      },
+      {
+        "nom": "La Réunion",
+        "SurfaceChantiers": {
+          "val12": 268419.0,
+          "val12_txt": "268 000 m²",
+          "yoy": 80.6610758,
+          "yoy_txt": "+80,7 %",
+          "ecart_ref": 35.2495318,
+          "ecart_ref_txt": "+35,2 %"
+        },
+        "SurfacePermis": {
+          "val12": 481409.0,
+          "val12_txt": "481 000 m²",
+          "yoy": 52.5468897,
+          "yoy_txt": "+52,5 %",
+          "ecart_ref": 23.6312644,
+          "ecart_ref_txt": "+23,6 %"
+        },
+        "hab": 301.7,
+        "hab_txt": "302 m²",
+        "part": 1.3,
+        "dest": [
+          28367.0,
+          96349.0,
+          52816.0,
+          90887.0
+        ]
+      },
+      {
+        "nom": "Corse",
+        "SurfaceChantiers": {
+          "val12": 67734.0,
+          "val12_txt": "68 000 m²",
+          "yoy": -18.6505411,
+          "yoy_txt": "-18,7 %",
+          "ecart_ref": -34.2243659,
+          "ecart_ref_txt": "-34,2 %"
+        },
+        "SurfacePermis": {
+          "val12": 156587.0,
+          "val12_txt": "157 000 m²",
+          "yoy": 5.0722012,
+          "yoy_txt": "+5,1 %",
+          "ecart_ref": -23.5767088,
+          "ecart_ref_txt": "-23,6 %"
+        },
+        "hab": 190.5,
+        "hab_txt": "190 m²",
+        "part": 0.3,
+        "dest": [
+          12035.0,
+          17718.0,
+          17326.0,
+          20655.0
+        ]
+      },
+      {
+        "nom": "Guadeloupe",
+        "SurfaceChantiers": {
+          "val12": 64264.0,
+          "val12_txt": "64 000 m²",
+          "yoy": 42.999555,
+          "yoy_txt": "+43,0 %",
+          "ecart_ref": -13.6849054,
+          "ecart_ref_txt": "-13,7 %"
+        },
+        "SurfacePermis": {
+          "val12": 128937.0,
+          "val12_txt": "129 000 m²",
+          "yoy": 34.637554,
+          "yoy_txt": "+34,6 %",
+          "ecart_ref": -7.5715892,
+          "ecart_ref_txt": "-7,6 %"
+        },
+        "hab": 167.3,
+        "hab_txt": "167 m²",
+        "part": 0.3,
+        "dest": [
+          872.0,
+          19451.0,
+          23104.0,
+          20837.0
+        ]
+      },
+      {
+        "nom": "Martinique",
+        "SurfaceChantiers": {
+          "val12": 48940.0,
+          "val12_txt": "49 000 m²",
+          "yoy": 32.1880993,
+          "yoy_txt": "+32,2 %",
+          "ecart_ref": -12.6847398,
+          "ecart_ref_txt": "-12,7 %"
+        },
+        "SurfacePermis": {
+          "val12": 81727.0,
+          "val12_txt": "82 000 m²",
+          "yoy": 23.5498647,
+          "yoy_txt": "+23,5 %",
+          "ecart_ref": -23.6377122,
+          "ecart_ref_txt": "-23,6 %"
+        },
+        "hab": 135.7,
+        "hab_txt": "136 m²",
+        "part": 0.2,
+        "dest": [
+          3523.0,
+          9822.0,
+          9155.0,
+          26440.0
+        ]
+      },
+      {
+        "nom": "Mayotte",
+        "SurfaceChantiers": {
+          "val12": 16876.0,
+          "val12_txt": "17 000 m²",
+          "yoy": 74.5371807,
+          "yoy_txt": "+74,5 %",
+          "ecart_ref": 70.4412983,
+          "ecart_ref_txt": "+70,4 %"
+        },
+        "SurfacePermis": {
+          "val12": 58331.0,
+          "val12_txt": "58 000 m²",
+          "yoy": -27.0780463,
+          "yoy_txt": "-27,1 %",
+          "ecart_ref": 33.6732589,
+          "ecart_ref_txt": "+33,7 %"
+        },
+        "hab": null,
+        "hab_txt": "—",
+        "part": 0.1,
+        "dest": [
+          0.0,
+          2589.0,
+          9737.0,
+          4550.0
+        ]
+      },
+      {
+        "nom": "Guyane",
+        "SurfaceChantiers": {
+          "val12": 10905.0,
+          "val12_txt": "11 000 m²",
+          "yoy": -62.1682567,
+          "yoy_txt": "-62,2 %",
+          "ecart_ref": -66.4457296,
+          "ecart_ref_txt": "-66,4 %"
+        },
+        "SurfacePermis": {
+          "val12": 78609.0,
+          "val12_txt": "79 000 m²",
+          "yoy": -56.7583475,
+          "yoy_txt": "-56,8 %",
+          "ecart_ref": 0.806829584,
+          "ecart_ref_txt": "+0,8 %"
+        },
+        "hab": 37.1,
+        "hab_txt": "37 m²",
+        "part": 0.1,
+        "dest": [
+          1982.0,
+          3070.0,
+          2048.0,
+          3805.0
+        ]
+      }
+    ]
+  },
   "how_to_read": "Toutes les valeurs sont des surfaces de plancher, en m², cumulées sur 12 mois glissants. La tendance compare les 12 derniers mois aux 12 précédents : d'un mois à l'autre, ces séries sont trop bruitées pour qu'un rythme sur trois mois veuille dire quelque chose, même corrigées des variations saisonnières. Le niveau se lit par rapport à la moyenne 2013-2019, la série commençant en 2013. Les quatre destinations s'additionnent au total ; les sous-destinations (hôtels, industrie, entrepôts, bureaux) sont un zoom à l'intérieur de la leur. Les m² commencés sont datés du jour où l'administration enregistre la déclaration, pas du premier coup de pelle : ils arrivent avec retard, et les m² autorisés sont le signal le plus frais.",
   "last_month": "juillet 2026",
   "ref_label": "2013-19",

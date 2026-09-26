@@ -46,7 +46,8 @@ toc: false
 <div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (<abbr title="Demandes de Valeurs Foncières : fichier de la DGFiP recensant les ventes immobilières réellement enregistrées">DVF</abbr>, DGFiP)</div>
 
 ```js
-import {multiLine, cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "../components/hm.js";
+import {multiLine, cardGrid, kpiCard, withCsvExport, legendStatic, formatMesure,
+        nf0, nf1, fmtMonthFR, Plot, TIP} from "../components/hm.js";
 import {series, ui} from "../components/theme.js";
 ```
 
@@ -332,6 +333,97 @@ if (dep.profil) display(html`<div class="hm-caption">
 if (!dep.profil) display(html`<div class="hm-caption">Le recensement de la population ne
   couvre pas ${dep.nom} dans les jeux de données utilisés ici (« France hors Mayotte ») :
   aucun profil n'est publié pour ce département.</div>`);
+```
+
+## Ce qui se construit ici, hors logement
+
+<div class="hm-caption">
+Entrepôts, usines, bâtiments agricoles, commerces, bureaux, écoles et hôpitaux : les
+surfaces de locaux autorisées et mises en chantier dans le département, publiées par le
+SDES à partir des autorisations d'urbanisme (<abbr title="Fichier du SDES qui recense les permis de construire et les mises en chantier">SIT@DEL</abbr>).
+Ce sont des données brutes, datées du jour où l'administration enregistre la déclaration,
+et un département compte assez peu de grands chantiers pour qu'un seul — une plateforme
+logistique, une usine — fasse varier son chiffre du simple au double d'une année sur
+l'autre. Le niveau se lit donc sur plusieurs années, et par rapport au pays.
+</div>
+
+```js
+// Le bloc vient du même calcul que la carte (mesures.locaux_indicateurs) : le chiffre
+// « pour 1 000 habitants » et son rang sont ceux de la couleur du département là-bas.
+// Il couvre les 101 départements, y compris les quatre hors DVF.
+const LO = dep.locaux ?? null;
+const LF = annuaire.locaux_france ?? null;
+const variation = formatMesure("pct_signe");
+// Même règle que commun.surface côté export : le million TOUJOURS à une décimale
+// (« 1,0 M m² », pas « 1 M m² », que nf1 écrirait en perdant le zéro).
+const nfM = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 1, maximumFractionDigits: 1});
+const surface = (v) => v == null ? "—" : v >= 1e6 ? nfM.format(v / 1e6) + " M m²"
+  : nf0.format(Math.round(v / 1000) * 1000) + " m²";
+const ecart = (a, b) => (a == null || !b) ? null : (a / b - 1) * 100;
+```
+
+```js
+if (LO) display(cardGrid([
+  {label: `Locaux mis en chantier · 12 mois jusqu'à ${fmtMonthFR(new Date(LO.date))}`,
+   value: surface(LO.com[0]),
+   delta: ecart(LO.com[0], LO.com[2]) == null ? null
+     : `${variation(ecart(LO.com[0], LO.com[2]))} vs moyenne ${LF?.ref_label ?? "2013-19"}`,
+   subs: [ecart(LO.com[0], LO.com[1]) == null ? null
+            : `${variation(ecart(LO.com[0], LO.com[1]))} vs les 12 mois précédents`,
+          LO.hab != null ? `${nf0.format(LO.hab)} m² pour 1 000 habitants${LF?.hab != null ? ` · France : ${nf0.format(LF.hab)} m²` : ""}` : null,
+          LO.p_hab != null ? position(LO.p_hab) : null]},
+  {label: "Locaux autorisés · 12 mois", value: surface(LO.aut[0]),
+   delta: ecart(LO.aut[0], LO.aut[2]) == null ? null
+     : `${variation(ecart(LO.aut[0], LO.aut[2]))} vs moyenne ${LF?.ref_label ?? "2013-19"}`,
+   subs: [ecart(LO.aut[0], LO.aut[1]) == null ? null
+            : `${variation(ecart(LO.aut[0], LO.aut[1]))} vs les 12 mois précédents`,
+          "le signal le plus frais : une autorisation remonte vite, une ouverture de chantier avec retard"]},
+  {label: "Dont entrepôts mis en chantier · 12 mois", value: surface(LO.ent),
+   subs: [LO.com[0] ? `${nf0.format(100 * LO.ent / LO.com[0])} % des surfaces de locaux commencées` : null]},
+], kpiCard));
+```
+
+```js
+// Années civiles complètes, m² commencés empilés par destination (elles partitionnent le
+// total), les m² autorisés en pointillé : l'écart entre les deux se lit sur la durée.
+function locauxAnnees() {
+  const A = LO.annuel, cles = Object.keys(LF.destinations), noms = Object.values(LF.destinations);
+  const couleurs = [series.green, series.brick, series.violet, series.blue];
+  const rows = A.annees.flatMap((a, i) => cles.map((k, j) => ({annee: String(a), type: noms[j], value: (A.dest[j][i] ?? 0) / 1000})));
+  const aut = A.annees.map((a, i) => ({annee: String(a), value: A.aut[i] / 1000}));
+  const plot = Plot.plot({
+    width, height: 320, marginLeft: 56,
+    x: {label: null, type: "band"}, y: {label: "Milliers de m²", grid: true},
+    color: {domain: noms, range: couleurs},
+    marks: [
+      Plot.barY(rows, {x: "annee", y: "value", fill: "type", order: noms, fillOpacity: 0.85,
+        title: (d) => `${d.annee} — ${d.type} : ${nf0.format(d.value)} milliers de m² commencés`, tip: {...TIP}}),
+      Plot.lineY(aut, {x: "annee", y: "value", stroke: ui.subtle, strokeDasharray: "5 3", strokeWidth: 1.8}),
+      Plot.dot(aut, {x: "annee", y: "value", fill: ui.subtle, r: 3}),
+      Plot.ruleY([0]),
+    ]});
+  return html`<div>${legendStatic([...noms.map((n, j) => ({name: n, color: couleurs[j]})),
+    {name: "Surfaces autorisées (total)", color: ui.subtle, dash: true}])}${withCsvExport(plot,
+    A.annees.map((a, i) => ({annee: a, autorisees: A.aut[i], commencees: A.com[i],
+      ...Object.fromEntries(cles.map((k, j) => [k.toLowerCase(), A.dest[j][i]]))})),
+    "departement-" + dep.code + "-locaux")}</div>`;
+}
+```
+
+```js
+if (LO && LF && LO.annuel.annees.length) display(locauxAnnees());
+```
+
+```js
+if (LO) display(html`<div class="hm-caption">Surfaces de plancher en m², données brutes par
+  département (SDES, SIT@DEL) ; le département est situé parmi les autres sur la
+  <a href="/carte">carte des départements</a>, et le pays sur la page
+  <a href="/non-residentiel">Construction non résidentielle</a>.</div>`);
+```
+
+```js
+if (!LO) display(html`<div class="hm-caption">Les surfaces de locaux ne sont pas disponibles
+  pour ce département.</div>`);
 ```
 
 ## Ce que ces chiffres comptent — et ce qu'ils ne comptent pas

@@ -20,10 +20,11 @@ const data = await FileAttachment("./data/carte.json").json();
 # 🗺️ Carte des départements
 
 Les départements côte à côte : ce que coûte un mètre carré, comment les prix ont bougé,
-combien de logements se vendent pour mille habitants, et qui y habite. Chaque carte
-colorie une seule mesure, publiée par un organisme public — les prix et les ventes par la
-DGFiP (<abbr title="Demandes de valeurs foncières : les ventes enregistrées chez le notaire">DVF</abbr>),
-le profil des habitants par le recensement de l'INSEE. Survolez un département pour sa
+combien de logements se vendent pour mille habitants, qui y habite, et ce qui s'y construit
+hors logement. Chaque carte colorie une seule mesure, publiée par un organisme public — les
+prix et les ventes par la DGFiP (<abbr title="Demandes de valeurs foncières : les ventes enregistrées chez le notaire">DVF</abbr>),
+le profil des habitants par le recensement de l'INSEE, les locaux mis en chantier —
+entrepôts, usines, bureaux, commerces — par le SDES. Survolez un département pour sa
 valeur et son rang parmi les autres ; cliquez pour ouvrir sa page.
 
 Rien ici n'est un score ni un classement de « gagnants » : la page décrit ce qui est

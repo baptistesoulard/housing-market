@@ -5,6 +5,7 @@ import os
 
 from commun import DATA_DIR, horodatage
 from ecriture import ecrire_si_change
+from mesures import locaux_indicateurs, percentiles
 
 import departements                             # noqa: E402
 import dvf_clean                                # noqa: E402
@@ -25,6 +26,10 @@ import queries as q                             # noqa: E402
 # BUDGET : 10 Ko bruts par département, vérifié à l'écriture (voir _verifier_budget).
 # Repère : la page « Marché du neuf » sert 504 Ko à chaque visite, donc la marge existe —
 # ce n'est pas une raison pour la dépenser.
+#
+# Les fichiers sont écrits COMPACTS (sans indentation) depuis le 2026-09-26 : le plus
+# gros touchait 9,95 Ko sur 10, l'indentation en pesait près de la moitié, et le bloc des
+# locaux non résidentiels n'y entrait plus. Compacts, les 101 passent de 919 à ~500 Ko.
 
 DEPARTEMENTS_DIR = os.path.join(DATA_DIR, "departements")
 BUDGET_OCTETS = 10 * 1024
@@ -44,7 +49,38 @@ def _colonnes(serie, cles):
     return out
 
 
-def build_departement(con, code: str, national) -> dict:
+def _locaux(con, code: str, terr: dict | None, ind: dict | None, rang: int | None):
+    """Le bloc « locaux non résidentiels » d'un département : cumuls 12 mois (courant,
+    précédent, niveau 2013-19) pour les m² autorisés et commencés, m² commencés par
+    destination, repères par habitant, et les années civiles complètes.
+
+    SIT@DEL couvre les 101 départements, y compris les quatre hors DVF : le bloc est donc
+    posé AVANT le retour anticipé des départements non couverts."""
+    if not terr:
+        return None
+    arrondi = lambda v: None if v is None else int(round(v))
+    annuel = q.locaux_annuel(con, code)
+    return {
+        "date": terr["date"],
+        "com": [arrondi(terr[f"Chantiers_Ensemble_{s}"]) for s in ("12m", "prec", "ref")],
+        "aut": [arrondi(terr[f"Permis_Ensemble_{s}"]) for s in ("12m", "prec", "ref")],
+        # L'ordre des destinations est celui de l'annuaire (`locaux_france.destinations`).
+        "dest": [arrondi(terr[f"Chantiers_{c}_12m"]) for c in LOCAUX_DESTINATIONS],
+        "ent": arrondi(terr["Chantiers_Entrepots_12m"]),
+        "hab": (ind or {}).get("hab"), "p_hab": rang,
+        "annuel": {"annees": [a["annee"] for a in annuel],
+                   "aut": [a["Permis_Ensemble"] for a in annuel],
+                   "com": [a["Chantiers_Ensemble"] for a in annuel],
+                   "dest": [[a[f"Chantiers_{c}"] for a in annuel] for c in LOCAUX_DESTINATIONS]},
+    }
+
+
+#: Les quatre destinations, dans l'ordre des colonnes du dataset (clé → libellé du site,
+#: le même que sur la page « Construction non résidentielle »).
+LOCAUX_DESTINATIONS = ["Agricole", "Commerce", "Public", "Activites"]
+
+
+def build_departement(con, code: str, national, locaux=None) -> dict:
     """Le JSON d'UN département. Traite franchement le cas « non couvert par DVF »."""
     couvert = code not in dvf_clean.DEPARTEMENTS_SANS_DVF
     payload = {
@@ -54,6 +90,8 @@ def build_departement(con, code: str, national) -> dict:
         "couvert": couvert,
         "source": "DVF (DGFiP) — licence ouverte v2",
     }
+    if locaux:
+        payload["locaux"] = locaux
     # Le profil INSEE (recensement) est indépendant de DVF : les quatre départements hors
     # DVF le reçoivent aussi — c'est la première fois que leur page porte un chiffre.
     # None quand le recensement ne couvre pas le département (Mayotte) : la page le dit.
@@ -142,12 +180,33 @@ def build_departements(con) -> int:
                                       **{it["key"]: it["fr"] for it in profil["items"]}}
             break
 
+    # Les locaux non résidentiels : une requête pour les 101, les repères par habitant et
+    # leur rang calculés par les MÊMES fonctions que la carte (mesures.locaux_indicateurs,
+    # mesures.percentiles) — un département doit lire ici le chiffre de sa couleur là-bas.
+    vues = {r[0] for r in q._cur(con).execute(
+        "SELECT view_name FROM duckdb_views() WHERE NOT internal").fetchall()}
+    terr = {t["code"]: t for t in q.locaux_territoires(con)}         if "locaux_departements" in vues else {}
+    pop = {c: (v or {}).get("Population")
+           for c, v in q.territoires_colonnes(con, ["Population"]).items()}
+    ind = locaux_indicateurs(list(terr.values()), pop)
+    rangs = percentiles({c: v["hab"] for c, v in ind["par_code"].items()})
+    if terr:
+        from housing_data.schema import LOCAUX_DESTINATIONS as _LIBELLES
+        index["locaux_france"] = {
+            "date": next(iter(terr.values()))["date"], "ref_label": "2013-19",
+            **ind["france"],
+            # Clés du dataset → libellés du site, dans l'ordre des tableaux `dest`.
+            "destinations": dict(zip(LOCAUX_DESTINATIONS, _LIBELLES)),
+        }
+
     modifies, total = 0, 0
     for code in codes:
-        payload = build_departement(con, code, national)
+        payload = build_departement(
+            con, code, national,
+            locaux=_locaux(con, code, terr.get(code), ind["par_code"].get(code), rangs.get(code)))
         payload["generated_at"] = horodatage()
         chemin = os.path.join(DEPARTEMENTS_DIR, f"{code}.json")
-        if ecrire_si_change(chemin, payload):
+        if ecrire_si_change(chemin, payload, compact=True):
             modifies += 1
         total += _verifier_budget(chemin, code)
         d = dispo.get(code)
@@ -159,7 +218,7 @@ def build_departements(con) -> int:
             "prix_m2": (d or {}).get("prix_m2"),
         })
 
-    if ecrire_si_change(os.path.join(DATA_DIR, "departements.json"), index):
+    if ecrire_si_change(os.path.join(DATA_DIR, "departements.json"), index, compact=True):
         modifies += 1
     print(f"[web_export] departements : {modifies} fichier(s) modifie(s) sur "
           f"{len(codes) + 1} | poids total {total / 1024:.0f} Ko, "

@@ -179,3 +179,15 @@ def test_postbuild_ecrit_le_tableau_des_departements_une_seule_fois(tmp_path):
     for code in dvf_clean.DEPARTEMENTS_SANS_DVF:
         ligne = re.search(rf'departement/{code}">.*?</tr>', html)
         assert ligne and "hors DVF" in ligne.group(0), code
+
+
+def test_chaque_fichier_departemental_tient_son_budget():
+    """10 Ko bruts par département (page_departements.BUDGET_OCTETS). L'export ne fait
+    qu'AVERTIR ; ce test, lui, casse — le bloc des locaux non résidentiels n'est entré
+    qu'en passant les fichiers en JSON compact, et le prochain ajout doit le savoir."""
+    import page_departements as pdp
+    fichiers = list(pathlib.Path(pdp.DEPARTEMENTS_DIR).glob("*.json"))
+    if not fichiers:
+        pytest.skip("fichiers départementaux absents — lancer web_export.py")
+    trop = {f.name: f.stat().st_size for f in fichiers if f.stat().st_size > pdp.BUDGET_OCTETS}
+    assert not trop, f"hors budget : {trop}"

@@ -109,3 +109,32 @@ def test_la_phrase_de_decomposition_suit_le_sens_de_la_donnee():
     hausse = phrase(12.0, 10.0, 1.5, 0.5, part_ref=25.0, part_recent=30.0)
     assert "progresse de 12,0 %" in hausse
     assert "maison individuelle" not in hausse
+
+
+def test_les_reperes_locaux_rapportent_des_sommes_pas_des_moyennes_de_ratios():
+    """France = somme des m² ÷ somme des habitants, sur les territoires dont la population
+    est connue ; un territoire sans recensement (Mayotte) reste sans repère par habitant
+    mais garde son écart à 2013-19."""
+    from mesures import locaux_indicateurs
+    terr = [{"code": "A", "Chantiers_Ensemble_12m": 1000.0, "Chantiers_Ensemble_ref": 800.0,
+             "Chantiers_Entrepots_12m": 100.0},
+            {"code": "B", "Chantiers_Ensemble_12m": 9000.0, "Chantiers_Ensemble_ref": 10000.0,
+             "Chantiers_Entrepots_12m": 0.0},
+            {"code": "976", "Chantiers_Ensemble_12m": 50.0, "Chantiers_Ensemble_ref": 25.0,
+             "Chantiers_Entrepots_12m": 0.0}]
+    r = locaux_indicateurs(terr, {"A": 1000, "B": 90000})
+    assert r["par_code"]["A"]["hab"] == 1000.0 and r["par_code"]["B"]["hab"] == 100.0
+    assert r["par_code"]["976"]["hab"] is None and r["par_code"]["976"]["ecart"] == 100.0
+    assert r["france"]["hab"] == pytest.approx(1000 * 10000 / 91000, abs=0.05)   # et non 550
+    assert r["france"]["ecart"] == pytest.approx((10050 / 10825 - 1) * 100, abs=0.05)
+
+
+def test_l_ecriture_compacte_ne_reecrit_qu_une_fois_au_changement_de_format(tmp_path):
+    from ecriture import ecrire_si_change
+    chemin = str(tmp_path / "d.json")
+    payload = {"generated_at": "t0", "v": [1.5, 2]}
+    assert ecrire_si_change(chemin, payload) is True
+    assert ecrire_si_change(chemin, {**payload, "generated_at": "t1"}) is False
+    assert ecrire_si_change(chemin, payload, compact=True) is True      # format changé
+    assert open(chemin, encoding="utf-8").read().startswith('{"')
+    assert ecrire_si_change(chemin, {**payload, "generated_at": "t2"}, compact=True) is False

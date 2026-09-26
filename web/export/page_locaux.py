@@ -35,9 +35,11 @@ import pandas as pd
 from commun import (COLOR_BLUE, COLOR_BRICK, COLOR_GREEN, COLOR_SUNFLOWER, COLOR_TEXT,
                     derniere_date, horodatage, iso_mois, ligne_niveau, mois_annee, pct, pt,
                     surface)
+from mesures import locaux_indicateurs
 from page_marches import _yoy_kpi
 
 import analysis as ana                          # noqa: E402
+import departements                             # noqa: E402
 import queries as q                             # noqa: E402
 from housing_data.schema import LOCAUX_DESTINATIONS, LOCAUX_SOUS_DESTINATIONS  # noqa: E402
 
@@ -86,6 +88,59 @@ def _ligne(roll, col, total12=None):
             "ecart_ref_txt": pct(lvl["gap_pct"]) if lvl else "—",
             "niveau": ligne_niveau(lvl),
             "part": round(v12 / total12 * 100, 1) if total12 else None}
+
+
+#: Les clés des quatre destinations dans `locaux_departements`, dans l'ordre du contrat.
+_CLES_DEST = ["Agricole", "Commerce", "Public", "Activites"]
+
+
+def _regions(con) -> dict | None:
+    """Les 18 régions : m² autorisés et commencés sur 12 mois, tendance, niveau 2013-19,
+    m² commencés pour 1 000 habitants et par destination.
+
+    Séries BRUTES (le SDES ne publie le détail départemental qu'en brut ; les régions
+    s'en déduisent au m² près). En cumul 12 mois, le brut national ne s'écarte du CVS-CJO
+    des cartes de tête que de 1,5 % au plus : la page le dit, et ne pose pas de ligne
+    « France » qui répéterait, à un dixième près, un chiffre déjà affiché plus haut.
+    Le niveau de référence a la définition de la page nationale (voir
+    queries.locaux_territoires)."""
+    vues = {r[0] for r in q._cur(con).execute(
+        "SELECT view_name FROM duckdb_views() WHERE NOT internal").fetchall()}
+    if "locaux_departements" not in vues:
+        return None
+    regs = q.locaux_territoires(con, "region")
+    if not regs:
+        return None
+    pop_dep = q.territoires_colonnes(con, ["Population"])
+    pop = {}
+    for code, v in pop_dep.items():
+        if (v or {}).get("Population"):
+            reg = departements.region(code)
+            pop[reg] = pop.get(reg, 0) + v["Population"]
+    ind = locaux_indicateurs(regs, pop)["par_code"]
+    total12 = sum(r["Chantiers_Ensemble_12m"] or 0 for r in regs)
+
+    def _mesure(r, m):
+        v12, prec, ref = (r[f"{m}_Ensemble_{s}"] for s in ("12m", "prec", "ref"))
+        yoy = (v12 / prec - 1) * 100 if v12 is not None and prec else None
+        ecart = (v12 / ref - 1) * 100 if v12 is not None and ref else None
+        return {"val12": v12, "val12_txt": surface(v12), "yoy": yoy, "yoy_txt": pct(yoy),
+                "ecart_ref": ecart, "ecart_ref_txt": pct(ecart)}
+
+    lignes = []
+    for r in sorted(regs, key=lambda r: -(r["Chantiers_Ensemble_12m"] or 0)):
+        hab = ind.get(r["code"], {}).get("hab")
+        lignes.append({
+            "nom": r["code"],
+            "SurfaceChantiers": _mesure(r, "Chantiers"),
+            "SurfacePermis": _mesure(r, "Permis"),
+            "hab": hab, "hab_txt": "—" if hab is None else f"{hab:,.0f} m²".replace(",", " "),
+            "part": round(100 * (r["Chantiers_Ensemble_12m"] or 0) / total12, 1) if total12 else None,
+            "dest": [r[f"Chantiers_{c}_12m"] for c in _CLES_DEST],
+        })
+    return {"date": regs[0]["date"], "periode": mois_annee(regs[0]["date"]),
+            "destinations": [{"type": t, "color": COULEURS[t]} for t in LOCAUX_DESTINATIONS],
+            "lignes": lignes}
 
 
 def build_locaux(con, frames: dict) -> dict:
@@ -160,6 +215,7 @@ def build_locaux(con, frames: dict) -> dict:
     return {
         "generated_at": horodatage(),
         "available": True,
+        "regions": _regions(con),
         "how_to_read": (
             "Toutes les valeurs sont des surfaces de plancher, en m², cumulées sur 12 mois "
             "glissants. La tendance compare les 12 derniers mois aux 12 précédents : d'un "

@@ -16,6 +16,10 @@
         "parquet"
       ],
       [
+        "locaux_departements",
+        "parquet"
+      ],
+      [
         "macro",
         "parquet"
       ],

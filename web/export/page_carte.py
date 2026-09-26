@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 
 from commun import horodatage, mois_annee
+from mesures import locaux_indicateurs, percentiles as _percentiles
 from page_departements import DUREE_REF_ANS, MENSUALITE_REF
 
 import departements                             # noqa: E402
@@ -82,25 +83,35 @@ INDICATEURS = [
               "dernier")},
     {"key": "niveau_vie", "groupe": "Habitants et logements", "label": "Niveau de vie médian",
      "unite": "euro_an", "echelle": "sequentielle", "source": "Filosofi (INSEE)"},
+    # --- Construction non résidentielle (SIT@DEL2, séries brutes par département) --------
+    # Rapportées aux habitants : en valeur absolue, la carte ne dirait que la taille des
+    # départements. L'écart à 2013-19, lui, se lit sans dénominateur — mais il est BRUITÉ à
+    # cette maille : un seul grand entrepôt suffit à doubler le chiffre d'un département
+    # peu construit, d'où la note affichée.
+    {"key": "loc_hab", "groupe": "Construction non résidentielle",
+     "label": "Locaux mis en chantier sur 12 mois, en m² pour 1 000 habitants",
+     "unite": "m2", "echelle": "sequentielle", "source": "SIT@DEL (SDES) et recensement (INSEE)"},
+    {"key": "loc_ecart", "groupe": "Construction non résidentielle",
+     "label": "Locaux mis en chantier sur 12 mois, écart à la moyenne 2013-19",
+     "unite": "pct_signe", "echelle": "divergente", "source": "SIT@DEL (SDES)",
+     "note": ("à l'échelle d'un département, un seul grand projet — un entrepôt, une usine "
+              "— peut faire basculer ce chiffre d'une année sur l'autre")},
+    {"key": "ent_hab", "groupe": "Construction non résidentielle",
+     "label": "Entrepôts mis en chantier sur 12 mois, en m² pour 1 000 habitants",
+     "unite": "m2", "echelle": "sequentielle", "source": "SIT@DEL (SDES) et recensement (INSEE)"},
 ]
+#: Les mesures « locaux », dont la référence est la FRANCE (rapport de sommes, voir
+#: mesures.locaux_indicateurs) et non le département médian.
+_LOCAUX = {"loc_hab": "hab", "loc_ecart": "ecart", "ent_hab": "ent_hab"}
 _PROFIL = {"part_rp_65", "part_65", "part_maisons", "taux_vacance", "taux_arrivee",
            "solde_migratoire", "niveau_vie"}
 
 
-def _percentiles(valeurs: dict) -> dict:
-    """Part des AUTRES départements renseignés strictement en dessous (0-100).
-
-    Même définition que `queries.territoires_profil` (percent_rank) : un rang « plus haut
-    que 81 % des autres » doit vouloir dire la même chose sur la carte et sur la page du
-    département."""
-    presents = {k: v for k, v in valeurs.items() if v is not None}
-    n = len(presents)
-    tri = sorted(presents.values())
-    out = {}
-    for k, v in presents.items():
-        dessous = sum(1 for w in tri if w < v)
-        out[k] = int(round(100 * dessous / (n - 1))) if n > 1 else None
-    return out
+def _vues(con) -> set:
+    """Les datasets présents dans l'entrepôt : une mesure dont la source manque (fichier
+    jamais collecté) laisse la carte hachurée plutôt que de casser l'export."""
+    return {r[0] for r in q._cur(con).execute(
+        "SELECT view_name FROM duckdb_views() WHERE NOT internal").fetchall()}
 
 
 def _mediane(valeurs):
@@ -151,10 +162,21 @@ def build_carte(con, frames: dict) -> dict:
                 val[it["key"]][c] = it["v"]
                 france.setdefault(it["key"], it["fr"])
 
+    # Les locaux : trois repères par département, calculés par la même fonction que pour
+    # les pages départementales (un chiffre, un calcul), référence FRANCE.
+    habitants = {c: (pop.get(c) or {}).get("Population") for c in codes}
+    terr_locaux = q.locaux_territoires(con) if "locaux_departements" in _vues(con) else []
+    loc = locaux_indicateurs(terr_locaux, habitants)
+    for k, champ in _LOCAUX.items():
+        for c in codes:
+            val[k][c] = (loc["par_code"].get(c) or {}).get(champ)
+        france[k] = loc["france"].get(champ)
+    date_locaux = terr_locaux[0]["date"] if terr_locaux else None
+
     # Référence des mesures DVF : le département MÉDIAN, jamais une moyenne que
     # l'Île-de-France écraserait (même convention que `queries.dvf_national_median`).
     for ind in INDICATEURS:
-        if ind["key"] not in _PROFIL:
+        if ind["key"] not in _PROFIL and ind["key"] not in _LOCAUX:
             med = _mediane(val[ind["key"]].get(c) for c in codes)
             france[ind["key"]] = round(med, 2) if med is not None else None
 
@@ -180,11 +202,17 @@ def build_carte(con, frames: dict) -> dict:
                        + (" contre les quatre précédents" if k == "evol_ventes" else ""))
         elif k == "m2_accessibles":
             periode = f"prix du {periode_dvf}, taux de crédit du dernier mois publié"
+        elif k in _LOCAUX:
+            periode = (f"douze mois jusqu'à {mois_annee(date_locaux)}, date d'enregistrement"
+                       + (" ; population du recensement " + str(millesime)
+                          if k != "loc_ecart" and millesime else "")
+                       if date_locaux else None)
         else:
             periode = periode_dvf
         indicateurs.append({
             **ind, "periode": periode, "ref": france.get(k),
-            "ref_libelle": ("département médian" if (not profil or k in ref_mediane)
+            "ref_libelle": ("France" if k in _LOCAUX
+                            else "département médian" if (not profil or k in ref_mediane)
                             else "France"),
             "n": sum(1 for c in codes if val[k].get(c) is not None)})
 

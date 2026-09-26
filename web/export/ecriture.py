@@ -58,7 +58,7 @@ def arrondir_flottants(o):
     return o
 
 
-def ecrire_si_change(path, payload):
+def ecrire_si_change(path, payload, compact=False):
     """Écrit le JSON uniquement si son contenu a réellement changé, `generated_at` exclu
     de la comparaison.
 
@@ -68,25 +68,37 @@ def ecrire_si_change(path, payload):
     garde-fou que _write_if_changed dans fetch_new_sources.py, avec la même conséquence
     utile : « Généré le » affiché par le front date de la dernière évolution réelle des
     données, pas de la dernière exécution du script. Renvoie True si le fichier a été
-    (ré)écrit."""
+    (ré)écrit.
+
+    `compact=True` écrit sans indentation ni espaces : c'est le régime des 101 fichiers
+    départementaux et de leur annuaire, chargés à chaque visite d'une page de département
+    et tenus par un budget de 10 Ko. L'indentation y pesait près de la moitié du poids
+    (919 Ko → 476 Ko pour les 101, mesuré le 2026-09-26). Les JSON nationaux restent
+    indentés : ce sont eux qu'on relit dans un diff. Un fichier dont seul le FORMAT
+    change est réécrit une fois, puis la garde de contenu reprend la main."""
     # Arrondi AVANT sérialisation, et donc avant la comparaison : les deux côtés sont
     # alors traités à la même précision (voir `arrondir_flottants`). Point de passage
     # unique — les 7 JSON nationaux, l'annuaire et les 101 fichiers départementaux
     # passent tous par ici, donc aucun appelant n'a à y penser.
     payload = arrondir_flottants(payload)
-    text = json.dumps(payload, ensure_ascii=False, indent=2)
+    text = (json.dumps(payload, ensure_ascii=False, separators=(",", ":")) if compact
+            else json.dumps(payload, ensure_ascii=False, indent=2))
     if os.path.exists(path):
         try:
             with open(path, encoding="utf-8") as f:
-                old = json.load(f)
+                brut = f.read()
+            old = json.loads(brut)
         except (OSError, json.JSONDecodeError):
             old = None                      # illisible / tronqué -> on réécrit
         if old is not None:
             # Comparer le payload APRÈS un aller-retour JSON : la sérialisation convertit
             # les clés non-str en str (impact_labels est indexé par des int), si bien que
             # l'objet Python et sa relecture ne sont jamais égaux tels quels — sans cela
-            # actualites.json serait réécrit à chaque passage.
-            if sans_horodatage(old) == sans_horodatage(json.loads(text)):
+            # actualites.json serait réécrit à chaque passage. Le format sur disque doit
+            # AUSSI être le bon : un JSON indenté commence par une accolade suivie d'un
+            # saut de ligne, un compact non.
+            meme_format = brut.startswith("{\n") != compact
+            if meme_format and sans_horodatage(old) == sans_horodatage(json.loads(text)):
                 return False
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)

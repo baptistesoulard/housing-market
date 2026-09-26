@@ -106,3 +106,55 @@ def taux_transformation(flux):
     p12 = flux["Permis"].dropna().rolling(12).sum()
     m12 = flux["MisesEnChantier"].dropna().rolling(12).sum()
     return (m12 / p12).dropna()
+
+
+def percentiles(valeurs: dict) -> dict:
+    """Part des AUTRES territoires renseignés strictement en dessous (0-100).
+
+    Même définition que `queries.territoires_profil` (percent_rank) : un rang « plus haut
+    que 81 % des autres » doit vouloir dire la même chose sur la carte et sur la page du
+    département — d'où une seule fonction, lue par les deux."""
+    presents = {k: v for k, v in valeurs.items() if v is not None}
+    n = len(presents)
+    tri = sorted(presents.values())
+    out = {}
+    for k, v in presents.items():
+        dessous = sum(1 for w in tri if w < v)
+        out[k] = int(round(100 * dessous / (n - 1))) if n > 1 else None
+    return out
+
+
+def locaux_indicateurs(territoires: list[dict], population: dict) -> dict:
+    """Les trois repères « locaux » d'un territoire, calculés une fois pour la carte et
+    pour les pages départementales : m² commencés sur 12 mois pour 1 000 habitants,
+    écart de ce cumul à son niveau 2013-19, m² d'entrepôts commencés pour 1 000 habitants.
+
+    `territoires` vient de `queries.locaux_territoires`, `population` est {code: habitants}.
+    La référence France est un RAPPORT DE SOMMES sur les territoires dont la population est
+    connue (Mayotte n'a pas de recensement dans ces jeux) — jamais une moyenne de ratios,
+    qu'un département peu peuplé tirerait autant que le Nord.
+
+    Renvoie {"par_code": {code: {...}}, "france": {...}}.
+    """
+    par_code, som = {}, {"com": 0.0, "ent": 0.0, "pop": 0.0, "com_all": 0.0, "ref_all": 0.0}
+    for t in territoires:
+        com, ref = t.get("Chantiers_Ensemble_12m"), t.get("Chantiers_Ensemble_ref")
+        ent, pop = t.get("Chantiers_Entrepots_12m"), population.get(t["code"])
+        par_code[t["code"]] = {
+            "hab": round(1000 * com / pop, 1) if com is not None and pop else None,
+            "ecart": round((com / ref - 1) * 100, 1) if com is not None and ref else None,
+            "ent_hab": round(1000 * ent / pop, 1) if ent is not None and pop else None,
+        }
+        if com is not None and ref:
+            som["com_all"] += com
+            som["ref_all"] += ref
+        if com is not None and ent is not None and pop:
+            som["com"] += com
+            som["ent"] += ent
+            som["pop"] += pop
+    france = {
+        "hab": round(1000 * som["com"] / som["pop"], 1) if som["pop"] else None,
+        "ecart": round((som["com_all"] / som["ref_all"] - 1) * 100, 1) if som["ref_all"] else None,
+        "ent_hab": round(1000 * som["ent"] / som["pop"], 1) if som["pop"] else None,
+    }
+    return {"par_code": par_code, "france": france}
