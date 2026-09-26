@@ -13,8 +13,8 @@ import pandas as pd
 
 from commun import (COLOR_BLUE, COLOR_BRICK, COLOR_GREEN, COLOR_TERRACOTTA, COLOR_TEXT,
                     derniere_date, horodatage, iso_mois, ligne_niveau, lignes, milliers,
-                    mois_annee, pct)
-from mesures import taux_transformation
+                    mois_annee, pct, pt, surface)
+from mesures import decomposition_surface, taux_transformation
 from reperes import NEUF_GATE
 
 import analysis as ana                          # noqa: E402
@@ -27,7 +27,7 @@ _TYPE_CODES = {"Maison Individuelle Pure": "ip", "Maison Individuelle Groupée":
 
 
 def _yoy_kpi(kpis, mom, label, month_label, regime=ana.ADJUSTED_SEQUENTIAL,
-             level=None, plateau=None):
+             level=None, plateau=None, fmt=milliers):
     """Carte KPI d'une page de marché.
 
     Alignée sur la Synthèse, et pour les mêmes raisons mesurées :
@@ -46,6 +46,9 @@ def _yoy_kpi(kpis, mom, label, month_label, regime=ana.ADJUSTED_SEQUENTIAL,
     Le badge `delta` garde la croissance 12 mois : quand le régime EST le 12 mois
     (l'IGEDD), la ligne de momentum est donc omise pour ne pas répéter le badge, et la
     place revient au plateau — la seule chose que le taux annuel ne peut pas dire.
+
+    `fmt` met en forme les deux niveaux de la carte (cumul et dernier mois) : `milliers`
+    pour un compte de logements, `surface` pour des m².
     """
     head = ana.headline_momentum(mom, regime)
     subs = []
@@ -56,10 +59,10 @@ def _yoy_kpi(kpis, mom, label, month_label, regime=ana.ADJUSTED_SEQUENTIAL,
                     f"({plateau['months']} mois)")
     if level:
         subs.append(ligne_niveau(level))
-    subs.append(f"Dernier mois ({month_label}) : {milliers(kpis['current_val'])}")
+    subs.append(f"Dernier mois ({month_label}) : {fmt(kpis['current_val'])}")
     return {
         "label": label,
-        "value": milliers(kpis["current_12m"]),
+        "value": fmt(kpis["current_12m"]),
         "delta": pct(kpis["yoy_12m_pct"]) + " YoY",
         "subs": subs,
     }
@@ -274,6 +277,103 @@ def build_neuf(con, frames: dict) -> dict:
         "indiv_collectif": iv,
         "ecln": ecln,
         "transformation": _transformation(con),
+        "surfaces": _surfaces(con),
+    }
+
+
+def _surfaces(con) -> dict:
+    """Les logements neufs en m² de surface de plancher — ce que les matériaux voient.
+
+    Le compte de logements est l'unité du promoteur ; le fabricant de matériaux, lui, vend
+    au m² (de dalle, de toiture, de façade, de cloison). Les deux ne bougent pas ensemble,
+    et l'écart n'est pas un détail : sur douze mois, les m² commencés reculent nettement
+    plus que les logements par rapport à 2010-19. `mesures.decomposition_surface` dit
+    pourquoi — surtout le MIX, pas la taille — et c'est ce que la section publie.
+
+    Tous types confondus, exprès : la section mesure l'effet du mélange des types, elle
+    n'a donc pas de sens sur un sous-ensemble — elle ne suit pas le sélecteur de la page.
+    Même régime de lecture que les cartes de tête (SIT@DEL est CVS-CJO : séquentiel,
+    plus le niveau).
+    """
+    roll = q.monthly(con, "sitadel",
+                     ["Permis", "MisesEnChantier", "SurfacePermis", "SurfaceChantiers"], (12,))
+    if roll["SurfaceChantiers"].dropna().empty:
+        return {}
+    mois = mois_annee(derniere_date(roll, "SurfaceChantiers"))
+    types = sorted(r[0] for r in q._cur(con).execute(
+        "SELECT DISTINCT Type FROM sitadel").fetchall())
+    par_type = q.monthly_by_group(con, "sitadel", {t: [t] for t in types},
+                                  ["Permis", "MisesEnChantier", "SurfacePermis",
+                                   "SurfaceChantiers"], (12,)).rename(columns={"Groupe": "Type"})
+    decomp = {cle: decomposition_surface(par_type, compte, surf)
+              for cle, compte, surf in (("chantiers", "MisesEnChantier", "SurfaceChantiers"),
+                                        ("permis", "Permis", "SurfacePermis"))}
+
+    kpis = [
+        _yoy_kpi(ana.calculate_kpis(roll, "SurfacePermis"),
+                 ana.momentum_metrics(roll, "SurfacePermis"),
+                 "Surface de logements autorisée (Cumul 12m glissant)", mois,
+                 level=ana.level_context(roll, "SurfacePermis"), fmt=surface),
+        _yoy_kpi(ana.calculate_kpis(roll, "SurfaceChantiers"),
+                 ana.momentum_metrics(roll, "SurfaceChantiers"),
+                 "Surface de logements commencée (Cumul 12m glissant)", mois,
+                 level=ana.level_context(roll, "SurfaceChantiers"), fmt=surface),
+    ]
+    dc = decomp["chantiers"]
+    if dc:
+        sm = dc["surface_moyenne"]
+        if abs(dc["mix"]) > abs(dc["taille"]):
+            cause = ("surtout parce que le mélange des types a basculé vers les "
+                     + ("petits" if dc["mix"] < 0 else "grands") + " logements")
+        else:
+            cause = ("surtout parce que chaque type de logement a "
+                     + ("rétréci" if dc["taille"] < 0 else "grandi"))
+        kpis.append({
+            "label": "Surface moyenne d'un logement commencé",
+            "value": f"{sm['recent']:.0f} m²",
+            "delta": pct((sm["recent"] / sm["ref"] - 1) * 100) + f" vs {dc['ref_label']}",
+            "subs": [f"{sm['ref']:.0f} m² en moyenne {dc['ref_label']}",
+                     f"sur les 12 derniers mois — {cause}"]})
+
+    # L'écart entre les deux unités, rendu visible : cumuls 12 mois en base 100 = moyenne
+    # 2015 (la convention du site, analysis.base_100). Deux courbes par indicateur, en
+    # COLONNES alignées sur `dates` comme `by_type` : une ligne par point triplait le poids
+    # de neuf.json pour la même information.
+    paires = {"chantiers": [("MisesEnChantier_12M", "Logements commencés"),
+                            ("SurfaceChantiers_12M", "Surface commencée (m²)")],
+              "permis": [("Permis_12M", "Logements autorisés"),
+                         ("SurfacePermis_12M", "Surface autorisée (m²)")]}
+    base = roll.dropna(subset=["SurfaceChantiers_12M", "SurfacePermis_12M"])
+    indices = {"dates": [iso_mois(d) for d in base["Date"]]}
+    for cle, cols in paires.items():
+        bases = ana.base_100(roll, [c for c, _ in cols])
+        indices[cle] = [{"name": nom,
+                         "values": [round(float(v) / bases[col] * 100, 2)
+                                    for v in base[col]]}
+                        for col, nom in cols if bases.get(col)]
+
+    def _points(d, surface_lib):
+        if not d:
+            return None
+        return {"total": pct(d["total"]), "volume": pt(d["volume"]), "mix": pt(d["mix"]),
+                "taille": pt(d["taille"]), "ref_label": d["ref_label"],
+                "phrase": _phrase_decomposition(d, surface_lib),
+                "valeurs": {k: round(d[k], 2) for k in ("total", "volume", "mix", "taille")},
+                "types": [{**t, **{k: round(t[k], 1) for k in
+                                   ("part_ref", "part_recent", "m2_ref", "m2_recent")}}
+                          for t in d["types"]]}
+
+    return {
+        "kpis": kpis,
+        "last_month": mois,
+        "decomposition": {
+            "chantiers": _points(decomp["chantiers"], "surface mise en chantier"),
+            "permis": _points(decomp["permis"], "surface autorisée")},
+        "indices": indices,
+        "meta": {"chantiers": [{"name": "Logements commencés", "color": COLOR_TEXT},
+                               {"name": "Surface commencée (m²)", "color": COLOR_BRICK}],
+                 "permis": [{"name": "Logements autorisés", "color": COLOR_TEXT},
+                            {"name": "Surface autorisée (m²)", "color": COLOR_BRICK}]},
     }
 
 
@@ -369,6 +469,37 @@ def build_ancien(con, frames: dict) -> dict:
         "monthly": {"rows": monthly_rows, "last_month_num": last_month_num},
         "prix": prix,
     }
+
+
+def _phrase_decomposition(d, surface_lib):
+    """La lecture de la décomposition, dans le sens de la donnée.
+
+    Le total se dit SANS signe, porté par le verbe (« recule de 30,7 % ») : « recule
+    de -30,7 % » est une double négation, que la règle du site interdit (le signe
+    arithmétique et le signe ressenti pointent dans le même sens). Les trois effets,
+    eux, sont des CONTRIBUTIONS qui s'additionnent : ils gardent leur signe, entre
+    parenthèses, derrière un verbe neutre. La glose sur la maison individuelle n'est
+    dite que si la donnée la porte — sa part a baissé et le mix pèse à la baisse.
+    """
+    sens = "recule" if d["total"] < 0 else "progresse"
+    txt = (f"Par rapport à la moyenne {d['ref_label']}, la {surface_lib} {sens} de "
+           f"{abs(d['total']):.1f} %".replace(".", ",")
+           + f". Trois effets s'y additionnent exactement : le nombre de logements "
+           f"({pt(d['volume'])}), leur répartition entre les types ({pt(d['mix'])}) et "
+           f"la surface de chaque type ({pt(d['taille'])}).")
+    # Contribution de chaque type à l'effet de mix : (part récente − part de
+    # référence) × surface de référence. « D'abord » ne se dit que si la maison
+    # individuelle pure porte la contribution la plus négative — vérifié, pas supposé.
+    contrib = {t["type"]: (t["part_recent"] - t["part_ref"]) * t["m2_ref"]
+               for t in d["types"]}
+    pur = next((t for t in d["types"] if t["type"] == "Maison Individuelle Pure"), None)
+    if (pur and d["mix"] < 0 and pur["part_recent"] < pur["part_ref"]
+            and min(contrib, key=contrib.get) == pur["type"]):
+        txt += (f" L'effet de répartition vient d'abord de la maison individuelle pure, "
+                f"le type le plus grand : {pur['part_ref']:.0f} % des logements en "
+                f"{d['ref_label']}, {pur['part_recent']:.0f} % sur les douze derniers "
+                "mois.")
+    return txt
 
 
 def _transformation(con) -> dict:

@@ -81,6 +81,21 @@ def milliers(v) -> str:
     return f"{int(round(float(v))):,}".replace(",", " ")
 
 
+def surface(v) -> str:
+    """Une surface de plancher : « 22,6 M m² » au-delà du million, « 42 000 m² » en deçà.
+
+    Le million à une décimale, parce que c'est l'unité où les surfaces de construction se
+    comparent (logements et locaux commencés en tiennent chacun une vingtaine par an) ; en
+    deçà — une sous-destination sur un mois — l'entier arrondi au millier, qui garde la
+    même précision relative sans afficher de fausses unités."""
+    if _manquant(v):
+        return "—"
+    v = float(v)
+    if abs(v) >= 1_000_000:
+        return f"{v / 1e6:.1f} M m²".replace(".", ",")
+    return f"{int(round(v, -3)):,} m²".replace(",", " ")
+
+
 def abrege(v) -> str:
     """Nombre 'de titre' : '385 k' au-dessus de 100 000, entier espacé en dessous."""
     if _manquant(v):

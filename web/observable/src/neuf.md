@@ -158,6 +158,110 @@ function ivSection() {
 
 ${ivMetrics.length ? ivSection() : html`<div class="hm-caption">Sélectionnez au moins un indicateur.</div>`}
 
+## 📐 En m² : ce que voient les matériaux
+
+<!--
+  Le compte de logements est l'unité du promoteur ; un fabricant de matériaux vend au m².
+  Le texte statique ne porte AUCUN chiffre (voir CLAUDE.md) : il dit ce que la section
+  mesure, les phrases chiffrées sont construites plus bas à partir de neuf.surfaces.
+-->
+
+<div class="hm-caption">Un fabricant de matériaux vend au mètre carré — de dalle, de toiture, de façade, de cloison — et non au logement. Les deux unités ne bougent pas ensemble : quand la construction glisse de la maison individuelle vers l'immeuble collectif et les résidences gérées, le nombre de logements résiste mieux que la surface bâtie. Cette section mesure l'écart et dit d'où il vient. Elle porte sur tous les types de logement, quelle que soit la sélection plus haut, puisque c'est justement leur mélange qu'elle mesure.</div>
+
+```js
+const SF = neuf.surfaces ?? null;
+const sfMetric = view(Inputs.radio(
+  new Map([["Mises en chantier", "chantiers"], ["Permis de construire", "permis"]]),
+  {value: "chantiers", label: "Indicateur"}));
+```
+
+```js
+if (SF) display(cardGrid(SF.kpis, kpiCard));
+```
+
+```js
+// Logements et m² sur la même échelle : base 100 = moyenne 2015 des cumuls 12 mois.
+// L'écart entre les deux courbes EST l'information — il n'existerait pas si la surface
+// suivait le nombre de logements.
+function sfIndices() {
+  const I = SF.indices;
+  const rows = I[sfMetric].flatMap((s) => s.values.map((v, i) => ({date: I.dates[i], series: s.name, value: v})));
+  return multiLine({rows: filterYears(rows, rangeN), meta: SF.meta[sfMetric], yLabel: "Base 100 = moyenne 2015",
+    valueFmt: (v) => nf0.format(v), width, filename: "neuf-logements-vs-m2-" + sfMetric});
+}
+```
+
+<div class="hm-panel-title">Logements et surface de plancher, cumuls sur 12 mois <span style="color:var(--hm-subtle);font-weight:400">(base 100 = moyenne 2015)</span></div>
+
+${SF ? sfIndices() : html`<div class="hm-caption">Surfaces indisponibles.</div>`}
+
+```js
+// Volume, mix, taille : trois barres qui s'additionnent au recul total des m².
+const DC = SF ? SF.decomposition[sfMetric] : null;
+function sfDecomposition() {
+  const effets = [
+    // Libellés NEUTRES : le sens de chaque effet est porté par la barre et son chiffre,
+    // pas par le mot — « la part des grands logements recule » serait faux le jour où
+    // le mix repartirait dans l'autre sens.
+    {effet: "Volume — nombre de logements", v: DC.valeurs.volume, txt: DC.volume},
+    {effet: "Mix — répartition entre les types", v: DC.valeurs.mix, txt: DC.mix},
+    {effet: "Taille — surface de chaque type", v: DC.valeurs.taille, txt: DC.taille},
+    {effet: "Total — surface de plancher", v: DC.valeurs.total, txt: DC.total},
+  ];
+  // L'étiquette se pose AU BOUT de la barre, côté extérieur, dans la couleur du texte :
+  // à l'intérieur, en blanc, elle disparaissait sur les petites barres. Le domaine garde
+  // une marge de chaque côté pour qu'elle ne morde ni sur les libellés ni sur le cadre.
+  const bornes = [Math.min(0, ...effets.map((d) => d.v)) * 1.3, Math.max(0, ...effets.map((d) => d.v)) * 1.3 + 0.5];
+  const plot = Plot.plot({
+    width, height: 210, marginLeft: 300, marginRight: 40,
+    x: {label: `Écart à la moyenne ${DC.ref_label}, en points de %`, grid: true, domain: bornes},
+    y: {label: null, domain: effets.map((d) => d.effet)},
+    marks: [
+      Plot.barX(effets, {y: "effet", x: "v", fill: (d) => d.effet.startsWith("Total") ? series.brick : series.violet, fillOpacity: 0.85}),
+      Plot.ruleX([0]),
+      // Deux marques : l'ancrage et le décalage de Plot.text sont des constantes.
+      Plot.text(effets.filter((d) => d.v < 0), {y: "effet", x: "v", text: "txt", fontWeight: 700, textAnchor: "end", dx: -6}),
+      Plot.text(effets.filter((d) => d.v >= 0), {y: "effet", x: "v", text: "txt", fontWeight: 700, textAnchor: "start", dx: 6}),
+    ]});
+  return withCsvExport(plot, effets.map(({effet, v}) => ({effet, points: v})), "neuf-decomposition-m2-" + sfMetric);
+}
+function sfTypes() {
+  return html`<table class="hm-table">
+    <thead><tr><th>Type de logement</th><th>Part des logements, ${DC.ref_label}</th><th>Part, 12 derniers mois</th><th>m² par logement, ${DC.ref_label}</th><th>m² par logement, 12 derniers mois</th></tr></thead>
+    <tbody>${DC.types.map((t) => html`<tr><td>${t.type}</td><td>${nf1.format(t.part_ref)} %</td><td>${nf1.format(t.part_recent)} %</td><td>${nf0.format(t.m2_ref)} m²</td><td>${nf0.format(t.m2_recent)} m²</td></tr>`)}</tbody>
+  </table>`;
+}
+```
+
+```js
+if (DC) display(html`<div class="hm-panel-title">D'où vient le recul des m² — ${sfMetric === "chantiers" ? "surface commencée" : "surface autorisée"}, 12 derniers mois contre la moyenne ${DC.ref_label}</div>`);
+```
+
+```js
+if (DC) display(sfDecomposition());
+```
+
+```js
+// La phrase chiffrée est rédigée par l'export (page_marches._surfaces), dans le sens de
+// la donnée : « recule de 30,7 % », jamais « recule de -30,7 % ».
+if (DC) display(html`<div class="hm-caption">${DC.phrase} Un parc qui rétrécit touche
+  toutes les lignes de produits ; un mélange qui bascule déplace la demande de l'une à
+  l'autre.</div>`);
+```
+
+```js
+if (DC) display(sfTypes());
+```
+
+<details class="hm-howto">
+  <summary>Le calcul, et ce qu'il ne dit pas</summary>
+  <p><b>La surface</b> est la surface de plancher déclarée dans les autorisations d'urbanisme (SIT@DEL, séries corrigées des variations saisonnières). Le total est la somme des quatre types de logement : le SDES corrige la surface totale indépendamment de ses composantes, si bien que le chiffre national qu'il affiche peut s'en écarter légèrement.</p>
+  <p><b>La décomposition</b> compare les douze derniers mois à la moyenne annuelle de la période de référence. Avec N le nombre de logements, w la part de chaque type et s sa surface moyenne, la surface vaut N × Σ w·s. Le volume mesure la variation de N ; le mix, celle de Σ w·s quand seules les parts changent, surfaces figées à la période de référence ; la taille, ce qui reste quand les surfaces par type changent à leur tour. Les trois se convertissent en points enchaînés, qui s'additionnent au recul total.</p>
+  <p><b>Ce qu'elle ne dit pas.</b> Le m² de plancher n'est pas un tonnage : un m² de collectif mobilise davantage de béton de structure, un m² de maison davantage de toiture et d'enveloppe. La décomposition dit quel type de logement porte la baisse ; c'est à chaque ligne de produits de traduire ce déplacement dans sa propre unité.</p>
+</details>
+
+<div class="hm-meta">Source : SDES — SIT@DEL2 (CVS-CJO), France entière · dernier point : ${SF ? SF.last_month : "—"}</div>
+
 ```js
 // ============================ Section ECLN ============================
 const e = neuf.ecln;
