@@ -91,10 +91,10 @@ l'autre, donc ces dates ne s'alignent pas, et c'est normal.
     <tr><td><a href="https://www.igedd.developpement-durable.gouv.fr/prix-immobilier-evolution-a-long-terme-a1048.html">Ventes de logements anciens</a></td><td>IGEDD</td><td>Classeur publié</td><td class="hm-when">juillet 2026</td></tr>
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/010567059">Prix des logements anciens</a></td><td>Notaires-INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T2 2026</td></tr>
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/010751595">Prix des logements neufs</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T2 2026</td></tr>
-    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001587668">Confiance des ménages</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">août 2026</td></tr>
-    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001616794">Intentions d'achat de logement</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">août 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001587668">Confiance des ménages</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">septembre 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001616794">Intentions d'achat de logement</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">septembre 2026</td></tr>
     <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001688527">Taux de chômage au sens du BIT</a></td><td>INSEE</td><td>API SDMX (BDM)</td><td class="hm-when">T2 2026</td></tr>
-    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001586954">Activité du second œuvre (rénovation)</a></td><td>INSEE — enquête de conjoncture</td><td>API SDMX (BDM)</td><td class="hm-when">août 2026</td></tr>
+    <tr><td><a href="https://www.insee.fr/fr/statistiques/serie/001586954">Activité du second œuvre (rénovation)</a></td><td>INSEE — enquête de conjoncture</td><td>API SDMX (BDM)</td><td class="hm-when">septembre 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/MIR">Taux et volume des crédits nouveaux à l'habitat</a></td><td>Banque de France / BCE</td><td>API SDMX (MIR)</td><td class="hm-when">juillet 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/BLS">Demande de crédits habitat (enquête BLS)</a></td><td>BCE / Banque de France</td><td>API SDMX (BLS)</td><td class="hm-when">T3 2026</td></tr>
     <tr><td><a href="https://data.ecb.europa.eu/data/datasets/FM">Euribor 3 mois</a></td><td>BCE</td><td>API SDMX (FM)</td><td class="hm-when">août 2026</td></tr>
