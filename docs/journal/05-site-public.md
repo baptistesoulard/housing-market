@@ -806,3 +806,41 @@ entrepôts pour 1 000 habitants), un bloc sur les 101 pages départementales.
   mai 2026 : une annulation) — le contrat n'a pas de borne basse.
 * Repères par habitant : rapport de SOMMES (France 308 m² commencés pour 1 000 habitants
   sur 12 mois), Mayotte sans recensement dans ces jeux, donc hachurée sur ces mesures.
+
+## La navigation par échelle, 2026-10-03
+
+**Le diagnostic** (vérifié sur le site en ligne et dans le code, avant toute modification) :
+une barre latérale plate de onze onglets qui mêlait quatre natures de pages — le marché
+national, le territoire (la carte, glissée en 4e position), le modèle, les outils — sans
+rien qui dise que le site a deux échelles. Les 101 fiches départementales (101 des 114 URL
+du sitemap) n'étaient reliées depuis aucune page nationale : Synthèse, neuf, ancien,
+financement et aides n'avaient aucun lien vers `/carte` ou `/departement/…`. « ⚙️ Données
+& Sources » était en fait l'outil d'import des ventes, la page le disait elle-même et
+renvoyait vers À propos — vers lequel le lien « Sources & fraîcheur » du pied de page
+aurait dû mener directement. Sur téléphone (vérifié à 375 px), la barre latérale ne
+s'ouvrait que par une bande grise sans mot au bord gauche.
+
+**Ce qui a changé.**
+
+* Quatre sections, nommées par l'ÉCHELLE et non par un public : France entière, Par
+  département, Prévision, Outils & méthode (`SECTIONS` et `navSections()` dans
+  `site.config.js`). Un découpage « acteurs nationaux / petits installateurs » a été
+  écarté : les publics se croisent (un industriel lit la carte pour répartir ses
+  commerciaux, un artisan lit les taux qui feront son carnet de commandes).
+* Le framework rend une section sans `open` en `<section>` non repliable : les règles CSS
+  des icônes et de l'onglet actif visent `#observablehq-sidebar > section` (elles visaient
+  `ol:nth-of-type(2)`). Le titre de section est une étiquette en petites capitales, pour ne
+  pas passer pour un douzième onglet.
+* Sous 1008 px, l'interrupteur du framework devient un bouton « Menu » flottant en bas à
+  gauche ; le pied de page porte le plan complet du site en HTML statique (menu qui ne
+  dépend de rien, maillage interne pour les robots). Le thème encadrait chaque lien de pied
+  de page (style des boutons précédent/suivant) : neutralisé pour le plan.
+* Libellés : « Confronter vos ventes » (`/donnees`), « Crédit & conjoncture » (`/macro`,
+  « environnement » se lisait écologie), « Le modèle face au réel » (`/previsions-passees`,
+  le libellé que l'accueil employait déjà). **Aucune URL n'a changé.**
+* Du national vers le local : un renvoi « dans votre département » sur la Synthèse, le neuf
+  et l'ancien (dans le bloc des renvois jumeaux, après le lien jumeau, que le test des
+  jumelles lit seul), et la carte s'ouvre sur un sélecteur de département.
+
+Tests : `test_la_barre_laterale_est_groupee_par_echelle`,
+`test_le_pied_de_page_porte_tous_les_onglets` ; le test des icônes lit les onglets à plat.

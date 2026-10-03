@@ -117,8 +117,8 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
   `warehouse.resolve()` ne retient un Parquet que s'il est au moins aussi récent que son
   CSV (un `git pull` qui apporte des CSV frais bascule donc en repli CSV — voulu).
 - **`read_frames()` / `load_or_generate_all()` rendent QUATRE frames, déballées par
-  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf`, `territoires`, `locaux` et
-  `locaux_departements` ne rejoignent jamais ce tuple : SQL uniquement (l'export les relit
+  POSITION** : sitadel, ventes_ancien, macro, ecln. `dvf`, `territoires`, `locaux`,
+  `locaux_departements` et `logements_departements` ne rejoignent jamais ce tuple : SQL uniquement (l'export les relit
   à part pour le tableau des sources). Ajouter ou retirer un dataset du tuple oblige à relire tous les déballages
   (`web_export.load_frames`, `forecast_archive` et `api/engine` qui lisent `[2]`). Les
   ventes second œuvre synthétiques (`sales`) et les ventes société (`company_sales`) en
@@ -154,6 +154,12 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
   fichier régional sert de contrôle à la collecte, un écart d'un m² l'arrête. Le niveau
   de référence y a la définition de `analysis.level_context`, sinon deux « écarts à
   2013-19 » différents s'affichent pour la même série (test de parité).
+- **Logements par département (`logements_departements`)** : la déclinaison locale de
+  `sitadel` (même jeu SDES), BRUT, en date réelle estimée, deux types (individuel ;
+  collectif + résidences) qui partitionnent le total — contrôlé à la collecte, comme la
+  somme des départements contre les régions. Mayotte absente. Niveau vs **2010-19** (celle
+  des pages nationales du logement, pas 2013-19). Les cumuls territoriaux des locaux et
+  des logements passent par UNE fonction, `queries._cumuls_territoires` (journal 07).
 - **Pas de m² dans l'ancien** : la surface moyenne d'une vente ne bouge pas (des m²
   vendus recopieraient les ventes) et m² vendus ≠ m² rénovés (journal 05).
 - **Ce qui reste en pandas y reste exprès** : `forecast.build_target` (référence),
@@ -206,7 +212,11 @@ Détail et mesures : journal 06.
 ## Le front (`web/observable/`)
 
 - **`site.config.js` est la source unique d'identité** (URL, titres, descriptions, NAV,
-  logo), lue par le `<head>`, `postbuild.mjs` et les tests. `observablehq.config.js` ne
+  logo), lue par le `<head>`, `postbuild.mjs` et les tests.
+- **La navigation est groupée par ÉCHELLE** (`SECTIONS` : France entière, Par département,
+  Prévision, Outils & méthode), jamais par public — les publics se croisent. Mêmes
+  groupes dans la barre latérale, le pied de page (le menu statique sur téléphone) et le
+  sommaire de l'accueil. Un libellé peut changer, une URL jamais (journal 05). `observablehq.config.js` ne
   porte que le rendu. Aucune URL d'hébergement en dur : `HM_SITE_URL`, repli sur le domaine.
 - **Les pages n'importent jamais `npm:`** : tout passe par `src/components/hm.js`, qui pose
   aussi la **locale française de d3** (graduations « 1 000 », mois « janv. »). Vignettes :
@@ -231,7 +241,8 @@ Détail et mesures : journal 06.
   `/data/departements/<code>.json` et lues par `fetch()`. Budget 10 Ko par fichier, écrits
   en JSON COMPACT (`ecrire_si_change(compact=True)`), budget testé (`test_carte.py`) ; les 4
   départements hors DVF (57, 67, 68, 976) ont une page qui explique l'absence — et
-  reçoivent quand même le profil INSEE et les locaux, qui ne dépendent pas de DVF. Les
+  reçoivent quand même le profil INSEE, les logements neufs (sauf Mayotte) et les
+  locaux, qui ne dépendent pas de DVF. Les
   repères partagés avec la carte (par habitant, rang) viennent des MÊMES fonctions
   (`mesures.locaux_indicateurs`, `mesures.percentiles`). Pas de prévision régionalisée.
 - **Carte des départements** (`carte.md`, `page_carte.py`, `carteDepartements` et

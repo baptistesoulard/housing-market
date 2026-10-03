@@ -369,3 +369,52 @@ Le bloc « Ce qui se construit ici, hors logement » vient du dataset `locaux_de
 ce sont les premiers chiffres d'activité de la page. Le repère par habitant et son rang
 sont calculés par les mêmes fonctions que la carte (`mesures.locaux_indicateurs`,
 `mesures.percentiles`, déplacée de `page_carte`).
+
+## Les logements neufs par département, 2026-10-03
+
+**Pourquoi.** La fiche départementale répondait aux questions d'un acheteur (prix, m² que
+paie une mensualité) et d'un constructeur de locaux, pas à celle qu'un artisan ou un
+installateur pose d'abord : combien de logements se construisent chez moi, maisons ou
+immeubles ? Le paradoxe était complet — les locaux non résidentiels avaient leur maille
+départementale, les logements non. La série existait pourtant dans le MÊME jeu DiDo que la
+série nationale du site (« Logements autorisés et commencés, séries mensuelles », fichier
+« Données mensuelles départementales - Logements », rid `d264957b-…`), jumeau de celui des
+locaux, avec son fichier régional de contrôle.
+
+**Ce qui a été mesuré avant de construire** (millésime publié le 2026-09-29) :
+
+* 100 départements, 2000-01 → 2026-08 ; Mayotte absente du fichier (sa page le dit).
+* « Individuel » + « Collectif et Résidence » = « Tous Logements », exactement, sur toutes
+  les cellules : on ne stocke que les deux types.
+* La somme des départements redonne chaque région publiée (série « Brute ») au logement et
+  au m² près, sur les 16 320 combinaisons (320 mois × 17 régions × 3 types, quatre mesures
+  chacune).
+* La somme des départements redonne les mises en chantier NATIONALES brutes du même
+  millésime, au logement près ; les permis s'en écartent de 7 logements au plus (Mayotte).
+  Contre le fichier national du dépôt (collecté le 2026-08-31, millésime précédent), les
+  écarts montent à 1 750 : révisions. Le test de cohérence ne compare donc que deux
+  fichiers du même millésime (même dernier mois), sinon il est sauté.
+* Des SURFACES mensuelles négatives existent (59 cellules en surface commencée :
+  annulations) ; aucun compte négatif. Le contrat borne les comptes, pas les surfaces.
+
+**Ce qui a été construit.** `fetch_new_sources.build_logements_territoires` (réduction +
+double contrôle, ~1,6 Mo), dataset `logements_departements` (contrat, `ensure_*` factorisé
+avec les locaux dans `_ensure_grille_departements`), `queries.logements_territoires` et
+`logements_annuel` — les cumuls territoriaux des locaux et des logements passent désormais
+par une seule fonction, `_cumuls_territoires` (export à 0 diff après le refactor, hors la
+liste des jeux de l'entrepôt dans `previsions.json`). Référence **2010-19**, celle des pages
+nationales du logement (`analysis.LEVEL_REF_YEARS`), et non 2013-19 qui n'existe que
+parce que la série des locaux démarre en 2013.
+
+Sur la page : une section « Les logements qui se construisent ici » (commencés et autorisés
+sur 12 mois face aux 12 précédents et à 2010-19, part des maisons, m² de plancher, rang par
+habitant, années civiles en barres), avant les locaux et le profil INSEE, qui passe après la
+construction. Une phrase dans le chapeau statique (`depChapeau`), y compris pour
+l'Alsace-Moselle. Sur la carte : trois mesures (pour 1 000 habitants, écart à 2010-19,
+part de l'individuel), mêmes fonctions que la page (`mesures.logements_indicateurs`).
+
+**Repères au 2026-08** : France 4,41 logements commencés pour 1 000 habitants sur 12 mois,
+−21,5 % sous 2010-19 en brut (la page « Marché du neuf » disait −23 % en CVS-CJO jusqu'en
+juillet, sur le millésime précédent — les deux se rapprocheront quand le job aura collecté
+le national du même mois), 36,5 % de maisons. Le plus gros fichier départemental passe de
+6,0 à 6,8 Ko (budget 10).
