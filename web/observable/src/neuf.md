@@ -1,5 +1,5 @@
 ---
-title: Marché du neuf
+title: Logement neuf
 toc: true
 ---
 
@@ -21,7 +21,7 @@ const neuf = await FileAttachment("./data/neuf.json").json();
   Voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
-# 🏗️ Marché du neuf — de l'autorisation à la vente
+# 🏗️ Logement neuf — de l'autorisation à la vente
 
 Le logement neuf se lit comme un tunnel : un permis de construire autorisé devient une mise
 en chantier six à douze mois plus tard, puis un logement livré et mis en vente. Cette page

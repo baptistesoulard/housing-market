@@ -1,5 +1,5 @@
 ---
-title: Marché de l'ancien
+title: Logement ancien
 toc: true
 ---
 
@@ -20,7 +20,7 @@ const anc = await FileAttachment("./data/ancien.json").json();
   Voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
-# 🏠 Marché de l'ancien — transactions, prix & accessibilité
+# 🏠 Logement ancien — transactions, prix & accessibilité
 
 L'essentiel des transactions immobilières en France porte sur des logements anciens. Cette
 page en suit le volume, mesuré par l'<abbr title="Inspection Générale de l'Environnement et du Développement Durable, qui publie le suivi mensuel des ventes de logements anciens">IGEDD</abbr> en cumul sur douze mois glissants, puis les prix

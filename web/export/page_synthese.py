@@ -516,14 +516,14 @@ def _blocs(f: dict, pill_ancien: str) -> list:
 
     return [
         {"title": "Aujourd'hui — ce qui se construit et se vend", "cards": cards_act,
-         "links": [renvoi("🏗️", "Marché du neuf", "/neuf"),
-                   renvoi("🏠", "Marché de l'ancien", "/ancien")]},
+         "links": [renvoi("🏗️", "Logement neuf", "/neuf"),
+                   renvoi("🏠", "Logement ancien", "/ancien")]},
         {"title": "Le carnet — ce qui est déjà autorisé, pour les 12 à 18 prochains mois",
          "cards": cards_carnet,
-         "links": [renvoi("🏗️", "Marché du neuf", "/neuf")]},
+         "links": [renvoi("🏗️", "Logement neuf", "/neuf")]},
         {"title": "Ce qui pilote la suite — conditions de financement", "cards": cards_fin,
          "links": [renvoi("🏦", "Crédit & conjoncture", "/macro"),
-                   renvoi("🏠", "Marché de l'ancien", "/ancien")]},
+                   renvoi("🏠", "Logement ancien", "/ancien")]},
         {"title": "Où va le marché" + (f" — {persp_verdict}" if persp_verdict else ""),
          "cards": cards_persp,
          "links": [renvoi("📡", "Prévision & Scénarios", "/previsions"),

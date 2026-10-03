@@ -1,4 +1,4 @@
-"""Les pages « Marché du neuf » et « Marché de l'ancien » restent parallèles.
+"""Les pages « Logement neuf » et « Logement ancien » restent parallèles.
 
 Les deux pages partagent trois sections — chiffres clés, courbes d'évolution, comparaison
 mensuelle — portant le MÊME titre, dans le MÊME ordre. Ce n'est pas une coïncidence de

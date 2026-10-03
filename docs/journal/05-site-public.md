@@ -844,3 +844,9 @@ s'ouvrait que par une bande grise sans mot au bord gauche.
 
 Tests : `test_la_barre_laterale_est_groupee_par_echelle`,
 `test_le_pied_de_page_porte_tous_les_onglets` ; le test des icônes lit les onglets à plat.
+
+**Complément, même jour : « Logement neuf » et « Logement ancien ».** Placé au-dessus de
+« Construction non résidentielle », « Marché du neuf » pouvait se lire toute la construction
+neuve — exactement la confusion du public matériaux. Les deux jumelles prennent le mot du
+site (libellés, titres de page, renvois de la Synthèse) ; leur `seoTitle` garde « marché du
+logement neuf / ancien », la requête des moteurs. URL `/neuf` et `/ancien` inchangées.

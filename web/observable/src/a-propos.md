@@ -121,7 +121,7 @@ que lui.
   <div class="hm-caption">
 
 **SIT@DEL** — le fichier du SDES qui recense les permis de construire et les mises en
-chantier. Source des courbes de la page Marché du neuf.
+chantier. Source des courbes de la page « Logement neuf ».
 
 **ECLN** — l'Enquête sur la Commercialisation des Logements Neufs, trimestrielle : ce que
 les promoteurs réservent, mettent en vente et vendent, avec leur prix.

@@ -226,12 +226,12 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
     chiffres clés du dernier mois publié.</span>
   </a>
   <a class="hm-page-card" href="/neuf">
-    <span class="t">🏗️ Marché du neuf</span>
+    <span class="t">🏗️ Logement neuf</span>
     <span class="d">Permis et mises en chantier, individuel contre collectif, puis la
     commercialisation : encours, délai d'écoulement, acquéreurs, prix au m².</span>
   </a>
   <a class="hm-page-card" href="/ancien">
-    <span class="t">🏠 Marché de l'ancien</span>
+    <span class="t">🏠 Logement ancien</span>
     <span class="d">Volumes de ventes, prix Notaires-INSEE, et ce que le pouvoir d'achat
     immobilier des ménages devient à mensualité constante.</span>
   </a>

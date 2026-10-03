@@ -173,10 +173,15 @@ export const NAV = [
   {icon: "🧭", name: "Synthèse", path: "/synthese", section: "france",
    description: "L'état du marché du logement français en un coup d'œil : neuf, ancien " +
      "et financement, avec les chiffres clés du dernier mois publié."},
-  {icon: "🏗️", name: "Marché du neuf", path: "/neuf", section: "france",
+  // « Logement » neuf / ancien depuis le 2026-10-03 (« Marché du neuf / de l'ancien »
+  // avant) : à côté de « Construction non résidentielle », « le neuf » pouvait se lire
+  // toute la construction neuve. Le seoTitle garde « marché », le mot que l'on cherche.
+  {icon: "🏗️", name: "Logement neuf", path: "/neuf", section: "france",
+   seoTitle: "Marché du logement neuf en France",
    description: "Permis et mises en chantier (SIT@DEL), individuel contre collectif, " +
      "commercialisation ECLN : encours, délai d'écoulement, acquéreurs et prix au m²."},
-  {icon: "🏠", name: "Marché de l'ancien", path: "/ancien", section: "france",
+  {icon: "🏠", name: "Logement ancien", path: "/ancien", section: "france",
+   seoTitle: "Marché du logement ancien en France",
    description: "Ventes de logements anciens (IGEDD), prix Notaires-INSEE, capacité " +
      "d'emprunt à mensualité constante et indice d'accessibilité, neuf contre ancien."},
   // L'autre moitié de la construction neuve, en m² : ce que le logement ne dit pas à qui

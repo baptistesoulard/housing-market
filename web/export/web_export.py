@@ -7,7 +7,7 @@ Ce fichier n'est plus que l'ORCHESTRATION : charger les données, appeler un con
 par page, écrire ce qui a changé. Chaque page a son module :
 
     page_synthese.py      Synthèse — faits, puis rédaction
-    page_marches.py       Marché du neuf, Marché de l'ancien
+    page_marches.py       Logement neuf, Logement ancien
     page_locaux.py        Construction non résidentielle (surfaces de locaux)
     page_contexte.py      Crédit & conjoncture, Actualités & Aides
     page_previsions.py    Prévision & Scénarios

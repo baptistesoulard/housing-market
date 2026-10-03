@@ -11,7 +11,7 @@ import {bestLagFit, shiftMonths} from "./components/api.js";
 
 ```js
 // Les deux drivers amont (transactions IGEDD, permis SIT@DEL par type) viennent des
-// mêmes JSON que les pages Marché de l'ancien / Marché du neuf — pas d'un serveur à
+// mêmes JSON que les pages Logement ancien / Logement neuf — pas d'un serveur à
 // joindre : le cumul 12 mois de ancien.json EST la série que l'ancienne route API
 // /market/transactions-run-rate exposait (vérifié : même valeur au dernier point).
 const ancienData = await FileAttachment("./data/ancien.json").json();

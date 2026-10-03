@@ -1,4 +1,4 @@
-"""Pages « Marché du neuf » et « Marché de l'ancien » — deux pages jumelles.
+"""Pages « Logement neuf » et « Logement ancien » — deux pages jumelles.
 
 Elles partagent un socle (chiffres clés, courbes d'évolution) et la même carte KPI
 (`_yoy_kpi`) : momentum selon le régime de la série, niveau, dernier mois. Le neuf ajoute

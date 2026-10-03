@@ -144,7 +144,7 @@ REFUTATIONS = [
                   "même voie administrative, si bien que le délai de déclaration pèse plus "
                   "que le délai de construction. Le décalage réel existe projet par projet ; "
                   "la moyenne nationale l'efface."),
-        "page": {"href": "/neuf", "libelle": "Voir la mesure sur Marché du neuf"},
+        "page": {"href": "/neuf", "libelle": "Voir la mesure sur « Logement neuf »"},
         "mesure_le": "2026-08-24",
     },
     {

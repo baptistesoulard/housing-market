@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T07:32:03+00:00",
+  "generated_at": "2026-10-03T09:03:13+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -66,12 +66,12 @@
       "links": [
         {
           "icon": "🏗️",
-          "label": "Marché du neuf",
+          "label": "Logement neuf",
           "path": "/neuf"
         },
         {
           "icon": "🏠",
-          "label": "Marché de l'ancien",
+          "label": "Logement ancien",
           "path": "/ancien"
         }
       ]
@@ -104,7 +104,7 @@
       "links": [
         {
           "icon": "🏗️",
-          "label": "Marché du neuf",
+          "label": "Logement neuf",
           "path": "/neuf"
         }
       ]
@@ -139,7 +139,7 @@
         },
         {
           "icon": "🏠",
-          "label": "Marché de l'ancien",
+          "label": "Logement ancien",
           "path": "/ancien"
         }
       ]

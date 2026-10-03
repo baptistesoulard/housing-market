@@ -264,7 +264,7 @@ local quand le pays tient, ou l'inverse, est ce qu'il faut y chercher.
 <div class="hm-caption">
 Les logements autorisés et mis en chantier dans le département, maisons individuelles et
 immeubles séparés, publiés par le SDES à partir des permis de construire (<abbr title="Fichier du SDES qui recense les permis de construire et les mises en chantier">SIT@DEL</abbr>) :
-la déclinaison locale de la page <a href="/neuf">Marché du neuf</a>. Les séries
+la déclinaison locale de la page <a href="/neuf">Logement neuf</a>. Les séries
 départementales sont publiées brutes — sans correction saisonnière —, d'où une lecture sur
 douze mois cumulés, comparée aux douze mois d'avant et au niveau moyen de 2010-2019.
 </div>
@@ -340,7 +340,7 @@ if (LG) display(html`<div class="hm-caption">Logements en date réelle estimée,
   par département (SDES, SIT@DEL) ; « collectif » comprend les résidences avec services
   (étudiants, seniors). Le département est situé parmi les autres sur la
   <a href="/carte">carte des départements</a>, et le pays sur la page
-  <a href="/neuf">Marché du neuf</a>.</div>`);
+  <a href="/neuf">Logement neuf</a>.</div>`);
 ```
 
 ```js
