@@ -20,6 +20,10 @@
         "parquet"
       ],
       [
+        "logements_departements",
+        "parquet"
+      ],
+      [
         "macro",
         "parquet"
       ],

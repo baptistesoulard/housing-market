@@ -339,6 +339,108 @@ def build_locaux_territoires():
                       last=out["Date"].iloc[-1], label="locaux (départements)")
 
 
+#: SIT@DEL2, LOGEMENTS par departement et par region : le meme jeu DiDo que la serie
+#: nationale de build_sitadel (« Logements autorises et commences, series mensuelles »,
+#: date reelle estimee), dont il est la declinaison locale. BRUT seulement a cette maille.
+LOGEMENTS_DEP_RID = "d264957b-c6d2-4efa-bf5e-6a8da836550a"
+LOGEMENTS_REG_RID = "f8883137-f6f2-4450-97f3-0f8cdb4d1f4d"
+#: Type SDES -> cle de colonne du fichier reduit. « Tous Logements » n'est pas stocke :
+#: il vaut exactement la somme des deux (verifie a la collecte, chaque cellule).
+LOGEMENTS_TYPES_SDES = {"Individuel": "Individuel", "Collectif et Residence": "Collectif"}
+#: Mesure SDES -> prefixe de colonne : logements autorises / commences, et leurs surfaces.
+LOGEMENTS_MESURES_SDES = {"LOG_AUT": "Permis", "LOG_COM": "Chantiers",
+                          "SDP_AUT": "SurfacePermis", "SDP_COM": "SurfaceChantiers"}
+
+
+def reduire_logements_departements(dep, reg):
+    """Fichier departemental brut des LOGEMENTS + fichier regional -> tableau REDUIT.
+
+    Jumeau de reduire_locaux_departements, et pour les memes raisons : une ligne par
+    (mois, departement), une colonne par mesure et par type (individuel, collectif), une
+    grille complete (un trou vaut zero, les cumuls glissants SQL comptent des lignes), et
+    un double controle qui arrete la collecte plutot que de publier un fichier faux :
+
+    * « Tous Logements » == Individuel + Collectif et Residence, cellule par cellule — c'est
+      ce qui autorise a ne stocker que les deux types ;
+    * chaque region publiee (serie « Brute ») == la somme de ses departements, pour chaque
+      mois, chaque type et chaque mesure, au logement et au m2 pres (verifie sur les 16 320
+      combinaisons mois x region x type du millesime 2026-09).
+
+    Mayotte (976) n'est pas dans le fichier du SDES : sa page le dit. Une SURFACE mensuelle
+    peut etre negative (annulation enregistree ce mois-la) : gardee telle quelle.
+    """
+    import departements
+
+    absents = set(LOGEMENTS_TYPES_SDES) | {"Tous Logements"}
+    absents -= set(dep["TYPE_LGT"])
+    if absents:
+        raise ValueError(f"logements départementaux : types absents {sorted(absents)}")
+    inconnus = set(dep["DEPARTEMENT_CODE"]) - set(departements.DEPARTEMENTS)
+    if inconnus:
+        raise ValueError(f"logements départementaux : départements inconnus {sorted(inconnus)}")
+
+    mesures = list(LOGEMENTS_MESURES_SDES)
+    dep = dep.copy()
+    dep["Date"] = pd.to_datetime(dep["ANNEE"] + "-" + dep["MOIS"].str.zfill(2) + "-01")
+    for c in mesures:
+        dep[c] = pd.to_numeric(dep[c]).astype("int64")
+
+    # Controle 1 : le total publie est la somme des deux types.
+    cle = ["Date", "DEPARTEMENT_CODE"]
+    tous = dep[dep["TYPE_LGT"] == "Tous Logements"].set_index(cle)[mesures]
+    parts = dep[dep["TYPE_LGT"].isin(LOGEMENTS_TYPES_SDES)].groupby(cle)[mesures].sum()
+    j = tous.join(parts, rsuffix="_types", how="outer")
+    ecart = j.isna().any(axis=1)
+    for c in mesures:
+        ecart |= j[c] != j[f"{c}_types"]
+    if ecart.any():
+        raise ValueError(f"logements : {int(ecart.sum())} cellule(s) où individuel + collectif "
+                         f"ne redonne pas « Tous Logements » — {j[ecart].head(3).to_dict('index')}")
+
+    # Controle 2 : somme des departements == region publiee, cellule par cellule.
+    reg = reg[reg["NAT_SERIES"] == "Brute"].copy()
+    reg["Date"] = pd.to_datetime(reg["ANNEE"] + "-" + reg["MOIS"].str.zfill(2) + "-01")
+    for c in mesures:
+        reg[c] = pd.to_numeric(reg[c]).astype("int64")
+    dep["Region"] = dep["DEPARTEMENT_CODE"].map(departements.region)
+    somme = dep.groupby(["Date", "Region", "TYPE_LGT"])[mesures].sum()
+    publie = reg.groupby(["Date", "REGION", "TYPE_LGT"])[mesures].sum()
+    publie.index.names = somme.index.names
+    j = somme.join(publie, rsuffix="_reg", how="outer")
+    ecart = j.isna().any(axis=1)
+    for c in mesures:
+        ecart |= j[c] != j[f"{c}_reg"]
+    if ecart.any():
+        raise ValueError(f"logements : {int(ecart.sum())} cellule(s) où la somme des "
+                         f"départements ne redonne pas la région publiée — "
+                         f"{j[ecart].head(3).to_dict('index')}")
+
+    dep = dep[dep["TYPE_LGT"].isin(LOGEMENTS_TYPES_SDES)].copy()
+    dep["cle"] = dep["TYPE_LGT"].map(LOGEMENTS_TYPES_SDES)
+    large = dep.pivot_table(index=cle, columns="cle", values=mesures, aggfunc="sum")
+    grille = pd.MultiIndex.from_product(
+        [sorted(dep["Date"].unique()), sorted(dep["DEPARTEMENT_CODE"].unique())], names=cle)
+    large = large.reindex(grille).fillna(0).astype("int64")
+    out = pd.DataFrame({"Date": large.index.get_level_values(0).strftime("%Y-%m-%d"),
+                        "Department": large.index.get_level_values(1)})
+    for m, prefixe in LOGEMENTS_MESURES_SDES.items():
+        for t in LOGEMENTS_TYPES_SDES.values():
+            out[f"{prefixe}_{t}"] = large[(m, t)].to_numpy()
+    return out
+
+
+def build_logements_territoires():
+    """SIT@DEL2, logements autorises et commences par departement (brut), controles par
+    les regions. Deux telechargements (~9 Mo), un fichier ecrit (~1,5 Mo)."""
+    cols = ("ANNEE", "MOIS", "TYPE_LGT") + tuple(LOGEMENTS_MESURES_SDES)
+    dep = _dido_csv(LOGEMENTS_DEP_RID, cols + ("DEPARTEMENT_CODE",))
+    reg = _dido_csv(LOGEMENTS_REG_RID, cols + ("REGION", "NAT_SERIES"))
+    out = reduire_logements_departements(dep, reg)
+    path = os.path.join(OUT_DIR, "logements-departements.csv")
+    _write_if_changed(path, out.to_csv(index=False, lineterminator="\n"), rows=len(out),
+                      last=out["Date"].iloc[-1], label="logements (départements)")
+
+
 def build_igedd():
     """IGEDD existing-home sales workbook — stable direct URL on cgedd.fr (the IGEDD
     page 'prix-immobilier-evolution-a-long-terme-a1048' links to it). Saved as-is; the
@@ -883,6 +985,7 @@ BUILDERS = [
     build_sitadel,          # SIT@DEL2 (SDES, API DiDo)
     build_locaux,           # SIT@DEL2, locaux non residentiels (meme API)
     build_locaux_territoires,  # les memes, par departement, controles par les regions
+    build_logements_territoires,  # logements par departement, controles par les regions
     build_dvf,              # DVF (DGFiP) - CONDITIONNEL : ne descend le corpus que si la
                             #   source a ete republiee (voir la garde dans le builder)
     build_igedd,            # ventes anciennes IGEDD (.xls cgedd.fr)

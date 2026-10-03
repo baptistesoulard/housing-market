@@ -292,7 +292,7 @@ export function depMeta(path) {
       ? `${d.nom} (${d.code}), ${d.region} : prix médian au m²` +
         `${prix ? ` — ${prix}` : ""}, nombre de ventes et évolution trimestre par ` +
         `trimestre depuis 2014, d'après les ventes enregistrées (DVF). ` +
-        `Combien de m² votre capacité d'emprunt achète.`
+        `Logements mis en chantier et capacité d'emprunt.`
       : `${d.nom} (${d.code}) : le fichier DVF de la DGFiP ne couvre pas ce ` +
         `département. Explication du régime de publicité foncière applicable et ` +
         `renvoi vers les indicateurs nationaux de prix et de financement.`,
@@ -349,13 +349,34 @@ function _profilPhrase(dep) {
   return parts.length ? ` ${parts.join("")}.` : "";
 }
 
+// La phrase des logements neufs (SIT@DEL) : le chiffre que cherche un professionnel du
+// bâtiment, indépendant de DVF — présent donc aussi en Alsace-Moselle. Mêmes conventions
+// que la page : cumul de douze mois, écart à la moyenne 2010-2019.
+const _MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
+               "septembre", "octobre", "novembre", "décembre"];
+function _logementsPhrase(dep) {
+  const lg = dep.logements;
+  if (!lg || !Array.isArray(lg.com) || lg.com[0] == null || !lg.date) return "";
+  const mois = `${_MOIS[Number(lg.date.slice(5, 7)) - 1]} ${lg.date.slice(0, 4)}`;
+  let t = ` Sur les douze mois jusqu'à ${mois}, ${_fr(lg.com[0])} logements y ont été mis en chantier`;
+  if (lg.ind != null && lg.com[0] > 0) t += `, dont ${_fr(100 * lg.ind / lg.com[0])} % de maisons individuelles`;
+  const ref = lg.com[2];
+  if (ref) {
+    const e = (lg.com[0] / ref - 1) * 100;
+    t += Math.abs(e) < 0.5 ? ", au niveau de la moyenne 2010-2019"
+      : ` (${_fr(Math.abs(e))} % ${e > 0 ? "au-dessus" : "en dessous"} de la moyenne 2010-2019)`;
+  }
+  return t + ".";
+}
+
 /** Le paragraphe statique d'une page départementale, depuis son JSON (`dep`), ou null. */
 export function depChapeau(dep) {
   if (!dep || typeof dep !== "object") return null;
   const tete = `${dep.nom} (${dep.code})`;
   if (dep.couvert !== true) {
     if (!dep.absence) return null;
-    return `${tete} : ${dep.absence.charAt(0).toLowerCase()}${dep.absence.slice(1)}` + _profilPhrase(dep);
+    return `${tete} : ${dep.absence.charAt(0).toLowerCase()}${dep.absence.slice(1)}` +
+      _logementsPhrase(dep) + _profilPhrase(dep);
   }
   const e = dep.dernier?.Ensemble;
   if (!e?.date || e.prix_m2 == null) return null;
@@ -382,7 +403,7 @@ export function depChapeau(dep) {
   if (n?.prix_m2 != null && n.date === e.date) {
     texte += ` France entière au même trimestre : ${_fr(n.prix_m2)} €/m².`;
   }
-  return texte + _profilPhrase(dep);
+  return texte + _logementsPhrase(dep) + _profilPhrase(dep);
 }
 
 // --- Le tableau statique de la page « Carte des départements » -----------------------

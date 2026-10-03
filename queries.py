@@ -685,30 +685,31 @@ LOCAUX_CLES = hd.schema.LOCAUX_CLES
 LOCAUX_REF = (2013, 2019)
 
 
-def locaux_territoires(con, echelon: str = "departement") -> list[dict]:
-    """Par territoire : cumul des 12 derniers mois, des 12 précédents, et NIVEAU de
-    référence, pour chaque mesure et chaque clé (`Chantiers_Entrepots_12m`, …).
+def _cumuls_territoires(con, table: str, mesures: list[str], ref: tuple[int, int],
+                        echelon: str) -> list[dict]:
+    """Par territoire : cumul des 12 derniers mois (`<c>_12m`), des 12 précédents
+    (`<c>_prec`) et NIVEAU de référence (`<c>_ref`) de chaque colonne de `mesures`, sur un
+    dataset départemental au format large (une ligne par mois et par département).
 
     Le niveau de référence a EXACTEMENT la définition de `analysis.level_context`, celle
-    de la page nationale : moyenne des cumuls 12 mois glissants dont le mois de fin tombe
-    en 2013-2019 (le premier cumul complet finit en décembre 2013). Une moyenne des
-    années civiles, plus simple, donnait −16,4 % là où la carte de tête affiche −15,5 % :
-    deux « écarts à 2013-19 » différents pour la même série, sur la même page.
+    des pages nationales : moyenne des cumuls 12 mois glissants dont le mois de fin tombe
+    dans les années `ref`. Une moyenne des années civiles, plus simple, donnait −16,4 % là
+    où la carte de tête des locaux affiche −15,5 % : deux « écarts » différents pour la
+    même série, sur la même page.
 
     `echelon` : "departement" (codes INSEE) ou "region" (noms, ceux de departements.py).
     """
     import departements as _dep
 
-    mesures = [f"{m}_{c}" for c in LOCAUX_CLES for m in ("Permis", "Chantiers")]
     if echelon == "region":
         paires = list(_dep.DEPARTEMENTS.items())
         valeurs = ", ".join(["(?, ?)"] * len(paires))
         params = [x for code, (_nom, reg) in paires for x in (code, reg)]
-        source = (f'(SELECT l.*, t.terr FROM "locaux_departements" l '
+        source = (f'(SELECT l.*, t.terr FROM "{table}" l '
                   f'JOIN (VALUES {valeurs}) t(dep, terr) ON l.Department = t.dep)')
     elif echelon == "departement":
         params = []
-        source = '(SELECT *, Department AS terr FROM "locaux_departements")'
+        source = f'(SELECT *, Department AS terr FROM "{table}")'
     else:
         raise ValueError(f"échelon inconnu : {echelon!r}")
 
@@ -718,7 +719,7 @@ def locaux_territoires(con, echelon: str = "departement") -> list[dict]:
     fin = ", ".join(
         f'MAX(CASE WHEN r.Date = b.d1 THEN r."{c}" END) AS "{c}_12m", '
         f'MAX(CASE WHEN r.Date = b.d1 - INTERVAL 12 MONTH THEN r."{c}" END) AS "{c}_prec", '
-        f'AVG(CASE WHEN year(r.Date) BETWEEN {LOCAUX_REF[0]} AND {LOCAUX_REF[1]} '
+        f'AVG(CASE WHEN year(r.Date) BETWEEN {ref[0]} AND {ref[1]} '
         f'THEN r."{c}" END) AS "{c}_ref"'
         for c in mesures)
     return rows(con, f"""
@@ -732,6 +733,13 @@ def locaux_territoires(con, echelon: str = "departement") -> list[dict]:
     """, params)
 
 
+def locaux_territoires(con, echelon: str = "departement") -> list[dict]:
+    """Locaux par territoire : `_cumuls_territoires` sur chaque mesure et chaque clé
+    (`Chantiers_Entrepots_12m`, …), référence 2013-19 (la série démarre en 2013)."""
+    mesures = [f"{m}_{c}" for c in LOCAUX_CLES for m in ("Permis", "Chantiers")]
+    return _cumuls_territoires(con, "locaux_departements", mesures, LOCAUX_REF, echelon)
+
+
 def locaux_annuel(con, departement: str) -> list[dict]:
     """Surfaces de locaux par ANNÉE CIVILE complète pour un département : le total
     autorisé et commencé, et les m² commencés des quatre destinations. Seules les années
@@ -741,5 +749,38 @@ def locaux_annuel(con, departement: str) -> list[dict]:
     sums = ", ".join(f'SUM("{c}")::BIGINT AS "{c}"' for c in cols)
     return rows(con, f"""
         SELECT year(Date) AS annee, {sums} FROM "locaux_departements"
+        WHERE Department = ? GROUP BY 1 HAVING COUNT(*) = 12 ORDER BY 1
+    """, (departement,))
+
+
+# ============================ Logements par territoire ================================
+# La déclinaison départementale de `sitadel` (dataset `logements_departements`, BRUT,
+# format large, deux types qui partitionnent le total). Même mécanique que les locaux,
+# mais la référence est celle des pages nationales du logement : 2010-19
+# (analysis.LEVEL_REF_YEARS), la série départementale démarrant en 2000.
+
+#: Les colonnes du dataset : <mesure>_<type>.
+LOGEMENTS_COLONNES = [f"{m}_{t}" for m in hd.schema.LOGEMENTS_MESURES
+                      for t in hd.schema.LOGEMENTS_TYPES]
+#: Période de référence du niveau — celle de `analysis.level_context`.
+LOGEMENTS_REF = (2010, 2019)
+
+
+def logements_territoires(con, echelon: str = "departement") -> list[dict]:
+    """Logements par territoire : `_cumuls_territoires` sur chaque colonne du dataset,
+    référence 2010-19. L'ensemble d'une mesure est la somme de ses deux types."""
+    return _cumuls_territoires(con, "logements_departements", LOGEMENTS_COLONNES,
+                               LOGEMENTS_REF, echelon)
+
+
+def logements_annuel(con, departement: str) -> list[dict]:
+    """Logements commencés (individuel, collectif) et autorisés (total) par ANNÉE CIVILE
+    complète pour un département. L'année en cours n'est pas une année."""
+    return rows(con, """
+        SELECT year(Date) AS annee,
+               SUM(Chantiers_Individuel)::BIGINT AS ind,
+               SUM(Chantiers_Collectif)::BIGINT AS coll,
+               SUM(Permis_Individuel + Permis_Collectif)::BIGINT AS aut
+        FROM "logements_departements"
         WHERE Department = ? GROUP BY 1 HAVING COUNT(*) = 12 ORDER BY 1
     """, (departement,))

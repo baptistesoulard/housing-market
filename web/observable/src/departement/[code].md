@@ -43,7 +43,7 @@ toc: false
 
 # Prix de l'immobilier par département
 
-<div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (<abbr title="Demandes de Valeurs Foncières : fichier de la DGFiP recensant les ventes immobilières réellement enregistrées">DVF</abbr>, DGFiP)</div>
+<div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (<abbr title="Demandes de Valeurs Foncières : fichier de la DGFiP recensant les ventes immobilières réellement enregistrées">DVF</abbr>, DGFiP), les permis de construire (SIT@DEL, SDES) et le recensement (INSEE)</div>
 
 ```js
 import {multiLine, cardGrid, kpiCard, withCsvExport, legendStatic, formatMesure,
@@ -259,80 +259,93 @@ plus de cent cinquante mille — et seules les <b>formes</b> se comparent. Un d�
 local quand le pays tient, ou l'inverse, est ce qu'il faut y chercher.
 </div>
 
-## Qui habite ici, et qui arrive ?
+## Les logements qui se construisent ici
 
 <div class="hm-caption">
-Le prix d'un logement dépend de qui l'occupe et de qui voudrait l'occuper. Les repères
-ci-dessous décrivent le département tel que le <abbr title="Recensement de la population : enquête annuelle de l'INSEE, dont chaque millésime agrège cinq années de collecte">recensement</abbr>
-le voit : l'âge de ses propriétaires — un parc détenu par des ménages âgés se transmettra
-dans les quinze ans qui viennent —, la forme de son parc, la vacance, et les mouvements de
-population, qui disent si l'on vient s'y installer ou si l'on en part. Chaque repère est
-situé parmi les départements couverts : c'est la position qui parle, plus que la valeur.
-Ils décrivent, ils ne prévoient pas.
+Les logements autorisés et mis en chantier dans le département, maisons individuelles et
+immeubles séparés, publiés par le SDES à partir des permis de construire (<abbr title="Fichier du SDES qui recense les permis de construire et les mises en chantier">SIT@DEL</abbr>) :
+la déclinaison locale de la page <a href="/neuf">Marché du neuf</a>. Les séries
+départementales sont publiées brutes — sans correction saisonnière —, d'où une lecture sur
+douze mois cumulés, comparée aux douze mois d'avant et au niveau moyen de 2010-2019.
 </div>
 
 ```js
-// Le profil est DESCRIPTIF, et c'est mesuré : la porte qui aurait autorisé un classement
-// « France héritée / France désirée » a été manquée (les deux axes changent de signe d'un
-// cycle à l'autre — voir la section des hypothèses écartées de la page de prévision).
-// D'où sept repères, chacun avec son percentile et la valeur France, et aucun score.
-// La valeur France vient de l'annuaire (`profil_france`, une fois pour tout le site) :
-// ratio du pays (somme sur somme) pour les parts, département médian pour le solde
-// migratoire et le niveau de vie — le libellé le dit à chaque fois.
-const nf2 = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-const PROFIL_META = {
-  part_rp_65: {label: "Résidences principales détenues par un ménage de 65 ans ou plus",
-               fmt: (v) => nf1.format(v) + " %", fr: "France"},
-  part_maisons: {label: "Part de maisons parmi les résidences principales",
-                 fmt: (v) => nf1.format(v) + " %", fr: "France"},
-  taux_vacance: {label: "Logements vacants", fmt: (v) => nf1.format(v) + " %", fr: "France"},
-  part_65: {label: "Habitants de 65 ans et plus", fmt: (v) => nf1.format(v) + " %", fr: "France"},
-  solde_migratoire: {label: "Solde migratoire apparent, par an",
-                     fmt: (v) => (v >= 0 ? "+" : "−") + nf2.format(Math.abs(v)) + " %",
-                     fr: "département médian",
-                     note: "arrivées moins départs, rapportés à la population, sur la période entre deux recensements"},
-  taux_arrivee: {label: "Habitants arrivés d'un autre département dans l'année",
-                 fmt: (v) => nf1.format(v) + " %", fr: "France"},
-  niveau_vie: {label: "Niveau de vie médian", fmt: (v) => nf0.format(v) + " € par an",
-               fr: "département médian"},
-};
-// Le percentile est la part des AUTRES départements strictement en dessous (percent_rank :
-// le département ne se compte pas lui-même — « 100 % des 100 départements » serait faux
-// d'une unité). La phrase change de sens à la médiane pour que le nombre cité soit
-// toujours la majorité — « plus bas que dans 98 % des autres » se lit, « plus élevé que
-// dans 2 % » se relit deux fois. L'effectif couvert est dit une fois, en légende.
-const position = (p) => p >= 50
-  ? `plus élevé que dans ${p} % des autres départements couverts`
-  : `plus bas que dans ${100 - p} % des autres départements couverts`;
+// Le bloc vient des mêmes fonctions que la carte (mesures.logements_indicateurs) : le
+// chiffre « pour 1 000 habitants » et son rang sont ceux de la couleur du département
+// là-bas. Absent pour Mayotte, que le fichier départemental du SDES ne couvre pas.
+const LG = dep.logements ?? null;
+const LGF = annuaire.logements_france ?? null;
+const variationLg = formatMesure("pct_signe");
+const ecartLg = (a, b) => (a == null || !b) ? null : (a / b - 1) * 100;
+const nfLg = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 1, maximumFractionDigits: 1});
 ```
 
 ```js
-if (dep.profil) display(cardGrid(dep.profil.items.filter((it) => PROFIL_META[it.key]).map((it) => {
-  const m = PROFIL_META[it.key];
-  return {label: m.label, value: m.fmt(it.v),
-          subs: [position(it.p),
-                 annuaire.profil_france?.[it.key] != null
-                   ? `${m.fr} : ${m.fmt(annuaire.profil_france[it.key])}` : null,
-                 m.note].filter(Boolean)};
-}), kpiCard));
+if (LG) display(cardGrid([
+  {label: `Logements mis en chantier · 12 mois jusqu'à ${fmtMonthFR(new Date(LG.date))}`,
+   value: nf0.format(LG.com[0]),
+   delta: ecartLg(LG.com[0], LG.com[2]) == null ? null
+     : `${variationLg(ecartLg(LG.com[0], LG.com[2]))} vs moyenne ${LGF?.ref_label ?? "2010-19"}`,
+   subs: [ecartLg(LG.com[0], LG.com[1]) == null ? null
+            : `${variationLg(ecartLg(LG.com[0], LG.com[1]))} vs les 12 mois précédents`,
+          LG.hab != null ? `${nfLg.format(LG.hab)} pour 1 000 habitants${LGF?.hab != null ? ` · France : ${nfLg.format(LGF.hab)}` : ""}` : null,
+          LG.p_hab != null ? position(LG.p_hab) : null]},
+  {label: "Logements autorisés · 12 mois", value: nf0.format(LG.aut[0]),
+   delta: ecartLg(LG.aut[0], LG.aut[2]) == null ? null
+     : `${variationLg(ecartLg(LG.aut[0], LG.aut[2]))} vs moyenne ${LGF?.ref_label ?? "2010-19"}`,
+   subs: [ecartLg(LG.aut[0], LG.aut[1]) == null ? null
+            : `${variationLg(ecartLg(LG.aut[0], LG.aut[1]))} vs les 12 mois précédents`,
+          "les permis délivrés : ce qui pourra se construire dans les mois qui viennent"]},
+  {label: "Dont maisons individuelles · 12 mois", value: nf0.format(LG.ind),
+   subs: [LG.com[0] ? `${nf0.format(100 * LG.ind / LG.com[0])} % des logements commencés${LGF?.ind != null ? ` · France : ${nf0.format(LGF.ind)} %` : ""}` : null,
+          LG.m2 != null ? `${nf0.format(Math.round(LG.m2 / 1000) * 1000)} m² de plancher commencés, tous logements` : null]},
+], kpiCard));
 ```
 
 ```js
-if (dep.profil) display(html`<div class="hm-caption">
-  Recensement de la population, millésime ${dep.profil.millesime} — chaque millésime agrège
-  cinq années de collecte, ce n'est pas la photo d'une année ; état civil et Filosofi
-  (INSEE). ${Math.max(...dep.profil.items.map((it) => it.n))} départements couverts, le
-  niveau de vie sur ${dep.profil.items.find((it) => it.key === "niveau_vie")?.n ?? "—"}. Le solde migratoire est dit « apparent » parce qu'il est déduit : variation de
-  population moins solde naturel. Mesurés sur douze ans de prix, ces repères ont changé
-  de sens d'un cycle à l'autre — c'est pourquoi ils décrivent et ne classent pas :
-  <a href="/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas">ce qu'on a essayé, et qui
-  ne marche pas</a>.</div>`);
+// Années civiles complètes : logements commencés empilés (maisons, immeubles), les
+// logements autorisés en pointillé. L'écart entre les deux se lit sur la durée.
+function logementsAnnees() {
+  const A = LG.annuel, noms = ["Maisons individuelles", "Collectif et résidences"];
+  const couleurs = [series.green, series.blue];
+  const rows = A.annees.flatMap((a, i) => [
+    {annee: String(a), type: noms[0], value: A.ind[i]},
+    {annee: String(a), type: noms[1], value: A.coll[i]}]);
+  const aut = A.annees.map((a, i) => ({annee: String(a), value: A.aut[i]}));
+  const plot = Plot.plot({
+    width, height: 320, marginLeft: 56,
+    x: {label: null, type: "band", tickFormat: (a) => (+a % 5 === 0 ? a : "")},
+    y: {label: "Logements par an", grid: true, tickFormat: (v) => nf0.format(v)},
+    color: {domain: noms, range: couleurs},
+    marks: [
+      Plot.barY(rows, {x: "annee", y: "value", fill: "type", order: noms, fillOpacity: 0.85,
+        title: (d) => `${d.annee} — ${d.type} : ${nf0.format(d.value)} logements commencés`, tip: {...TIP}}),
+      Plot.lineY(aut, {x: "annee", y: "value", stroke: ui.subtle, strokeDasharray: "5 3", strokeWidth: 1.8}),
+      Plot.dot(aut, {x: "annee", y: "value", fill: ui.subtle, r: 2.5}),
+      Plot.ruleY([0]),
+    ]});
+  return html`<div>${legendStatic([...noms.map((n, j) => ({name: n, color: couleurs[j]})),
+    {name: "Logements autorisés (total)", color: ui.subtle, dash: true}])}${withCsvExport(plot,
+    A.annees.map((a, i) => ({annee: a, commences_individuel: A.ind[i], commences_collectif: A.coll[i],
+      autorises: A.aut[i]})), "departement-" + dep.code + "-logements")}</div>`;
+}
 ```
 
 ```js
-if (!dep.profil) display(html`<div class="hm-caption">Le recensement de la population ne
-  couvre pas ${dep.nom} dans les jeux de données utilisés ici (« France hors Mayotte ») :
-  aucun profil n'est publié pour ce département.</div>`);
+if (LG && LG.annuel.annees.length) display(logementsAnnees());
+```
+
+```js
+if (LG) display(html`<div class="hm-caption">Logements en date réelle estimée, données brutes
+  par département (SDES, SIT@DEL) ; « collectif » comprend les résidences avec services
+  (étudiants, seniors). Le département est situé parmi les autres sur la
+  <a href="/carte">carte des départements</a>, et le pays sur la page
+  <a href="/neuf">Marché du neuf</a>.</div>`);
+```
+
+```js
+if (!LG) display(html`<div class="hm-caption">Le SDES ne publie pas de série départementale
+  des logements autorisés et commencés pour ${dep.nom}.</div>`);
 ```
 
 ## Ce qui se construit ici, hors logement
@@ -424,6 +437,82 @@ if (LO) display(html`<div class="hm-caption">Surfaces de plancher en m², donné
 ```js
 if (!LO) display(html`<div class="hm-caption">Les surfaces de locaux ne sont pas disponibles
   pour ce département.</div>`);
+```
+
+## Qui habite ici, et qui arrive ?
+
+<div class="hm-caption">
+Le prix d'un logement dépend de qui l'occupe et de qui voudrait l'occuper. Les repères
+ci-dessous décrivent le département tel que le <abbr title="Recensement de la population : enquête annuelle de l'INSEE, dont chaque millésime agrège cinq années de collecte">recensement</abbr>
+le voit : l'âge de ses propriétaires — un parc détenu par des ménages âgés se transmettra
+dans les quinze ans qui viennent —, la forme de son parc, la vacance, et les mouvements de
+population, qui disent si l'on vient s'y installer ou si l'on en part. Chaque repère est
+situé parmi les départements couverts : c'est la position qui parle, plus que la valeur.
+Ils décrivent, ils ne prévoient pas.
+</div>
+
+```js
+// Le profil est DESCRIPTIF, et c'est mesuré : la porte qui aurait autorisé un classement
+// « France héritée / France désirée » a été manquée (les deux axes changent de signe d'un
+// cycle à l'autre — voir la section des hypothèses écartées de la page de prévision).
+// D'où sept repères, chacun avec son percentile et la valeur France, et aucun score.
+// La valeur France vient de l'annuaire (`profil_france`, une fois pour tout le site) :
+// ratio du pays (somme sur somme) pour les parts, département médian pour le solde
+// migratoire et le niveau de vie — le libellé le dit à chaque fois.
+const nf2 = new Intl.NumberFormat("fr-FR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const PROFIL_META = {
+  part_rp_65: {label: "Résidences principales détenues par un ménage de 65 ans ou plus",
+               fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  part_maisons: {label: "Part de maisons parmi les résidences principales",
+                 fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  taux_vacance: {label: "Logements vacants", fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  part_65: {label: "Habitants de 65 ans et plus", fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  solde_migratoire: {label: "Solde migratoire apparent, par an",
+                     fmt: (v) => (v >= 0 ? "+" : "−") + nf2.format(Math.abs(v)) + " %",
+                     fr: "département médian",
+                     note: "arrivées moins départs, rapportés à la population, sur la période entre deux recensements"},
+  taux_arrivee: {label: "Habitants arrivés d'un autre département dans l'année",
+                 fmt: (v) => nf1.format(v) + " %", fr: "France"},
+  niveau_vie: {label: "Niveau de vie médian", fmt: (v) => nf0.format(v) + " € par an",
+               fr: "département médian"},
+};
+// Le percentile est la part des AUTRES départements strictement en dessous (percent_rank :
+// le département ne se compte pas lui-même — « 100 % des 100 départements » serait faux
+// d'une unité). La phrase change de sens à la médiane pour que le nombre cité soit
+// toujours la majorité — « plus bas que dans 98 % des autres » se lit, « plus élevé que
+// dans 2 % » se relit deux fois. L'effectif couvert est dit une fois, en légende.
+const position = (p) => p >= 50
+  ? `plus élevé que dans ${p} % des autres départements couverts`
+  : `plus bas que dans ${100 - p} % des autres départements couverts`;
+```
+
+```js
+if (dep.profil) display(cardGrid(dep.profil.items.filter((it) => PROFIL_META[it.key]).map((it) => {
+  const m = PROFIL_META[it.key];
+  return {label: m.label, value: m.fmt(it.v),
+          subs: [position(it.p),
+                 annuaire.profil_france?.[it.key] != null
+                   ? `${m.fr} : ${m.fmt(annuaire.profil_france[it.key])}` : null,
+                 m.note].filter(Boolean)};
+}), kpiCard));
+```
+
+```js
+if (dep.profil) display(html`<div class="hm-caption">
+  Recensement de la population, millésime ${dep.profil.millesime} — chaque millésime agrège
+  cinq années de collecte, ce n'est pas la photo d'une année ; état civil et Filosofi
+  (INSEE). ${Math.max(...dep.profil.items.map((it) => it.n))} départements couverts, le
+  niveau de vie sur ${dep.profil.items.find((it) => it.key === "niveau_vie")?.n ?? "—"}. Le solde migratoire est dit « apparent » parce qu'il est déduit : variation de
+  population moins solde naturel. Mesurés sur douze ans de prix, ces repères ont changé
+  de sens d'un cycle à l'autre — c'est pourquoi ils décrivent et ne classent pas :
+  <a href="/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas">ce qu'on a essayé, et qui
+  ne marche pas</a>.</div>`);
+```
+
+```js
+if (!dep.profil) display(html`<div class="hm-caption">Le recensement de la population ne
+  couvre pas ${dep.nom} dans les jeux de données utilisés ici (« France hors Mayotte ») :
+  aucun profil n'est publié pour ce département.</div>`);
 ```
 
 ## Ce que ces chiffres comptent — et ce qu'ils ne comptent pas

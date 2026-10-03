@@ -252,6 +252,28 @@ LOCAUX_DEPARTEMENTS = DataFrameSchema(
     unique=["Date", "Department"],
 )
 
+# --- Logements PAR DEPARTEMENT (SIT@DEL2, series BRUTES, date reelle estimee) --------
+# La declinaison locale de la serie nationale `sitadel` (meme jeu du SDES). Format LARGE :
+# une ligne par (mois, departement), une colonne par mesure et par type. Deux types
+# seulement, qui partitionnent le total publie (verifie a la collecte) : l'ensemble est
+# leur somme, jamais une colonne. Comptes en logements, surfaces en m2 de plancher ; une
+# SURFACE mensuelle peut etre negative (annulation), un compte jamais. Les regions ne sont
+# pas stockees (fetch_new_sources.reduire_logements_departements).
+LOGEMENTS_TYPES = ["Individuel", "Collectif"]
+LOGEMENTS_MESURES = ["Permis", "Chantiers", "SurfacePermis", "SurfaceChantiers"]
+LOGEMENTS_DEPARTEMENTS = DataFrameSchema(
+    {
+        "Date": _DATE,
+        "Department": _DEP_CODE,
+        **{f"{m}_{t}": (_COUNT(f"logements {m.lower()} ({t}), brut")
+                        if not m.startswith("Surface")
+                        else _SURFACE(f"m2 {m[7:].lower()} ({t}), brut"))
+           for m in LOGEMENTS_MESURES for t in LOGEMENTS_TYPES},
+    },
+    strict=False, coerce=True, name="logements_departements",
+    unique=["Date", "Department"],
+)
+
 SCHEMAS: dict[str, DataFrameSchema] = {
     "sitadel": SITADEL,
     "ventes_ancien": VENTES_ANCIEN,
@@ -261,6 +283,7 @@ SCHEMAS: dict[str, DataFrameSchema] = {
     "territoires": TERRITOIRES,
     "locaux": LOCAUX,
     "locaux_departements": LOCAUX_DEPARTEMENTS,
+    "logements_departements": LOGEMENTS_DEPARTEMENTS,
 }
 
 

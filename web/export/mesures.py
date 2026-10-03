@@ -158,3 +158,48 @@ def locaux_indicateurs(territoires: list[dict], population: dict) -> dict:
         "ent_hab": round(1000 * som["ent"] / som["pop"], 1) if som["pop"] else None,
     }
     return {"par_code": par_code, "france": france}
+
+
+def logements_indicateurs(territoires: list[dict], population: dict) -> dict:
+    """Les repères « logements neufs » d'un territoire, calculés une fois pour la carte et
+    pour les pages départementales : logements mis en chantier sur 12 mois pour 1 000
+    habitants, écart de ce cumul à son niveau 2010-19 (la référence des pages nationales
+    du logement), et part des maisons individuelles dans ces mises en chantier — le
+    marché d'un artisan ou d'un poseur n'est pas le même dans un département de maisons
+    et dans un département d'immeubles.
+
+    `territoires` vient de `queries.logements_territoires`, `population` est
+    {code: habitants}. Les références France sont des RAPPORTS DE SOMMES (même règle que
+    `locaux_indicateurs`), jamais des moyennes de ratios.
+
+    Renvoie {"par_code": {code: {...}}, "france": {...}}.
+    """
+    def total(t, suffixe):
+        a, b = t.get(f"Chantiers_Individuel_{suffixe}"), t.get(f"Chantiers_Collectif_{suffixe}")
+        return None if a is None or b is None else a + b
+
+    par_code = {}
+    som = {"com": 0.0, "pop": 0.0, "com_all": 0.0, "ref_all": 0.0, "ind": 0.0, "com_ind": 0.0}
+    for t in territoires:
+        com, ref, pop = total(t, "12m"), total(t, "ref"), population.get(t["code"])
+        ind = t.get("Chantiers_Individuel_12m")
+        par_code[t["code"]] = {
+            "hab": round(1000 * com / pop, 2) if com is not None and pop else None,
+            "ecart": round((com / ref - 1) * 100, 1) if com is not None and ref else None,
+            "ind": round(100 * ind / com, 1) if ind is not None and com else None,
+        }
+        if com is not None and ref:
+            som["com_all"] += com
+            som["ref_all"] += ref
+        if com is not None and pop:
+            som["com"] += com
+            som["pop"] += pop
+        if com and ind is not None:
+            som["ind"] += ind
+            som["com_ind"] += com
+    france = {
+        "hab": round(1000 * som["com"] / som["pop"], 2) if som["pop"] else None,
+        "ecart": round((som["com_all"] / som["ref_all"] - 1) * 100, 1) if som["ref_all"] else None,
+        "ind": round(100 * som["ind"] / som["com_ind"], 1) if som["com_ind"] else None,
+    }
+    return {"par_code": par_code, "france": france}

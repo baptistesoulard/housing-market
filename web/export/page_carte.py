@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 from commun import horodatage, mois_annee
-from mesures import locaux_indicateurs, percentiles as _percentiles
+from mesures import locaux_indicateurs, logements_indicateurs, percentiles as _percentiles
 from page_departements import DUREE_REF_ANS, MENSUALITE_REF
 
 import departements                             # noqa: E402
@@ -83,6 +83,20 @@ INDICATEURS = [
               "dernier")},
     {"key": "niveau_vie", "groupe": "Habitants et logements", "label": "Niveau de vie médian",
      "unite": "euro_an", "echelle": "sequentielle", "source": "Filosofi (INSEE)"},
+    # --- Logements neufs (SIT@DEL2, séries brutes par département) -----------------------
+    # La déclinaison locale de la page « Marché du neuf ». Rapportés aux habitants pour la
+    # même raison que les locaux ; la part de l'individuel dit QUEL neuf se construit — un
+    # département de maisons et un département d'immeubles n'occupent pas les mêmes
+    # métiers. Référence 2010-19, celle des pages nationales du logement.
+    {"key": "log_hab", "groupe": "Logements neufs",
+     "label": "Logements mis en chantier sur 12 mois, pour 1 000 habitants",
+     "unite": "decimal", "echelle": "sequentielle", "source": "SIT@DEL (SDES) et recensement (INSEE)"},
+    {"key": "log_ecart", "groupe": "Logements neufs",
+     "label": "Logements mis en chantier sur 12 mois, écart à la moyenne 2010-19",
+     "unite": "pct_signe", "echelle": "divergente", "source": "SIT@DEL (SDES)"},
+    {"key": "log_ind", "groupe": "Logements neufs",
+     "label": "Part des maisons individuelles dans les logements mis en chantier",
+     "unite": "pct", "echelle": "sequentielle", "source": "SIT@DEL (SDES)"},
     # --- Construction non résidentielle (SIT@DEL2, séries brutes par département) --------
     # Rapportées aux habitants : en valeur absolue, la carte ne dirait que la taille des
     # départements. L'écart à 2013-19, lui, se lit sans dénominateur — mais il est BRUITÉ à
@@ -103,6 +117,8 @@ INDICATEURS = [
 #: Les mesures « locaux », dont la référence est la FRANCE (rapport de sommes, voir
 #: mesures.locaux_indicateurs) et non le département médian.
 _LOCAUX = {"loc_hab": "hab", "loc_ecart": "ecart", "ent_hab": "ent_hab"}
+#: Les mesures « logements neufs », même régime (mesures.logements_indicateurs).
+_LOGEMENTS = {"log_hab": "hab", "log_ecart": "ecart", "log_ind": "ind"}
 _PROFIL = {"part_rp_65", "part_65", "part_maisons", "taux_vacance", "taux_arrivee",
            "solde_migratoire", "niveau_vie"}
 
@@ -173,10 +189,18 @@ def build_carte(con, frames: dict) -> dict:
         france[k] = loc["france"].get(champ)
     date_locaux = terr_locaux[0]["date"] if terr_locaux else None
 
+    terr_lg = q.logements_territoires(con) if "logements_departements" in _vues(con) else []
+    lg = logements_indicateurs(terr_lg, habitants)
+    for k, champ in _LOGEMENTS.items():
+        for c in codes:
+            val[k][c] = (lg["par_code"].get(c) or {}).get(champ)
+        france[k] = lg["france"].get(champ)
+    date_lg = terr_lg[0]["date"] if terr_lg else None
+
     # Référence des mesures DVF : le département MÉDIAN, jamais une moyenne que
     # l'Île-de-France écraserait (même convention que `queries.dvf_national_median`).
     for ind in INDICATEURS:
-        if ind["key"] not in _PROFIL and ind["key"] not in _LOCAUX:
+        if ind["key"] not in _PROFIL and ind["key"] not in _LOCAUX and ind["key"] not in _LOGEMENTS:
             med = _mediane(val[ind["key"]].get(c) for c in codes)
             france[ind["key"]] = round(med, 2) if med is not None else None
 
@@ -202,6 +226,11 @@ def build_carte(con, frames: dict) -> dict:
                        + (" contre les quatre précédents" if k == "evol_ventes" else ""))
         elif k == "m2_accessibles":
             periode = f"prix du {periode_dvf}, taux de crédit du dernier mois publié"
+        elif k in _LOGEMENTS:
+            periode = (f"douze mois jusqu'à {mois_annee(date_lg)}"
+                       + (" ; population du recensement " + str(millesime)
+                          if k == "log_hab" and millesime else "")
+                       if date_lg else None)
         elif k in _LOCAUX:
             periode = (f"douze mois jusqu'à {mois_annee(date_locaux)}, date d'enregistrement"
                        + (" ; population du recensement " + str(millesime)
@@ -211,7 +240,7 @@ def build_carte(con, frames: dict) -> dict:
             periode = periode_dvf
         indicateurs.append({
             **ind, "periode": periode, "ref": france.get(k),
-            "ref_libelle": ("France" if k in _LOCAUX
+            "ref_libelle": ("France" if k in _LOCAUX or k in _LOGEMENTS
                             else "département médian" if (not profil or k in ref_mediane)
                             else "France"),
             "n": sum(1 for c in codes if val[k].get(c) is not None)})

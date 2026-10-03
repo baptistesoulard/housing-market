@@ -5,7 +5,7 @@ import os
 
 from commun import DATA_DIR, horodatage
 from ecriture import ecrire_si_change
-from mesures import locaux_indicateurs, percentiles
+from mesures import locaux_indicateurs, logements_indicateurs, percentiles
 
 import departements                             # noqa: E402
 import dvf_clean                                # noqa: E402
@@ -75,12 +75,40 @@ def _locaux(con, code: str, terr: dict | None, ind: dict | None, rang: int | Non
     }
 
 
+def _logements(con, code: str, terr: dict | None, ind: dict | None, rang: int | None):
+    """Le bloc « logements neufs » d'un département : logements commencés et autorisés en
+    cumuls 12 mois (courant, précédent, niveau 2010-19), dont individuels, surfaces
+    commencées, repères par habitant, et les années civiles complètes.
+
+    SIT@DEL couvre les départements hors DVF (57, 67, 68) mais pas Mayotte : le bloc est
+    posé avant le retour anticipé des non couverts, et absent quand le SDES ne publie rien."""
+    if not terr:
+        return None
+    arrondi = lambda v: None if v is None else int(round(v))
+    somme = lambda mesure, s: (None if terr[f"{mesure}_Individuel_{s}"] is None
+                               or terr[f"{mesure}_Collectif_{s}"] is None
+                               else terr[f"{mesure}_Individuel_{s}"] + terr[f"{mesure}_Collectif_{s}"])
+    annuel = q.logements_annuel(con, code)
+    return {
+        "date": terr["date"],
+        "com": [arrondi(somme("Chantiers", s)) for s in ("12m", "prec", "ref")],
+        "aut": [arrondi(somme("Permis", s)) for s in ("12m", "prec", "ref")],
+        "ind": arrondi(terr["Chantiers_Individuel_12m"]),
+        "m2": arrondi(somme("SurfaceChantiers", "12m")),
+        "hab": (ind or {}).get("hab"), "p_hab": rang,
+        "annuel": {"annees": [a["annee"] for a in annuel],
+                   "ind": [a["ind"] for a in annuel],
+                   "coll": [a["coll"] for a in annuel],
+                   "aut": [a["aut"] for a in annuel]},
+    }
+
+
 #: Les quatre destinations, dans l'ordre des colonnes du dataset (clé → libellé du site,
 #: le même que sur la page « Construction non résidentielle »).
 LOCAUX_DESTINATIONS = ["Agricole", "Commerce", "Public", "Activites"]
 
 
-def build_departement(con, code: str, national, locaux=None) -> dict:
+def build_departement(con, code: str, national, locaux=None, logements=None) -> dict:
     """Le JSON d'UN département. Traite franchement le cas « non couvert par DVF »."""
     couvert = code not in dvf_clean.DEPARTEMENTS_SANS_DVF
     payload = {
@@ -90,6 +118,8 @@ def build_departement(con, code: str, national, locaux=None) -> dict:
         "couvert": couvert,
         "source": "DVF (DGFiP) — licence ouverte v2",
     }
+    if logements:
+        payload["logements"] = logements
     if locaux:
         payload["locaux"] = locaux
     # Le profil INSEE (recensement) est indépendant de DVF : les quatre départements hors
@@ -199,11 +229,23 @@ def build_departements(con) -> int:
             "destinations": dict(zip(LOCAUX_DESTINATIONS, _LIBELLES)),
         }
 
+    # Les logements neufs : même régime que les locaux, mêmes fonctions que la carte.
+    terr_lg = ({t["code"]: t for t in q.logements_territoires(con)}
+               if "logements_departements" in vues else {})
+    ind_lg = logements_indicateurs(list(terr_lg.values()), pop)
+    rangs_lg = percentiles({c: v["hab"] for c, v in ind_lg["par_code"].items()})
+    if terr_lg:
+        index["logements_france"] = {
+            "date": next(iter(terr_lg.values()))["date"], "ref_label": "2010-19",
+            **ind_lg["france"]}
+
     modifies, total = 0, 0
     for code in codes:
         payload = build_departement(
             con, code, national,
-            locaux=_locaux(con, code, terr.get(code), ind["par_code"].get(code), rangs.get(code)))
+            locaux=_locaux(con, code, terr.get(code), ind["par_code"].get(code), rangs.get(code)),
+            logements=_logements(con, code, terr_lg.get(code), ind_lg["par_code"].get(code),
+                                 rangs_lg.get(code)))
         payload["generated_at"] = horodatage()
         chemin = os.path.join(DEPARTEMENTS_DIR, f"{code}.json")
         if ecrire_si_change(chemin, payload, compact=True):

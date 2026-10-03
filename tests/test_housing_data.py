@@ -59,7 +59,7 @@ def test_empty_optional_frame_passes():
 
 def test_all_known_datasets_have_a_schema():
     expected = {"sitadel", "ventes_ancien", "macro", "ecln", "dvf", "territoires", "locaux",
-                "locaux_departements"}
+                "locaux_departements", "logements_departements"}
     assert set(S.SCHEMAS) == expected
 
 
