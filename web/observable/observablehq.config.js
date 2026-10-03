@@ -43,11 +43,14 @@ const VARS = Object.entries({
 // pour une seule page.
 const PAGES = NAV.filter((p) => p.nav !== false).map(({name, path}) => ({name, path}));
 
-// Une règle par onglet : l'emoji en ::before, adressé par le href que rend le framework
-// (« ./ » pour la racine, « ./neuf » ailleurs). Ces règles sont concaténées dans STYLE.
+// Une règle par onglet : l'emoji en ::before, adressé par la FIN du href que rend le
+// framework. Ce href est relatif à la page courante : « ./neuf » à la racine, mais
+// « ../neuf » sous /departement/ — un sélecteur à égalité stricte perdait toutes les
+// icônes sur les 101 pages départementales. D'où « $= » : « /neuf » à toute profondeur,
+// « ./ » pour la racine (« ./ » comme « ../ »). Ces règles sont concaténées dans STYLE.
 const NAV_ICONS = PAGES.map(({path}) => ({icon: NAV.find((n) => n.path === path).icon, path}))
   .map(({icon, path}) =>
-  `#observablehq-sidebar > ol:nth-of-type(2) a[href="${path === "/" ? "./" : "." + path}"]::before` +
+  `#observablehq-sidebar > ol:nth-of-type(2) a[href$="${path === "/" ? "./" : path}"]::before` +
   ` { content: "${icon}"; }
 `).join("");
 

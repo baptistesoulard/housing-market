@@ -129,6 +129,29 @@ def test_l_accueil_n_est_pas_un_onglet(heads):
     assert "/" in heads["indexable"], "l'accueil doit rester dans le sitemap"
 
 
+# L'emoji de chaque onglet est posé en CSS, adressé par le href du lien. Le framework rend
+# ce href RELATIF à la page courante : « ./neuf » à la racine, « ../neuf » sous
+# /departement/. Jusqu'au 2026-09-24, le sélecteur visait « ./neuf » à l'égalité stricte :
+# les 101 pages départementales affichaient une barre latérale sans une icône, sans que le
+# build ni aucun test ne le signale. Hors du propos du module (une icône se VOIT), mais
+# c'est ici que le <head> est rendu.
+_OPERATEURS = {"": str.__eq__, "$": str.endswith, "^": str.startswith, "*": str.__contains__}
+
+
+def test_chaque_onglet_a_son_icone_a_toute_profondeur(heads):
+    regles = re.findall(r'a\[href([$^*]?)="([^"]+)"\]::before\s*\{\s*content:\s*"([^"]+)"',
+                        heads["head"]["/synthese"])
+    assert regles, "plus aucune règle d'icône dans le <head> — le motif du test a-t-il dérivé ?"
+    icones = {p["path"]: p["icon"] for p in heads["nav"]}
+    for page in heads["pages"]:
+        for prefixe in ("./", "../"):
+            href = prefixe + page["path"].lstrip("/")
+            trouvees = [icone for op, valeur, icone in regles if _OPERATEURS[op](href, valeur)]
+            assert trouvees == [icones[page["path"]]], (
+                f"le lien {href} reçoit {trouvees or 'aucune icône'}, "
+                f"attendu {icones[page['path']]}")
+
+
 def _ld(head):
     """Les blocs JSON-LD d'un <head>, décodés."""
     out = []
