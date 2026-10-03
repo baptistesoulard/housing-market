@@ -224,6 +224,26 @@ def test_display_ne_recoit_jamais_de_valeur_vide():
 # Ce test empêche la rechute. Il travaille sur la SOURCE Markdown, en pur Python : une
 # interpolation se reconnaît à l'œil nu, et le vérifier ici évite d'exiger un build.
 
+# --- Une cellule de tableau par html`…` -------------------------------------------------
+# Septième façon de casser une page sans que le build le dise : html`<td>a</td><td>b</td>`
+# a PLUSIEURS racines, et htl les emballe alors dans un <span>. Posé dans un <tr>, ce span
+# met toutes les valeurs dans une seule case et décale le reste de la ligne — le tableau des
+# destinations de « Construction non résidentielle » s'affichait ainsi depuis sa création
+# (vu en ligne le 2026-10-03). Une ligne entière (html`<tr>…</tr>`) n'a qu'une racine : sûre.
+
+def test_aucun_gabarit_ne_rend_plusieurs_cellules_sans_leur_ligne():
+    motif = re.compile(r"html`\s*<(td|th)\b[^`]*?</\1>\s*<(td|th)\b")
+    fautifs = []
+    for fichier in sorted(f for f in os.listdir(_WEB) if f.endswith(".md")):
+        for m in motif.finditer(_page(fichier[:-3])):
+            fautifs.append(f"{fichier} : {m.group(0)[:60]}")
+    for nom in ("hm.js",):
+        for m in motif.finditer(_composant(nom)):
+            fautifs.append(f"components/{nom} : {m.group(0)[:60]}")
+    assert not fautifs, ("plusieurs <td>/<th> dans un même html`…` (emballés dans un "
+                         "<span>) : " + " ; ".join(fautifs))
+
+
 PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "carte", "non-residentiel", "macro",
                     "actualites",
                     "previsions", "previsions-passees", "donnees"]

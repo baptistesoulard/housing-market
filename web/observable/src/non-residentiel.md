@@ -66,10 +66,14 @@ function roll12(types, mesure) {
 // est autorisé et ce qui démarre est souvent la première chose à lire. Les variations
 // arrivent MISES EN FORME par l'export (commun.pct : espace avant « % », jamais « -0,0 ») —
 // ne pas les reformater ici.
+//
+// Les cellules d'une mesure sont rendues en TABLEAU de <td>, une par appel à html : un seul
+// gabarit html qui contient trois <td> a trois racines, et html les emballe dans un <span>.
+// Posé dans un <tr>, ce <span> affichait les trois valeurs dans une seule case et les deux
+// mesures l'une sous l'autre (vu en ligne le 2026-10-03, présent depuis la création).
 function tableau(lignes, avecPart) {
-  const cellules = (m) => m
-    ? html`<td>${m.val12_txt}</td><td>${m.yoy_txt}</td><td>${m.ecart_ref_txt}</td>`
-    : html`<td>—</td><td>—</td><td>—</td>`;
+  const cellules = (m) => (m ? [m.val12_txt, m.yoy_txt, m.ecart_ref_txt] : ["—", "—", "—"])
+    .map((v) => html`<td>${v}</td>`);
   return html`<div style="overflow-x:auto"><table class="hm-table">
     <thead><tr><th></th>
       <th>Commencées, 12 mois</th><th>vs 12 mois précédents</th><th>vs ${L.ref_label}</th>
