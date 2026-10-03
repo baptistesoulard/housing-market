@@ -280,6 +280,15 @@ Détail et mesures : journal 06.
 Une seule branche, `main`. Pour savoir s'il reste quelque chose à fusionner, se fier à
 `git branch -r` et `git rev-list --left-right --count`, jamais à une liste écrite ici.
 
+**Synchro PC ↔ GitHub, à chaque séance** (GitHub est la référence : le robot y commite
+chaque lundi, Cloudflare n'y lit que `main`) :
+
+- **En début de séance**, avant toute modification : `git fetch` puis
+  `git rev-list --left-right --count main...origin/main`. Si le PC est en retard,
+  `git pull --rebase` d'abord ; s'il est en avance, signaler les commits non poussés.
+- **En fin de séance** : proposer de pousser. Un travail terminé ne reste jamais sur le
+  seul PC — il n'est ni en ligne, ni sauvegardé.
+
 ## Le journal (`docs/journal/`)
 
 | Fichier | Contenu |
