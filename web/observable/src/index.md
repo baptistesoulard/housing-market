@@ -209,7 +209,15 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
   </div>
 </div>
 
-## Les dix pages
+## Les pages du site
+
+<!--
+  Mêmes groupes et mêmes libellés que la barre latérale et le pied de page (SECTIONS dans
+  site.config.js) : deux échelles, la France et le département, puis le modèle et les
+  outils.
+-->
+
+<h3 class="hm-pages-groupe">France entière</h3>
 
 <div class="hm-pages">
   <a class="hm-page-card" href="/synthese">
@@ -227,18 +235,13 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
     <span class="d">Volumes de ventes, prix Notaires-INSEE, et ce que le pouvoir d'achat
     immobilier des ménages devient à mensualité constante.</span>
   </a>
-  <a class="hm-page-card" href="/carte">
-    <span class="t">🗺️ Carte des départements</span>
-    <span class="d">Les départements côte à côte : prix au m², évolution des prix, ventes
-    et profil des habitants, sur une carte et en tableau.</span>
-  </a>
   <a class="hm-page-card" href="/non-residentiel">
     <span class="t">🏭 Construction non résidentielle</span>
     <span class="d">L'autre part de la construction neuve : entrepôts, industrie, bureaux,
     commerces, bâtiments agricoles et publics, en m² autorisés et commencés.</span>
   </a>
   <a class="hm-page-card" href="/macro">
-    <span class="t">🏦 Environnement & Financement</span>
+    <span class="t">🏦 Crédit & conjoncture</span>
     <span class="d">Taux, Euribor, OAT, confiance des ménages, intentions d'achat,
     chômage, production et demande de crédits habitat.</span>
   </a>
@@ -247,20 +250,45 @@ complet et chiffres du dernier mois sur la Synthèse</a>.</div>
     <span class="d">Les dispositifs en vigueur et à venir, leur impact par pilier et leur
     échéancier.</span>
   </a>
+</div>
+
+<h3 class="hm-pages-groupe">Par département</h3>
+
+<div class="hm-pages">
+  <a class="hm-page-card" href="/carte">
+    <span class="t">🗺️ Carte des départements</span>
+    <span class="d">Les départements côte à côte — prix au m², ventes, logements mis en
+    chantier, locaux, profil des habitants — et la fiche de chacun.</span>
+  </a>
+</div>
+
+<h3 class="hm-pages-groupe">Prévision</h3>
+
+<div class="hm-pages">
   <a class="hm-page-card" href="/previsions">
     <span class="t">📡 Prévision & Scénarios</span>
     <span class="d">La projection des transactions à 12-18 mois, son backtest, et un
     panneau de scénarios à trois leviers.</span>
   </a>
   <a class="hm-page-card" href="/previsions-passees">
-    <span class="t">🎯 Prévisions passées</span>
+    <span class="t">🎯 Le modèle face au réel</span>
     <span class="d">Toutes les prévisions déjà produites, face à ce qui s'est réellement
     passé — et à partir de quel horizon le modèle bat une prévision naïve.</span>
   </a>
+</div>
+
+<h3 class="hm-pages-groupe">Outils & méthode</h3>
+
+<div class="hm-pages">
   <a class="hm-page-card" href="/donnees">
-    <span class="t">⚙️ Données & Sources</span>
-    <span class="d">De quoi confronter vos propres ventes aux indicateurs de marché,
-    sans que votre fichier quitte votre navigateur.</span>
+    <span class="t">📤 Confronter vos ventes</span>
+    <span class="d">Chargez vos ventes mensuelles et voyez quel indicateur du marché les
+    explique le mieux, sans que votre fichier quitte votre navigateur.</span>
+  </a>
+  <a class="hm-page-card" href="/a-propos">
+    <span class="t">ℹ️ À propos & sources</span>
+    <span class="d">D'où viennent les chiffres, à quelle date chaque source a été publiée,
+    la méthode et ses limites.</span>
   </a>
 </div>
 

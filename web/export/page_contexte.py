@@ -1,4 +1,4 @@
-"""Pages « Environnement & Financement » et « Actualités & Aides ».
+"""Pages « Crédit & conjoncture » et « Actualités & Aides ».
 
 Deux pages de contexte : la première publie les séries macro-financières telles quelles
 (aucun jugement), la seconde met en forme la veille curatée d'`actualites.py`.

@@ -60,7 +60,8 @@ import config from {json.dumps(OHQ_CONFIG.as_uri())};
 const paths = [...NAV.map((p) => (p.path === "/" ? "/index" : p.path)), "/404"];
 process.stdout.write(JSON.stringify({{
   site: SITE, nav: NAV, indexable: INDEXABLE, author: AUTHOR,
-  title: config.title, pages: config.pages,
+  title: config.title, pages: config.pages.flatMap((s) => ("pages" in s ? s.pages : [s])),
+  sections: config.pages, footer: config.footer,
   meta: Object.fromEntries(paths.map((p) => [p, pageMeta(p)])),
   head: Object.fromEntries(paths.map((p) => [p, config.head({{path: p, title: null, data: {{}}}})])),
 }}));
@@ -136,6 +137,31 @@ def test_l_accueil_n_est_pas_un_onglet(heads):
 # build ni aucun test ne le signale. Hors du propos du module (une icône se VOIT), mais
 # c'est ici que le <head> est rendu.
 _OPERATEURS = {"": str.__eq__, "$": str.endswith, "^": str.startswith, "*": str.__contains__}
+
+
+def test_la_barre_laterale_est_groupee_par_echelle(heads):
+    """Onze onglets en liste plate obligeaient à tout lire pour deviner que le site a deux
+    échelles (France, département), un modèle et des outils. Chaque onglet appartient à
+    une section, dans l'ordre de SECTIONS, et aucune n'est repliable : une section fermée
+    cacherait des pages."""
+    sections = heads["sections"]
+    assert all("pages" in s for s in sections), "un onglet hors de toute section"
+    assert [s["name"] for s in sections] == [
+        "France entière", "Par département", "Prévision", "Outils & méthode"]
+    assert all(not s.get("open") and not s.get("collapsible") for s in sections)
+    onglets = [p["path"] for s in sections for p in s["pages"]]
+    attendus = [p["path"] for p in heads["nav"] if p.get("nav") is not False]
+    assert sorted(onglets) == sorted(attendus)
+
+
+def test_le_pied_de_page_porte_tous_les_onglets(heads):
+    """Sur téléphone, la barre latérale est fermée : le pied de page, en HTML statique,
+    est le menu qui ne dépend de rien — et le maillage interne de chaque page."""
+    pied = heads["footer"]
+    for page in heads["pages"]:
+        assert f'href="{page["path"]}"' in pied, f"{page['path']} absent du pied de page"
+    assert 'href="/a-propos#d-ou-viennent-les-donnees"' in pied
+    assert 'href="/donnees">Sources' not in pied, "« Sources » menait à l'import des ventes"
 
 
 def test_chaque_onglet_a_son_icone_a_toute_profondeur(heads):

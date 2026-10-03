@@ -162,50 +162,61 @@ export const SITE = {
 //               propos » est parfait dans une barre latérale, où le contexte est donné
 //               par tout ce qui l'entoure, et muet dans une page de résultats, où il
 //               n'est entouré de rien. Le libellé reste court, le titre porte le nom.
+//   section     le groupe de la barre latérale (une clé de SECTIONS, plus bas).
+//
+// Les URL ne bougent JAMAIS avec un libellé : « /donnees » s'appelle « Confronter vos
+// ventes » depuis le 2026-10-03, « /previsions-passees » « Le modèle face au réel ». Une
+// adresse renommée casserait les liens partagés et le référencement acquis.
 export const NAV = [
   {icon: "🏡", name: "Accueil", path: "/", nav: false,
    description: SITE.description},
-  {icon: "🧭", name: "Synthèse", path: "/synthese",
+  {icon: "🧭", name: "Synthèse", path: "/synthese", section: "france",
    description: "L'état du marché du logement français en un coup d'œil : neuf, ancien " +
      "et financement, avec les chiffres clés du dernier mois publié."},
-  {icon: "🏗️", name: "Marché du neuf", path: "/neuf",
+  {icon: "🏗️", name: "Marché du neuf", path: "/neuf", section: "france",
    description: "Permis et mises en chantier (SIT@DEL), individuel contre collectif, " +
      "commercialisation ECLN : encours, délai d'écoulement, acquéreurs et prix au m²."},
-  {icon: "🏠", name: "Marché de l'ancien", path: "/ancien",
+  {icon: "🏠", name: "Marché de l'ancien", path: "/ancien", section: "france",
    description: "Ventes de logements anciens (IGEDD), prix Notaires-INSEE, capacité " +
      "d'emprunt à mensualité constante et indice d'accessibilité, neuf contre ancien."},
-  // La vue d'ensemble des 101 pages départementales, qui n'en avaient aucune : on y entrait
-  // par une liste déroulante. Juste après l'ancien, dont elle est la déclinaison locale.
-  {icon: "🗺️", name: "Carte des départements", path: "/carte",
-   seoTitle: "Carte des prix immobiliers par département",
-   description: "Carte des 101 départements : prix au m², évolution des prix, ventes " +
-     "et profil des habitants (DVF, recensement INSEE), à comparer d'un coup d'œil."},
   // L'autre moitié de la construction neuve, en m² : ce que le logement ne dit pas à qui
-  // fabrique des matériaux. Après les pages logement, avant l'environnement financier.
-  {icon: "🏭", name: "Construction non résidentielle", path: "/non-residentiel",
+  // fabrique des matériaux. Après les pages logement, avant le financement.
+  {icon: "🏭", name: "Construction non résidentielle", path: "/non-residentiel", section: "france",
    seoTitle: "Construction de bureaux, entrepôts et commerces en France",
    description: "Surfaces de locaux autorisées et mises en chantier (SIT@DEL) : entrepôts, " +
      "industrie, bureaux, commerces, bâtiments agricoles et équipements publics, en m²."},
-  {icon: "🏦", name: "Environnement & Financement", path: "/macro",
+  // « Environnement & Financement » jusqu'au 2026-10-03 : sur un site de logement,
+  // « environnement » se lisait écologie ou DPE.
+  {icon: "🏦", name: "Crédit & conjoncture", path: "/macro", section: "france",
+   seoTitle: "Taux de crédit immobilier et conjoncture",
    description: "Taux de crédit, Euribor et OAT, confiance des ménages, intentions " +
      "d'achat, chômage, production de crédits habitat et demande de crédits (enquête BLS)."},
-  {icon: "📰", name: "Actualités & Aides", path: "/actualites",
+  {icon: "📰", name: "Actualités & Aides", path: "/actualites", section: "france",
    description: "Veille des dispositifs d'aide au logement en France et en Europe : " +
      "MaPrimeRénov', PTZ, DPE, CEE — impacts par pilier et échéancier des mesures."},
-  // Ces deux pages appelaient l'API HTTP jusqu'au 2026-08-23 ; elles lisent depuis un
-  // JSON statique comme les autres (previsions.json, ou des séries dérivées d'ancien.json
-  // et neuf.json). L'encart .hm-api-offline qui subsiste ne se déclenche plus que si le
-  // modèle n'a pas pu être calibré à la dernière publication.
-  {icon: "📡", name: "Prévision & Scénarios", path: "/previsions",
+  // La porte des 101 pages départementales : la carte s'ouvre sur un sélecteur, puis
+  // compare les départements. Seule entrée de sa section, et c'est le propos : la
+  // section dit au lecteur que le site a un second niveau, local.
+  {icon: "🗺️", name: "Carte des départements", path: "/carte", section: "departements",
+   seoTitle: "Carte des prix immobiliers par département",
+   description: "Carte des 101 départements : prix au m², ventes, logements mis en " +
+     "chantier, locaux et profil des habitants (DVF, SIT@DEL, INSEE), à comparer."},
+  {icon: "📡", name: "Prévision & Scénarios", path: "/previsions", section: "prevision",
    description: "Prévision des transactions de logements à 12-18 mois : modèle à deux " +
      "étages, backtest hors échantillon et scénarios à trois leviers."},
-  {icon: "🎯", name: "Prévisions passées", path: "/previsions-passees",
+  // Le libellé que l'accueil employait déjà pour cette page (« Prévisions passées » avant).
+  {icon: "🎯", name: "Le modèle face au réel", path: "/previsions-passees", section: "prevision",
+   seoTitle: "Prévisions passées du marché immobilier, face au réel",
    description: "Toutes les prévisions de transactions produites par le modèle, face au " +
      "réalisé : erreur par horizon et comparaison avec une prévision naïve."},
-  {icon: "⚙️", name: "Données & Sources", path: "/donnees",
-   description: "Sources, fraîcheur des séries et méthode de calcul, avec import local " +
-     "d'un fichier de ventes pour le confronter aux indicateurs de marché."},
-  {icon: "ℹ️", name: "À propos", path: "/a-propos",
+  // « ⚙️ Données & Sources » jusqu'au 2026-10-03, alors que la page ne sert qu'à importer
+  // ses ventes — les sources sont sur À propos. L'outil le plus utile à un professionnel
+  // se cachait derrière un libellé de documentation.
+  {icon: "📤", name: "Confronter vos ventes", path: "/donnees", section: "outils",
+   seoTitle: "Confronter vos ventes au marché du logement",
+   description: "Importez vos ventes mensuelles et trouvez l'indicateur du marché du " +
+     "logement qui les explique le mieux ; le fichier ne quitte pas votre navigateur."},
+  {icon: "ℹ️", name: "À propos & sources", path: "/a-propos", section: "outils",
    seoTitle: "À propos — Baptiste Soulard",
    description: "Baptiste Soulard publie ce baromètre du marché du logement : " +
      "sources publiques, méthode, limites et calculs reproductibles."},
@@ -217,6 +228,29 @@ export const NAV = [
    description: "Éditeur, hébergeur, traitement des données du formulaire de contact, " +
      "licences des sources publiques et limites d'usage de ce baromètre."},
 ];
+
+// Les groupes de la barre latérale, dans leur ordre. Le site a deux ÉCHELLES (la France,
+// le département), un modèle et des outils : une liste plate de onze onglets obligeait à
+// lire tous les libellés pour le deviner. Les groupes se nomment par l'échelle, jamais
+// par un public (« pour les industriels », « pour les installateurs ») : les publics se
+// croisent — un industriel national lit la carte pour répartir ses commerciaux, un
+// artisan lit les taux qui feront son carnet de commandes — et personne n'a à se
+// ranger dans une case pour trouver une page.
+//
+// Mêmes groupes, mêmes libellés, à trois endroits : la barre latérale, le pied de page
+// (sa copie statique, qui sert de menu sur téléphone) et le sommaire de l'accueil.
+export const SECTIONS = [
+  {key: "france", name: "France entière"},
+  {key: "departements", name: "Par département"},
+  {key: "prevision", name: "Prévision"},
+  {key: "outils", name: "Outils & méthode"},
+];
+
+/** Les onglets groupés : [{key, name, pages: [entrée NAV, …]}, …], sans section vide. */
+export function navSections() {
+  return SECTIONS.map((s) => ({...s, pages: NAV.filter((p) => p.nav !== false && p.section === s.key)}))
+    .filter((s) => s.pages.length);
+}
 
 // --- Les pages départementales -------------------------------------------------------
 // 101 pages générées par UNE route paramétrée (src/departement/[code].md). Elles ne

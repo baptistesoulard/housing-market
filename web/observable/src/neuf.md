@@ -73,7 +73,7 @@ const segLabelN = allTypesN ? "tous types" :
 
 <div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de la période affichée, mais calculés sur la segmentation retenue (${segLabelN}).</div>
 
-<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./ancien#chiffres-cles">🏠 la même vue pour l'ancien</a></div>
+<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./ancien#chiffres-cles">🏠 la même vue pour l'ancien</a><a class="hm-shortcut" href="./carte">📍 logements commencés dans votre département</a></div>
 
 ${cardGrid(kpisN, kpiCard)}
 

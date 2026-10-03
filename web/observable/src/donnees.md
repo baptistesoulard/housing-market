@@ -1,5 +1,5 @@
 ---
-title: Données & Sources
+title: Confronter vos ventes
 toc: true
 ---
 
@@ -18,7 +18,7 @@ const ancienData = await FileAttachment("./data/ancien.json").json();
 const neufData = await FileAttachment("./data/neuf.json").json();
 ```
 
-# ⚙️ Données & Sources
+# 📤 Confronter vos ventes au marché du logement
 
 <!--
   CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».

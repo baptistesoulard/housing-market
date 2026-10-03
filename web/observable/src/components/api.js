@@ -7,7 +7,7 @@
 //
 // Ce qui reste ici, ce sont des calculs qui ne PEUVENT PAS être pré-exportés : ils
 // dépendent de données qui n'existent que dans le navigateur (le fichier de ventes
-// importé sur Données & Sources, jamais envoyé nulle part) ou d'hypothèses posées par
+// importé sur « Confronter vos ventes », jamais envoyé nulle part) ou d'hypothèses posées par
 // l'utilisateur (le panneau de scénarios de Prévision). Chacun est un PORT — même
 // calcul, même critère qu'une fonction Python nommée en commentaire — et
 // `tests/test_web_js_parity.py` verrouille l'accord des deux sur les mêmes données :

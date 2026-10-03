@@ -9,9 +9,9 @@ par page, écrire ce qui a changé. Chaque page a son module :
     page_synthese.py      Synthèse — faits, puis rédaction
     page_marches.py       Marché du neuf, Marché de l'ancien
     page_locaux.py        Construction non résidentielle (surfaces de locaux)
-    page_contexte.py      Environnement & Financement, Actualités & Aides
+    page_contexte.py      Crédit & conjoncture, Actualités & Aides
     page_previsions.py    Prévision & Scénarios
-    page_archive.py       Prévisions passées
+    page_archive.py       Le modèle face au réel (/previsions-passees)
     page_departements.py  les 101 pages départementales + l'annuaire
     page_carte.py         Carte des départements (les 101 côte à côte)
 

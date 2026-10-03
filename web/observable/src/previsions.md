@@ -143,7 +143,7 @@ if (V) display(html`<div class="hm-takeaways">
       ${nf1.format(V.reliability.mape)} % contre ${nf1.format(V.reliability.naive_mape)} %
       pour une prévision naïve.</li>` : ""}
     <li>Le détail de ces comptes, épisode par épisode, est sur
-      <a href="/previsions-passees">Prévisions passées</a> — y compris les périodes où le
+      <a href="/previsions-passees">Le modèle face au réel</a> — y compris les périodes où le
       modèle s'est trompé.</li>
   </ul>
 </div>`);
@@ -885,7 +885,7 @@ if (T) display(html`<p>Le R² de ce modèle vaut <b>${pct(T.r2)}</b>, et ce chif
   <p>La vraie mise à l'épreuve est ailleurs, et elle est publiée : chaque prévision est
   rejouée sur les données du moment, puis confrontée à ce qui s'est passé. C'est ce que
   mesurent les deux cartes ci-dessus, et c'est le sujet entier de la page
-  <a href="/previsions-passees">Prévisions passées</a>.</p>`);
+  <a href="/previsions-passees">Le modèle face au réel</a>.</p>`);
 ```
 
 ```js
@@ -1151,16 +1151,17 @@ chiffre connu ; pour un classement, garder le même sens d'un cycle au suivant.
 
 <div class="hm-shortcuts" style="margin-top:1.6rem">
   <span class="lead">Et chez vous :</span>
-  <a class="hm-shortcut" href="/#et-chez-vous">📍 Le prix au m² dans votre département</a>
+  <a class="hm-shortcut" href="/carte">📍 Votre département : prix, ventes, logements commencés</a>
   <a class="hm-shortcut" href="/previsions-passees">🎯 Nos prévisions passées, face au réel</a>
-  <a class="hm-shortcut" href="/donnees">⚙️ Croiser avec vos propres ventes</a>
+  <a class="hm-shortcut" href="/donnees">📤 Confronter vos propres ventes</a>
 </div>
 
 <div class="hm-caption" style="margin-top:1rem">
 Cette page raisonne au niveau NATIONAL, et c'est délibéré : les taux, le chômage et les
 intentions d'achat sont des grandeurs nationales. Un modèle « local » publierait cent une
 fois la même courbe sous cent un titres. Pour le marché de votre département, les pages
-départementales donnent les prix et les volumes réellement observés.
+départementales donnent les prix, les ventes et les logements mis en chantier
+réellement observés.
 Pour croiser ces prévisions avec <b>vos</b> ventes, voir la page
-<a href="./donnees">⚙️ Données & Sources</a> — le fichier reste dans votre navigateur.
+<a href="./donnees">📤 Confronter vos ventes</a> — le fichier reste dans votre navigateur.
 </div>

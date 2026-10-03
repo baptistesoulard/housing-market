@@ -48,7 +48,7 @@ const rangeA = Generators.input(periodFilter({min: anc.period.min, max: anc.peri
 
 <div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de tout filtre.</div>
 
-<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#chiffres-cles">🏗️ la même vue pour le neuf</a></div>
+<div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#chiffres-cles">🏗️ la même vue pour le neuf</a><a class="hm-shortcut" href="./carte">📍 prix et ventes dans votre département</a></div>
 
 ${cardGrid([anc.kpi], kpiCard)}
 

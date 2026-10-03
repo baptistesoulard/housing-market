@@ -104,7 +104,7 @@ une recommandation d'achat ou de vente, ni une estimation de la valeur d'un bien
 particulier.**
 
 Le site publie d'ailleurs ses propres erreurs : la page
-[Prévisions passées](/previsions-passees) confronte chaque prévision au réalisé, y compris
+[Le modèle face au réel](/previsions-passees) confronte chaque prévision au réalisé, y compris
 là où le modèle fait moins bien qu'une simple reconduction du dernier chiffre connu. C'est
 la mesure honnête de ce qu'on peut lui demander.
 

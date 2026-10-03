@@ -522,7 +522,7 @@ def _blocs(f: dict, pill_ancien: str) -> list:
          "cards": cards_carnet,
          "links": [renvoi("🏗️", "Marché du neuf", "/neuf")]},
         {"title": "Ce qui pilote la suite — conditions de financement", "cards": cards_fin,
-         "links": [renvoi("🏦", "Environnement & Financement", "/macro"),
+         "links": [renvoi("🏦", "Crédit & conjoncture", "/macro"),
                    renvoi("🏠", "Marché de l'ancien", "/ancien")]},
         {"title": "Où va le marché" + (f" — {persp_verdict}" if persp_verdict else ""),
          "cards": cards_persp,
@@ -558,7 +558,7 @@ def _cartes_perspective(f: dict):
     Le bloc affichait « ventes 12 m vs cible BPCE 2026 » : le même 954 k que la carte
     d'activité, en vert parce qu'il dépasse la cible d'une banque, à un écran de la même
     valeur en orange. Un seul nombre, deux jugements. Le site A une prévision, backtestée
-    et publiée sur « Prévisions passées » : ne pas la montrer ici revenait à garder son
+    et publiée sur « Le modèle face au réel » : ne pas la montrer ici revenait à garder son
     seul actif prospectif hors de sa porte d'entrée.
 
     Repli si le modèle n'est pas calibrable (macro incomplète) : la comparaison BPCE, qui
@@ -592,7 +592,7 @@ def _cartes_perspective(f: dict):
             "value": abrege(verdict["predicted"]),
             "sub": " · ".join(bits),
             "level": "prévision du modèle du site, ajustée sur les taux, les intentions "
-                     "d'achat et le chômage — voir « Prévisions passées » pour ses erreurs"})
+                     "d'achat et le chômage — voir « Le modèle face au réel » pour ses erreurs"})
         return cards, persp_verdict
 
     last_tx = f["tx12_dernier"]

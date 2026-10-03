@@ -1,4 +1,4 @@
-"""Page « Prévisions passées » — la seule qui juge le modèle au lieu de l'exposer."""
+"""Page « Le modèle face au réel » (/previsions-passees) — la seule qui juge le modèle au lieu de l'exposer."""
 from __future__ import annotations
 
 import numpy as np

@@ -8,7 +8,7 @@
 //
 // L'IDENTITÉ du site (adresse publique, descriptions de pages, navigation, logo) vit
 // dans site.config.js — ce fichier-ci ne porte que le rendu.
-import {SITE, NAV, MARK, THEME as T, AUTHOR, pageMeta, DEP_PATHS} from "./site.config.js";
+import {SITE, NAV, MARK, THEME as T, AUTHOR, pageMeta, DEP_PATHS, navSections} from "./site.config.js";
 
 // {--hm-xxx: valeur} à plat, à partir des groupes du thème.
 const VARS = Object.entries({
@@ -41,16 +41,23 @@ const VARS = Object.entries({
 // false` dans site.config.js). Il reste atteignable par le bloc de marque en haut de la
 // barre, qui pointe déjà sur « / » — l'y répéter en huitième onglet ferait deux entrées
 // pour une seule page.
-const PAGES = NAV.filter((p) => p.nav !== false).map(({name, path}) => ({name, path}));
+//
+// Les onglets sont GROUPÉS (site.config.js, SECTIONS) : une section du framework sans
+// `open` n'est pas repliable, elle est rendue en <section><summary>titre</summary><ol>…
+// — toujours ouverte, ce qu'on veut pour onze onglets.
+const PAGES = navSections().map(({name, pages}) => ({
+  name, pages: pages.map(({name, path}) => ({name, path}))}));
+const ONGLETS = PAGES.flatMap((s) => s.pages);
 
 // Une règle par onglet : l'emoji en ::before, adressé par la FIN du href que rend le
 // framework. Ce href est relatif à la page courante : « ./neuf » à la racine, mais
 // « ../neuf » sous /departement/ — un sélecteur à égalité stricte perdait toutes les
 // icônes sur les 101 pages départementales. D'où « $= » : « /neuf » à toute profondeur,
 // « ./ » pour la racine (« ./ » comme « ../ »). Ces règles sont concaténées dans STYLE.
-const NAV_ICONS = PAGES.map(({path}) => ({icon: NAV.find((n) => n.path === path).icon, path}))
+// Portée : les <section> de la barre, jamais le premier <ol> (le bloc de marque).
+const NAV_ICONS = ONGLETS.map(({path}) => ({icon: NAV.find((n) => n.path === path).icon, path}))
   .map(({icon, path}) =>
-  `#observablehq-sidebar > ol:nth-of-type(2) a[href$="${path === "/" ? "./" : path}"]::before` +
+  `#observablehq-sidebar > section a[href$="${path === "/" ? "./" : path}"]::before` +
   ` { content: "${icon}"; }
 `).join("");
 
@@ -365,14 +372,38 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
   content: "${SITE.tagline}";
   display: block; padding: 0.1rem 1rem 0 calc(1.5rem + 26px + 0.55rem);
   font-size: 0.72rem; font-weight: 500; line-height: 1.25; color: var(--hm-subtle); }
-#observablehq-sidebar > ol:nth-of-type(2) .observablehq-link a { gap: 0; }
-#observablehq-sidebar > ol:nth-of-type(2) .observablehq-link a::before {
+#observablehq-sidebar > section .observablehq-link a { gap: 0; }
+#observablehq-sidebar > section .observablehq-link a::before {
   flex: none; display: inline-block; width: 1.5em; font-size: 0.95rem; line-height: 1; }
 ${NAV_ICONS}
 /* L'onglet courant : liseré à la couleur de marque (il était au bleu de focus du thème,
    la seule teinte de l'écran qui ne vienne pas de theme.json) et libellé à l'encre. */
-#observablehq-sidebar > ol:nth-of-type(2) > li.observablehq-link-active::before { background: var(--hm-brick); }
-#observablehq-sidebar > ol:nth-of-type(2) > li.observablehq-link-active > a { color: var(--hm-ink); font-weight: 600; }
+#observablehq-sidebar > section li.observablehq-link-active::before { background: var(--hm-brick); }
+#observablehq-sidebar > section li.observablehq-link-active > a { color: var(--hm-ink); font-weight: 600; }
+/* Titre de section : une étiquette, pas un onglet — petites capitales discrètes, au ras
+   des onglets. Le framework le rend en gras à la taille des liens, ce qui le faisait
+   passer pour une douzième entrée cliquable. */
+#observablehq-sidebar > section { margin: 0.2rem 0; padding-bottom: 0.3rem; }
+#observablehq-sidebar > section > summary {
+  padding: 0.55rem 1rem 0.15rem 1.5rem; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--hm-subtle); }
+
+/* --- Le menu sur téléphone ------------------------------------------------------------
+   Sous 1008 px, la barre latérale est fermée et le framework ne l'ouvre que par une bande
+   de 2rem collée au bord gauche, marquée d'un glyphe gris à mi-hauteur, sans un mot :
+   vérifié à 375 px le 2026-10-03, on ne la trouve pas. Le même interrupteur devient ici un
+   bouton « Menu » flottant en bas à gauche, à portée de pouce. Le pied de page porte
+   aussi tous les onglets, en HTML statique : un second chemin qui ne dépend de rien. */
+@media (max-width: 1007.98px) {
+  #observablehq-sidebar-toggle {
+    top: auto; bottom: 1rem; left: 0.75rem; height: auto; width: auto; gap: 0.45rem;
+    padding: 0.5rem 0.95rem; border-radius: 999px; cursor: pointer;
+    background: var(--hm-ink); color: var(--hm-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22); z-index: 3; }
+  #observablehq-sidebar-toggle::after {
+    content: "Menu"; font: 600 0.9rem var(--hm-font-sans); line-height: 1; }
+  #observablehq-sidebar-toggle:checked { display: none; }
+}
 
 /* --- Page d'accueil ----------------------------------------------------------------
    Cette page a un rôle que les sept autres n'ont pas : elle s'adresse à quelqu'un qui
@@ -529,6 +560,9 @@ ${NAV_ICONS}
   margin: 0.2rem 0 0; }
 /* Le sommaire des pages : de vrais liens décrits, pas une liste de titres. Ils donnent
    au visiteur le plan du site et aux moteurs le maillage interne qui manquait. */
+/* Le sommaire de l'accueil, groupé comme la barre latérale. */
+.hm-pages-groupe { margin: 1.4rem 0 0; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--hm-subtle); }
 .hm-pages { display: grid; gap: 0.9rem; margin: 1rem 0 0.6rem;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 /* [href] : toujours un anchor, même défaut qu'à .hm-shortcut plus haut. */
@@ -589,6 +623,13 @@ ${NAV_ICONS}
   border-top: 1px solid var(--hm-border); font-size: 0.85rem; color: var(--hm-muted); }
 #observablehq-footer nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; margin-bottom: 0.4rem; }
 #observablehq-footer p { margin: 0.3rem 0; max-width: none; }
+/* Le plan du site : une colonne par section de la barre latérale. */
+#observablehq-footer nav.hm-footer-plan {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem 1.2rem; margin-bottom: 1rem; }
+.hm-footer-groupe { display: flex; flex-direction: column; gap: 0.25rem; }
+.hm-footer-titre { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--hm-subtle); }
 
 /* --- Accessibilité ------------------------------------------------------------------
    La légende cliquable était un <span onclick>. Elle se voyait comme un contrôle, se
@@ -768,9 +809,22 @@ const RELOAD_GUARD = `
 // --- Pied de page --------------------------------------------------------------------
 // Rendu au build sur toutes les pages (donc indexable, contrairement à ce que les pages
 // construisent en JavaScript). Les liens relatifs sont réécrits par le framework.
-const FOOTER = `<nav>
-  <a href="/a-propos">À propos & méthode</a>
-  <a href="/donnees">Sources & fraîcheur</a>
+//
+// Il porte TOUS les onglets, groupés comme la barre latérale : sur téléphone, c'est le
+// seul menu qui ne dépende pas d'un interrupteur, et pour un robot le maillage interne
+// de chaque page vers toutes les autres. « Sources & fraîcheur » pointe sur le tableau
+// des sources d'À propos — il menait jusqu'au 2026-10-03 à la page d'import des ventes,
+// qui renvoyait elle-même vers ce tableau.
+const FOOTER_PLAN = navSections().map((s) => `<div class="hm-footer-groupe">
+    <span class="hm-footer-titre">${esc(s.name)}</span>
+    ${s.pages.map((p) => `<a href="${p.path}">${esc(p.name)}</a>`).join("\n    ")}
+  </div>`).join("\n  ");
+const FOOTER = `<nav class="hm-footer-plan" aria-label="Toutes les pages">
+  ${FOOTER_PLAN}
+</nav>
+<nav>
+  <a href="/">Accueil</a>
+  <a href="/a-propos#d-ou-viennent-les-donnees">Sources & fraîcheur</a>
   <a href="/mentions-legales">Mentions légales</a>
   <a href="${SITE.repo}">Code source</a>
 </nav>

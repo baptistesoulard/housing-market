@@ -170,7 +170,7 @@ que deux mois se comparent équitablement.
 modèle explique, entre 0 (rien) et 1 (tout).
 
 **MAPE** — l'erreur moyenne en pourcentage entre une prévision et ce qui s'est
-réellement passé. C'est le chiffre publié sur la page Prévisions passées.
+réellement passé. C'est le chiffre publié sur la page « Le modèle face au réel ».
 
 **Backtest** — un test du modèle sur des données qu'il n'a pas vues à l'entraînement :
 il mesure sa valeur prédictive, pas seulement sa capacité à s'ajuster au passé.

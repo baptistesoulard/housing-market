@@ -1,5 +1,5 @@
 ---
-title: Prévisions passées
+title: Le modèle face au réel
 toc: true
 ---
 
@@ -42,7 +42,7 @@ const encours = (A.current?.points ?? []).map((p) => ({...p, date: d(p.date)}));
   Voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
-# 🎯 Prévisions passées — ce que nous annoncions
+# 🎯 Le modèle face au réel — ce que nous annoncions
 
 Une prévision qui n'est jamais vérifiée n'est qu'une opinion. Chaque prévision de
 transactions publiée par ce site est enregistrée le jour de sa publication, avant que la

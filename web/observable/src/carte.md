@@ -20,17 +20,43 @@ const data = await FileAttachment("./data/carte.json").json();
 # 🗺️ Carte des départements
 
 Les départements côte à côte : ce que coûte un mètre carré, comment les prix ont bougé,
-combien de logements se vendent pour mille habitants, qui y habite, et ce qui s'y construit
-hors logement. Chaque carte colorie une seule mesure, publiée par un organisme public — les
-prix et les ventes par la DGFiP (<abbr title="Demandes de valeurs foncières : les ventes enregistrées chez le notaire">DVF</abbr>),
-le profil des habitants par le recensement de l'INSEE, les locaux mis en chantier —
-entrepôts, usines, bureaux, commerces — par le SDES. Survolez un département pour sa
-valeur et son rang parmi les autres ; cliquez pour ouvrir sa page.
+combien de logements se vendent et se construisent pour mille habitants, qui y habite, et ce
+qui s'y construit hors logement. Chaque carte colorie une seule mesure, publiée par un
+organisme public — les prix et les ventes par la DGFiP (<abbr title="Demandes de valeurs foncières : les ventes enregistrées chez le notaire">DVF</abbr>),
+le profil des habitants par le recensement de l'INSEE, les logements et les locaux mis en
+chantier — maisons, immeubles, entrepôts, usines, bureaux, commerces — par le SDES.
+Survolez un département pour sa valeur et son rang parmi les autres ; cliquez pour ouvrir
+sa page.
 
 Rien ici n'est un score ni un classement de « gagnants » : la page décrit ce qui est
 observé, pas où le marché ira. La dernière section montre pourquoi, en confrontant une idée
 séduisante — les départements âgés perdraient, les départements attractifs gagneraient —
 aux prix réellement enregistrés sur deux périodes successives.
+
+## Votre département
+
+<div class="hm-caption">
+Chaque département a sa fiche : prix au m² et ventes, logements autorisés et mis en
+chantier, locaux, profil des habitants, et ce que votre capacité d'emprunt y achète.
+</div>
+
+```js
+// La porte d'entrée des 101 fiches, en tête de la page qui les porte : sans elle, on n'y
+// arrivait qu'en cliquant sur la carte ou en dépliant le tableau du bas.
+const annuaireDep = await FileAttachment("./data/departements.json").json();
+```
+
+```js
+const depChoisi = view(Inputs.select(
+  annuaireDep.departements.map((d) => d.code),
+  {label: "Département",
+   format: (c) => `${c} — ${annuaireDep.departements.find((x) => x.code === c).nom}`}));
+```
+
+```js
+display(html`<a class="hm-cta" href="/departement/${depChoisi}">Ouvrir la fiche — ${
+  annuaireDep.departements.find((d) => d.code === depChoisi).nom} →</a>`);
+```
 
 ## Une mesure à la fois
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T07:09:31+00:00",
+  "generated_at": "2026-10-03T07:32:03+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -134,7 +134,7 @@
       "links": [
         {
           "icon": "🏦",
-          "label": "Environnement & Financement",
+          "label": "Crédit & conjoncture",
           "path": "/macro"
         },
         {
@@ -152,7 +152,7 @@
           "title": "Ventes anciennes projetées (avril 2027)",
           "value": "899 k",
           "sub": "-5,9 % vs les 12 derniers mois · fourchette 817 k – 983 k · sens juste 75 % du temps à cet horizon (202 millésimes)",
-          "level": "prévision du modèle du site, ajustée sur les taux, les intentions d'achat et le chômage — voir « Prévisions passées » pour ses erreurs"
+          "level": "prévision du modèle du site, ajustée sur les taux, les intentions d'achat et le chômage — voir « Le modèle face au réel » pour ses erreurs"
         },
         {
           "emoji": "🔴",

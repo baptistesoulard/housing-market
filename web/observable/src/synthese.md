@@ -83,7 +83,7 @@ mois.
 Chaque chiffre porte son rythme récent **et** son niveau, parce qu'une pente ne dit rien de
 l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché.
 Chiffres nationaux, d'organismes publics ; la méthode est détaillée sous « Comment lire
-cette page », et les erreurs passées du modèle sur « Prévisions passées ».
+cette page », et les erreurs passées du modèle sur « Le modèle face au réel ».
 
 
 <div class="hm-chips">${data.pillars.map(chip)}</div>
@@ -92,6 +92,8 @@ cette page », et les erreurs passées du modèle sur « Prévisions passées »
   <strong>À retenir</strong>
   <ul>${data.takeaways.map((t) => html`<li>${bold(t)}</li>`)}</ul>
 </div>
+
+<div class="hm-shortcuts"><span class="lead">Et chez vous :</span><a class="hm-shortcut" href="./carte">📍 prix, ventes et logements commencés dans votre département</a></div>
 
 <div class="hm-meta">📅 Dernières données — ${data.freshness.join(" · ")}</div>
 

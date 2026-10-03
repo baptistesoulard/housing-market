@@ -1,5 +1,5 @@
 ---
-title: Environnement & Financement
+title: Crédit & conjoncture
 toc: true
 ---
 
@@ -19,7 +19,7 @@ const macro = await FileAttachment("./data/macro.json").json();
   Voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
-# 🏦 Contexte Macroéconomique et Financement
+# 🏦 Crédit & conjoncture — taux, confiance, emploi
 
 Le marché du logement ne se comprend pas sans ce qui le finance et ce qui décide les
 ménages. Cette page rassemble les indicateurs qui expliquent le marché plus qu'ils ne le
