@@ -628,6 +628,10 @@ ${NAV_ICONS}
   display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.9rem 1.2rem; margin-bottom: 1rem; }
 .hm-footer-groupe { display: flex; flex-direction: column; gap: 0.25rem; }
+/* Le thème encadre tout lien de pied de page (il est pensé pour les boutons « page
+   précédente / suivante ») : douze cadres empilés écrasaient le plan. Des liens simples. */
+#observablehq-footer nav.hm-footer-plan a {
+  display: block; border: none; padding: 0.1rem 0; line-height: 1.45; }
 .hm-footer-titre { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--hm-subtle); }
 
