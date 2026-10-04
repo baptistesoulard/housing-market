@@ -154,7 +154,7 @@ export const SITE = {
 //               même chasse, cf. le CSS de la barre latérale) ;
 //   name        libellé de navigation ;
 //   path        chemin servi, sans extension ;
-//   description meta description ET texte du sommaire de l'accueil. UNE phrase, propre
+//   description meta description. UNE phrase, propre
 //               à la page : deux pages qui partagent leur description se cannibalisent
 //               dans les résultats de recherche.
 //   nav: false  page servie et indexée, mais absente de la barre latérale.
@@ -196,7 +196,11 @@ export const NAV = [
    seoTitle: "Taux de crédit immobilier et conjoncture",
    description: "Taux de crédit, Euribor et OAT, confiance des ménages, intentions " +
      "d'achat, chômage, production de crédits habitat et demande de crédits (enquête BLS)."},
-  {icon: "📰", name: "Actualités & Aides", path: "/actualites", section: "france",
+  // « Actualités & Aides » jusqu'au 2026-10-04 : la page est une veille revue À LA MAIN,
+  // et « actualités » promettait une fraîcheur qu'un site relu chaque lundi par un
+  // automate laisse supposer, mais que cette page-là n'a pas. Le libellé dit ce qu'elle est.
+  {icon: "📰", name: "Aides & dispositifs", path: "/actualites", section: "france",
+   seoTitle: "Aides au logement et à la rénovation : MaPrimeRénov', PTZ, DPE",
    description: "Veille des dispositifs d'aide au logement en France et en Europe : " +
      "MaPrimeRénov', PTZ, DPE, CEE — impacts par pilier et échéancier des mesures."},
   // La porte des 101 pages départementales : la carte s'ouvre sur un sélecteur, puis
@@ -242,8 +246,9 @@ export const NAV = [
 // artisan lit les taux qui feront son carnet de commandes — et personne n'a à se
 // ranger dans une case pour trouver une page.
 //
-// Mêmes groupes, mêmes libellés, à trois endroits : la barre latérale, le pied de page
-// (sa copie statique, qui sert de menu sur téléphone) et le sommaire de l'accueil.
+// Mêmes groupes, mêmes libellés, à deux endroits : la barre latérale et le pied de page
+// (sa copie statique, qui sert de menu sur téléphone). L'accueil n'a plus de sommaire
+// depuis le 2026-10-04 : il entre par tâches (« Ce que vous pouvez faire ici »).
 export const SECTIONS = [
   {key: "france", name: "France entière"},
   {key: "departements", name: "Par département"},

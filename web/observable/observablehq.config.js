@@ -324,7 +324,6 @@ details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
 .hm-period-track input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--hm-blue); outline-offset: 1px; }
 .hm-period-bounds { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--theme-foreground-muted); }
 .hm-dep-head h1 { margin-bottom: 0.2rem; }
-.hm-dep-invite { font-size: 0.95rem; margin: 0.2rem 0 0.8rem; }
 .hm-absence { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
   border-radius: 6px; padding: 0.9rem 1.1rem; margin: 1rem 0; background: var(--hm-surface); }
 .hm-absence-titre { font-weight: 600; color: var(--hm-ink); margin-bottom: 0.4rem; }
@@ -513,13 +512,13 @@ ${NAV_ICONS}
    un orphelin a l'air cassée ; 4 puis 2 (2+2) reste toujours équilibré. */
 .hm-stats { list-style: none; display: grid; gap: 1.1rem 1.6rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 2rem -2.2rem 0; padding: 1.2rem 2.2rem 1.3rem;
+  margin: 1.6rem -2.2rem 0; padding: 0.9rem 2.2rem 1rem;
   border-top: 1px solid color-mix(in srgb, var(--hm-bg) 22%, transparent);
   background: color-mix(in srgb, var(--hm-bg) 6%, transparent); }
 .hm-stats li { margin: 0; }
-.hm-stats .n { display: block; font-size: 1.5rem; font-weight: 700; line-height: 1.15;
+.hm-stats .n { display: block; font-size: 1.2rem; font-weight: 700; line-height: 1.15;
   color: var(--hm-bg); }
-.hm-stats .d { display: block; font-size: 0.83rem; line-height: 1.45; margin-top: 0.2rem;
+.hm-stats .d { display: block; font-size: 0.78rem; line-height: 1.4; margin-top: 0.15rem;
   color: var(--hm-bg); opacity: 0.82; }
 @media (max-width: 820px) {
   .hm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -588,9 +587,6 @@ ${NAV_ICONS}
   margin: 0.2rem 0 0; }
 /* Le sommaire des pages : de vrais liens décrits, pas une liste de titres. Ils donnent
    au visiteur le plan du site et aux moteurs le maillage interne qui manquait. */
-/* Le sommaire de l'accueil, groupé comme la barre latérale. */
-.hm-pages-groupe { margin: 1.4rem 0 0; font-size: 0.78rem; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--hm-subtle); }
 .hm-pages { display: grid; gap: 0.9rem; margin: 1rem 0 0.6rem;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 /* [href] : toujours un anchor, même défaut qu'à .hm-shortcut plus haut. */
@@ -601,6 +597,29 @@ ${NAV_ICONS}
 .hm-page-card .t { font-weight: 600; display: flex; align-items: baseline; gap: 0.45rem; }
 .hm-page-card:hover .t, .hm-page-card:focus-visible .t { color: var(--hm-brick-text); }
 .hm-page-card .d { font-size: 0.875rem; line-height: 1.5; margin-top: 0.3rem; color: var(--hm-muted); }
+/* Les cartes-tâches de l'accueil : à qui la tâche parle, en pied de carte. */
+.hm-page-card .p { display: block; font-size: 0.8rem; line-height: 1.45; margin-top: 0.55rem;
+  color: var(--hm-subtle); }
+/* La réponse sous le titre de l'accueil : la première chose lue, donc le corps le plus
+   grand après le titre, sur un filet clair qui la détache du bandeau sombre. */
+.hm-reponse { border-left: 3px solid color-mix(in srgb, var(--hm-bg) 70%, var(--hm-brick));
+  padding: 0.1rem 0 0.1rem 1rem; margin: 0.4rem 0 1.3rem; max-width: 48rem; }
+.hm-reponse p { color: var(--hm-bg); font-size: 1.22rem; line-height: 1.5; margin: 0 0 0.5rem; }
+.hm-reponse strong { color: var(--hm-bg); }
+.hm-reponse .hm-reponse-maj { font-size: 0.86rem; opacity: 0.78; margin: 0; }
+.hm-hero--band .hm-lead { font-size: 1rem; }
+/* Le sélecteur de département, juste sous le bandeau. */
+.hm-dep { border: 1px solid var(--hm-border); border-radius: 12px; background: var(--hm-surface);
+  padding: 0.9rem 1.1rem 0.4rem; margin: 0 0 2rem; }
+.hm-dep .hm-dep-titre { margin: 0 0 0.6rem; font-size: 0.95rem; }
+.hm-dep .hm-dep-memo { margin: 0.3rem 0 0; font-size: 0.92rem; }
+/* Le journal des changements de l'accueil. */
+.hm-journal { margin: 0.8rem 0 0.4rem; }
+.hm-journal-entree { border-left: 2px solid var(--hm-border); padding: 0 0 0.2rem 0.9rem;
+  margin: 0 0 0.8rem; }
+.hm-journal-date { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--hm-subtle); }
+.hm-journal ul { margin: 0.2rem 0 0; padding-left: 1.1rem; font-size: 0.92rem; }
 /* Les trois arguments de crédibilité de l'accueil. Trois colonnes courtes plutôt qu'un
    paragraphe : c'est ce qu'un visiteur de passage lit réellement. */
 .hm-proof { display: grid; gap: 1.2rem 1.6rem; margin: 1rem 0 0.4rem;
@@ -857,6 +876,7 @@ const FOOTER = `<nav class="hm-footer-plan" aria-label="Toutes les pages">
 <nav>
   <a href="/">Accueil</a>
   <a href="/a-propos#d-ou-viennent-les-donnees">Sources & fraîcheur</a>
+  <a href="/a-propos#me-contacter">Me contacter</a>
   <a href="/mentions-legales">Mentions légales</a>
   <a href="${SITE.repo}">Code source</a>
 </nav>

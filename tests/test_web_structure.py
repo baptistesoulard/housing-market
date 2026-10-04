@@ -131,9 +131,9 @@ def test_les_ancres_visees_existent_dans_la_page_cible(page):
             f"(ancres disponibles : {sorted(disponibles)})")
 
 
-# L'accueil a quatre sections et PAS de sommaire, délibérément : c'est une page
-# d'atterrissage qui se lit d'un trait et se termine par un appel à cliquer. Un sommaire y
-# entrerait en concurrence avec « Les pages du site », qui EST la navigation du site.
+# L'accueil a des sections et PAS de sommaire, délibérément : c'est une page
+# d'atterrissage qui se lit d'un trait, et « Ce que vous pouvez faire ici » y fait déjà
+# office d'entrée vers le reste du site.
 SANS_SOMMAIRE = {"index"}
 
 

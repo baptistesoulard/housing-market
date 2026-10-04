@@ -35,6 +35,10 @@ def build_synthese(con, frames: dict) -> dict:
         "pillars": texte["pillars"],
         "takeaways": texte["takeaways"],
         "freshness": texte["freshness"],
+        # Lus par l'accueil (accueil.py les recopie dans index.md) : la réponse à sa question
+        # et le dernier mois publié par les sources.
+        "resume": texte["resume"],
+        "dernier_mois": texte["dernier_mois"],
         "how_to_read": COMMENT_LIRE,
         "blocks": texte["blocks"],
         "chart": f["graphique"],
@@ -228,15 +232,18 @@ def rediger(f: dict) -> dict:
     pill_ancien = "flat" if plateau_tx else statut_annuel(head["tx"]["value"])
     pill_fin = _statut_taux(dr_yr)
 
+    # Des mots de tous les jours (2026-10-04) : « amont en repli » et « en durcissement »
+    # demandaient de savoir que l'amont, ce sont les permis, et qu'un crédit « durcit »
+    # quand son taux monte. Le pilier du financement s'appelle « Crédit », comme la page.
     w_market = {"up": "en reprise", "flat": "stable", "down": "en repli"}
-    w_fin = {"up": "en amélioration", "flat": "stable", "down": "en durcissement"}
+    w_fin = {"up": "moins cher", "flat": "stable", "down": "plus cher"}
     w_ancien = f"au plateau depuis {plateau_tx['months']} mois" if plateau_tx else w_market[pill_ancien]
     pillars = [
         {"key": "neuf", "label": "Neuf", "status": pill_neuf,
          "dot": pastille(pill_neuf), "word": pn["word"]},
         {"key": "ancien", "label": "Ancien", "status": pill_ancien,
          "dot": pastille(pill_ancien), "word": w_ancien},
-        {"key": "fin", "label": "Financement", "status": pill_fin,
+        {"key": "fin", "label": "Crédit", "status": pill_fin,
          "dot": pastille(pill_fin), "word": w_fin[pill_fin]},
     ]
 
@@ -245,7 +252,39 @@ def rediger(f: dict) -> dict:
         "takeaways": _puces(f, pill_ancien, pill_fin),
         "freshness": _fraicheur(f["fraicheur"]),
         "blocks": _blocs(f, pill_ancien),
+        "resume": _resume(f, pill_ancien, pill_fin),
+        "dernier_mois": mois_annee(max(d for d in (f["fraicheur"]["sitadel"],
+                                                   f["fraicheur"]["igedd"]) if d is not None)),
     }
+
+
+def _resume(f: dict, pill_ancien: str, pill_fin: str) -> str:
+    """L'état du marché en UNE phrase, sans jargon : la réponse que l'accueil donne à sa
+    propre question, juste sous le titre (recopiée dans index.md par accueil.py).
+
+    Les puces « à retenir » parlent à qui lit déjà la Synthèse ; cette phrase parle à qui
+    arrive d'un lien et ne sait encore rien du site. Pas de pourcentage ici, hormis le
+    taux de crédit : la projection, chiffrée, la précède sur l'accueil."""
+    plateau_tx, pn, taux = f["plateau_tx"], f["pilier_neuf"], f["taux"]
+    if plateau_tx:
+        ancien = f"les ventes de logements anciens plafonnent depuis {plateau_tx['months']} mois"
+    else:
+        ancien = {"up": "les ventes de logements anciens progressent",
+                  "flat": "les ventes de logements anciens sont stables",
+                  "down": "les ventes de logements anciens reculent"}[pill_ancien]
+    neuf = {"reprise": "les permis de construire et les mises en chantier repartent",
+            "stable": "la construction neuve est stable",
+            "repli": "les permis de construire et les mises en chantier reculent",
+            "amont_repli": "les permis de construire reculent",
+            "amont_reprise": "les permis de construire repartent",
+            "aval_hausse": "les mises en chantier progressent",
+            "aval_repli": "les mises en chantier reculent"}.get(pn["kind"], "la construction neuve hésite")
+    credit = {"down": "le crédit renchérit", "up": "le crédit devient moins cher",
+              "flat": "le coût du crédit est stable"}[pill_fin]
+    if taux is not None:
+        credit += f" ({taux['now']:.2f} %".replace(".", ",")
+        credit += f", {pt(taux['sur_un_an'])} sur un an)" if taux["sur_un_an"] is not None else ")"
+    return f"Aujourd'hui, {ancien}, {neuf} et {credit}."
 
 
 def _puces(f: dict, pill_ancien: str, pill_fin: str) -> list:
@@ -379,11 +418,14 @@ def _puces(f: dict, pill_ancien: str, pill_fin: str) -> list:
 
 
 def _fraicheur(fr: dict) -> list:
-    out = [f"SIT@DEL : {mois_annee(fr['sitadel'])}",
-           f"IGEDD : {mois_annee(fr['igedd'])}"]
+    """Le dernier point publié de chaque source, nommé par ce qu'elle compte et non par
+    son sigle : « SIT@DEL : juillet 2026 » ne disait rien à qui ne connaît pas le SDES."""
+    out = [f"permis et mises en chantier : {mois_annee(fr['sitadel'])}",
+           f"ventes de logements anciens : {mois_annee(fr['igedd'])}"]
     if fr["ecln"] is not None:
         e = fr["ecln"]
-        out.append(f"ECLN : {e.year}-T{(e.month - 1) // 3 + 1}")
+        t = (e.month - 1) // 3 + 1
+        out.append(f"commercialisation du neuf : {t}{'er' if t == 1 else 'e'} trimestre {e.year}")
     return out
 
 
@@ -527,7 +569,7 @@ def _blocs(f: dict, pill_ancien: str) -> list:
         {"title": "Où va le marché" + (f" — {persp_verdict}" if persp_verdict else ""),
          "cards": cards_persp,
          "links": [renvoi("📡", "Prévision & Scénarios", "/previsions"),
-                   renvoi("📰", "Actualités & Aides", "/actualites")]},
+                   renvoi("📰", "Aides & dispositifs", "/actualites")]},
     ]
 
 

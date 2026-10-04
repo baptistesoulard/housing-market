@@ -1,11 +1,16 @@
-"""Les deux affirmations CHIFFRÉES de l'accueil qui bougent, réécrites dans `index.md`.
+"""Les affirmations CHIFFRÉES de l'accueil qui bougent, réécrites dans `index.md`.
 
 L'accueil doit rester du HTML rendu au build : c'est, avec À propos, le seul texte du site
 que lisent les robots d'aperçu de partage, qui n'exécutent aucun JavaScript. Deux de ses
 affirmations dépendent pourtant des données :
 
 * l'erreur moyenne du modèle dans le bandeau de chiffres ;
-* l'horizon en deçà duquel le modèle fait moins bien qu'une prévision naïve.
+* l'horizon en deçà duquel le modèle fait moins bien qu'une prévision naïve ;
+* depuis le 2026-10-04, la RÉPONSE à la question du titre (« Où en est le marché du
+  logement en France ? ») : la projection des ventes, l'état du marché en une phrase et
+  le dernier mois publié par les sources. La question restait sans réponse à l'écran — la
+  réponse vivait sur la Synthèse, à un clic — et c'est le texte qui décide un visiteur
+  arrivé d'un lien à rester. Aucune page n'avait la prévision elle-même dans son HTML.
 
 Écrites à la main, elles ont dérivé toutes les deux : le bandeau citait l'erreur à six
 mois du MILLÉSIME (5,7 % contre 5,9 %) pendant que la Synthèse annonçait sa prévision
@@ -35,7 +40,12 @@ MARQUEURS = {
                "<!-- hm:erreur:fin -->"),
     "bascule": ("<!-- hm:bascule — régénéré par web/export/accueil.py -->",
                 "<!-- hm:bascule:fin -->"),
+    "reponse": ("<!-- hm:reponse:début — régénéré par web/export/accueil.py -->",
+                "<!-- hm:reponse:fin -->"),
 }
+
+#: Les passages qui sont des BLOCS (retours à la ligne autour) ; la bascule est en ligne.
+_BLOCS = ("erreur", "reponse")
 
 _LETTRES = ("zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf",
             "dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept",
@@ -98,7 +108,48 @@ def phrase_bascule(crossover: int | None) -> str:
             "chiffre publié, le modèle fait moins bien qu'une prévision naïve")
 
 
-def rendu(previsions: dict, archive: dict) -> dict:
+def _milliers(v: float) -> str:
+    return f"{int(round(float(v), -3)):,}".replace(",", " ")
+
+
+def phrase_projection(verdict: dict | None) -> str | None:
+    """La projection des ventes, dans les mots de la puce « Ce que ça implique » de la
+    Synthèse. L'horizon se compte devant le LECTEUR (« dans six mois »), la convention du
+    verdict, et la phrase la nomme."""
+    if not verdict or verdict.get("direction") not in ("hausse", "baisse", "stable"):
+        return None
+    ampleur = f"{abs(verdict['change_pct']):.0f} %".replace(".", ",")
+    mouvement = {"hausse": f"devraient progresser d'environ {ampleur}",
+                 "baisse": f"devraient reculer d'environ {ampleur}",
+                 "stable": "devraient rester à peu près stables"}[verdict["direction"]]
+    phrase = (f"<strong>Les ventes de logements anciens {mouvement} d'ici "
+              f"{verdict['target_month']}</strong>, dans {en_lettres(int(verdict['months_ahead']))} mois")
+    if verdict.get("from_value") and verdict.get("predicted"):
+        phrase += (f" : de {_milliers(verdict['from_value'])} à "
+                   f"{_milliers(verdict['predicted'])} ventes sur douze mois")
+    return phrase + ", selon le modèle du site."
+
+
+def bloc_reponse(previsions: dict, synthese: dict) -> str | None:
+    """La réponse sous le titre : projection, état du marché, dernier mois publié.
+
+    None si la Synthèse n'a pas de résumé : le passage reste alors tel quel."""
+    resume = (synthese or {}).get("resume")
+    if not resume:
+        return None
+    projection = phrase_projection((previsions or {}).get("verdict"))
+    corps = f"{projection} {resume}" if projection else resume
+    lignes = ['<div class="hm-reponse">', f"<p>{corps}</p>"]
+    if synthese.get("dernier_mois"):
+        lignes.append(
+            f'<p class="hm-reponse-maj">Dernier mois publié par les sources : '
+            f"{synthese['dernier_mois']}. Elles paraissent avec quelques mois de décalage ; "
+            "le site les relit chaque lundi.</p>")
+    lignes.append("</div>")
+    return "\n".join(lignes)
+
+
+def rendu(previsions: dict, archive: dict, synthese: dict | None = None) -> dict:
     """{marqueur: texte à placer entre ses bornes}, ou None pour un passage à laisser tel quel."""
     retro = ((archive or {}).get("kinds") or {}).get("retro") or {}
     premier = retro.get("first_vintage")
@@ -106,6 +157,7 @@ def rendu(previsions: dict, archive: dict) -> dict:
         "erreur": bandeau_erreur((previsions or {}).get("verdict"),
                                  premier[:4] if premier else None),
         "bascule": phrase_bascule((archive or {}).get("crossover_horizon")),
+        "reponse": bloc_reponse(previsions, synthese or {}),
     }
 
 
@@ -117,7 +169,8 @@ def _bornes(src: str, cle: str, path: str):
     return i + len(debut), j
 
 
-def ecrire(previsions: dict, archive: dict, path: str = INDEX) -> bool:
+def ecrire(previsions: dict, archive: dict, synthese: dict | None = None,
+           path: str = INDEX) -> bool:
     """Réécrit les passages entre leurs marqueurs. True si le fichier a changé.
 
     Même garde que les JSON du front : sans changement, aucun octet n'est touché, donc le
@@ -125,13 +178,14 @@ def ecrire(previsions: dict, archive: dict, path: str = INDEX) -> bool:
     with open(path, encoding="utf-8") as f:
         avant = f.read()
     apres = avant
-    for cle, texte in rendu(previsions, archive).items():
+    for cle, texte in rendu(previsions, archive, synthese).items():
         if texte is None:
             print(f"[web_export] index.md : pas de valeur pour hm:{cle}, passage laissé tel quel")
             continue
         i, j = _bornes(apres, cle, path)
         # Le bandeau est un bloc (retours à la ligne autour), la bascule est en ligne.
-        corps = f"\n{texte}\n  " if cle == "erreur" else texte
+        corps = (f"\n{texte}\n  " if cle == "erreur"
+                 else f"\n{texte}\n" if cle == "reponse" else texte)
         apres = apres[:i] + corps + apres[j:]
     if apres == avant:
         return False
@@ -147,5 +201,5 @@ def passages_du_fichier(path: str = INDEX) -> dict:
     out = {}
     for cle in MARQUEURS:
         i, j = _bornes(src, cle, path)
-        out[cle] = src[i:j].strip("\n").rstrip() if cle == "erreur" else src[i:j]
+        out[cle] = src[i:j].strip("\n").rstrip() if cle in _BLOCS else src[i:j]
     return out

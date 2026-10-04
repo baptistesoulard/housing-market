@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T09:03:13+00:00",
+  "generated_at": "2026-10-04T09:54:46+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -8,7 +8,7 @@
       "label": "Neuf",
       "status": "flat",
       "dot": "🟠",
-      "word": "amont en repli"
+      "word": "permis en recul"
     },
     {
       "key": "ancien",
@@ -19,10 +19,10 @@
     },
     {
       "key": "fin",
-      "label": "Financement",
+      "label": "Crédit",
       "status": "down",
       "dot": "🔴",
-      "word": "en durcissement"
+      "word": "plus cher"
     }
   ],
   "takeaways": [
@@ -32,10 +32,12 @@
     "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 6 % d'ici avril 2027."
   ],
   "freshness": [
-    "SIT@DEL : juillet 2026",
-    "IGEDD : juillet 2026",
-    "ECLN : 2026-T2"
+    "permis et mises en chantier : juillet 2026",
+    "ventes de logements anciens : juillet 2026",
+    "commercialisation du neuf : 2e trimestre 2026"
   ],
+  "resume": "Aujourd'hui, les ventes de logements anciens plafonnent depuis 7 mois, les permis de construire reculent et le crédit renchérit (3,18 %, +0,2 pt sur un an).",
+  "dernier_mois": "juillet 2026",
   "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Les blocs sont rangés par horizon et non par source : ce qui se consomme aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, puis les conditions de crédit — qui sont les entrées du modèle, d'où leur place juste avant sa projection. Chaque carte porte deux horizons : le momentum court terme, puis la tendance sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux 3 précédents, sans repasser par une base vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc « Perspective » publie la projection du modèle du site à six mois, avec sa fourchette et la part de fois où le sens annoncé s'est avéré juste sur les millésimes rétro-simulés — ses erreurs détaillées sont sur « Prévisions passées ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
   "blocks": [
     {
@@ -177,7 +179,7 @@
         },
         {
           "icon": "📰",
-          "label": "Actualités & Aides",
+          "label": "Aides & dispositifs",
           "path": "/actualites"
         }
       ]

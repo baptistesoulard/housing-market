@@ -34,6 +34,7 @@ import os
 import pandas as pd
 
 import accueil                                  # chiffres de l'accueil (index.md)
+import changements                              # journal « ce qui a changé » + flux RSS
 from commun import DATA_DIR
 from ecriture import ecrire_si_change
 import page_archive                             # noqa: E402
@@ -101,6 +102,10 @@ def main():
     con = q.open_warehouse(refresh=False)  # vue DuckDB sur les Parquet déjà à jour
     period = _period_bounds(frames)        # domaine de la frise de la barre latérale
     changed, payloads = [], {}
+    # La publication PRÉCÉDENTE, telle que commitée, avant que la boucle ne l'écrase : le
+    # journal des changements se calcule par différence avec elle.
+    precedent = {n: changements.lire(os.path.join(DATA_DIR, f"{n}.json"))
+                 for n in ("synthese", "previsions")}
     for name, builder in _BUILDERS.items():
         path = os.path.join(DATA_DIR, f"{name}.json")
         payload = builder(con, frames)
@@ -124,10 +129,23 @@ def main():
         print("[web_export] a-propos.md : tableau des sources inchangé")
     # Les deux affirmations chiffrées de l'accueil (erreur du modèle, horizon de bascule),
     # même régime que le tableau des sources : Markdown réécrit entre marqueurs, hors compteur.
-    if accueil.ecrire(payloads["previsions"], payloads["archive"]):
+    if accueil.ecrire(payloads["previsions"], payloads["archive"], payloads["synthese"]):
         print("[web_export] index.md : chiffres de l'accueil mis à jour")
     else:
         print("[web_export] index.md : chiffres de l'accueil inchangés")
+    # Le journal « ce qui a changé » (accueil, flux RSS), lui aussi hors compteur : il ne
+    # s'écrit que si cette publication diffère de la précédente. Sans journal sur le
+    # disque, le premier passage pose une ligne d'état comme point de départ.
+    chemin = os.path.join(DATA_DIR, "changements.json")
+    journal = changements.lire(chemin)
+    lignes = changements.evenements(None if journal is None else precedent["synthese"],
+                                    payloads["synthese"], precedent["previsions"],
+                                    payloads["previsions"])
+    if lignes and ecrire_si_change(chemin, changements.ajouter(journal, lignes,
+                                                               changements.aujourd_hui())):
+        print(f"[web_export] changements.json : {len(lignes)} ligne(s) ajoutée(s)")
+    else:
+        print("[web_export] changements.json : rien de neuf")
 
 
 if __name__ == "__main__":

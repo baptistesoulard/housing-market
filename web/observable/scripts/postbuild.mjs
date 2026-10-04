@@ -37,6 +37,10 @@
 //      le JSON du département : sans lui, ces 101 pages n'ont AUCUN chiffre dans leur
 //      HTML — tout arrive par fetch() — et un moteur de rendu qui abandonne un import
 //      n'indexe qu'un titre et un message d'erreur (constaté le 2026-09-19).
+//   8. Le flux RSS /flux.xml, depuis le journal des changements (src/data/changements.json),
+//      et son annonce <link rel="alternate"> dans le <head> de chaque page.
+//   9. La police, copiée de assets/fonts/ à l'adresse stable /fonts/ (le site ne charge
+//      plus rien chez Google Fonts).
 //
 // Réécrire du HTML après coup n'est pas élégant ; c'est la seule prise disponible pour
 // les points 1, 2 et 7 tant que le framework n'expose pas ces réglages. Le traitement
@@ -53,6 +57,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = process.argv[2] ? resolve(process.argv[2]) : join(ROOT, "dist");
 const SKIP = `<a class="hm-skip" href="#observablehq-main">Aller au contenu</a>`;
 const ICON = `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`;
+// Le flux RSS, annoncé dans le <head> de chaque page (un lecteur de flux le découvre ainsi
+// depuis n'importe quelle adresse du site). Posé ici pour la même raison que la favicon :
+// le framework réécrirait le chemin d'un <link href> déclaré dans sa config.
+const FLUX = `<link rel="alternate" type="application/rss+xml" title="${SITE.name} — ce qui a changé" href="/flux.xml">`;
 
 /** Tous les .html de dist/, à n'importe quelle profondeur. */
 async function htmlFiles(dir) {
@@ -76,6 +84,7 @@ for (const file of pages) {
   after = after.replace(/<html>/i, `<html lang="${SITE.lang}">`);
   if (!after.includes('class="hm-skip"')) after = after.replace(/<body>/i, `<body>${SKIP}`);
   if (!after.includes('rel="icon"')) after = after.replace(/<meta charset="utf-8">/i, `$&\n${ICON}`);
+  if (!after.includes('type="application/rss+xml"')) after = after.replace(/<meta charset="utf-8">/i, `$&\n${FLUX}`);
   if (after !== before) { await writeFile(file, after); patched++; }
 }
 
@@ -90,6 +99,39 @@ if (existsSync(og)) await copyFile(og, join(DIST, "og-image.png"));
 else console.warn(
   `postbuild: ATTENTION — ${og} est absent. Les balises og:image pointent vers une image ` +
   "qui n'existe pas : un lien partagé s'affichera sans vignette. Régénérer avec `npm run og-image`.");
+
+// Le flux RSS « ce qui a changé », écrit depuis le journal que web_export.py tient à jour
+// (src/data/changements.json) : une entrée par publication qui a changé quelque chose.
+// C'est le rendez-vous du lecteur qui ne revient pas de lui-même — un lecteur de flux, ou
+// un canal d'équipe, le relève pour lui. Sans journal, pas de flux, et le build continue.
+const journalSrc = join(ROOT, "src", "data", "changements.json");
+if (existsSync(journalSrc)) {
+  const {entrees = []} = JSON.parse(await readFile(journalSrc, "utf-8"));
+  const xml = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const jourFr = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("fr-FR",
+    {day: "numeric", month: "long", year: "numeric", timeZone: "UTC"});
+  const items = entrees.map((e) => [
+    "  <item>",
+    `    <title>${xml(`${SITE.name} — ${jourFr(e.date)}`)}</title>`,
+    `    <link>${SITE.url}/#revenir</link>`,
+    `    <guid isPermaLink="false">${xml(`${SITE.url}/changements/${e.date}`)}</guid>`,
+    `    <pubDate>${new Date(`${e.date}T06:00:00Z`).toUTCString()}</pubDate>`,
+    `    <description>${xml(e.items.join(" "))}</description>`,
+    "  </item>"].join("\n"));
+  await writeFile(join(DIST, "flux.xml"), [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`,
+    "<channel>",
+    `  <title>${xml(SITE.name)} — ce qui a changé</title>`,
+    `  <link>${SITE.url}/</link>`,
+    `  <atom:link href="${SITE.url}/flux.xml" rel="self" type="application/rss+xml"/>`,
+    "  <description>Chaque publication qui change quelque chose : nouveau mois de données, " +
+      "prévision mise à jour, pastille qui change de couleur.</description>",
+    "  <language>fr-fr</language>",
+    ...items,
+    "</channel>",
+    "</rss>", ""].join("\n"));
+}
 
 // La police, servie par le site (les @font-face de observablehq.config.js visent
 // /fonts/). Copiée à une adresse STABLE pour la même raison que la vignette. Une police

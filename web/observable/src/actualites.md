@@ -1,5 +1,5 @@
 ---
-title: Actualités & Aides
+title: Aides & dispositifs
 toc: true
 ---
 
@@ -27,7 +27,7 @@ const periodeActus = periodFilter({min: A.period.min, max: A.period.max,
   Voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
-# 📰 Actualités — aides & plans de relance logement
+# 📰 Aides & dispositifs — logement et rénovation
 
 Les dispositifs publics pèsent sur le marché immobilier autant que les taux : MaPrimeRénov',
 le prêt à taux zéro, le diagnostic de performance énergétique ou les certificats d'économies

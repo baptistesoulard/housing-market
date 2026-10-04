@@ -515,6 +515,31 @@ if (!dep.profil) display(html`<div class="hm-caption">Le recensement de la popul
   aucun profil n'est publié pour ce département.</div>`);
 ```
 
+## Et à l'échelle de la France ?
+
+Le site ne fait pas de prévision par département. Il en publie une pour la France entière,
+dont chaque erreur passée est archivée : c'est le contexte national dans lequel lire les
+chiffres de cette page, pas une projection de ce département.
+
+```js
+// La phrase vient de l'annuaire (departements.json), écrite par page_departements.py
+// depuis le même verdict que la Synthèse et l'accueil.
+display(html`<div class="hm-note">
+  ${annuaire.verdict_national ? html`<p style="margin:0 0 0.5rem"><strong>À l'échelle nationale</strong> —
+    ${annuaire.verdict_national}</p>` : html`<span></span>`}
+  <p style="margin:0">La <a href="/synthese">synthèse du marché</a>, la
+  <a href="/previsions">prévision et ses scénarios</a>, et
+  <a href="/previsions-passees">le modèle face au réel</a>.</p>
+</div>`);
+```
+
+```js
+// Le département consulté est RETENU dans le navigateur (localStorage, jamais envoyé) :
+// l'accueil propose d'y revenir à la visite suivante. Gardé : navigation privée ou
+// stockage bloqué, la page n'en dépend pas.
+try { localStorage.setItem("hm-departement", dep.code); } catch { /* indisponible */ }
+```
+
 ## Ce que ces chiffres comptent — et ce qu'ils ne comptent pas
 
 <details class="hm-howto">

@@ -24,29 +24,23 @@ const neufData = await FileAttachment("./data/neuf.json").json();
   CHAPEAU STATIQUE, rendu au build — voir CLAUDE.md, « Texte statique : aucun chiffre, aucun état ».
 -->
 
-Toutes les séries utilisées sur ce site sont publiques et officielles. La date de dernière
-publication de chacune est tenue à jour dans le
-[tableau des sources de la page À propos](/a-propos#d-ou-viennent-les-donnees), qu'un
-script réécrit à chaque rafraîchissement — c'est là qu'il faut regarder pour savoir jusqu'à
-quel mois va une série.
+Chargez vos ventes mensuelles — chiffre d'affaires, volumes, commandes — et cette page
+cherche lequel des indicateurs du logement les précède le mieux, et de combien de mois :
+les ventes de logements anciens, ou les permis et mises en chantier d'un type de logement.
+Si vos ventes suivent les permis avec plusieurs mois de retard, les permis d'aujourd'hui
+annoncent déjà une partie de votre activité à venir.
 
-Cette page-ci sert à autre chose : charger un fichier de ventes mensuelles et le confronter
-aux indicateurs amont du marché du logement, pour voir lequel explique le mieux votre
-activité. Le fichier est lu dans le navigateur ; il n'est envoyé ni à l'hébergeur ni à
-aucun service, et rien n'en est conservé.
-
-<div class="hm-caption">
-Les jeux de données de marché (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier">SIT@DEL</abbr>, <abbr title="Inspection Générale de l'Environnement et du Développement Durable, suivi mensuel des ventes de logements anciens">IGEDD</abbr>, macro, <abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>…) sont rafraîchis hors
-application, par <code>python fetch_new_sources.py</code> et le workflow hebdomadaire.
-Cette page ne sert qu'à une chose : croiser <b>vos</b> ventes mensuelles avec les drivers
-amont du marché.
-</div>
+Pas de fichier sous la main ? Le modèle de fichier et la série d'exemple, juste en
+dessous, montrent ce que la page en tire. Les séries de marché sont celles du site, et la
+date de leur dernier point figure dans le
+[tableau des sources](/a-propos#d-ou-viennent-les-donnees).
 
 <div class="hm-privacy">
-🔒 <b>Votre fichier ne quitte pas ce navigateur.</b> Il est lu localement, gardé dans le
-stockage de l'onglet, et toutes les régressions qui en dépendent sont calculées ici, en
-JavaScript. Rien n'est téléversé nulle part — les drivers amont (transactions, permis)
-viennent des mêmes exports statiques que le reste du site, pas d'un serveur à joindre.
+🔒 <b>Votre fichier ne quitte pas ce navigateur.</b> Il est lu localement, et toutes les
+régressions qui en dépendent sont calculées ici, en JavaScript : rien n'est téléversé
+nulle part. Il n'est <b>conservé sur cet appareil que si vous le demandez</b> (case
+« Garder mon fichier »), pour le retrouver à votre prochaine visite face aux indicateurs
+mis à jour.
 </div>
 
 ## 1. Importer vos ventes mensuelles
@@ -62,14 +56,59 @@ const upload = view(Inputs.file({label: "Fichier CSV", accept: ".csv,.txt"}));
 ```
 
 ```js
+// Le modèle de fichier, fabriqué ici (aucun fichier servi) : trois lignes au bon format.
+const MODELE = ["Date,Ventes,Serie", "2024-01-01,1250,Gamme A", "2024-02-01,1310,Gamme A",
+  "2024-03-01,1480,Gamme A"].join("\n") + "\n";
+display(html`<div class="hm-shortcuts">
+  <a class="hm-shortcut" download="modele-ventes.csv"
+     href=${"data:text/csv;charset=utf-8," + encodeURIComponent(MODELE)}>⬇️ Modèle de fichier</a>
+</div>`);
+```
+
+```js
+const essai = view(Inputs.button("Essayer avec une série d'exemple", {value: false,
+  reduce: () => true}));
+```
+
+```js
+// Garder le fichier est un CHOIX (2026-10-04) : jusque-là il restait dans le navigateur
+// sans que la page le dise — elle affirmait même que « rien n'en est conservé ». La case
+// est cochée d'office seulement si un fichier est déjà gardé, pour ne pas l'effacer en
+// silence à l'ouverture.
+const CLE_VENTES = "hmCompanySales";
+const dejaGarde = (() => { try { return !!localStorage.getItem(CLE_VENTES); } catch { return false; } })();
+```
+
+```js
+const garder = view(Inputs.toggle({label: "Garder mon fichier sur cet appareil", value: dejaGarde}));
+```
+
+```js
 // Lecture locale. `Inputs.file` donne un FileAttachment : `.text()` lit le fichier choisi
 // par l'utilisateur sans aucune requête réseau.
 const parsed = await (async () => {
+  if (!upload && essai) {
+    // Une série FABRIQUÉE, et dite telle : les ventes anciennes du site décalées de cinq
+    // mois, mises à l'échelle d'une entreprise et bruitées. La page doit retrouver un
+    // décalage voisin de cinq mois — c'est ce qu'elle montre à qui n'a pas de fichier.
+    const source = ancienData.main_series.rows.filter((r) => r.roll12 != null && r.date >= "2012-01-01");
+    // Arrêtée au dernier mois publié : des ventes datées dans le futur n'existent pas.
+    const dernier = source[source.length - 1].date;
+    const rows = source.map((r, i) => {
+        const d = new Date(`${r.date}T00:00:00Z`);
+        d.setUTCMonth(d.getUTCMonth() + 5);
+        const date = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-01`;
+        return {date, value: Math.round(r.roll12 / 800 * (1 + 0.04 * Math.sin(i * 1.7))),
+                serie: "Toutes"};
+      }).filter((r) => r.date <= dernier);
+    return {rows, source: "série d'exemple fabriquée (ventes anciennes décalées de cinq mois)",
+            exemple: true};
+  }
   if (!upload) {
-    // Reprise de l'import précédent, s'il y en a un dans cet onglet.
+    // Reprise du fichier gardé sur cet appareil, s'il y en a un.
     try {
-      const saved = localStorage.getItem("hmCompanySales");
-      if (saved) return {rows: JSON.parse(saved), source: "mémoire du navigateur"};
+      const saved = localStorage.getItem(CLE_VENTES);
+      if (saved) return {rows: JSON.parse(saved), source: "fichier gardé sur cet appareil"};
     } catch { /* stockage indisponible */ }
     return null;
   }
@@ -93,9 +132,17 @@ const parsed = await (async () => {
     return isNaN(value) ? null : {date, value, serie: serieCol ? r[serieCol] : "Toutes"};
   }).filter(Boolean).sort((a, b) => a.date.localeCompare(b.date));
   if (!rows.length) return {error: "Aucune ligne exploitable dans ce fichier."};
-  try { localStorage.setItem("hmCompanySales", JSON.stringify(rows)); } catch { /* privé */ }
   return {rows, source: upload.name};
 })();
+```
+
+```js
+// Le fichier n'est écrit sur l'appareil que si la case est cochée, et effacé dès qu'elle
+// est décochée. La série d'exemple n'est jamais gardée.
+try {
+  if (!garder) localStorage.removeItem(CLE_VENTES);
+  else if (parsed?.rows && !parsed.exemple) localStorage.setItem(CLE_VENTES, JSON.stringify(parsed.rows));
+} catch { /* stockage indisponible */ }
 ```
 
 ```js
@@ -256,7 +303,7 @@ if (bestDriver) display(html`<div class="hm-caption">
 ```js
 if (mySales) display(html`<div style="margin-top:1.2rem">
   ${Inputs.button("🗑️ Oublier mes ventes (efface le stockage local)", {reduce: () => {
-    try { localStorage.removeItem("hmCompanySales"); } catch { /* privé */ }
+    try { localStorage.removeItem(CLE_VENTES); } catch { /* privé */ }
     location.reload();
   }})}
 </div>`);

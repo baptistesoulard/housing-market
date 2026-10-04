@@ -6,6 +6,7 @@ import os
 from commun import DATA_DIR, horodatage
 from ecriture import ecrire_si_change
 from mesures import locaux_indicateurs, logements_indicateurs, percentiles
+from verdict import partage
 
 import departements                             # noqa: E402
 import dvf_clean                                # noqa: E402
@@ -200,6 +201,14 @@ def build_departements(con) -> int:
         "national": _colonnes(national, ["prix_m2", "ventes"]),
         "departements": [],
     }
+    # La projection NATIONALE des ventes, en une phrase, pour le bloc « Et à l'échelle
+    # de la France ? » des fiches : le visiteur venu de Google pour un prix au m² n'avait
+    # aucun chemin vers ce que le site fait de plus — la prévision. Une phrase ici plutôt
+    # que previsions.json (236 Ko) chargé par 101 pages. Le site ne régionalise pas sa
+    # prévision : la fiche dit que ce chiffre est national.
+    verdict = partage(con)
+    if verdict and verdict.get("sentence"):
+        index["verdict_national"] = verdict["sentence"]
     dispo = {d["code"]: d for d in q.dvf_departements(con)}
     # Les valeurs France du profil INSEE, une fois pour tout le site (voir build_departement).
     # Prises sur un département couvert quelconque : elles ne dépendent pas du département.

@@ -48,9 +48,17 @@ caractères elle-même est servie par le site, et non par Google Fonts : aucune 
 transmet votre adresse IP à un tiers. C'est aussi pourquoi vous ne voyez aucun bandeau de
 consentement : il n'y a rien à consentir.
 
-**Le fichier de ventes que vous pouvez charger sur la page Données ne quitte jamais votre
-navigateur.** Il est lu localement, conservé dans le stockage de l'onglet, et tous les
-calculs qui en dépendent se font sur votre machine. Rien n'est téléversé.
+### Ce que le site garde dans votre navigateur
+
+Deux choses, qui ne quittent jamais votre appareil et que le site ne lit que pour vous
+les rendre — des préférences d'interface, pas des traceurs :
+
+- **le dernier département consulté**, pour que l'accueil vous propose d'y revenir ;
+- **le fichier de ventes de la page « Confronter vos ventes », seulement si vous cochez
+  « Garder mon fichier »**. Il est lu localement, tous les calculs qui en dépendent se font
+  sur votre machine, et rien n'est téléversé. Le bouton « Oublier mes ventes » l'efface.
+
+Vider les données du site dans votre navigateur efface l'un et l'autre.
 
 ### Le formulaire de contact
 

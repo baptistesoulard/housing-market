@@ -86,7 +86,8 @@ def _chiffres_de_l_accueil():
 def test_les_passages_chiffres_de_l_accueil_sont_ceux_que_l_export_ecrirait():
     """Si ce test échoue, ne pas corriger index.md à la main : relancer
     python web/export/web_export.py, qui réécrit les passages entre leurs marqueurs."""
-    attendu = accueil.rendu(_json(PREVISIONS), _json(ARCHIVE))
+    attendu = accueil.rendu(_json(PREVISIONS), _json(ARCHIVE), _json(SYNTHESE))
+    assert attendu["reponse"] is not None, "la Synthèse doit fournir le résumé de l'accueil"
     present = accueil.passages_du_fichier(str(INDEX))
     for cle, texte in attendu.items():
         if texte is not None:
@@ -320,3 +321,27 @@ def test_l_arrondi_preserve_ce_qui_est_exact_et_ne_touche_ni_entiers_ni_booleens
 def test_la_precision_reste_largement_au_dela_de_l_affichage():
     """Garde sur la constante : la descendre trop abîmerait des valeurs publiées."""
     assert 6 <= we.PRECISION_JSON <= 12
+
+
+def test_l_accueil_repond_a_sa_question_sous_le_titre():
+    """Le titre pose une question (« Où en est le marché ? ») : la réponse — projection et
+    état du marché — doit suivre le titre dans le HTML statique, avant toute section. Elle
+    vivait sur la Synthèse, à un clic, et aucune page n'avait la prévision dans son HTML."""
+    src = INDEX.read_text(encoding="utf-8")
+    titre = src.index("# Où en est le marché du logement en France ?")
+    reponse = src.index('<div class="hm-reponse">')
+    premiere_section = src.index("\n## ")
+    assert titre < reponse < premiere_section
+    verdict = _json(PREVISIONS)["verdict"]
+    if verdict:
+        assert verdict["target_month"] in src[reponse:premiere_section]
+
+
+def test_la_projection_de_l_accueil_dit_son_sens_et_son_horizon_lecteur():
+    v = {"direction": "baisse", "change_pct": -5.9, "target_month": "avril 2027",
+         "months_ahead": 6, "from_value": 956_000, "predicted": 899_439}
+    phrase = accueil.phrase_projection(v)
+    assert "reculer d'environ 6 %" in phrase and "dans six mois" in phrase
+    assert "de 956 000 à 899 000" in phrase
+    assert "progresser" in accueil.phrase_projection({**v, "direction": "hausse", "change_pct": 3.2})
+    assert accueil.phrase_projection(None) is None

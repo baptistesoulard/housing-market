@@ -303,9 +303,9 @@ def pillar_neuf(mom_permis, mom_mises, tol=SEQ_TOL, lang="FR"):
                 "repli": ("en repli", "declining")}[kind]
         status = amont
     elif amont == "down":
-        kind, word, status = "amont_repli", ("amont en repli", "upstream declining"), "flat"
+        kind, word, status = "amont_repli", ("permis en recul", "permits declining"), "flat"
     elif amont == "up":
-        kind, word, status = "amont_reprise", ("amont en reprise", "upstream recovering"), "flat"
+        kind, word, status = "amont_reprise", ("permis en reprise", "permits recovering"), "flat"
     elif aval == "up":
         kind, word, status = "aval_hausse", ("chantiers en hausse", "starts rising"), "flat"
     else:

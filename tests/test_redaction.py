@@ -45,7 +45,7 @@ def _faits(**maj):
                 "tx": _kpi(956_000, 4.3)},
         "momentum": {"permis": _head(-3.6), "mises": _head(-0.5), "tx": _head(4.3, True)},
         "pilier_neuf": {"status": "flat", "kind": "amont_repli", "amont": "down",
-                        "aval": "flat", "word": "amont en repli"},
+                        "aval": "flat", "word": "permis en recul"},
         "plateau_tx": {"months": 7, "since": pd.Timestamp("2025-12-01"), "level": 956_000},
         "niveau": {"permis": _niveau(-18.0, 9.0), "mises": _niveau(-23.0, 10.0),
                    "tx": _niveau(17.0, 74.0)},
@@ -157,3 +157,33 @@ def test_le_signe_pourcent_est_toujours_precede_d_une_espace():
     texte = _tout_le_texte(ps.rediger(_faits()))
     colles = re.findall(r"\d%", texte)
     assert not colles, f"« % » collé au nombre : {colles}"
+
+
+# --- Le résumé de l'accueil et la fraîcheur en clair -----------------------------------
+
+def test_le_resume_de_l_accueil_parle_sans_jargon():
+    """La phrase que l'accueil place sous son titre : ni « amont », ni sigle de source."""
+    resume = ps.rediger(_faits())["resume"]
+    assert resume.startswith("Aujourd'hui, ")
+    assert "plafonnent depuis 7 mois" in resume
+    assert "les permis de construire reculent" in resume
+    assert "amont" not in resume and "SIT@DEL" not in resume
+
+
+def test_un_taux_qui_monte_se_dit_un_credit_qui_rencherit():
+    """Le signe du taux et le sens ressenti pointent dans le même sens : +0,2 pt est un
+    crédit plus cher, pastille comprise ; contre-épreuve avec un taux qui baisse."""
+    texte = ps.rediger(_faits())
+    assert "le crédit renchérit (3,18 %, +0,2 pt sur un an)" in texte["resume"]
+    assert next(p for p in texte["pillars"] if p["key"] == "fin")["word"] == "plus cher"
+    baisse = ps.rediger(_faits(taux={"now": 2.9, "sur_un_an": -0.4}))
+    assert "moins cher" in baisse["resume"]
+    assert next(p for p in baisse["pillars"] if p["key"] == "fin")["word"] == "moins cher"
+
+
+def test_la_fraicheur_nomme_ce_que_la_source_compte():
+    texte = ps.rediger(_faits())
+    assert texte["freshness"] == ["permis et mises en chantier : juillet 2026",
+                                  "ventes de logements anciens : juillet 2026",
+                                  "commercialisation du neuf : 2e trimestre 2026"]
+    assert texte["dernier_mois"] == "juillet 2026"
