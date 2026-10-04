@@ -107,7 +107,7 @@ ${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.me
 
 ## 🏠 Dynamique Individuel vs Collectif
 
-<div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre (fermetures, menuiseries, sécurité, domotique) qu'un logement collectif : c'est le driver de volume le plus direct.
+<div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre par logement qu'un logement collectif : c'est le driver de volume le plus direct.
 Lire chaque segment sur ses deux lignes, parce qu'elles peuvent s'inverser : une croissance forte sur douze mois
 décrit parfois un rebond depuis un plancher historique, et le segment le moins dégradé peut être celui dont le rythme
 se retourne le premier. C'est l'écart entre ces deux lectures qui décide d'un arbitrage de lignes de produits, pas le

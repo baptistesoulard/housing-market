@@ -187,3 +187,21 @@ def test_la_fraicheur_nomme_ce_que_la_source_compte():
                                   "ventes de logements anciens : juillet 2026",
                                   "commercialisation du neuf : 2e trimestre 2026"]
     assert texte["dernier_mois"] == "juillet 2026"
+
+
+def test_aucune_famille_de_produits_n_est_nommee():
+    """Les puces parlent à toute la filière : pas de « (fermetures & menuiseries) » ni de
+    « (sécurité & domotique) », restes de l'ancien jeu de ventes synthétique. Éprouvé sur
+    les branches que la donnée du moment n'active pas (permis qui repartent, modèle non
+    calibrable, transactions en hausse ou en baisse)."""
+    reprise = {"status": "flat", "kind": "amont_reprise", "amont": "up", "aval": "flat",
+               "word": "permis en reprise"}
+    cas = [_faits(pilier_neuf=reprise)]
+    for annuel in (12.0, -12.0):
+        cas.append(_faits(verdict=None, plateau_tx=None,
+                          momentum={"permis": _head(-3.6), "mises": _head(-0.5),
+                                    "tx": _head(annuel, True)}))
+    for f in cas:
+        texte = _tout_le_texte(ps.rediger(f))
+        for mot in ("fermetures", "menuiseries", "sécurité", "domotique"):
+            assert mot not in texte, mot

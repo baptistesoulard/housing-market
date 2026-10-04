@@ -392,8 +392,10 @@ def _puces(f: dict, pill_ancien: str, pill_fin: str) -> list:
     # pilier : c'est l'autorisation d'aujourd'hui qui devient le chantier de l'an
     # prochain. Lire ici le statut agrégé laisserait l'aval, qui décrit le présent,
     # masquer le signal du futur — le défaut même que la fin de la moyenne corrige.
-    impl_neuf = {"up": "signal favorable à 12-18 mois via le neuf (fermetures & menuiseries) : "
-                       "les permis repartent",
+    # Aucune famille de produits nommée (2026-10-04) : « (fermetures & menuiseries) »,
+    # « (sécurité & domotique) » étaient des restes des familles de l'ancien jeu de ventes
+    # synthétique, et le site parle à toute la filière, pas à un catalogue.
+    impl_neuf = {"up": "signal favorable à 12-18 mois côté neuf : les permis repartent",
                  "flat": "signal neuf neutre à 12-18 mois : les permis ne bougent pas",
                  "down": "vent contraire à 12-18 mois côté neuf : les permis reculent"}[pn["amont"]]
     # Le second membre porte la PROJECTION quand elle existe : c'est le seul chiffre
@@ -408,11 +410,10 @@ def _puces(f: dict, pill_ancien: str, pill_fin: str) -> list:
                        f"{verdict['target_month']}")
     else:
         impl_ancien = ("transactions au plateau, pas de relais à court terme" if plateau_tx
-                       else {"up": "soutien à court terme (~2 mois) via les transactions "
-                                   "(sécurité & domotique)",
+                       else {"up": "soutien à court terme (~2 mois) via les transactions",
                              "flat": "transactions neutres à court terme",
-                             "down": "prudence à court terme (~2 mois) sur les produits liés "
-                                     "aux déménagements (sécurité & domotique)"}[pill_ancien])
+                             "down": "prudence à court terme (~2 mois) sur l'activité liée "
+                                     "aux déménagements"}[pill_ancien])
     takeaways.append(f"🎯 **Ce que ça implique** — {impl_neuf} ; {impl_ancien}.")
     return takeaways
 
