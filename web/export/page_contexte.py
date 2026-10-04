@@ -126,7 +126,8 @@ def build_actualites(con, frames: dict) -> dict:
     kpis = [
         {"label": "Dispositifs suivis", "value": str(len(items_all))},
         {"label": "En vigueur", "value": str(n_vigueur)},
-        {"label": "Budget MaPrimeRénov' 2026", "value": "3,6 Md€"},
+        {"label": actu.CHIFFRE_CLE["label"], "value": actu.CHIFFRE_CLE["value"],
+         "subs": [actu.CHIFFRE_CLE["sub"]]},
     ]
     if next_jalons:
         nd, nit = next_jalons[0]
@@ -144,7 +145,7 @@ def build_actualites(con, frames: dict) -> dict:
             "est notée de ⬇⬇ à ⬆⬆ sur les trois piliers selon le sens et l'intensité de son effet "
             "attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé. Le statut "
             "distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion — seules "
-            "les mesures en vigueur agissent déjà sur les séries des autres onglets."),
+            "les mesures en vigueur agissent déjà sur les séries des autres pages."),
         "maj": actu.MAJ,
         "kpis": kpis,
         "items": items,

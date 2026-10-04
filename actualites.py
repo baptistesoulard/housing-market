@@ -1,18 +1,29 @@
-"""Veille « Actualités & Aides » — aides publiques et plans de relance logement (FR + UE).
+"""Veille « Aides & dispositifs » — aides publiques et plans logement (FR + UE).
 
 Contenu ÉDITORIAL curaté manuellement (pas de flux automatique) : chaque entrée décrit un
-dispositif ou un plan (statut, jalons, montants) et son impact POTENTIEL sur les trois
-piliers du modèle de l'app (neuf = permis/ventes SIT@DEL-ECLN, ancien = transactions
-IGEDD, rénovation = second œuvre). Les impacts sont des lectures qualitatives (-2..+2),
-pas des sorties de modèle — ils servent de grille de lecture pour les scénarios de
-l'onglet « 📡 Prévision & Scénarios ».
+dispositif ou un plan (statut, jalons, montants) et son impact POTENTIEL sur trois piliers
+(neuf = permis/ventes SIT@DEL-ECLN, ancien = transactions IGEDD, rénovation = second
+œuvre). Les impacts sont des lectures qualitatives (-2..+2), pas des sorties de modèle.
 
 Mise à jour : éditer NEWS_ITEMS puis la constante MAJ. Textes bilingues {"FR": .., "EN": ..}
-(le site ne publie que le FR ; l'EN est conservé pour une version anglaise éventuelle). `tests/test_actualites.py` vérifie la cohérence du contenu.
+(le site ne publie que le FR ; l'EN est conservé pour une version anglaise éventuelle).
+`tests/test_actualites.py` vérifie la cohérence du contenu, et échoue si la veille a plus
+de 120 jours.
+
+Revue du 2026-10-04 : décret MaPrimeRénov' du 25 août 2026 (fin du parcours par geste pour
+l'isolation et les fenêtres), PLF 2027 présenté le 1er octobre (PTZ, Anah, dons), projet
+de loi Relance logement à l'Assemblée, Affordable Housing Act proposé le 9 septembre, et
+deux corrections : la 6e période CEE court jusqu'en 2030 (et non 2029), et le Citizens
+Energy Package avait été présenté dès le 10 mars 2026.
 """
 
-# Date d'arrêt de la veille (affichée dans l'onglet — à mettre à jour à chaque édition).
-MAJ = "2026-07-16"
+# Date d'arrêt de la veille (affichée sur la page — à mettre à jour à chaque édition).
+MAJ = "2026-10-04"
+
+# Le chiffre-clé de la carte de tête de la page, revu avec le reste de la veille (il
+# était écrit en dur dans l'export, et vieillissait sans que rien ne le signale).
+CHIFFRE_CLE = {"label": "Dotation de l'État à l'Anah 2027 (PLF)", "value": "1,2 Md€",
+               "sub": "contre 1,4 Md€ en 2026"}
 
 # Échelle qualitative d'impact par pilier (emoji + libellé, rendus tels quels dans l'UI).
 IMPACT_LABELS = {
@@ -43,7 +54,7 @@ CATEGORIES = {
     "EN": {"FR": "🇫🇷 France", "EU": "🇪🇺 European Union"},
 }
 
-# Types de jalons pour l'échéancier (symbole Plotly + libellé de légende).
+# Types de jalons pour l'échéancier (symbole + libellé de légende).
 JALON_TYPES = {
     "effet": {"symbol": "circle", "FR": "Entrée en vigueur", "EN": "Entry into force"},
     "jalon": {"symbol": "diamond", "FR": "Jalon", "EN": "Milestone"},
@@ -55,207 +66,348 @@ JALON_TYPES = {
 # attendu vers l'activité, résumé + lecture d'impact, sources publiques.
 NEWS_ITEMS = [
     {
-        "id": "jeanbrun",
+        "id": "ptz_2026",
         "categorie": "FR",
         "statut": "vigueur",
-        "date": "2026-01-01",
-        "court": {"FR": "Dispositif Jeanbrun", "EN": "Jeanbrun scheme"},
+        "date": "2026-10-01",
+        "court": {"FR": "PTZ", "EN": "PTZ"},
         "titre": {
-            "FR": "Plan « Relance Logement » & dispositif Jeanbrun (statut du bailleur privé)",
-            "EN": "'Relance Logement' plan & Jeanbrun scheme (private-landlord status)",
+            "FR": "Prêt à taux zéro : tout le territoire, et un PTZ « parentalité » au PLF 2027",
+            "EN": "Zero-interest loan (PTZ): nationwide, plus a 'parenthood' PTZ in the 2027 budget bill",
         },
-        "montant": {"FR": "≈ 12 k€/an d'amortissement max", "EN": "≈ €12k/yr max amortisation"},
-        "horizon": {"FR": "6-24 mois", "EN": "6-24 months"},
+        "montant": {"FR": "Plafond de dépense de 2,1 Md€ supprimé (PLF 2027)",
+                    "EN": "€2.1bn spending cap removed (2027 budget bill)"},
+        "horizon": {"FR": "3-18 mois", "EN": "3-18 months"},
         "impacts": {"neuf": 2, "ancien": 1, "renovation": 1},
         "resume": {
-            "FR": "Cœur du plan gouvernemental « Relance Logement », le dispositif Jeanbrun "
-                  "(du nom du ministre du Logement Vincent Jeanbrun, voté en loi de finances "
-                  "2026) remplace définitivement le Pinel par un statut du bailleur privé : "
-                  "amortissement annuel du bien déductible des revenus fonciers (jusqu'à "
-                  "12 000 €/an en location très sociale), engagement locatif de 9 ans, "
-                  "déficit foncier renforcé. Contrairement au Pinel, il s'applique **sans "
-                  "zonage, sur tout le territoire**, au **neuf comme à l'ancien rénové**. "
-                  "Objectifs affichés : 50 000 logements locatifs dès 2026, 400 000 "
-                  "logements construits/an, 2 millions d'ici 2030.",
-            "EN": "Centrepiece of the government's 'Relance Logement' plan, the Jeanbrun "
-                  "scheme (named after housing minister Vincent Jeanbrun, voted in the 2026 "
-                  "budget) permanently replaces the Pinel scheme with a private-landlord "
-                  "status: annual amortisation of the dwelling deductible from rental income "
-                  "(up to €12,000/yr for very-social rents), 9-year rental commitment, "
-                  "enhanced land-deficit rules. Unlike Pinel it applies **nationwide, with "
-                  "no zoning**, to **new-builds and renovated existing homes** alike. Stated "
-                  "targets: 50,000 rental units from 2026, 400,000 dwellings built per year, "
-                  "2 million by 2030.",
+            "FR": "Depuis le **1er avril 2025**, le PTZ couvre **tout le territoire** et de "
+                  "nouveau la **maison individuelle neuve** ; dans l'ancien, il reste "
+                  "conditionné à des travaux (≥ 25 % du coût total) en zone détendue. Il "
+                  "court jusqu'au **31 décembre 2027**. Le **PLF 2027**, présenté le **1er "
+                  "octobre 2026**, crée un **PTZ « parentalité »** — ouvert une fois aux "
+                  "ménages qui attendent un enfant ou ont un enfant de moins de trois ans, "
+                  "même s'ils ont déjà bénéficié d'un PTZ — et **supprime le plafond annuel "
+                  "de dépense de 2,1 Md€**, inchangé depuis 2016. Le Premier ministre a "
+                  "annoncé une prolongation au-delà de 2027, que le texte présenté ne "
+                  "contient pas encore.",
+            "EN": "Since **1 April 2025** the PTZ covers the **whole country** and again "
+                  "**new detached houses**; for existing homes it still requires works "
+                  "(≥ 25% of total cost) in low-pressure areas. It runs until **31 December "
+                  "2027**. The **2027 budget bill**, presented on **1 October 2026**, creates "
+                  "a **'parenthood' PTZ** — available once to households expecting a child "
+                  "or with a child under three, even if they already had a PTZ — and "
+                  "**removes the €2.1bn annual spending cap** unchanged since 2016. The "
+                  "Prime Minister announced an extension beyond 2027 that the bill as "
+                  "presented does not yet contain.",
         },
         "impact_detail": {
-            "FR": "Relance directe de la demande d'investissement locatif → soutien aux "
-                  "réservations ECLN puis aux permis SIT@DEL (transmission 12-24 mois, cf. "
-                  "lags de l'onglet Time-Lag). L'éligibilité de l'**ancien rénové** crée un "
-                  "double effet : transactions IGEDD + travaux de second œuvre (menuiseries, "
-                  "fermetures) sur les biens acquis pour être loués.",
-            "EN": "Directly restarts rental-investment demand → supports ECLN reservations "
-                  "then SIT@DEL permits (12-24-month transmission, see Time-Lag tab). "
-                  "Eligibility of **renovated existing homes** creates a double effect: "
-                  "IGEDD transactions + secondary-works jobs (joinery, closures) on "
-                  "buy-to-let acquisitions.",
+            "FR": "Principal levier de solvabilisation des primo-accédants : soutien direct "
+                  "aux ventes de maisons neuves puis aux permis. Le volet « ancien avec "
+                  "travaux » alimente aussi les transactions et la rénovation (25 % de "
+                  "travaux imposés). Le PTZ « parentalité » élargit le public sans changer "
+                  "le mécanisme ; l'absence de prolongation écrite au-delà de 2027 reste le "
+                  "point à surveiller pour les programmes neufs lancés en 2027.",
+            "EN": "Main solvency lever for first-time buyers: direct support to new "
+                  "detached-house sales, then permits. The 'existing home with works' leg "
+                  "also feeds transactions and renovation (25% works requirement). The "
+                  "parenthood PTZ widens the audience without changing the mechanism; the "
+                  "lack of a written extension beyond 2027 is the point to watch for new-"
+                  "build programmes launched in 2027.",
         },
         "jalons": [
-            ("2026-01-01", {"FR": "Entrée en vigueur (LF 2026)", "EN": "Entry into force (2026 budget)"}, "effet"),
-            ("2026-02-06", {"FR": "Adoption définitive du PLF 2026", "EN": "Final adoption of the 2026 budget bill"}, "jalon"),
+            ("2025-04-01", {"FR": "Extension nationale + maison neuve", "EN": "Nationwide extension + new houses"}, "effet"),
+            ("2026-10-01", {"FR": "PLF 2027 : PTZ parentalité, plafond supprimé", "EN": "2027 budget bill: parenthood PTZ, cap removed"}, "jalon"),
+            ("2026-11-17", {"FR": "Adoption visée du PLF 2027 à l'Assemblée", "EN": "Targeted Assembly vote on the 2027 budget bill"}, "echeance"),
+            ("2027-12-31", {"FR": "Fin de la prorogation actuelle", "EN": "End of current extension"}, "echeance"),
         ],
         "sources": [
-            ("info.gouv.fr — Relance logement", "https://www.info.gouv.fr/grand-dossier/relance-logement"),
-            ("Ministère — plan Relance logement", "https://www.ecologie.gouv.fr/dossiers/plan-relance-logement"),
-            ("vie-publique.fr — loi Jeanbrun", "https://www.vie-publique.fr/loi/303813-relance-logement-projet-de-loi-jeanbrun"),
+            ("HLM.coop — PLF 2027 et logement", "https://www.hlm.coop/actualites/all/21771"),
+            ("Batiactu — annonces logement du PLF 2027", "https://www.batiactu.com/edito/budget-2027-annonces-lecornu-sur-logement-75394.php"),
+            ("Service-Public — PTZ", "https://www.service-public.fr/particuliers/vosdroits/F10871"),
+        ],
+    },
+    {
+        "id": "relance_logement",
+        "categorie": "FR",
+        "statut": "discussion",
+        "date": "2026-09-21",
+        "court": {"FR": "Loi Relance logement", "EN": "Housing relaunch bill"},
+        "titre": {
+            "FR": "Projet de loi « Relance logement et décentralisation » : adopté au Sénat, examiné à l'Assemblée",
+            "EN": "'Housing relaunch and decentralisation' bill: passed by the Senate, before the Assembly",
+        },
+        "montant": {"FR": "Objectif : 400 000 logements/an, 2 millions d'ici 2030",
+                    "EN": "Target: 400,000 homes/yr, 2 million by 2030"},
+        "horizon": {"FR": "6-36 mois", "EN": "6-36 months"},
+        "impacts": {"neuf": 1, "ancien": 1, "renovation": 0},
+        "resume": {
+            "FR": "Présenté le **24 juin 2026** par le ministre Vincent Jeanbrun, adopté en "
+                  "première lecture par le **Sénat le 8 juillet**, arrivé à l'**Assemblée "
+                  "nationale le 21 septembre** (procédure accélérée, adoption visée avant la "
+                  "fin de l'année). Deux articles comptent pour le marché : l'**article 4** "
+                  "retouche le statut du bailleur privé créé par la loi de finances 2026 "
+                  "(le Sénat a remplacé le seuil de 20 % de travaux dans l'ancien par un "
+                  "critère de performance énergétique et ouvert le dispositif aux SCPI) ; "
+                  "l'**article 6** permettrait de **continuer à louer un logement F ou G** "
+                  "si le propriétaire s'engage par contrat à le rénover — en **3 ans** pour "
+                  "une maison, **5 ans** en copropriété — jusqu'à la classe E au moins. Le "
+                  "gouvernement estime que 650 000 à 700 000 logements resteraient ou "
+                  "reviendraient sur le marché locatif d'ici 2028. Le texte donne aussi de "
+                  "nouveaux pouvoirs aux maires. Tant qu'il n'est pas voté, le calendrier "
+                  "de la loi Climat & Résilience s'applique.",
+            "EN": "Presented on **24 June 2026** by minister Vincent Jeanbrun, passed at "
+                  "first reading by the **Senate on 8 July**, sent to the **National "
+                  "Assembly on 21 September** (fast-track procedure, final vote targeted "
+                  "before year-end). Two articles matter for the market: **article 4** "
+                  "amends the private-landlord status created by the 2026 budget law (the "
+                  "Senate replaced the 20% works threshold for existing homes with an "
+                  "energy-performance criterion and opened it to SCPIs); **article 6** "
+                  "would let owners **keep renting F- or G-rated homes** if they commit by "
+                  "contract to renovate them — within **3 years** for a house, **5 years** "
+                  "in a condominium — to at least class E. The government estimates "
+                  "650,000-700,000 homes would stay on or return to the rental market by "
+                  "2028. The bill also gives mayors new powers. Until it passes, the "
+                  "Climate & Resilience calendar applies.",
+        },
+        "impact_detail": {
+            "FR": "Pour l'**ancien**, l'article 6 retire une partie des ventes contraintes de "
+                  "passoires que l'échéance F-2028 aurait provoquées, et garde des biens sur "
+                  "le marché locatif. Pour la **rénovation**, l'effet est ambigu : moins "
+                  "d'urgence réglementaire, mais des travaux contractualisés et étalés sur "
+                  "3 à 5 ans plutôt qu'un retrait du marché. Pour le **neuf**, l'effet passe "
+                  "par le statut du bailleur privé (voir l'entrée dédiée).",
+            "EN": "For **existing homes**, article 6 removes part of the forced sales of "
+                  "energy sieves the F-2028 deadline would have triggered, and keeps homes "
+                  "on the rental market. For **renovation** the effect is ambiguous: less "
+                  "regulatory urgency, but contracted works spread over 3-5 years rather "
+                  "than withdrawal. For **new-build**, the effect runs through the private-"
+                  "landlord status (see its own entry).",
+        },
+        "jalons": [
+            ("2026-06-24", {"FR": "Présentation du projet de loi", "EN": "Bill presented"}, "jalon"),
+            ("2026-07-08", {"FR": "Adoption au Sénat (1re lecture)", "EN": "Senate first-reading vote"}, "jalon"),
+            ("2026-09-21", {"FR": "Transmission à l'Assemblée nationale", "EN": "Sent to the National Assembly"}, "jalon"),
+            ("2026-12-31", {"FR": "Adoption définitive visée avant la fin de l'année", "EN": "Final adoption targeted by year-end"}, "echeance"),
+        ],
+        "sources": [
+            ("Banque des Territoires — le Sénat adopte le projet de loi", "https://www.banquedesterritoires.fr/le-senat-adopte-le-projet-de-loi-logement-et-donne-du-pouvoir-aux-maires"),
+            ("LocService — passoires thermiques", "https://www.locservice.fr/actualites/assouplissement-interdiction-location-passoires-thermiques-2026-16079.html"),
+            ("vie-publique.fr — loi Relance logement", "https://www.vie-publique.fr/loi/303813-relance-logement-projet-de-loi-jeanbrun"),
+        ],
+    },
+    {
+        "id": "eu_aha",
+        "categorie": "EU",
+        "statut": "discussion",
+        "date": "2026-09-09",
+        "court": {"FR": "Affordable Housing Act", "EN": "Affordable Housing Act"},
+        "titre": {
+            "FR": "Affordable Housing Act : la Commission propose un règlement européen sur le logement abordable",
+            "EN": "Affordable Housing Act: the Commission proposes an EU regulation on affordable housing",
+        },
+        "montant": None,
+        "horizon": {"FR": "24-48 mois", "EN": "24-48 months"},
+        "impacts": {"neuf": 1, "ancien": 0, "renovation": 0},
+        "resume": {
+            "FR": "Proposé le **9 septembre 2026** (COM(2026) 599), un **règlement** qui "
+                  "donne un cadre commun aux mesures nationales : une méthode commune pour "
+                  "désigner les **zones sous tension**, les conditions auxquelles une "
+                  "autorité peut **restreindre les locations de courte durée** (impact "
+                  "négatif démontré sur trois ans, mesure ciblée et proportionnée), un cadre "
+                  "pour les résidences secondaires et les logements durablement vacants, et "
+                  "un plan d'accélération (permis, rénovation, reconversion de bâtiments) "
+                  "adossé à de nouvelles règles d'aides d'État. Le Parlement européen et le "
+                  "Conseil doivent encore s'accorder sur le texte.",
+            "EN": "Proposed on **9 September 2026** (COM(2026) 599), a **regulation** giving "
+                  "national measures a common framework: a shared method to designate "
+                  "**high-pressure areas**, conditions under which authorities may "
+                  "**restrict short-term rentals** (negative impact shown over three "
+                  "years, targeted and proportionate), a framework for second homes and "
+                  "long-term vacant dwellings, and an acceleration plan (permits, "
+                  "renovation, building conversion) backed by new state-aid rules. "
+                  "Parliament and Council still have to agree on the text.",
+        },
+        "impact_detail": {
+            "FR": "Effet de **long terme** et indirect : des aides d'État plus faciles pour le "
+                  "logement abordable soutiendraient la production neuve des bailleurs "
+                  "sociaux, et un cadre clair pour les meublés de tourisme peut remettre des "
+                  "logements sur le marché dans les zones tendues. Rien ne change tant que "
+                  "le règlement n'est pas adopté.",
+            "EN": "A **long-term**, indirect effect: easier state aid for affordable housing "
+                  "would support social landlords' new-build output, and a clear framework "
+                  "for short-term lets can bring homes back to market in tight areas. "
+                  "Nothing changes until the regulation is adopted.",
+        },
+        "jalons": [
+            ("2026-09-09", {"FR": "Proposition de la Commission", "EN": "Commission proposal"}, "jalon"),
+        ],
+        "sources": [
+            ("Commission européenne — Affordable Housing Act", "https://housing.ec.europa.eu/european-affordable-housing-plan/affordable-housing-act_en"),
+            ("Commission — communiqué du 9 septembre 2026", "https://luxembourg.representation.ec.europa.eu/actualites-et-evenements/actualites/new-eu-rules-help-local-authorities-tackle-housing-crisis-2026-09-09_en"),
         ],
     },
     {
         "id": "mpr_2026",
         "categorie": "FR",
         "statut": "vigueur",
-        "date": "2026-07-02",
-        "court": {"FR": "MaPrimeRénov' 2026", "EN": "MaPrimeRénov' 2026"},
+        "date": "2026-09-01",
+        "court": {"FR": "MaPrimeRénov'", "EN": "MaPrimeRénov'"},
         "titre": {
-            "FR": "MaPrimeRénov' 2026 : budget 3,6 Md€, recentrage sur les rénovations d'ampleur",
-            "EN": "MaPrimeRénov' 2026: €3.6bn budget, refocus on deep renovations",
+            "FR": "MaPrimeRénov' : fin de l'aide par geste pour l'isolation et les fenêtres depuis le 1er septembre 2026",
+            "EN": "MaPrimeRénov': no more single-measure grants for insulation and windows since 1 September 2026",
         },
-        "montant": {"FR": "3,6 Md€ (vs 3,4 Md€ en 2025)", "EN": "€3.6bn (vs €3.4bn in 2025)"},
+        "montant": {"FR": "Dotation de l'État à l'Anah : 1,2 Md€ en 2027 (-200 M€)",
+                    "EN": "State allocation to Anah: €1.2bn in 2027 (-€200m)"},
         "horizon": {"FR": "0-12 mois", "EN": "0-12 months"},
+        "impacts": {"neuf": 0, "ancien": 0, "renovation": -1},
+        "resume": {
+            "FR": "Le **décret n° 2026-822 du 25 août 2026** retire six travaux du parcours "
+                  "« par geste » au **1er septembre 2026** : **isolation des combles et "
+                  "toitures**, **fenêtres et portes**, ventilation double flux, chauffe-eau "
+                  "thermodynamique, poêles à bois ou granulés et solaire thermique "
+                  "(métropole). Ne restent finançables seuls que la pompe à chaleur de "
+                  "chauffage, le raccordement à un réseau de chaleur, l'audit énergétique et "
+                  "la dépose d'une cuve à fioul ; les dossiers déposés avant le 1er "
+                  "septembre gardent les anciennes règles. Le Conseil national de l'habitat "
+                  "avait rendu un avis défavorable le 2 juillet. Le **PLF 2027** prévoit "
+                  "1,2 Md€ de crédits de l'État pour l'Anah, contre 1,4 Md€ en 2026 : les "
+                  "travaux isolés sont désormais financés par les seuls CEE. La rénovation "
+                  "d'ampleur (gain d'au moins deux classes de DPE) reste aidée.",
+            "EN": "**Decree no. 2026-822 of 25 August 2026** removes six works from the "
+                  "single-measure track on **1 September 2026**: **attic and roof "
+                  "insulation**, **windows and doors**, balanced ventilation, heat-pump "
+                  "water heaters, wood or pellet stoves and solar thermal (mainland). Only "
+                  "heating heat pumps, heat-network connection, energy audits and oil-tank "
+                  "removal remain fundable on their own; applications filed before 1 "
+                  "September keep the old rules. The national housing council had issued "
+                  "an unfavourable opinion on 2 July. The **2027 budget bill** plans €1.2bn "
+                  "of State funding for Anah, down from €1.4bn in 2026: single works are "
+                  "now funded through energy-saving certificates (CEE) only. Deep "
+                  "renovation (at least two EPC classes gained) remains subsidised.",
+        },
+        "impact_detail": {
+            "FR": "**Frein** pour la rénovation par geste : l'isolation et les fenêtres posées "
+                  "seules perdent l'aide de l'État et ne gardent que la prime CEE. Attendre "
+                  "un **pic de dossiers déposés en août 2026**, puis un creux sur ces "
+                  "travaux, plus marqué chez les ménages modestes, pour qui MaPrimeRénov' "
+                  "pesait le plus. La rénovation d'ampleur et les pompes à chaleur sont "
+                  "épargnées.",
+            "EN": "A **headwind** for single-measure renovation: insulation and windows done "
+                  "on their own lose State aid and keep only the CEE premium. Expect a "
+                  "**spike of applications filed in August 2026**, then a dip on these "
+                  "works, sharper for low-income households, for whom MaPrimeRénov' "
+                  "mattered most. Deep renovation and heat pumps are spared.",
+        },
+        "jalons": [
+            ("2026-02-06", {"FR": "Réouverture avec la LF 2026 (3,6 Md€)", "EN": "Reopening with the 2026 budget (€3.6bn)"}, "effet"),
+            ("2026-07-02", {"FR": "Avis défavorable du CNH", "EN": "Unfavourable housing-council opinion"}, "jalon"),
+            ("2026-09-01", {"FR": "Six gestes retirés du parcours par geste", "EN": "Six measures removed from the single-measure track"}, "effet"),
+            ("2026-10-01", {"FR": "PLF 2027 : dotation Anah à 1,2 Md€", "EN": "2027 budget bill: Anah allocation at €1.2bn"}, "jalon"),
+        ],
+        "sources": [
+            ("Argile — le décret du 25 août 2026", "https://www.argile.ai/blog/fin-des-monogestes-maprimerenov-deux-ans-de-bras-de-fer"),
+            ("Boursorama — budget de l'Anah 2027", "https://www.boursorama.com/immobilier/actualites/maprimerenov-le-budget-de-l-anah-en-baisse-de-200-millions-d-euros-f48d4509cb23c93b33d7614a2d00be3d"),
+            ("Selectra — avis du CNH", "https://selectra.info/energie/actualites/renovation-energetique/cnh-avis-defavorable-suppression-monogestes-maprimerenov"),
+        ],
+    },
+    {
+        "id": "citizens_energy",
+        "categorie": "EU",
+        "statut": "adopte",
+        "date": "2026-03-10",
+        "court": {"FR": "Citizens Energy Package", "EN": "Citizens Energy Package"},
+        "titre": {
+            "FR": "Citizens Energy Package (UE) : factures et précarité énergétique, sans volet rénovation",
+            "EN": "Citizens Energy Package (EU): bills and energy poverty, no renovation strand",
+        },
+        "montant": None,
+        "horizon": {"FR": "12-36 mois", "EN": "12-36 months"},
         "impacts": {"neuf": 0, "ancien": 0, "renovation": 0},
         "resume": {
-            "FR": "Après une suspension au 1er janvier 2026 (« pas de budget, pas de "
-                  "guichet » faute de loi de finances), MaPrimeRénov' a rouvert avec la LF "
-                  "2026 : budget de **3,6 Md€**, cible d'au moins **120 000 rénovations "
-                  "d'ampleur** et **150 000 rénovations par geste**, priorité aux passoires "
-                  "thermiques et aux ménages modestes. Réforme présentée au Conseil national "
-                  "de l'habitat le **2 juillet 2026** : suppression prévue en **septembre "
-                  "2026** de plusieurs forfaits monogestes (poêles biomasse, solaire "
-                  "thermique/hybride hors outre-mer, PAC eau chaude sanitaire).",
-            "EN": "After a suspension on 1 January 2026 ('no budget, no counter' pending the "
-                  "budget law), MaPrimeRénov' reopened with the 2026 budget: **€3.6bn**, "
-                  "targeting at least **120,000 deep renovations** and **150,000 single-"
-                  "measure renovations**, with priority to energy sieves and low-income "
-                  "households. A reform presented to the national housing council on **2 "
-                  "July 2026** plans to scrap several single-measure grants from "
-                  "**September 2026** (biomass stoves, solar thermal/hybrid outside "
-                  "overseas territories, heat-pump water heaters).",
+            "FR": "Présenté le **10 mars 2026** : une **communication** de la Commission "
+                  "(COM(2026) 115), non contraignante, complétée le 30 avril par des "
+                  "recommandations aux États membres. Elle vise les factures d'énergie "
+                  "(protection contre les coupures, baisse des taxes sur l'électricité, qui "
+                  "pèsent environ 25 % du prix payé par les ménages) et la précarité "
+                  "énergétique — un ménage européen sur dix ne peut pas se chauffer "
+                  "correctement — sans mesure propre à la rénovation des logements.",
+            "EN": "Presented on **10 March 2026**: a non-binding Commission "
+                  "**communication** (COM(2026) 115), followed on 30 April by "
+                  "recommendations to Member States. It targets energy bills (protection "
+                  "against disconnection, lower taxes on electricity, about 25% of the "
+                  "price households pay) and energy poverty — one European household in ten "
+                  "cannot heat its home adequately — with no measure specific to housing "
+                  "renovation.",
         },
         "impact_detail": {
-            "FR": "Impact **mitigé** pour le second œuvre : le budget global progresse et "
-                  "les rénovations d'ampleur (qui incluent l'isolation et les menuiseries) "
-                  "restent finançables, mais la coupe des monogestes dès septembre 2026 "
-                  "peut provoquer un **pic d'anticipation puis un trou d'air** sur les "
-                  "familles produits concernées — à surveiller dans le pilier rénovation "
-                  "du modèle de ventes.",
-            "EN": "**Mixed** impact for secondary works: the overall budget grows and deep "
-                  "renovations (which include insulation and joinery) remain fundable, but "
-                  "cutting single-measure grants from September 2026 may cause a **pull-"
-                  "forward spike then an air pocket** in the affected product families — "
-                  "worth watching in the sales model's renovation pillar.",
+            "FR": "Pas d'effet direct attendu sur les volumes : un cadre d'orientation, pas un "
+                  "financement. Corrige la veille de juillet, qui l'annonçait encore à venir "
+                  "et en attendait un levier sur la rénovation.",
+            "EN": "No direct effect on volumes expected: guidance, not funding. Corrects the "
+                  "July review, which still described it as upcoming and expected a "
+                  "renovation lever.",
         },
         "jalons": [
-            ("2026-01-01", {"FR": "Suspension du guichet (loi spéciale)", "EN": "Counter suspended (stopgap law)"}, "jalon"),
-            ("2026-02-06", {"FR": "Réouverture avec la LF 2026 (3,6 Md€)", "EN": "Reopening with the 2026 budget (€3.6bn)"}, "effet"),
-            ("2026-07-02", {"FR": "Réforme présentée au CNH", "EN": "Reform presented to the housing council"}, "jalon"),
-            ("2026-09-01", {"FR": "Suppression prévue des forfaits monogestes ciblés", "EN": "Planned removal of targeted single-measure grants"}, "echeance"),
+            ("2026-03-10", {"FR": "Communication de la Commission", "EN": "Commission communication"}, "effet"),
+            ("2026-04-30", {"FR": "Recommandations aux États membres", "EN": "Recommendations to Member States"}, "jalon"),
         ],
         "sources": [
-            ("Hellio — MaPrimeRénov' 2026", "https://particulier.hellio.com/blog/financement/maprimerenov-2026"),
-            ("LeSiteImmo — réforme juillet 2026", "https://news.lesiteimmo.com/2026/07/01/maprimerenov-travaux-non-finances-reforme-2026/"),
-            ("Zepros Bâti — MPR/DPE/CEE 2026", "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"),
+            ("Commission européenne — communiqué du 10 mars 2026", "https://energy.ec.europa.eu/news/commission-boost-access-affordable-and-clean-energy-all-europeans-2026-03-10_en"),
+            ("Commission européenne — Citizens Energy Package", "https://energy.ec.europa.eu/topics/markets-and-consumers/energy-consumers-and-prosumers/citizens-energy-package_en"),
         ],
     },
     {
-        "id": "ptz_2026",
+        "id": "jeanbrun",
         "categorie": "FR",
         "statut": "vigueur",
-        "date": "2025-04-01",
-        "court": {"FR": "PTZ élargi", "EN": "Extended PTZ"},
+        "date": "2026-02-21",
+        "court": {"FR": "Statut du bailleur privé", "EN": "Private-landlord status"},
         "titre": {
-            "FR": "Prêt à taux zéro élargi : tout le territoire, maison individuelle incluse",
-            "EN": "Extended zero-interest loan (PTZ): nationwide, detached houses included",
+            "FR": "Statut du bailleur privé (« dispositif Jeanbrun ») : l'amortissement locatif remplace le Pinel",
+            "EN": "Private-landlord status ('Jeanbrun scheme'): rental depreciation replaces Pinel",
         },
-        "montant": {"FR": "Prorogé jusqu'à fin 2027", "EN": "Extended until end-2027"},
-        "horizon": {"FR": "3-18 mois", "EN": "3-18 months"},
+        "montant": {"FR": "Amortissement 3,5 à 5,5 %/an, plafonné à 8-12 k€",
+                    "EN": "3.5-5.5%/yr depreciation, capped at €8-12k"},
+        "horizon": {"FR": "6-24 mois", "EN": "6-24 months"},
         "impacts": {"neuf": 2, "ancien": 1, "renovation": 1},
         "resume": {
-            "FR": "Depuis le **1er avril 2025**, le PTZ est étendu à **tout le territoire** "
-                  "(fin du zonage) et de nouveau ouvert à la **maison individuelle neuve**. "
-                  "La loi de finances 2026 le maintient et ajuste les plafonds de ressources "
-                  "et de coût d'opération pour solvabiliser davantage de primo-accédants. Le "
-                  "PTZ dans l'ancien reste conditionné à des travaux (≥ 25 % du coût total) "
-                  "en zone détendue. Dispositif prorogé jusqu'à fin 2027.",
-            "EN": "Since **1 April 2025** the PTZ has been extended **nationwide** (no more "
-                  "zoning) and reopened to **new detached houses**. The 2026 budget law "
-                  "keeps it and adjusts income and cost ceilings to solvabilise more first-"
-                  "time buyers. The PTZ for existing homes still requires works (≥ 25% of "
-                  "total cost) in low-pressure areas. Extended until end-2027.",
+            "FR": "Créé par la **loi de finances 2026** (loi n° 2026-103 du 19 février 2026, "
+                  "art. 47), **en vigueur depuis le 21 février 2026** pour les acquisitions "
+                  "jusqu'au **31 décembre 2028** : le bailleur qui loue nu pendant **9 ans**, "
+                  "sous plafonds de loyer et de ressources, déduit chaque année de ses "
+                  "revenus fonciers un amortissement de 80 % de la valeur du bien — 3,5 % en "
+                  "loyer intermédiaire, 4,5 % en social, 5,5 % en très social, plafonné à "
+                  "8 000, 10 000 et 12 000 € par an. Sans zonage, au **neuf** comme à "
+                  "l'**ancien rénové**. Le projet de loi Relance logement, à l'Assemblée "
+                  "depuis le 21 septembre, en retouche les conditions (voir l'entrée "
+                  "dédiée).",
+            "EN": "Created by the **2026 budget law** (law no. 2026-103 of 19 February 2026, "
+                  "art. 47), **in force since 21 February 2026** for purchases until **31 "
+                  "December 2028**: landlords letting unfurnished for **9 years**, under "
+                  "rent and income ceilings, deduct each year from rental income a "
+                  "depreciation of 80% of the property value — 3.5% at intermediate rent, "
+                  "4.5% social, 5.5% very social, capped at €8,000, €10,000 and €12,000 a "
+                  "year. No zoning, for **new-build** and **renovated existing homes** "
+                  "alike. The Housing relaunch bill, before the Assembly since 21 "
+                  "September, amends its conditions (see its own entry).",
         },
         "impact_detail": {
-            "FR": "Principal levier de solvabilisation des primo-accédants : soutien direct "
-                  "aux ventes de maisons neuves puis aux permis. Le volet « ancien avec travaux » "
-                  "alimente aussi "
-                  "les transactions IGEDD et le second œuvre (25 % de travaux imposés).",
-            "EN": "Main solvency lever for first-time buyers: direct support to new detached-"
-                  "house sales then to permits. The 'existing home with works' leg also feeds IGEDD "
-                  "transactions "
-                  "and secondary works (25% works requirement).",
+            "FR": "Relance de la demande d'investissement locatif → soutien aux réservations "
+                  "de logements neufs (ECLN), puis aux permis (transmission 12-24 mois). "
+                  "L'éligibilité de l'**ancien rénové** joue doublement : transactions, et "
+                  "travaux sur les biens achetés pour être loués.",
+            "EN": "Restarts rental-investment demand → supports new-build reservations "
+                  "(ECLN), then permits (12-24-month transmission). Eligibility of "
+                  "**renovated existing homes** works twice: transactions, and works on "
+                  "homes bought to let.",
         },
         "jalons": [
-            ("2025-04-01", {"FR": "Extension nationale + maison neuve", "EN": "Nationwide extension + new houses"}, "effet"),
-            ("2026-01-01", {"FR": "LF 2026 : plafonds ajustés", "EN": "2026 budget: ceilings adjusted"}, "jalon"),
-            ("2027-12-31", {"FR": "Fin de la prorogation actuelle", "EN": "End of current extension"}, "echeance"),
+            ("2026-02-21", {"FR": "Entrée en vigueur (LF 2026)", "EN": "Entry into force (2026 budget law)"}, "effet"),
+            ("2028-12-31", {"FR": "Fin des acquisitions éligibles", "EN": "End of eligible purchases"}, "echeance"),
         ],
         "sources": [
-            ("Ministère — accéder à la propriété", "https://www.ecologie.gouv.fr/acceder-propriete"),
-            ("Service-Public — PTZ", "https://www.service-public.fr/particuliers/vosdroits/F10871"),
-        ],
-    },
-    {
-        "id": "donation_neuf",
-        "categorie": "FR",
-        "statut": "vigueur",
-        "date": "2025-04-01",
-        "court": {"FR": "Donations exonérées", "EN": "Tax-free gifts"},
-        "titre": {
-            "FR": "Exonération des dons familiaux pour l'achat neuf ou la rénovation énergétique",
-            "EN": "Family-gift tax exemption for new-build purchase or energy renovation",
-        },
-        "montant": {"FR": "100 k€/donateur, 300 k€/bénéficiaire", "EN": "€100k/donor, €300k/beneficiary"},
-        "horizon": {"FR": "0-12 mois — expire fin 2026", "EN": "0-12 months — expires end-2026"},
-        "impacts": {"neuf": 1, "ancien": 0, "renovation": 1},
-        "resume": {
-            "FR": "Depuis le 1er avril 2025 et **jusqu'au 31 décembre 2026**, les dons "
-                  "familiaux (parents, grands-parents, arrière-grands-parents) sont exonérés "
-                  "de droits jusqu'à **100 000 € par donateur** et **300 000 € par "
-                  "bénéficiaire**, s'ils financent l'achat d'un **logement neuf** (résidence "
-                  "principale) ou des **travaux de rénovation énergétique** de la résidence "
-                  "principale.",
-            "EN": "From 1 April 2025 **until 31 December 2026**, family gifts (parents, "
-                  "grandparents, great-grandparents) are exempt from gift tax up to "
-                  "**€100,000 per donor** and **€300,000 per beneficiary** when they fund "
-                  "the purchase of a **new-build main home** or **energy-renovation works** "
-                  "on the main home.",
-        },
-        "impact_detail": {
-            "FR": "Apport supplémentaire qui débloque des projets neufs et des chantiers de "
-                  "rénovation. **L'échéance du 31/12/2026 devrait concentrer des ventes et "
-                  "des travaux au S2 2026** (effet d'aubaine avant extinction) — possible "
-                  "sur-performance temporaire des piliers neuf et rénovation, puis "
-                  "contrecoup début 2027.",
-            "EN": "Extra down-payment capacity that unlocks new-build projects and "
-                  "renovation jobs. **The 31/12/2026 sunset should concentrate sales and "
-                  "works in H2 2026** (rush before expiry) — possible temporary over-"
-                  "performance of the new-build and renovation pillars, then a hangover in "
-                  "early 2027.",
-        },
-        "jalons": [
-            ("2025-04-01", {"FR": "Début de l'exonération", "EN": "Exemption starts"}, "effet"),
-            ("2026-12-31", {"FR": "Fin du dispositif", "EN": "Scheme expires"}, "echeance"),
-        ],
-        "sources": [
-            ("Lamotte — exonération dons familiaux", "https://www.lamotte.fr/conseils/exoneration-dons-familiaux/"),
-            ("Médicis — PLF 2026 & immobilier", "https://www.medicis-patrimoine.com/actualites-immobilier-neuf/marche-de-l-immobilier/2026/02/06/4208-budget-le-plf-adopte-ce-qui-change-ou-pas-pour-l-immobilier.html"),
+            ("Kohen Avocats — statut du bailleur privé", "https://kohenavocats.fr/2026/09/09/statut-bailleur-prive-2026-amortissement-locatif-relance-logement-conditions/"),
+            ("info.gouv.fr — Relance logement", "https://www.info.gouv.fr/grand-dossier/relance-logement"),
         ],
     },
     {
@@ -277,34 +429,35 @@ NEWS_ITEMS = [
                   "logements chauffés à l'électricité sortent mécaniquement du statut de "
                   "passoire énergétique** (F/G). Le calendrier de la loi Climat & Résilience "
                   "reste en vigueur : location interdite pour les G depuis 2025, pour les "
-                  "**F au 1er janvier 2028**, pour les E en 2034. Le DPE collectif est "
-                  "obligatoire pour les copropriétés ≤ 50 lots depuis 2026.",
+                  "**F au 1er janvier 2028**, pour les E en 2034 — mais le projet de loi "
+                  "Relance logement, à l'Assemblée, permettrait de continuer à louer un F ou "
+                  "un G contre un engagement de travaux (voir l'entrée dédiée).",
             "EN": "On **1 January 2026** the electricity conversion factor in the French EPC "
                   "drops from **2.3 to 1.9** (EU alignment): about **850,000 electrically "
                   "heated homes mechanically exit 'energy sieve' status** (F/G). The "
-                  "Climate & Resilience law calendar still applies: renting G-rated homes "
-                  "banned since 2025, **F-rated from 1 January 2028**, E-rated from 2034. "
-                  "Building-level EPCs are mandatory for condos ≤ 50 units since 2026.",
+                  "Climate & Resilience calendar still applies: renting G-rated homes "
+                  "banned since 2025, **F-rated from 1 January 2028**, E-rated from 2034 — "
+                  "but the Housing relaunch bill, before the Assembly, would let owners "
+                  "keep renting F or G homes against a works commitment (see its entry).",
         },
         "impact_detail": {
             "FR": "Double lecture : la sortie de 850 000 logements du statut F/G **fluidifie "
                   "les transactions dans l'ancien** (moins de décotes, moins de ventes "
                   "contraintes) mais **réduit la pression réglementaire à rénover** ces "
-                  "biens — léger frein pour le pilier rénovation. L'échéance F-2028 "
-                  "maintient toutefois un flux de chantiers obligatoires.",
+                  "biens — léger frein pour la rénovation, que l'assouplissement en "
+                  "discussion accentuerait.",
             "EN": "Two-sided: 850,000 homes exiting F/G status **smooths existing-home "
                   "transactions** (fewer discounts, fewer forced sales) but **eases the "
-                  "regulatory pressure to renovate** them — a mild headwind for the "
-                  "renovation pillar. The F-2028 deadline still sustains a pipeline of "
-                  "mandatory works.",
+                  "regulatory pressure to renovate** — a mild headwind for renovation, "
+                  "which the softening under discussion would reinforce.",
         },
         "jalons": [
             ("2026-01-01", {"FR": "Nouveau coefficient électricité", "EN": "New electricity factor"}, "effet"),
-            ("2028-01-01", {"FR": "Interdiction de louer les logements F", "EN": "Ban on renting F-rated homes"}, "echeance"),
+            ("2028-01-01", {"FR": "Interdiction de louer les logements F (loi actuelle)", "EN": "Ban on renting F-rated homes (current law)"}, "echeance"),
         ],
         "sources": [
-            ("Zepros Bâti — MPR/DPE/CEE 2026", "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"),
             ("Ministère — le DPE", "https://www.ecologie.gouv.fr/politiques-publiques/diagnostic-performance-energetique-dpe"),
+            ("Zepros Bâti — MPR/DPE/CEE 2026", "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"),
         ],
     },
     {
@@ -314,42 +467,47 @@ NEWS_ITEMS = [
         "date": "2026-01-01",
         "court": {"FR": "CEE 6e période", "EN": "CEE 6th period"},
         "titre": {
-            "FR": "Certificats d'économies d'énergie : 6e période 2026-2029, obligations relevées",
-            "EN": "Energy-saving certificates (CEE): 6th period 2026-2029, higher obligations",
+            "FR": "Certificats d'économies d'énergie : 6e période 2026-2030, obligations relevées de 27 %",
+            "EN": "Energy-saving certificates (CEE): 6th period 2026-2030, obligations up 27%",
         },
-        "montant": {"FR": "P6 : 2026 → 2029", "EN": "P6: 2026 → 2029"},
-        "horizon": {"FR": "0-48 mois", "EN": "0-48 months"},
+        "montant": {"FR": "1 050 TWhc/an, dont 280 pour la précarité",
+                    "EN": "1,050 TWhc/yr, of which 280 for energy poverty"},
+        "horizon": {"FR": "0-60 mois", "EN": "0-60 months"},
         "impacts": {"neuf": 0, "ancien": 0, "renovation": 2},
         "resume": {
-            "FR": "La **6e période des CEE** court du **1er janvier 2026 au 31 décembre "
-                  "2029**, avec un relèvement significatif des obligations d'économies "
-                  "d'énergie imposées aux vendeurs d'énergie. L'accent est mis sur les "
-                  "opérations performantes : isolation, chauffage décarboné, rénovations "
-                  "globales. Ce financement privé compense en partie la contraction des "
-                  "aides budgétaires directes (MaPrimeRénov').",
-            "EN": "The **6th CEE period** runs from **1 January 2026 to 31 December 2029**, "
-                  "with a significant increase in the energy-saving obligations placed on "
-                  "energy sellers. Emphasis is on high-performance operations: insulation, "
-                  "decarbonised heating, whole-home renovations. This private funding "
-                  "partly offsets the contraction of direct budget aid (MaPrimeRénov').",
+            "FR": "La **6e période des CEE** (décret n° 2025-1048 du 4 novembre 2025) court "
+                  "du **1er janvier 2026 au 31 décembre 2030** — cinq ans, et non quatre "
+                  "comme l'indiquait la veille précédente. Obligation de **1 050 TWh cumac "
+                  "par an**, dont **280 réservés à la précarité énergétique**, soit environ "
+                  "27 % de plus que la période précédente ; les bonifications « coup de "
+                  "pouce » sont prolongées. Depuis le 1er septembre 2026, les CEE sont la "
+                  "**seule aide nationale** pour l'isolation et les fenêtres posées seules "
+                  "(voir MaPrimeRénov').",
+            "EN": "The **6th CEE period** (decree no. 2025-1048 of 4 November 2025) runs "
+                  "from **1 January 2026 to 31 December 2030** — five years, not four as "
+                  "the previous review said. Obligation of **1,050 TWh cumac a year**, of "
+                  "which **280 for energy poverty**, about 27% more than the previous "
+                  "period; 'coup de pouce' boosts are extended. Since 1 September 2026, "
+                  "CEE are the **only national aid** for insulation and windows done on "
+                  "their own (see MaPrimeRénov').",
         },
         "impact_detail": {
-            "FR": "Soutien structurel au pilier rénovation sur 4 ans : primes CEE (et "
-                  "bonifications type « coup de pouce ») directement mobilisables sur les "
-                  "familles second œuvre (isolation, fermetures & menuiseries). Contrepoids "
-                  "au recentrage de MaPrimeRénov' — les deux dispositifs sont cumulables.",
-            "EN": "Structural 4-year support for the renovation pillar: CEE premiums (and "
-                  "'coup de pouce' boosts) directly usable on secondary-works families "
-                  "(insulation, closures & joinery). A counterweight to the MaPrimeRénov' "
-                  "refocus — the two schemes can be combined.",
+            "FR": "Soutien structurel à la rénovation sur cinq ans, financé par les vendeurs "
+                  "d'énergie et non par le budget de l'État : c'est le contrepoids au "
+                  "recentrage de MaPrimeRénov', et désormais le principal financement des "
+                  "travaux d'isolation et de menuiserie réalisés seuls.",
+            "EN": "Structural five-year support for renovation, funded by energy sellers "
+                  "rather than the State budget: the counterweight to the MaPrimeRénov' "
+                  "refocus, and now the main funding for insulation and joinery works done "
+                  "on their own.",
         },
         "jalons": [
             ("2026-01-01", {"FR": "Début de la 6e période", "EN": "6th period starts"}, "effet"),
-            ("2029-12-31", {"FR": "Fin de la 6e période", "EN": "6th period ends"}, "echeance"),
+            ("2030-12-31", {"FR": "Fin de la 6e période", "EN": "6th period ends"}, "echeance"),
         ],
         "sources": [
+            ("Hellio — la 6e période des CEE", "https://www.hellio.com/actualites/reglementation/sixieme-periode-cee"),
             ("Ministère — dispositif CEE", "https://www.ecologie.gouv.fr/politiques-publiques/dispositif-certificats-deconomies-denergie"),
-            ("Zepros Bâti — MPR/DPE/CEE 2026", "https://bati.zepros.fr/actu-generale/maprimerenov-dpe-cee-est-2026"),
         ],
     },
     {
@@ -367,38 +525,33 @@ NEWS_ITEMS = [
         "impacts": {"neuf": 1, "ancien": 0, "renovation": 1},
         "resume": {
             "FR": "Présenté par la Commission le **16 décembre 2025** — premier plan "
-                  "logement de l'UE. Il prévoit **10 Md€ supplémentaires du budget européen "
-                  "en 2026-2027** et **375 Md€ mobilisés via la BEI et les institutions "
+                  "logement de l'UE : **10 Md€ supplémentaires du budget européen en "
+                  "2026-2027** et **375 Md€ mobilisés via la BEI et les institutions "
                   "financières partenaires d'ici 2029** pour la construction et la "
-                  "rénovation abordables. Un **Affordable Housing Act** est attendu en 2026 "
-                  "(dont encadrement des locations de courte durée), ainsi que le **premier "
-                  "sommet européen des chefs d'État sur le logement** et une European "
-                  "Housing Alliance. Résolution de soutien du Parlement européen le 24 mars "
-                  "2026.",
+                  "rénovation abordables. Résolution de soutien du Parlement européen le 24 "
+                  "mars 2026. Son volet législatif, l'**Affordable Housing Act**, a été "
+                  "proposé le 9 septembre 2026 (voir l'entrée dédiée).",
             "EN": "Presented by the Commission on **16 December 2025** — the EU's first "
-                  "housing plan. It earmarks **an extra €10bn from the EU budget in "
-                  "2026-2027** and **€375bn mobilised via the EIB and partner financial "
-                  "institutions by 2029** for affordable construction and renovation. An "
-                  "**Affordable Housing Act** is expected in 2026 (including short-term "
-                  "rental rules), plus the **first EU heads-of-state housing summit** and a "
-                  "European Housing Alliance. Supporting European Parliament resolution on "
-                  "24 March 2026.",
+                  "housing plan: **an extra €10bn from the EU budget in 2026-2027** and "
+                  "**€375bn mobilised via the EIB and partner institutions by 2029** for "
+                  "affordable construction and renovation. Supporting European Parliament "
+                  "resolution on 24 March 2026. Its legislative strand, the **Affordable "
+                  "Housing Act**, was proposed on 9 September 2026 (see its entry).",
         },
         "impact_detail": {
             "FR": "Effet surtout **moyen-long terme** via le financement BEI du logement "
-                  "social/abordable et de la rénovation : renfort potentiel des ventes en "
-                  "bloc aux bailleurs sociaux (visibles dans les réservations ECLN "
-                  "« bailleurs sociaux » de l'onglet Commercialisation Neuf) et des "
-                  "programmes de rénovation du parc social.",
-            "EN": "Mostly a **medium-to-long-term** effect via EIB funding of social/"
+                  "social et abordable et de la rénovation : renfort potentiel des ventes en "
+                  "bloc aux bailleurs sociaux (visibles dans les réservations ECLN de la "
+                  "page Logement neuf) et des programmes de rénovation du parc social.",
+            "EN": "Mostly a **medium-to-long-term** effect via EIB funding of social and "
                   "affordable housing and renovation: potential boost to block sales to "
-                  "social landlords (visible in the ECLN 'social landlords' reservations in "
-                  "the New-Build Sales tab) and to social-housing renovation programmes.",
+                  "social landlords (visible in ECLN reservations on the new-build page) "
+                  "and to social-housing renovation programmes.",
         },
         "jalons": [
             ("2025-12-16", {"FR": "Présentation par la Commission", "EN": "Presented by the Commission"}, "effet"),
             ("2026-03-24", {"FR": "Résolution du Parlement européen", "EN": "European Parliament resolution"}, "jalon"),
-            ("2026-12-31", {"FR": "Affordable Housing Act + sommet UE attendus en 2026", "EN": "Affordable Housing Act + EU summit expected in 2026"}, "echeance"),
+            ("2029-12-31", {"FR": "Horizon des 375 Md€ mobilisés", "EN": "Horizon for the €375bn mobilised"}, "echeance"),
         ],
         "sources": [
             ("Commission européenne — EAHP", "https://housing.ec.europa.eu/european-affordable-housing-plan_en"),
@@ -406,44 +559,50 @@ NEWS_ITEMS = [
         ],
     },
     {
-        "id": "citizens_energy",
-        "categorie": "EU",
-        "statut": "discussion",
-        "date": "2026-06-30",
-        "court": {"FR": "Citizens Energy Package", "EN": "Citizens Energy Package"},
+        "id": "donation_neuf",
+        "categorie": "FR",
+        "statut": "vigueur",
+        "date": "2025-04-01",
+        "court": {"FR": "Donations exonérées", "EN": "Tax-free gifts"},
         "titre": {
-            "FR": "Citizens Energy Package (UE) : factures, précarité énergétique, rénovation",
-            "EN": "Citizens Energy Package (EU): bills, energy poverty, renovation",
+            "FR": "Dons familiaux exonérés pour l'achat neuf ou la rénovation énergétique : fin le 31 décembre 2026",
+            "EN": "Tax-free family gifts for new-build purchase or energy renovation: ends 31 December 2026",
         },
-        "montant": None,
-        "horizon": {"FR": "12-36 mois", "EN": "12-36 months"},
-        "impacts": {"neuf": 0, "ancien": 0, "renovation": 1},
+        "montant": {"FR": "100 k€/donateur, 300 k€/bénéficiaire", "EN": "€100k/donor, €300k/beneficiary"},
+        "horizon": {"FR": "0-3 mois — expire fin 2026", "EN": "0-3 months — expires end-2026"},
+        "impacts": {"neuf": 1, "ancien": 0, "renovation": 1},
         "resume": {
-            "FR": "Volet complémentaire du plan logement européen, annoncé pour **2026** : "
-                  "un paquet « énergie des citoyens » visant à faire baisser les factures, "
-                  "éradiquer la précarité énergétique et accompagner une transition juste — "
-                  "avec un levier attendu sur la rénovation énergétique des logements des "
-                  "ménages modestes. Contenu législatif précis encore en préparation.",
-            "EN": "Companion piece to the EU housing plan, announced for **2026**: a "
-                  "'Citizens Energy Package' to lower energy bills, eradicate energy "
-                  "poverty and support a just transition — with an expected lever on "
-                  "energy renovation of low-income households' homes. Precise legislative "
-                  "content still in preparation.",
+            "FR": "Depuis 2025 et **jusqu'au 31 décembre 2026**, les dons familiaux (parents, "
+                  "grands-parents, arrière-grands-parents) sont exonérés de droits jusqu'à "
+                  "**100 000 € par donateur** et **300 000 € par bénéficiaire** s'ils "
+                  "financent l'achat d'un **logement neuf** ou en VEFA, ou des **travaux de "
+                  "rénovation énergétique** ; les fonds doivent être employés dans les six "
+                  "mois et le logement conservé cinq ans. Le **PLF 2027 ne prolonge pas** ce "
+                  "régime : la réforme des donations annoncée pour 2027 porte sur les dons "
+                  "familiaux en général, sans fléchage vers le logement.",
+            "EN": "Since 2025 and **until 31 December 2026**, family gifts (parents, "
+                  "grandparents, great-grandparents) are exempt up to **€100,000 per donor** "
+                  "and **€300,000 per beneficiary** when they fund a **new-build** or off-"
+                  "plan home, or **energy-renovation works**; funds must be used within six "
+                  "months and the home kept five years. The **2027 budget bill does not "
+                  "extend** it: the gift reform announced for 2027 covers family gifts in "
+                  "general, with no housing earmark.",
         },
         "impact_detail": {
-            "FR": "À ce stade un signal plutôt qu'un dispositif : à suivre pour le pilier "
-                  "rénovation (aides européennes ciblées précarité énergétique, possibles "
-                  "co-financements des monogestes que la France recentre par ailleurs).",
-            "EN": "At this stage a signal rather than a scheme: watch it for the renovation "
-                  "pillar (EU aid targeting energy poverty, possible co-funding of the "
-                  "single-measure works France is otherwise refocusing).",
+            "FR": "L'échéance du 31/12/2026, désormais confirmée, devrait **concentrer des "
+                  "réservations neuves et des travaux au dernier trimestre 2026**, puis "
+                  "laisser un **contrecoup début 2027**.",
+            "EN": "The 31/12/2026 sunset, now confirmed, should **bunch new-build "
+                  "reservations and works into Q4 2026**, then leave a **hangover in early "
+                  "2027**.",
         },
         "jalons": [
-            ("2026-12-31", {"FR": "Présentation attendue courant 2026", "EN": "Expected during 2026"}, "echeance"),
+            ("2025-04-01", {"FR": "Début de l'exonération", "EN": "Exemption starts"}, "effet"),
+            ("2026-12-31", {"FR": "Fin du dispositif, non prolongé au PLF 2027", "EN": "Scheme expires, not extended in the 2027 bill"}, "echeance"),
         ],
         "sources": [
-            ("Commission européenne — EAHP", "https://housing.ec.europa.eu/european-affordable-housing-plan_en"),
-            ("Commission — logement abordable", "https://commission.europa.eu/topics/employment-and-social-affairs/affordable-housing_fr"),
+            ("Kohen Avocats — fin au 31 décembre 2026", "https://kohenavocats.com/don-logement-100000-euros-exoneration-31-decembre-2026-texte-reel/"),
+            ("Médicis — budget 2027 et donations", "https://www.medicis-patrimoine.com/actualites-immobilier-neuf/prix-de-l-immobilier/2026/09/17/4264-Budget-le-gouvernement-veut-accelerer-les-donations-familiales-quel-impact-pour-les-projets-immobiliers.html"),
         ],
     },
 ]

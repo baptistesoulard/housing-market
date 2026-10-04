@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T09:54:46+00:00",
+  "generated_at": "2026-10-04T10:40:57+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -166,8 +166,8 @@
         {
           "emoji": "🗓️",
           "title": "Prochaine échéance aides",
-          "value": "12/2026",
-          "sub": "Citizens Energy Package",
+          "value": "11/2026",
+          "sub": "PTZ",
           "level": ""
         }
       ],
