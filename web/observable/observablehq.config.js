@@ -61,8 +61,36 @@ const NAV_ICONS = ONGLETS.map(({path}) => ({icon: NAV.find((n) => n.path === pat
   ` { content: "${icon}"; }
 `).join("");
 
+// Source Sans 3, servie par le site lui-même (2026-10-04) : chargée depuis Google Fonts,
+// chaque visite transmettait l'adresse IP du visiteur à Google, ce que la promesse des
+// mentions légales (« aucun tiers ») ne disait pas. Mêmes fichiers que Google servait
+// (sous-ensembles latin et latin-ext, droite et italique, graisses 300 à 900 en un seul
+// fichier variable), même découpage par unicode-range : le rendu est identique. Les
+// fichiers vivent dans assets/fonts/ et postbuild.mjs les copie à l'adresse STABLE
+// /fonts/ — une url() dans ce <style> n'est pas réécrite par le framework, qui hacherait
+// le nom. Conséquence : la préversion (`npm run dev`) ne sert pas /fonts/ et retombe sur
+// la pile système, comme elle ne sert pas /data/departements/.
+const LATIN = "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, " +
+  "U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, " +
+  "U+FEFF, U+FFFD";
+const LATIN_EXT = "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, " +
+  "U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, " +
+  "U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF";
+const FONT_FILES = [
+  {file: "source-sans-3-latin-ext.woff2", style: "normal", range: LATIN_EXT},
+  {file: "source-sans-3-latin.woff2", style: "normal", range: LATIN},
+  {file: "source-sans-3-italic-latin-ext.woff2", style: "italic", range: LATIN_EXT},
+  {file: "source-sans-3-italic-latin.woff2", style: "italic", range: LATIN},
+];
+const FONT_FACES = FONT_FILES.map(({file, style, range}) => `@font-face {
+  font-family: "Source Sans 3"; font-style: ${style}; font-weight: 300 900;
+  font-display: swap; src: url("/fonts/${file}") format("woff2");
+  unicode-range: ${range};
+}`).join("\n");
+
 const STYLE = `
 <style>
+${FONT_FACES}
 :root {
 ${VARS}
   --sans-serif: var(--hm-font-sans);
@@ -849,12 +877,11 @@ export default {
   root: "src",
   theme: ["air", "wide"],
   head: (page) => META(page) + STYLE + RELOAD_GUARD,
-  // Remplace le Source Serif 4 chargé par défaut avec le thème `air` : cette police
-  // n'était jamais rendue (--serif est réécrit sur la pile de theme.json), le site la
-  // téléchargeait pour rien. Source Sans 3 est, elle, la police du corps de texte.
-  globalStylesheets: [
-    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap",
-  ],
+  // Vide, et c'est voulu : le défaut du framework charge Source Serif 4 depuis Google
+  // Fonts (jamais rendue ici, --serif est réécrit sur la pile de theme.json). Source
+  // Sans 3, la police du texte, est servie par le site (FONT_FACES, plus haut) : aucune
+  // requête ne part vers Google.
+  globalStylesheets: [],
   pages: PAGES,
   // Les 101 pages départementales, générées par src/departement/[code].md.
   // La liste vient des données (site.config.js), pas d'une énumération à la main.

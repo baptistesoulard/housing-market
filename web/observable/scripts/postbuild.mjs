@@ -91,6 +91,15 @@ else console.warn(
   `postbuild: ATTENTION — ${og} est absent. Les balises og:image pointent vers une image ` +
   "qui n'existe pas : un lien partagé s'affichera sans vignette. Régénérer avec `npm run og-image`.");
 
+// La police, servie par le site (les @font-face de observablehq.config.js visent
+// /fonts/). Copiée à une adresse STABLE pour la même raison que la vignette. Une police
+// absente fait échouer le build : le site retomberait sans bruit sur la pile système.
+const fontsSrc = join(ROOT, "assets", "fonts");
+const fonts = existsSync(fontsSrc) ? (await readdir(fontsSrc)).filter((f) => f.endsWith(".woff2")) : [];
+if (fonts.length < 4) throw new Error(`postbuild: polices manquantes dans ${fontsSrc}`);
+await mkdir(join(DIST, "fonts"), {recursive: true});
+for (const f of [...fonts, "LICENSE.md"]) await copyFile(join(fontsSrc, f), join(DIST, "fonts", f));
+
 // 6. Les données départementales, copiées à une adresse STABLE (voir le point 6 en tête
 //    de fichier). Le format colonnaire de web_export.py tient déjà le budget de 10 Ko
 //    par département ; ce n'est qu'une copie, aucune transformation ici.

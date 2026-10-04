@@ -43,8 +43,10 @@ Le site est un ensemble de fichiers statiques servis par **Cloudflare Pages**.
 
 **Aucun cookie, aucune mesure d'audience, aucun traceur.** Le site ne charge ni Google
 Analytics, ni pixel publicitaire, ni script tiers d'aucune sorte — c'est vérifiable dans
-son [code source](https://github.com/baptistesoulard/housing-market). C'est aussi pourquoi
-vous ne voyez aucun bandeau de consentement : il n'y a rien à consentir.
+son [code source](https://github.com/baptistesoulard/housing-market). La police de
+caractères elle-même est servie par le site, et non par Google Fonts : aucune visite ne
+transmet votre adresse IP à un tiers. C'est aussi pourquoi vous ne voyez aucun bandeau de
+consentement : il n'y a rien à consentir.
 
 **Le fichier de ventes que vous pouvez charger sur la page Données ne quitte jamais votre
 navigateur.** Il est lu localement, conservé dans le stockage de l'onglet, et tous les
