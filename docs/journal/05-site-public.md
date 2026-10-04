@@ -850,3 +850,71 @@ Tests : `test_la_barre_laterale_est_groupee_par_echelle`,
 neuve — exactement la confusion du public matériaux. Les deux jumelles prennent le mot du
 site (libellés, titres de page, renvois de la Synthèse) ; leur `seoTitle` garde « marché du
 logement neuf / ancien », la requête des moteurs. URL `/neuf` et `/ancien` inchangées.
+
+## L'accueil par les questions du visiteur, et de quoi revenir, 2026-10-04
+
+**Le diagnostic** (site en ligne mesuré à 1366×768 et 375 px, avant toute modification).
+Le titre posait une question — « Où en est le marché du logement en France ? » — à
+laquelle la page ne répondait pas : la réponse (« ventes anciennes projetées en recul
+d'environ 6 % d'ici avril 2027 ») vivait dans les puces de la Synthèse, et l'accueil n'en
+montrait que trois pastilles en jargon (« Neuf · amont en repli ») au deuxième écran.
+La page parlait d'elle-même (méthode, références, catalogue de onze cartes — la même
+navigation que la barre latérale et le pied de page), « À qui ça sert » arrivait au 4e
+écran sur 5 (6e sur 7 sur téléphone), le sélecteur s'ouvrait sur « 01 — Ain », et la
+fraîcheur s'écrivait en sigles (« SIT@DEL : juillet 2026 »), qu'un non-initié lisait
+« périmé » sous un bandeau « rafraîchies chaque semaine ». Rien n'invitait à revenir —
+pour un « baromètre », lecture périodique par nature. Aucune page n'avait la prévision
+elle-même dans son HTML (vérifié sur `/`, `/synthese`, `/previsions`, `/ancien`).
+
+**Le public, tranché par l'auteur.** Le cœur de cible est le professionnel dont
+l'activité suit les volumes du logement ; les particuliers sont un bonus d'audience. Le
+site a deux portes : Google mène aux fiches départementales (la requête « prix m² +
+département », journal 07), les liens — LinkedIn d'abord — mènent à l'accueil. Revient
+donc sur le choix du 2026-08-23 (« À qui ça sert » mettait le particulier d'abord, par
+cohérence avec les éléments de la page plutôt que d'après qui la visite). Pas de lettre
+d'information pour l'instant : elle obligerait à collecter des adresses.
+
+**Ce qui a changé.**
+
+* **La réponse sous le titre**, générée par `accueil.py` (marqueurs `hm:reponse`) : la
+  projection du verdict, l'état du marché en une phrase (`resume`, écrit par
+  `page_synthese.rediger`) et le dernier mois publié (`dernier_mois`). Une date de passage
+  aurait fait un diff chaque lundi ; le dernier mois publié ne bouge qu'avec les données.
+* **Des tâches au lieu du catalogue** : « Ce que vous pouvez faire ici », cinq cartes
+  (anticiper, tester ses ventes, compter en m², lire un marché local, citer un chiffre),
+  chacune avec des profils « par exemple ». La navigation reste par échelle ; la règle
+  « mêmes groupes à trois endroits » passe à deux (barre latérale, pied de page).
+* **Le département** : saisie libre avec suggestions (nom ou numéro), Entrée valide, et le
+  dernier département consulté — ici ou en ouvrant sa fiche — est retenu dans le
+  navigateur et proposé au retour.
+* **« Revenir »** : le journal des changements (`changements.py` → `changements.json`,
+  écrit seulement quand une source publie, que la projection bouge au point près ou
+  qu'une pastille change de couleur), le prochain passage, le flux RSS `/flux.xml`
+  (écrit par `postbuild.mjs`, annoncé dans chaque `<head>`), LinkedIn et le contact.
+* **Mots simples** : pastilles « permis en recul » (et non « amont en repli »), « Crédit ·
+  plus cher » (et non « Financement · en durcissement »), fraîcheur nommée par ce que la
+  source compte. Régénère `synthese.json` (1/9, délibéré).
+* **Fiches départementales** : un bloc « Et à l'échelle de la France ? » porte la
+  projection NATIONALE, dite telle (pas de prévision régionalisée), avec les liens vers la
+  Synthèse et la prévision ; la phrase vient de `departements.json` plutôt que de
+  `previsions.json` (236 Ko pour 101 pages).
+* **« Confronter vos ventes »** : le chapeau parlait d'autre chose (le tableau des sources,
+  `python fetch_new_sources.py`) ; il dit maintenant ce que fait l'outil, avec un modèle
+  de fichier et une série d'exemple fabriquée (les ventes anciennes décalées de cinq mois,
+  que l'outil retrouve). Le fichier importé restait dans `localStorage` sans limite alors
+  que la page affirmait que « rien n'en est conservé » : le garder est désormais une case
+  à cocher, et la page comme les mentions légales le disent.
+* **« Actualités & Aides » devient « Aides & dispositifs »** (URL inchangée) : la veille
+  est revue à la main — dernière revue le 2026-07-16 — et « actualités » promettait une
+  fraîcheur qu'elle n'a pas.
+* **La police est servie par le site** : Source Sans 3 chargée chez Google Fonts
+  transmettait l'IP de chaque visiteur à Google. Mêmes fichiers (latin et latin-ext,
+  droite et italique, variables 300-900), même découpage `unicode-range`, copiés par
+  `postbuild.mjs` à `/fonts/` ; le build échoue s'ils manquent. Vérifié sur `dist/` :
+  aucune requête hors du site.
+* « Me contacter » dans le pied de page.
+
+Tests : `test_changements.py` (se taire quand rien ne bouge, nouveau mois, prévision,
+pastille, premier passage, borne du journal), le résumé et la fraîcheur dans
+`test_redaction.py`, la réponse sous le titre et la phrase de projection dans
+`test_web_links.py`.

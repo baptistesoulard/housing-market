@@ -17,6 +17,12 @@ face au réel, 101 pages départementales, et la construction non résidentielle
 des publics fabrique des matériaux : il compte en m², pas en logements). Tout vient de
 sources publiques.
 
+**Le cœur de cible est le PROFESSIONNEL dont l'activité suit les volumes du logement**
+(industriels, négoces, directions commerciales, planification, promoteurs ; puis agents,
+courtiers, journalistes). Les particuliers sont un bonus d'audience : ils arrivent par
+Google sur les fiches départementales, pas par l'accueil. Pas de lettre d'information
+pour l'instant (décision du 2026-10-04, journal 05).
+
 ```
 fetch_new_sources.py ─► data_manual_input/ ─► DataManager ─► data/*.csv (versionnés) + *.parquet (non)
                                                                    │
@@ -64,6 +70,7 @@ python forecast_archive.py --calibrate      # recalibre la bande (deux passes, v
 | `reperes.py` | **tout ce que rien ne régénère** : repères saisis à la main et mesures datées |
 | `ecriture.py` | point d'écriture unique : arrondi à 9 chiffres significatifs, garde de contenu |
 | `sources_table.py`, `accueil.py` | Markdown réécrit entre marqueurs (`a-propos.md`, `index.md`) |
+| `changements.py` | journal « ce qui a changé » (`changements.json`), par différence avec la publication précédente ; repris en flux RSS par `postbuild.mjs` |
 | `fond_de_carte.py` | outil ponctuel : fond de carte des départements, versionné (`departements-geo.json`) |
 
 Règles :
@@ -97,8 +104,9 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
   réponse dépend des données, elle appartient au générateur. Un chapeau peut geler le
   présent sans écrire un seul nombre (« le collectif s'est retourné »).
 - **Les seules exceptions sont GÉNÉRÉES** et ne s'éditent jamais à la main : le tableau des
-  sources d'À propos (`sources_table.py`), les deux affirmations chiffrées de l'accueil —
-  erreur du modèle et horizon de bascule — (`accueil.py`), le chapeau chiffré des 101
+  sources d'À propos (`sources_table.py`), les passages chiffrés de l'accueil — la
+  réponse sous le titre (projection, état du marché, dernier mois publié), l'erreur du
+  modèle et l'horizon de bascule — (`accueil.py`), le chapeau chiffré des 101
   pages départementales et le tableau des départements de la page carte
   (`scripts/postbuild.mjs`, à chaque build). Les marqueurs `hm:*` délimitent ce qui est
   réécrit.
@@ -215,9 +223,22 @@ Détail et mesures : journal 06.
   logo), lue par le `<head>`, `postbuild.mjs` et les tests.
 - **La navigation est groupée par ÉCHELLE** (`SECTIONS` : France entière, Par département,
   Prévision, Outils & méthode), jamais par public — les publics se croisent. Mêmes
-  groupes dans la barre latérale, le pied de page (le menu statique sur téléphone) et le
-  sommaire de l'accueil. Un libellé peut changer, une URL jamais (journal 05). `observablehq.config.js` ne
+  groupes dans la barre latérale et le pied de page (le menu statique sur téléphone). Un
+  libellé peut changer, une URL jamais (journal 05). `observablehq.config.js` ne
   porte que le rendu. Aucune URL d'hébergement en dur : `HM_SITE_URL`, repli sur le domaine.
+- **L'accueil suit les questions du visiteur, pas le plan du site** : la réponse sous le
+  titre (générée), le département, « Ce que vous pouvez faire ici » (des TÂCHES, avec des
+  profils donnés « par exemple », jamais des cases où se ranger), le marché, la preuve,
+  « Revenir » (journal des changements, flux RSS, contact). Pas de catalogue des pages :
+  la barre latérale et le pied de page le portent déjà.
+- **Aucune requête vers un tiers.** La police (Source Sans 3) est servie par le site :
+  `assets/fonts/`, copiée à `/fonts/` par `postbuild.mjs` (la préversion `dev` ne la sert
+  pas et retombe sur la pile système). Ne pas réintroduire Google Fonts ni aucun script
+  tiers : c'est la promesse des mentions légales.
+- **Ce que le site garde dans le navigateur est déclaré dans les mentions légales** : le
+  dernier département consulté (`hm-departement`) et, seulement si la case est cochée, le
+  fichier de « Confronter vos ventes » (`hmCompanySales`). Toute nouvelle clé
+  `localStorage` s'y ajoute, et chaque accès reste dans un `try`.
 - **Les pages n'importent jamais `npm:`** : tout passe par `src/components/hm.js`, qui pose
   aussi la **locale française de d3** (graduations « 1 000 », mois « janv. »). Vignettes :
   `{...TIP}` en option de marque, jamais en CSS. `multiLine` pose sa légende dès deux
