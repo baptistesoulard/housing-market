@@ -223,7 +223,8 @@ Détail et mesures : journal 06.
   logo), lue par le `<head>`, `postbuild.mjs` et les tests.
 - **La navigation est groupée par ÉCHELLE** (`SECTIONS` : France entière, Par département,
   Prévision, Outils & méthode), jamais par public — les publics se croisent. Mêmes
-  groupes dans la barre latérale et le pied de page (le menu statique sur téléphone). Un
+  groupes dans la barre latérale et le pied de page (le menu statique sur téléphone, masqué
+  dès 1008 px, où la barre latérale le porte déjà). Un
   libellé peut changer, une URL jamais (journal 05). `observablehq.config.js` ne
   porte que le rendu. Aucune URL d'hébergement en dur : `HM_SITE_URL`, repli sur le domaine.
 - **L'accueil suit les questions du visiteur, pas le plan du site** : la réponse sous le

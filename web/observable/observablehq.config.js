@@ -420,7 +420,8 @@ ${NAV_ICONS}
    de 2rem collée au bord gauche, marquée d'un glyphe gris à mi-hauteur, sans un mot :
    vérifié à 375 px le 2026-10-03, on ne la trouve pas. Le même interrupteur devient ici un
    bouton « Menu » flottant en bas à gauche, à portée de pouce. Le pied de page porte
-   aussi tous les onglets, en HTML statique : un second chemin qui ne dépend de rien. */
+   aussi tous les onglets, en HTML statique : un second chemin qui ne dépend de rien —
+   affiché seulement sous ce seuil (voir le plan du pied de page, plus bas). */
 @media (max-width: 1007.98px) {
   #observablehq-sidebar-toggle {
     top: auto; bottom: 1rem; left: 0.75rem; height: auto; width: auto; gap: 0.45rem;
@@ -681,6 +682,15 @@ ${NAV_ICONS}
   display: block; border: none; padding: 0.1rem 0; line-height: 1.45; }
 .hm-footer-titre { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--hm-subtle); }
+/* Le plan n'est montré que là où la barre latérale ne l'est pas (2026-10-04). À partir
+   de 1008 px, elle reste affichée à côté de la page et porte les mêmes liens : le plan en
+   faisait une seconde copie sous les yeux. Il reste dans le HTML (masqué, pas retiré) et
+   s'affiche sur téléphone, où il sert de « où aller ensuite » en bas de page. La rangée
+   de boutons dessous (contact, mentions légales, code source) reste partout : ces liens
+   ne sont pas dans la barre latérale. */
+@media (min-width: 1008px) {
+  #observablehq-footer nav.hm-footer-plan { display: none; }
+}
 
 /* --- Accessibilité ------------------------------------------------------------------
    La légende cliquable était un <span onclick>. Elle se voyait comme un contrôle, se
