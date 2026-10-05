@@ -40,1479 +40,1478 @@
         "parquet"
       ]
     ],
-    "transactions_last_month": "2026-07-01",
+    "transactions_last_month": "2026-08-01",
     "model_last_fitted_month": "2026-04-01",
     "macro_last_month": "2026-09-01",
     "forecast_split": "2021-12-01"
   },
   "rate": {
-    "r2": 0.927032432,
-    "rmse": 0.317270901,
-    "lag": 7,
+    "r2": 0.926210351,
+    "rmse": 0.318505521,
+    "lag": 6,
     "coefficients": {
-      "intercept": 1.21661899,
-      "oat": 0.740737729,
-      "marche": 0.740737729
+      "intercept": 1.21268045,
+      "oat": 0.743289801,
+      "marche": 0.743289801
     },
     "projected": [
       {
-        "date": "2026-08-01",
-        "rate": 3.15777787,
-        "modelled": 3.83142318,
-        "source": "2026-01-01"
-      },
-      {
         "date": "2026-09-01",
-        "rate": 3.06148196,
-        "modelled": 3.73512727,
-        "source": "2026-02-01"
-      },
-      {
-        "date": "2026-10-01",
-        "rate": 3.23925902,
-        "modelled": 3.91290433,
+        "rate": 3.37838955,
+        "modelled": 3.91825533,
         "source": "2026-03-01"
       },
       {
-        "date": "2026-11-01",
-        "rate": 3.30592541,
-        "modelled": 3.97957072,
+        "date": "2026-10-01",
+        "rate": 3.44528563,
+        "modelled": 3.98515141,
         "source": "2026-04-01"
       },
       {
-        "date": "2026-12-01",
-        "rate": 3.31333279,
-        "modelled": 3.9869781,
+        "date": "2026-11-01",
+        "rate": 3.45271853,
+        "modelled": 3.99258431,
         "source": "2026-05-01"
       },
       {
-        "date": "2027-01-01",
-        "rate": 3.26888853,
-        "modelled": 3.94253384,
+        "date": "2026-12-01",
+        "rate": 3.40812114,
+        "modelled": 3.94798692,
         "source": "2026-06-01"
       },
       {
-        "date": "2027-02-01",
-        "rate": 3.39481394,
-        "modelled": 4.06845925,
+        "date": "2027-01-01",
+        "rate": 3.53448041,
+        "modelled": 4.07434619,
         "source": "2026-07-01"
+      },
+      {
+        "date": "2027-02-01",
+        "rate": 3.64597388,
+        "modelled": 4.18583966,
+        "source": "2026-08-01"
       }
     ],
     "series": [
       {
         "date": "2003-01-01",
         "observed": 4.8,
-        "modelled": 5.00178879
+        "modelled": 4.89939787
       },
       {
         "date": "2003-02-01",
         "observed": 4.85,
-        "modelled": 4.89067813
+        "modelled": 4.68384382
       },
       {
         "date": "2003-03-01",
         "observed": 4.71,
-        "modelled": 4.67586419
+        "modelled": 4.52775297
       },
       {
         "date": "2003-04-01",
         "observed": 4.59,
-        "modelled": 4.52030927
+        "modelled": 4.59464905
       },
       {
         "date": "2003-05-01",
         "observed": 4.48,
-        "modelled": 4.58697566
+        "modelled": 4.57978325
       },
       {
         "date": "2003-06-01",
         "observed": 4.43,
-        "modelled": 4.57216091
+        "modelled": 4.46828978
       },
       {
         "date": "2003-07-01",
         "observed": 4.24,
-        "modelled": 4.46105025
+        "modelled": 4.34936341
       },
       {
         "date": "2003-08-01",
         "observed": 4.16,
-        "modelled": 4.34253221
+        "modelled": 4.19327256
       },
       {
         "date": "2003-09-01",
         "observed": 4.17,
-        "modelled": 4.18697729
+        "modelled": 4.26016864
       },
       {
         "date": "2003-10-01",
         "observed": 4.21,
-        "modelled": 4.25364368
+        "modelled": 4.34936341
       },
       {
         "date": "2003-11-01",
         "observed": 4.24,
-        "modelled": 4.34253221
+        "modelled": 4.10407778
       },
       {
         "date": "2003-12-01",
         "observed": 4.24,
-        "modelled": 4.09808876
+        "modelled": 3.95541982
       },
       {
         "date": "2004-01-01",
         "observed": 4.26,
-        "modelled": 3.94994121
+        "modelled": 4.19327256
       },
       {
         "date": "2004-02-01",
         "observed": 4.28,
-        "modelled": 4.18697729
+        "modelled": 4.30476603
       },
       {
         "date": "2004-03-01",
         "observed": 4.23,
-        "modelled": 4.29808795
+        "modelled": 4.35679631
       },
       {
         "date": "2004-04-01",
         "observed": 4.21,
-        "modelled": 4.34993959
+        "modelled": 4.3939608
       },
       {
         "date": "2004-05-01",
         "observed": 4.06,
-        "modelled": 4.38697648
+        "modelled": 4.49058848
       },
       {
         "date": "2004-06-01",
         "observed": 4.06,
-        "modelled": 4.48327238
+        "modelled": 4.43855819
       },
       {
         "date": "2004-07-01",
         "observed": 4.07,
-        "modelled": 4.43142074
+        "modelled": 4.33449762
       },
       {
         "date": "2004-08-01",
         "observed": 4.05,
-        "modelled": 4.32771746
+        "modelled": 4.28990023
       },
       {
         "date": "2004-09-01",
         "observed": 4.08,
-        "modelled": 4.28327319
+        "modelled": 4.17097386
       },
       {
         "date": "2004-10-01",
         "observed": 4.06,
-        "modelled": 4.16475516
+        "modelled": 4.31963182
       },
       {
         "date": "2004-11-01",
         "observed": 4.04,
-        "modelled": 4.3129027
+        "modelled": 4.43855819
       },
       {
         "date": "2004-12-01",
         "observed": 3.91,
-        "modelled": 4.43142074
+        "modelled": 4.47572268
       },
       {
         "date": "2005-01-01",
         "observed": 3.92,
-        "modelled": 4.46845763
+        "modelled": 4.3865279
       },
       {
         "date": "2005-02-01",
         "observed": 3.9,
-        "modelled": 4.3795691
+        "modelled": 4.26760154
       },
       {
         "date": "2005-03-01",
         "observed": 3.79,
-        "modelled": 4.26105106
+        "modelled": 4.25273574
       },
       {
         "date": "2005-04-01",
         "observed": 3.77,
-        "modelled": 4.24623631
+        "modelled": 4.17097386
       },
       {
         "date": "2005-05-01",
         "observed": 3.76,
-        "modelled": 4.16475516
+        "modelled": 4.08177909
       },
       {
         "date": "2005-06-01",
         "observed": 3.7,
-        "modelled": 4.07586663
+        "modelled": 3.91825533
       },
       {
         "date": "2005-07-01",
         "observed": 3.65,
-        "modelled": 3.91290433
+        "modelled": 3.87365794
       },
       {
         "date": "2005-08-01",
         "observed": 3.6,
-        "modelled": 3.86846006
+        "modelled": 3.88852374
       },
       {
         "date": "2005-09-01",
         "observed": 3.57,
-        "modelled": 3.88327482
+        "modelled": 4.00001721
       },
       {
         "date": "2005-10-01",
         "observed": 3.51,
-        "modelled": 3.99438548
+        "modelled": 3.84392635
       },
       {
         "date": "2005-11-01",
         "observed": 3.48,
-        "modelled": 3.83883056
+        "modelled": 3.72499998
       },
       {
         "date": "2005-12-01",
         "observed": 3.51,
-        "modelled": 3.72031252
+        "modelled": 3.59120782
       },
       {
         "date": "2006-01-01",
         "observed": 3.52,
-        "modelled": 3.58697973
+        "modelled": 3.6432381
       },
       {
         "date": "2006-02-01",
         "observed": 3.63,
-        "modelled": 3.63883137
+        "modelled": 3.6655368
       },
       {
         "date": "2006-03-01",
         "observed": 3.64,
-        "modelled": 3.6610535
+        "modelled": 3.53917753
       },
       {
         "date": "2006-04-01",
         "observed": 3.65,
-        "modelled": 3.53512809
+        "modelled": 3.6581039
       },
       {
         "date": "2006-05-01",
         "observed": 3.69,
-        "modelled": 3.65364612
+        "modelled": 3.81419476
       },
       {
         "date": "2006-06-01",
         "observed": 3.77,
-        "modelled": 3.80920105
+        "modelled": 3.72499998
       },
       {
         "date": "2006-07-01",
         "observed": 3.82,
-        "modelled": 3.72031252
+        "modelled": 3.69526839
       },
       {
         "date": "2006-08-01",
         "observed": 3.89,
-        "modelled": 3.69068301
+        "modelled": 3.82162765
       },
       {
         "date": "2006-09-01",
         "observed": 3.96,
-        "modelled": 3.81660842
+        "modelled": 3.95541982
       },
       {
         "date": "2006-10-01",
         "observed": 4.01,
-        "modelled": 3.94994121
+        "modelled": 4.14867517
       },
       {
         "date": "2006-11-01",
         "observed": 4.07,
-        "modelled": 4.14253302
+        "modelled": 4.18583966
       },
       {
         "date": "2006-12-01",
         "observed": 4.12,
-        "modelled": 4.17956991
+        "modelled": 4.19327256
       },
       {
         "date": "2007-01-01",
         "observed": 4.11,
-        "modelled": 4.18697729
+        "modelled": 4.20813835
       },
       {
         "date": "2007-02-01",
         "observed": 4.17,
-        "modelled": 4.20179204
+        "modelled": 4.11151068
       },
       {
         "date": "2007-03-01",
         "observed": 4.19,
-        "modelled": 4.10549614
+        "modelled": 4.014883
       },
       {
         "date": "2007-04-01",
         "observed": 4.2,
-        "modelled": 4.00920023
+        "modelled": 4.04461459
       },
       {
         "date": "2007-05-01",
         "observed": 4.23,
-        "modelled": 4.03882974
+        "modelled": 3.99258431
       },
       {
         "date": "2007-06-01",
         "observed": 4.26,
-        "modelled": 3.9869781
+        "modelled": 4.04461459
       },
       {
         "date": "2007-07-01",
         "observed": 4.37,
-        "modelled": 4.03882974
+        "modelled": 4.23786994
       },
       {
         "date": "2007-08-01",
         "observed": 4.51,
-        "modelled": 4.23142155
+        "modelled": 4.26016864
       },
       {
         "date": "2007-09-01",
         "observed": 4.61,
-        "modelled": 4.25364368
+        "modelled": 4.18583966
       },
       {
         "date": "2007-10-01",
         "observed": 4.73,
-        "modelled": 4.17956991
+        "modelled": 4.34193052
       },
       {
         "date": "2007-11-01",
         "observed": 4.81,
-        "modelled": 4.33512483
+        "modelled": 4.43855819
       },
       {
         "date": "2007-12-01",
         "observed": 4.85,
-        "modelled": 4.43142074
+        "modelled": 4.64667933
       },
       {
         "date": "2008-01-01",
         "observed": 4.86,
-        "modelled": 4.6388273
+        "modelled": 4.61694774
       },
       {
         "date": "2008-02-01",
         "observed": 4.9,
-        "modelled": 4.60919779
+        "modelled": 4.47572268
       },
       {
         "date": "2008-03-01",
         "observed": 4.89,
-        "modelled": 4.46845763
+        "modelled": 4.45342399
       },
       {
         "date": "2008-04-01",
         "observed": 4.87,
-        "modelled": 4.44623549
+        "modelled": 4.48315558
       },
       {
         "date": "2008-05-01",
         "observed": 4.86,
-        "modelled": 4.475865
+        "modelled": 4.35679631
       },
       {
         "date": "2008-06-01",
         "observed": 4.88,
-        "modelled": 4.34993959
+        "modelled": 4.44599109
       },
       {
         "date": "2008-07-01",
         "observed": 4.98,
-        "modelled": 4.43882812
+        "modelled": 4.29733313
       },
       {
         "date": "2008-08-01",
         "observed": 5.05,
-        "modelled": 4.29068057
+        "modelled": 4.24530284
       },
       {
         "date": "2008-09-01",
         "observed": 5.18,
-        "modelled": 4.23882893
+        "modelled": 4.20070545
       },
       {
         "date": "2008-10-01",
         "observed": 5.21,
-        "modelled": 4.19438467
+        "modelled": 4.3865279
       },
       {
         "date": "2008-11-01",
         "observed": 5.27,
-        "modelled": 4.3795691
+        "modelled": 4.49058848
       },
       {
         "date": "2008-12-01",
         "observed": 5.34,
-        "modelled": 4.48327238
+        "modelled": 4.72844121
       },
       {
         "date": "2009-01-01",
         "observed": 5.2,
-        "modelled": 4.72030845
+        "modelled": 4.69870962
       },
       {
         "date": "2009-02-01",
         "observed": 4.97,
-        "modelled": 4.69067894
+        "modelled": 4.48315558
       },
       {
         "date": "2009-03-01",
         "observed": 4.78,
-        "modelled": 4.475865
+        "modelled": 4.45342399
       },
       {
         "date": "2009-04-01",
         "observed": 4.59,
-        "modelled": 4.44623549
+        "modelled": 4.31963182
       },
       {
         "date": "2009-05-01",
         "observed": 4.4,
-        "modelled": 4.3129027
+        "modelled": 4.17097386
       },
       {
         "date": "2009-06-01",
         "observed": 4.3,
-        "modelled": 4.16475516
+        "modelled": 3.84392635
       },
       {
         "date": "2009-07-01",
         "observed": 4.19,
-        "modelled": 3.83883056
+        "modelled": 3.88852374
       },
       {
         "date": "2009-08-01",
         "observed": 4.15,
-        "modelled": 3.88327482
+        "modelled": 3.94798692
       },
       {
         "date": "2009-09-01",
         "observed": 4.13,
-        "modelled": 3.94253384
+        "modelled": 3.92568823
       },
       {
         "date": "2009-10-01",
         "observed": 4.07,
-        "modelled": 3.92031171
+        "modelled": 3.93312112
       },
       {
         "date": "2009-11-01",
         "observed": 3.99,
-        "modelled": 3.92771908
+        "modelled": 4.0371817
       },
       {
         "date": "2009-12-01",
         "observed": 3.91,
-        "modelled": 4.03142236
+        "modelled": 4.11151068
       },
       {
         "date": "2010-01-01",
         "observed": 3.89,
-        "modelled": 4.10549614
+        "modelled": 3.98515141
       },
       {
         "date": "2010-02-01",
         "observed": 3.87,
-        "modelled": 3.97957072
+        "modelled": 3.88109084
       },
       {
         "date": "2010-03-01",
         "observed": 3.82,
-        "modelled": 3.87586744
+        "modelled": 3.88109084
       },
       {
         "date": "2010-04-01",
         "observed": 3.74,
-        "modelled": 3.87586744
+        "modelled": 3.85879214
       },
       {
         "date": "2010-05-01",
         "observed": 3.7,
-        "modelled": 3.85364531
+        "modelled": 3.85879214
       },
       {
         "date": "2010-06-01",
         "observed": 3.66,
-        "modelled": 3.85364531
+        "modelled": 3.79932896
       },
       {
         "date": "2010-07-01",
         "observed": 3.62,
-        "modelled": 3.79438629
+        "modelled": 3.82906055
       },
       {
         "date": "2010-08-01",
         "observed": 3.55,
-        "modelled": 3.8240158
+        "modelled": 3.81419476
       },
       {
         "date": "2010-09-01",
         "observed": 3.53,
-        "modelled": 3.80920105
+        "modelled": 3.76959737
       },
       {
         "date": "2010-10-01",
         "observed": 3.46,
-        "modelled": 3.76475678
+        "modelled": 3.73986578
       },
       {
         "date": "2010-11-01",
         "observed": 3.44,
-        "modelled": 3.73512727
+        "modelled": 3.50201304
       },
       {
         "date": "2010-12-01",
         "observed": 3.42,
-        "modelled": 3.4980912
+        "modelled": 3.49458014
       },
       {
         "date": "2011-01-01",
         "observed": 3.46,
-        "modelled": 3.49068382
+        "modelled": 3.43511696
       },
       {
         "date": "2011-02-01",
         "observed": 3.54,
-        "modelled": 3.4314248
+        "modelled": 3.20469712
       },
       {
         "date": "2011-03-01",
         "observed": 3.64,
-        "modelled": 3.20179611
+        "modelled": 3.20469712
       },
       {
         "date": "2011-04-01",
         "observed": 3.7,
-        "modelled": 3.20179611
+        "modelled": 3.23442871
       },
       {
         "date": "2011-05-01",
         "observed": 3.8,
-        "modelled": 3.23142562
+        "modelled": 3.44254986
       },
       {
         "date": "2011-06-01",
         "observed": 3.86,
-        "modelled": 3.43883218
+        "modelled": 3.69526839
       },
       {
         "date": "2011-07-01",
         "observed": 3.89,
-        "modelled": 3.69068301
+        "modelled": 3.76959737
       },
       {
         "date": "2011-08-01",
         "observed": 3.95,
-        "modelled": 3.76475678
+        "modelled": 3.88852374
       },
       {
         "date": "2011-09-01",
         "observed": 3.93,
-        "modelled": 3.88327482
+        "modelled": 3.89595663
       },
       {
         "date": "2011-10-01",
         "observed": 3.93,
-        "modelled": 3.8906822
+        "modelled": 3.95541982
       },
       {
         "date": "2011-11-01",
         "observed": 3.95,
-        "modelled": 3.94994121
+        "modelled": 3.80676186
       },
       {
         "date": "2011-12-01",
         "observed": 3.94,
-        "modelled": 3.80179367
+        "modelled": 3.76216447
       },
       {
         "date": "2012-01-01",
         "observed": 3.98,
-        "modelled": 3.7573494
+        "modelled": 3.73986578
       },
       {
         "date": "2012-02-01",
         "observed": 4.02,
-        "modelled": 3.73512727
+        "modelled": 3.42768406
       },
       {
         "date": "2012-03-01",
         "observed": 4.03,
-        "modelled": 3.42401743
+        "modelled": 3.17496553
       },
       {
         "date": "2012-04-01",
         "observed": 3.95,
-        "modelled": 3.1721666
+        "modelled": 3.43511696
       },
       {
         "date": "2012-05-01",
         "observed": 3.91,
-        "modelled": 3.4314248
+        "modelled": 3.74729867
       },
       {
         "date": "2012-06-01",
         "observed": 3.83,
-        "modelled": 3.74253465
+        "modelled": 3.56147622
       },
       {
         "date": "2012-07-01",
         "observed": 3.74,
-        "modelled": 3.55735022
+        "modelled": 3.57634202
       },
       {
         "date": "2012-08-01",
         "observed": 3.67,
-        "modelled": 3.57216497
+        "modelled": 3.45741565
       },
       {
         "date": "2012-09-01",
         "observed": 3.63,
-        "modelled": 3.45364694
+        "modelled": 3.40538537
       },
       {
         "date": "2012-10-01",
         "observed": 3.54,
-        "modelled": 3.40179529
+        "modelled": 3.43511696
       },
       {
         "date": "2012-11-01",
         "observed": 3.46,
-        "modelled": 3.4314248
+        "modelled": 3.25672741
       },
       {
         "date": "2012-12-01",
         "observed": 3.4,
-        "modelled": 3.25364775
+        "modelled": 3.12293524
       },
       {
         "date": "2013-01-01",
         "observed": 3.33,
-        "modelled": 3.12031496
+        "modelled": 2.9073812
       },
       {
         "date": "2013-02-01",
         "observed": 3.32,
-        "modelled": 2.90550102
+        "modelled": 2.78845483
       },
       {
         "date": "2013-03-01",
         "observed": 3.27,
-        "modelled": 2.78698298
+        "modelled": 2.87764961
       },
       {
         "date": "2013-04-01",
         "observed": 3.23,
-        "modelled": 2.87587151
+        "modelled": 2.84048512
       },
       {
         "date": "2013-05-01",
         "observed": 3.19,
-        "modelled": 2.83883462
+        "modelled": 2.80332063
       },
       {
         "date": "2013-06-01",
         "observed": 3.12,
-        "modelled": 2.80179773
+        "modelled": 2.70669295
       },
       {
         "date": "2013-07-01",
         "observed": 3.09,
-        "modelled": 2.70550183
+        "modelled": 2.82561932
       },
       {
         "date": "2013-08-01",
         "observed": 3.08,
-        "modelled": 2.82401987
+        "modelled": 2.87764961
       },
       {
         "date": "2013-09-01",
         "observed": 3.11,
-        "modelled": 2.87587151
+        "modelled": 2.75129034
       },
       {
         "date": "2013-10-01",
         "observed": 3.1,
-        "modelled": 2.74994609
+        "modelled": 2.5506021
       },
       {
         "date": "2013-11-01",
         "observed": 3.17,
-        "modelled": 2.54994691
+        "modelled": 2.60263238
       },
       {
         "date": "2013-12-01",
         "observed": 3.17,
-        "modelled": 2.60179855
+        "modelled": 2.85535091
       },
       {
         "date": "2014-01-01",
         "observed": 3.2,
-        "modelled": 2.85364937
+        "modelled": 2.88508251
       },
       {
         "date": "2014-02-01",
         "observed": 3.19,
-        "modelled": 2.88327888
+        "modelled": 2.96684438
       },
       {
         "date": "2014-03-01",
         "observed": 3.17,
-        "modelled": 2.96476003
+        "modelled": 3.06347206
       },
       {
         "date": "2014-04-01",
         "observed": 3.14,
-        "modelled": 3.06105594
+        "modelled": 2.98914308
       },
       {
         "date": "2014-05-01",
         "observed": 3.08,
-        "modelled": 2.98698217
+        "modelled": 2.8999483
       },
       {
         "date": "2014-06-01",
         "observed": 3.02,
-        "modelled": 2.89809364
+        "modelled": 2.94454569
       },
       {
         "date": "2014-07-01",
         "observed": 2.94,
-        "modelled": 2.9425379
+        "modelled": 2.98171018
       },
       {
         "date": "2014-08-01",
         "observed": 2.87,
-        "modelled": 2.97957479
+        "modelled": 2.88508251
       },
       {
         "date": "2014-09-01",
         "observed": 2.82,
-        "modelled": 2.88327888
+        "modelled": 2.81075353
       },
       {
         "date": "2014-10-01",
         "observed": 2.74,
-        "modelled": 2.80920511
+        "modelled": 2.72155875
       },
       {
         "date": "2014-11-01",
         "observed": 2.67,
-        "modelled": 2.72031658
+        "modelled": 2.58033369
       },
       {
         "date": "2014-12-01",
         "observed": 2.6,
-        "modelled": 2.57957642
+        "modelled": 2.48370601
       },
       {
         "date": "2015-01-01",
         "observed": 2.55,
-        "modelled": 2.48328051
+        "modelled": 2.37221254
       },
       {
         "date": "2015-02-01",
         "observed": 2.51,
-        "modelled": 2.37216985
+        "modelled": 2.26071907
       },
       {
         "date": "2015-03-01",
         "observed": 2.42,
-        "modelled": 2.26105919
+        "modelled": 2.21612168
       },
       {
         "date": "2015-04-01",
         "observed": 2.31,
-        "modelled": 2.21661493
+        "modelled": 2.1492256
       },
       {
         "date": "2015-05-01",
         "observed": 2.25,
-        "modelled": 2.14994853
+        "modelled": 2.06003083
       },
       {
         "date": "2015-06-01",
         "observed": 2.17,
-        "modelled": 2.06106
+        "modelled": 1.89650707
       },
       {
         "date": "2015-07-01",
         "observed": 2.15,
-        "modelled": 1.8980977
+        "modelled": 1.71068462
       },
       {
         "date": "2015-08-01",
         "observed": 2.18,
-        "modelled": 1.71291327
+        "modelled": 1.65865433
       },
       {
         "date": "2015-09-01",
         "observed": 2.21,
-        "modelled": 1.66106163
+        "modelled": 1.59175825
       },
       {
         "date": "2015-10-01",
         "observed": 2.25,
-        "modelled": 1.59439523
+        "modelled": 1.53972797
       },
       {
         "date": "2015-11-01",
         "observed": 2.35,
-        "modelled": 1.54254359
+        "modelled": 1.87420838
       },
       {
         "date": "2015-12-01",
         "observed": 2.32,
-        "modelled": 1.87587557
+        "modelled": 2.10462821
       },
       {
         "date": "2016-01-01",
         "observed": 2.31,
-        "modelled": 2.10550427
+        "modelled": 2.03773213
       },
       {
         "date": "2016-02-01",
         "observed": 2.26,
-        "modelled": 2.03883787
+        "modelled": 1.96340315
       },
       {
         "date": "2016-03-01",
         "observed": 2.18,
-        "modelled": 1.9647641
+        "modelled": 1.95597025
       },
       {
         "date": "2016-04-01",
         "observed": 2.09,
-        "modelled": 1.95735672
+        "modelled": 1.85934258
       },
       {
         "date": "2016-05-01",
         "observed": 1.97,
-        "modelled": 1.86106082
+        "modelled": 1.86677548
       },
       {
         "date": "2016-06-01",
         "observed": 1.85,
-        "modelled": 1.86846819
+        "modelled": 1.90393997
       },
       {
         "date": "2016-07-01",
         "observed": 1.77,
-        "modelled": 1.90550508
+        "modelled": 1.83704389
       },
       {
         "date": "2016-08-01",
         "observed": 1.72,
-        "modelled": 1.83883869
+        "modelled": 1.65122144
       },
       {
         "date": "2016-09-01",
         "observed": 1.68,
-        "modelled": 1.65365425
+        "modelled": 1.59175825
       },
       {
         "date": "2016-10-01",
         "observed": 1.6,
-        "modelled": 1.59439523
+        "modelled": 1.59175825
       },
       {
         "date": "2016-11-01",
         "observed": 1.56,
-        "modelled": 1.59439523
+        "modelled": 1.59175825
       },
       {
         "date": "2016-12-01",
         "observed": 1.5,
-        "modelled": 1.59439523
+        "modelled": 1.50256348
       },
       {
         "date": "2017-01-01",
         "observed": 1.5,
-        "modelled": 1.50550671
+        "modelled": 1.33903972
       },
       {
         "date": "2017-02-01",
         "observed": 1.54,
-        "modelled": 1.34254441
+        "modelled": 1.32417392
       },
       {
         "date": "2017-03-01",
         "observed": 1.54,
-        "modelled": 1.32772965
+        "modelled": 1.34647262
       },
       {
         "date": "2017-04-01",
         "observed": 1.57,
-        "modelled": 1.34995178
+        "modelled": 1.45796609
       },
       {
         "date": "2017-05-01",
         "observed": 1.59,
-        "modelled": 1.46106244
+        "modelled": 1.71068462
       },
       {
         "date": "2017-06-01",
         "observed": 1.61,
-        "modelled": 1.71291327
+        "modelled": 1.7701478
       },
       {
         "date": "2017-07-01",
         "observed": 1.62,
-        "modelled": 1.77217229
+        "modelled": 1.85190968
       },
       {
         "date": "2017-08-01",
         "observed": 1.65,
-        "modelled": 1.85365344
+        "modelled": 1.97826895
       },
       {
         "date": "2017-09-01",
         "observed": 1.65,
-        "modelled": 1.97957885
+        "modelled": 1.97083605
       },
       {
         "date": "2017-10-01",
         "observed": 1.66,
-        "modelled": 1.97217148
+        "modelled": 1.86677548
       },
       {
         "date": "2017-11-01",
         "observed": 1.64,
-        "modelled": 1.86846819
+        "modelled": 1.81474519
       },
       {
         "date": "2017-12-01",
         "observed": 1.6,
-        "modelled": 1.81661655
+        "modelled": 1.70325172
       },
       {
         "date": "2018-01-01",
         "observed": 1.61,
-        "modelled": 1.70550589
+        "modelled": 1.83704389
       },
       {
         "date": "2018-02-01",
         "observed": 1.61,
-        "modelled": 1.83883869
+        "modelled": 1.74041621
       },
       {
         "date": "2018-03-01",
         "observed": 1.58,
-        "modelled": 1.74254278
+        "modelled": 1.73298331
       },
       {
         "date": "2018-04-01",
         "observed": 1.57,
-        "modelled": 1.7351354
+        "modelled": 1.81474519
       },
       {
         "date": "2018-05-01",
         "observed": 1.57,
-        "modelled": 1.81661655
+        "modelled": 1.74784911
       },
       {
         "date": "2018-06-01",
         "observed": 1.55,
-        "modelled": 1.74995016
+        "modelled": 1.71068462
       },
       {
         "date": "2018-07-01",
         "observed": 1.54,
-        "modelled": 1.71291327
+        "modelled": 1.84447678
       },
       {
         "date": "2018-08-01",
         "observed": 1.53,
-        "modelled": 1.84624606
+        "modelled": 1.94110446
       },
       {
         "date": "2018-09-01",
         "observed": 1.51,
-        "modelled": 1.94254197
+        "modelled": 1.82961099
       },
       {
         "date": "2018-10-01",
         "observed": 1.51,
-        "modelled": 1.83143131
+        "modelled": 1.7924465
       },
       {
         "date": "2018-11-01",
         "observed": 1.5,
-        "modelled": 1.79439442
+        "modelled": 1.7998794
       },
       {
         "date": "2018-12-01",
         "observed": 1.48,
-        "modelled": 1.8018018
+        "modelled": 1.7701478
       },
       {
         "date": "2019-01-01",
         "observed": 1.5,
-        "modelled": 1.77217229
+        "modelled": 1.71068462
       },
       {
         "date": "2019-02-01",
         "observed": 1.51,
-        "modelled": 1.71291327
+        "modelled": 1.73298331
       },
       {
         "date": "2019-03-01",
         "observed": 1.5,
-        "modelled": 1.7351354
+        "modelled": 1.7850136
       },
       {
         "date": "2019-04-01",
         "observed": 1.49,
-        "modelled": 1.78698704
+        "modelled": 1.82217809
       },
       {
         "date": "2019-05-01",
         "observed": 1.44,
-        "modelled": 1.82402393
+        "modelled": 1.7775807
       },
       {
         "date": "2019-06-01",
         "observed": 1.39,
-        "modelled": 1.77957967
+        "modelled": 1.73298331
       },
       {
         "date": "2019-07-01",
         "observed": 1.34,
-        "modelled": 1.7351354
+        "modelled": 1.69581882
       },
       {
         "date": "2019-08-01",
         "observed": 1.31,
-        "modelled": 1.69809852
+        "modelled": 1.62148984
       },
       {
         "date": "2019-09-01",
         "observed": 1.27,
-        "modelled": 1.62402474
+        "modelled": 1.53972797
       },
       {
         "date": "2019-10-01",
         "observed": 1.23,
-        "modelled": 1.54254359
+        "modelled": 1.48769768
       },
       {
         "date": "2019-11-01",
         "observed": 1.2,
-        "modelled": 1.49069195
+        "modelled": 1.43566739
       },
       {
         "date": "2019-12-01",
         "observed": 1.17,
-        "modelled": 1.43884031
+        "modelled": 1.27214364
       },
       {
         "date": "2020-01-01",
         "observed": 1.17,
-        "modelled": 1.27587801
+        "modelled": 1.16065017
       },
       {
         "date": "2020-02-01",
         "observed": 1.19,
-        "modelled": 1.16476735
+        "modelled": 0.959961921
       },
       {
         "date": "2020-03-01",
         "observed": 1.19,
-        "modelled": 0.964768165
+        "modelled": 1.01199221
       },
       {
         "date": "2020-04-01",
         "observed": 1.36,
-        "modelled": 1.01661981
+        "modelled": 1.09375409
       },
       {
         "date": "2020-05-01",
         "observed": 1.26,
-        "modelled": 1.09810096
+        "modelled": 1.19781466
       },
       {
         "date": "2020-06-01",
         "observed": 1.26,
-        "modelled": 1.20180424
+        "modelled": 1.24241205
       },
       {
         "date": "2020-07-01",
         "observed": 1.29,
-        "modelled": 1.2462485
+        "modelled": 1.20524756
       },
       {
         "date": "2020-08-01",
         "observed": 1.31,
-        "modelled": 1.20921162
+        "modelled": 1.07888829
       },
       {
         "date": "2020-09-01",
         "observed": 1.3,
-        "modelled": 1.0832862
+        "modelled": 1.17551596
       },
       {
         "date": "2020-10-01",
         "observed": 1.28,
-        "modelled": 1.17958211
+        "modelled": 1.25727784
       },
       {
         "date": "2020-11-01",
         "observed": 1.27,
-        "modelled": 1.26106326
+        "modelled": 1.19038176
       },
       {
         "date": "2020-12-01",
         "observed": 1.24,
-        "modelled": 1.19439686
+        "modelled": 1.18294886
       },
       {
         "date": "2021-01-01",
         "observed": 1.24,
-        "modelled": 1.18698948
+        "modelled": 1.10118698
       },
       {
         "date": "2021-02-01",
         "observed": 1.21,
-        "modelled": 1.10550833
+        "modelled": 1.08632119
       },
       {
         "date": "2021-03-01",
         "observed": 1.18,
-        "modelled": 1.09069358
+        "modelled": 1.0565896
       },
       {
         "date": "2021-04-01",
         "observed": 1.15,
-        "modelled": 1.06106407
+        "modelled": 0.989693513
       },
       {
         "date": "2021-05-01",
         "observed": 1.14,
-        "modelled": 0.994397674
+        "modelled": 0.974827717
       },
       {
         "date": "2021-06-01",
         "observed": 1.12,
-        "modelled": 0.979582919
+        "modelled": 0.959961921
       },
       {
         "date": "2021-07-01",
         "observed": 1.12,
-        "modelled": 0.964768165
+        "modelled": 0.982260615
       },
       {
         "date": "2021-08-01",
         "observed": 1.12,
-        "modelled": 0.986990297
+        "modelled": 1.10118698
       },
       {
         "date": "2021-09-01",
         "observed": 1.13,
-        "modelled": 1.10550833
+        "modelled": 1.16065017
       },
       {
         "date": "2021-10-01",
         "observed": 1.13,
-        "modelled": 1.16476735
+        "modelled": 1.20524756
       },
       {
         "date": "2021-11-01",
         "observed": 1.12,
-        "modelled": 1.20921162
+        "modelled": 1.36877131
       },
       {
         "date": "2021-12-01",
         "observed": 1.1,
-        "modelled": 1.37217392
+        "modelled": 1.32417392
       },
       {
         "date": "2022-01-01",
         "observed": 1.12,
-        "modelled": 1.32772965
+        "modelled": 1.20524756
       },
       {
         "date": "2022-02-01",
         "observed": 1.13,
-        "modelled": 1.20921162
+        "modelled": 1.12348568
       },
       {
         "date": "2022-03-01",
         "observed": 1.14,
-        "modelled": 1.12773047
+        "modelled": 1.24241205
       },
       {
         "date": "2022-04-01",
         "observed": 1.19,
-        "modelled": 1.2462485
+        "modelled": 1.36133841
       },
       {
         "date": "2022-05-01",
         "observed": 1.26,
-        "modelled": 1.36476654
+        "modelled": 1.28700943
       },
       {
         "date": "2022-06-01",
         "observed": 1.35,
-        "modelled": 1.29069277
+        "modelled": 1.24984494
       },
       {
         "date": "2022-07-01",
         "observed": 1.45,
-        "modelled": 1.25365588
+        "modelled": 1.44310029
       },
       {
         "date": "2022-08-01",
         "observed": 1.58,
-        "modelled": 1.44624769
+        "modelled": 1.71811752
       },
       {
         "date": "2022-09-01",
         "observed": 1.68,
-        "modelled": 1.72032065
+        "modelled": 1.7924465
       },
       {
         "date": "2022-10-01",
         "observed": 1.77,
-        "modelled": 1.79439442
+        "modelled": 2.1640914
       },
       {
         "date": "2022-11-01",
         "observed": 1.91,
-        "modelled": 2.16476329
+        "modelled": 2.34248095
       },
       {
         "date": "2022-12-01",
         "observed": 2.05,
-        "modelled": 2.34254034
+        "modelled": 2.74385744
       },
       {
         "date": "2023-01-01",
         "observed": 2.2,
-        "modelled": 2.74253872
+        "modelled": 2.48370601
       },
       {
         "date": "2023-02-01",
         "observed": 2.35,
-        "modelled": 2.48328051
+        "modelled": 2.46884022
       },
       {
         "date": "2023-03-01",
         "observed": 2.54,
-        "modelled": 2.46846576
+        "modelled": 3.00400887
       },
       {
         "date": "2023-04-01",
         "observed": 2.71,
-        "modelled": 3.00179692
+        "modelled": 3.2715932
       },
       {
         "date": "2023-05-01",
         "observed": 2.88,
-        "modelled": 3.2684625
+        "modelled": 3.13036814
       },
       {
         "date": "2023-06-01",
         "observed": 3.04,
-        "modelled": 3.12772233
+        "modelled": 3.16009973
       },
       {
         "date": "2023-07-01",
         "observed": 3.16,
-        "modelled": 3.15735184
+        "modelled": 3.21213002
       },
       {
         "date": "2023-08-01",
         "observed": 3.31,
-        "modelled": 3.20920349
+        "modelled": 3.34592218
       },
       {
         "date": "2023-09-01",
         "observed": 3.36,
-        "modelled": 3.34253628
+        "modelled": 3.38308667
       },
       {
         "date": "2023-10-01",
         "observed": 3.43,
-        "modelled": 3.37957316
+        "modelled": 3.36822088
       },
       {
         "date": "2023-11-01",
         "observed": 3.52,
-        "modelled": 3.36475841
+        "modelled": 3.39795247
       },
       {
         "date": "2023-12-01",
         "observed": 3.6,
-        "modelled": 3.39438792
+        "modelled": 3.39051957
       },
       {
         "date": "2024-01-01",
         "observed": 3.59,
-        "modelled": 3.38698054
+        "modelled": 3.47228145
       },
       {
         "date": "2024-02-01",
         "observed": 3.51,
-        "modelled": 3.46846169
+        "modelled": 3.52431173
       },
       {
         "date": "2024-03-01",
         "observed": 3.5,
-        "modelled": 3.52031333
+        "modelled": 3.62093941
       },
       {
         "date": "2024-04-01",
         "observed": 3.49,
-        "modelled": 3.61660924
+        "modelled": 3.77703027
       },
       {
         "date": "2024-05-01",
         "observed": 3.48,
-        "modelled": 3.77216416
+        "modelled": 3.58377492
       },
       {
         "date": "2024-06-01",
         "observed": 3.43,
-        "modelled": 3.57957235
+        "modelled": 3.18239843
       },
       {
         "date": "2024-07-01",
         "observed": 3.4,
-        "modelled": 3.17957398
+        "modelled": 3.24929451
       },
       {
         "date": "2024-08-01",
         "observed": 3.37,
-        "modelled": 3.24624037
+        "modelled": 3.33105639
       },
       {
         "date": "2024-09-01",
         "observed": 3.33,
-        "modelled": 3.32772152
+        "modelled": 3.30875769
       },
       {
         "date": "2024-10-01",
         "observed": 3.27,
-        "modelled": 3.30549939
+        "modelled": 3.42025116
       },
       {
         "date": "2024-11-01",
         "observed": 3.17,
-        "modelled": 3.41661005
+        "modelled": 3.46484855
       },
       {
         "date": "2024-12-01",
         "observed": 3.14,
-        "modelled": 3.46105431
+        "modelled": 3.55404333
       },
       {
         "date": "2025-01-01",
         "observed": 3.11,
-        "modelled": 3.54994284
+        "modelled": 3.54661043
       },
       {
         "date": "2025-02-01",
         "observed": 3.01,
-        "modelled": 3.54253546
+        "modelled": 3.39795247
       },
       {
         "date": "2025-03-01",
         "observed": 3.05,
-        "modelled": 3.39438792
+        "modelled": 3.36822088
       },
       {
         "date": "2025-04-01",
         "observed": 3.03,
-        "modelled": 3.36475841
+        "modelled": 3.43511696
       },
       {
         "date": "2025-05-01",
         "observed": 3.02,
-        "modelled": 3.4314248
+        "modelled": 3.50944594
       },
       {
         "date": "2025-06-01",
         "observed": 3.01,
-        "modelled": 3.50549858
+        "modelled": 3.44998275
       },
       {
         "date": "2025-07-01",
         "observed": 3.01,
-        "modelled": 3.44623956
+        "modelled": 3.68040259
       },
       {
         "date": "2025-08-01",
         "observed": 3.01,
-        "modelled": 3.67586825
+        "modelled": 3.55404333
       },
       {
         "date": "2025-09-01",
         "observed": 2.99,
-        "modelled": 3.54994284
+        "modelled": 3.76216447
       },
       {
         "date": "2025-10-01",
         "observed": 2.99,
-        "modelled": 3.7573494
+        "modelled": 3.6358052
       },
       {
         "date": "2025-11-01",
         "observed": 3.0,
-        "modelled": 3.63142399
+        "modelled": 3.6358052
       },
       {
         "date": "2025-12-01",
         "observed": 2.99,
-        "modelled": 3.63142399
+        "modelled": 3.62093941
       },
       {
         "date": "2026-01-01",
         "observed": 3.05,
-        "modelled": 3.61660924
+        "modelled": 3.71013418
       },
       {
         "date": "2026-02-01",
         "observed": 3.1,
-        "modelled": 3.70549776
+        "modelled": 3.75473157
       },
       {
         "date": "2026-03-01",
         "observed": 3.1,
-        "modelled": 3.74994203
+        "modelled": 3.82162765
       },
       {
         "date": "2026-04-01",
         "observed": 3.11,
-        "modelled": 3.81660842
+        "modelled": 3.76959737
       },
       {
         "date": "2026-05-01",
         "observed": 3.1,
-        "modelled": 3.76475678
+        "modelled": 3.76959737
       },
       {
         "date": "2026-06-01",
         "observed": 3.16,
-        "modelled": 3.76475678
+        "modelled": 3.85879214
       },
       {
         "date": "2026-07-01",
         "observed": 3.18,
-        "modelled": 3.85364531
+        "modelled": 3.83649345
+      },
+      {
+        "date": "2026-08-01",
+        "observed": 3.2,
+        "modelled": 3.73986578
       }
     ]
   },
@@ -4262,15 +4261,15 @@
       {
         "label": "taux de crédit",
         "lag": 10,
-        "last_observed": "2026-07-01",
+        "last_observed": "2026-08-01",
         "observed_months": 10,
-        "held_value": 3.18
+        "held_value": 3.2
       },
       {
         "label": "intentions d'achat",
         "lag": 2,
         "last_observed": "2026-09-01",
-        "observed_months": 4,
+        "observed_months": 3,
         "held_value": -82.0
       },
       {
@@ -4282,134 +4281,134 @@
       }
     ],
     "sigma": 55081.2485,
-    "last_observed": 956000.0,
-    "end_value": 894883.912,
-    "end_change_pct": -6.39289628,
+    "last_observed": 951000.0,
+    "end_value": 893051.157,
+    "end_change_pct": -6.09346408,
     "series": [
       {
-        "date": "2026-08-01",
-        "predicted": 936794.602,
-        "lo": 885678.602,
-        "hi": 972433.802,
-        "assured": false
-      },
-      {
         "date": "2026-09-01",
-        "predicted": 920117.902,
-        "lo": 858188.402,
-        "hi": 964998.902,
+        "predicted": 922840.071,
+        "lo": 871724.071,
+        "hi": 958479.271,
         "assured": false
       },
       {
         "date": "2026-10-01",
-        "predicted": 905273.958,
-        "lo": 839672.358,
-        "hi": 955515.958,
+        "predicted": 907996.126,
+        "lo": 846066.626,
+        "hi": 952877.126,
         "assured": false
       },
       {
         "date": "2026-11-01",
-        "predicted": 923129.831,
-        "lo": 854551.331,
-        "hi": 974400.831,
+        "predicted": 925851.999,
+        "lo": 860250.399,
+        "hi": 976093.999,
         "assured": false
       },
       {
         "date": "2026-12-01",
+        "predicted": 918547.943,
+        "lo": 849969.443,
+        "hi": 969818.943,
+        "assured": false
+      },
+      {
+        "date": "2027-01-01",
         "predicted": 915825.775,
         "lo": 837281.775,
         "hi": 971165.575,
         "assured": false
       },
       {
-        "date": "2027-01-01",
-        "predicted": 913103.606,
-        "lo": 828588.306,
-        "hi": 975783.506,
-        "assured": false
-      },
-      {
         "date": "2027-02-01",
-        "predicted": 909465.06,
-        "lo": 823328.46,
-        "hi": 979572.26,
+        "predicted": 912187.229,
+        "lo": 827671.929,
+        "hi": 974867.129,
         "assured": false
       },
       {
         "date": "2027-03-01",
-        "predicted": 907659.269,
-        "lo": 824425.369,
-        "hi": 984719.769,
+        "predicted": 910381.437,
+        "lo": 824244.837,
+        "hi": 980488.637,
         "assured": false
       },
       {
         "date": "2027-04-01",
-        "predicted": 899438.835,
-        "lo": 817085.835,
-        "hi": 983382.835,
+        "predicted": 902161.004,
+        "lo": 818927.104,
+        "hi": 979221.504,
         "assured": false
       },
       {
         "date": "2027-05-01",
-        "predicted": 894883.912,
-        "lo": 810171.812,
-        "hi": 978705.812,
+        "predicted": 897606.08,
+        "lo": 815253.08,
+        "hi": 981550.08,
         "assured": false
       },
       {
         "date": "2027-06-01",
-        "predicted": 894883.912,
-        "lo": 805892.312,
-        "hi": 971544.512,
+        "predicted": 893051.157,
+        "lo": 808339.057,
+        "hi": 976873.057,
         "assured": false
       },
       {
         "date": "2027-07-01",
-        "predicted": 894883.912,
-        "lo": 806603.612,
-        "hi": 972124.512,
+        "predicted": 893051.157,
+        "lo": 804059.557,
+        "hi": 969711.757,
         "assured": false
       },
       {
         "date": "2027-08-01",
-        "predicted": 894883.912,
-        "lo": 799124.512,
-        "hi": 976731.112,
+        "predicted": 893051.157,
+        "lo": 804770.857,
+        "hi": 970291.757,
         "assured": false
       },
       {
         "date": "2027-09-01",
-        "predicted": 894883.912,
-        "lo": 793204.412,
-        "hi": 986963.412,
+        "predicted": 893051.157,
+        "lo": 797291.757,
+        "hi": 974898.357,
         "assured": false
       },
       {
         "date": "2027-10-01",
-        "predicted": 894883.912,
-        "lo": 788632.912,
-        "hi": 993014.312,
+        "predicted": 893051.157,
+        "lo": 791371.657,
+        "hi": 985130.657,
         "assured": false
       },
       {
         "date": "2027-11-01",
-        "predicted": 894883.912,
-        "lo": 784296.912,
-        "hi": 993462.312,
+        "predicted": 893051.157,
+        "lo": 786800.157,
+        "hi": 991181.557,
         "assured": false
       },
       {
         "date": "2027-12-01",
-        "predicted": 894883.912,
-        "lo": 782645.112,
-        "hi": 996123.912,
+        "predicted": 893051.157,
+        "lo": 782464.157,
+        "hi": 991629.557,
         "assured": false
       },
       {
         "date": "2028-01-01",
-        "predicted": 894883.912,
-        "lo": 776960.712,
-        "hi": 1004820.41,
+        "predicted": 893051.157,
+        "lo": 780812.357,
+        "hi": 994291.157,
+        "assured": false
+      },
+      {
+        "date": "2028-02-01",
+        "predicted": 893051.157,
+        "lo": 775127.957,
+        "hi": 1002987.66,
         "assured": false
       }
     ]
@@ -5606,6 +5605,10 @@
         {
           "date": "2026-07-01",
           "value": 3.18
+        },
+        {
+          "date": "2026-08-01",
+          "value": 3.2
         }
       ],
       "transactions_series": [
@@ -9115,43 +9118,43 @@
         },
         {
           "lag": 3,
-          "r2": 0.910975003
+          "r2": 0.910964429
         },
         {
           "lag": 4,
-          "r2": 0.908665331
+          "r2": 0.908536461
         },
         {
           "lag": 5,
-          "r2": 0.906376461
+          "r2": 0.90628339
         },
         {
           "lag": 6,
-          "r2": 0.90467052
+          "r2": 0.904610452
         },
         {
           "lag": 7,
-          "r2": 0.90328871
+          "r2": 0.903258791
         },
         {
           "lag": 8,
-          "r2": 0.901843724
+          "r2": 0.901840131
         },
         {
           "lag": 9,
-          "r2": 0.899905098
+          "r2": 0.899923795
         },
         {
           "lag": 10,
-          "r2": 0.89751076
+          "r2": 0.897548202
         },
         {
           "lag": 11,
-          "r2": 0.895318882
+          "r2": 0.895372514
         },
         {
           "lag": 12,
-          "r2": 0.893572678
+          "r2": 0.893640392
         }
       ],
       "predictor_series": [
@@ -10650,33 +10653,33 @@
   },
   "scenario_baseline": {
     "oat": 4.0,
-    "euribor": 2.5131429,
-    "rate_now": 3.18,
+    "euribor": 2.6350455,
+    "rate_now": 3.2,
     "intentions": -82.0,
     "intentions_mean": -83.1456311,
     "intentions_std": 2.63495891,
     "intentions_z": 0.434781379,
     "unemployment": 8.3,
-    "tx_now": 956000.0
+    "tx_now": 951000.0
   },
   "verdict": {
-    "horizon": 9,
+    "horizon": 8,
     "months_ahead": 6,
     "target_month": "avril 2027",
     "target_date": "2027-04-01",
     "direction": "baisse",
-    "change_pct": -5.9,
-    "from_value": 956000,
-    "predicted": 899439,
-    "lo": 817086,
-    "hi": 983383,
-    "sentence": "D'ici avril 2027, dans six mois, le marché des logements anciens devrait reculer d'environ 6 %, en passant de 956 000 à 899 000 ventes sur douze mois.",
+    "change_pct": -5.1,
+    "from_value": 951000,
+    "predicted": 902161,
+    "lo": 818927,
+    "hi": 979222,
+    "sentence": "D'ici avril 2027, dans six mois, le marché des logements anciens devrait reculer d'environ 5 %, en passant de 951 000 à 902 000 ventes sur douze mois.",
     "reliability": {
-      "horizon": 9,
-      "direction": 0.748,
-      "mape": 6.29,
-      "naive_mape": 8.28,
-      "n": 202
+      "horizon": 8,
+      "direction": 0.75,
+      "mape": 6.14,
+      "naive_mape": 7.5,
+      "n": 204
     }
   },
   "benchmark": {
@@ -10688,33 +10691,33 @@
     "releve_le": "2026-01-01",
     "note": "Prévision annuelle publiée par la FNAIM. Son chiffre est un TOTAL d'année ; le nôtre un cumul sur douze mois glissants — les deux ne coïncident qu'en décembre. Les périmètres diffèrent aussi d'environ 0,6 % : à fin février 2026, les Notaires comptaient 958 000 ventes là où notre série IGEDD en voit 952 000 en mars.",
     "date": "2026-12-01",
-    "notre_prevision": 915826,
+    "notre_prevision": 918548,
     "dans_la_fourchette": true,
-    "ecart_au_milieu_pct": 0.6
+    "ecart_au_milieu_pct": 0.9
   },
   "horizon_blocks": [
     {
       "bloc": "1-3",
       "mape": 3.93,
-      "naive_mape": 2.24,
-      "skill_pct": -75.9
+      "naive_mape": 2.23,
+      "skill_pct": -76.1
     },
     {
       "bloc": "4-6",
-      "mape": 5.34,
-      "naive_mape": 5.05,
-      "skill_pct": -5.7
+      "mape": 5.33,
+      "naive_mape": 5.02,
+      "skill_pct": -6.0
     },
     {
       "bloc": "7-12",
-      "mape": 6.24,
-      "naive_mape": 8.57,
-      "skill_pct": 27.3
+      "mape": 6.22,
+      "naive_mape": 8.54,
+      "skill_pct": 27.2
     },
     {
       "bloc": "13-18",
-      "mape": 7.1,
-      "naive_mape": 11.89,
+      "mape": 7.09,
+      "naive_mape": 11.86,
       "skill_pct": 40.3
     }
   ],
@@ -10722,16 +10725,16 @@
   "regime": {
     "kind": "inter",
     "label": "taux en mouvement modéré",
-    "mouvement_pt": 0.17,
-    "percentile": 34,
+    "mouvement_pt": 0.19,
+    "percentile": 36,
     "fenetre_mois": 12,
-    "n": 1197,
-    "mape": 5.49,
-    "naive_mape": 6.37,
-    "skill_pct": 13.8,
-    "direction": 0.688,
-    "direction_horizon": 0.71,
-    "horizon": 9
+    "n": 1206,
+    "mape": 5.48,
+    "naive_mape": 6.36,
+    "skill_pct": 13.9,
+    "direction": 0.687,
+    "direction_horizon": 0.667,
+    "horizon": 8
   },
   "refutations": [
     {

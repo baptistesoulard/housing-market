@@ -44,8 +44,8 @@ const data = await FileAttachment("./data/synthese.json").json();
 -->
 <!-- hm:reponse:début — régénéré par web/export/accueil.py -->
 <div class="hm-reponse">
-<p><strong>Les ventes de logements anciens devraient reculer d'environ 6 % d'ici avril 2027</strong>, dans six mois : de 956 000 à 899 000 ventes sur douze mois, selon le modèle du site. Aujourd'hui, les ventes de logements anciens plafonnent depuis 7 mois, les permis de construire reculent et le crédit renchérit (3,18 %, +0,2 pt sur un an).</p>
-<p class="hm-reponse-maj">Dernier mois publié par les sources : juillet 2026. Elles paraissent avec quelques mois de décalage ; le site les relit chaque lundi.</p>
+<p><strong>Les ventes de logements anciens devraient reculer d'environ 5 % d'ici avril 2027</strong>, dans six mois : de 951 000 à 902 000 ventes sur douze mois, selon le modèle du site. Aujourd'hui, les ventes de logements anciens plafonnent depuis 9 mois, les permis de construire reculent et le crédit renchérit (3,20 %, +0,2 pt sur un an).</p>
+<p class="hm-reponse-maj">Dernier mois publié par les sources : août 2026. Elles paraissent avec quelques mois de décalage ; le site les relit chaque lundi.</p>
 </div>
 <!-- hm:reponse:fin -->
 
@@ -77,8 +77,8 @@ le jour de sa publication puis confrontée au réel.</p>
 <ul class="hm-stats">
   <!-- hm:erreur:début — régénéré par web/export/accueil.py -->
   <li>
-    <span class="n">6,3 %</span>
-    <span class="d">d'erreur moyenne à six mois, mesurée sur <abbr title="recalculées après coup en tronquant les données au mois visé">des prévisions rétro-simulées</abbr> depuis 2009 — une prévision naïve se trompe de 8,3 %</span>
+    <span class="n">6,1 %</span>
+    <span class="d">d'erreur moyenne à six mois, mesurée sur <abbr title="recalculées après coup en tronquant les données au mois visé">des prévisions rétro-simulées</abbr> depuis 2009 — une prévision naïve se trompe de 7,5 %</span>
   </li>
   <!-- hm:erreur:fin -->
   <li>
