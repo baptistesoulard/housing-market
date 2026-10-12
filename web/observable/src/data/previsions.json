@@ -10652,7 +10652,7 @@
     }
   },
   "scenario_baseline": {
-    "oat": 4.0,
+    "oat": 4.44,
     "euribor": 2.6350455,
     "rate_now": 3.2,
     "intentions": -82.0,
