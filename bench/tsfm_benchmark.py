@@ -505,7 +505,7 @@ def main() -> None:
           f"{d['millesimes'][0]:%Y-%m} → {d['millesimes'][-1]:%Y-%m}")
     SORTIE.mkdir(exist_ok=True)
 
-    lignes, durees = [], {}
+    lignes, durees, erreurs = [], {}, {}
     if not args.check:
         taches = {"ets_tx12": lambda: ets_tx12(d), "hw_flux": lambda: hw_flux(d)}
         if not args.sans_xgb:
@@ -520,7 +520,13 @@ def main() -> None:
                 raise SystemExit(f"modèle inconnu : {m}")
         for nom, f in taches.items():
             t0 = time.time()
-            lignes += f()
+            try:
+                lignes += f()
+            except Exception:       # un modèle qui casse ne doit pas emporter les autres
+                import traceback
+                erreurs[nom] = traceback.format_exc()
+                print(f"[bench] {nom} : ÉCHEC\n{erreurs[nom]}")
+                continue
             durees[nom] = time.time() - t0
             print(f"[bench] {nom} : {durees[nom]:.0f} s")
 
@@ -537,9 +543,14 @@ def main() -> None:
 
     prev.to_csv(SORTIE / "previsions.csv", index=False)
     (SORTIE / "synthese.json").write_text(
-        json.dumps({"controle_ecarts": ecarts, "durees_s": durees, "resultats": res},
+        json.dumps({"controle_ecarts": ecarts, "durees_s": durees, "erreurs": erreurs,
+                    "resultats": res},
                    ensure_ascii=False, indent=1), "utf-8")
-    (SORTIE / "rapport.md").write_text(rapport(res, durees), "utf-8")
+    texte = rapport(res, durees)
+    if erreurs:
+        texte += "\n## Échecs\n\n" + "\n".join(
+            f"### {k}\n\n```\n{v[-3000:]}\n```\n" for k, v in erreurs.items())
+    (SORTIE / "rapport.md").write_text(texte, "utf-8")
     print((SORTIE / "rapport.md").read_text("utf-8"))
 
 

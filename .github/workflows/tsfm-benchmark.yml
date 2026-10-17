@@ -55,7 +55,7 @@ jobs:
       # main) : lisibles sans télécharger d'artefact. Un commit fait avec GITHUB_TOKEN ne
       # relance pas ce workflow.
       - name: Committer le rapport sur la branche de test
-        if: startsWith(github.ref, 'refs/heads/bench/')
+        if: always() && startsWith(github.ref, 'refs/heads/bench/')
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
