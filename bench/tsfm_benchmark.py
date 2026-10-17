@@ -145,9 +145,15 @@ def _lignes(nom: str, v: pd.Timestamp, point, lo=None, hi=None) -> list[dict]:
 
 
 def flux_vers_tx12(flux_obs: np.ndarray, flux_prev: np.ndarray) -> np.ndarray:
-    """Cumul 12 mois à chaque horizon : les mois encore observés + les mois prévus."""
+    """Cumul 12 mois à chaque horizon : les mois encore observés + les mois prévus.
+
+    `serie` aligne les 11 derniers mois observés (indices 0..10 = mois v-10..v) et les
+    mois prévus (indice 10+h = mois v+h). Le cumul à l'horizon h couvre les mois
+    v+h-11..v+h, soit les indices h-1..h+10. La première version prenait h..h+11 : décalée
+    d'un mois, et au 18e mois elle ne sommait plus que 11 mois (corrigé le 2026-10-17,
+    `tests/test_bench.py`)."""
     serie = np.concatenate([flux_obs[-11:], flux_prev])
-    return np.array([serie[h: h + 12].sum() for h in range(1, len(flux_prev) + 1)])
+    return np.array([serie[h - 1: h + 11].sum() for h in range(1, len(flux_prev) + 1)])
 
 
 # ------------------------------------------------------------- références statistiques
