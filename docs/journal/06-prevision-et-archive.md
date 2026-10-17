@@ -918,3 +918,56 @@ l'encart d'API injoignable, plus huit latents sur « Prévision » et cinq sur
 donnée manque — API éteinte, aucun fichier importé — c'est-à-dire l'état normal d'un
 visiteur du site public. `tests/test_web_structure.py` refuse désormais tout `display()`
 dont une branche vaut `` html`` `` ou `""`.
+
+## 2026-10-17 — Banc d'essai des modèles de fondation (Chronos-2, Timestral)
+
+**Question.** Chronos-2 (Amazon, 120M) et Timestral (Mistral, 5M à 209M, sorti le
+2026-10-15), sans entraînement, prévoient-ils le cumul 12 mois mieux que le modèle publié ?
+Outil : `bench/tsfm_benchmark.py`, hors chaîne de publication, lancé par
+`.github/workflows/tsfm-benchmark.yml` sur les branches `bench/**` (le runner télécharge
+les poids). Protocole calqué sur la rétro-simulation : 210 millésimes depuis 2009, horizons
+1-18, troncature au millésime (macro comprise), réalisé relu sur la série courante, naïve
+de l'archive. Le contrôle intégré retrouve les épisodes publiés du modèle (0 écart).
+
+**Mesures (rétro, 2026-10-17)** — MAPE par bloc 1-3 / 4-6 / 7-12 / 13-18 :
+
+| | 1-3 | 4-6 | 7-12 | 13-18 |
+|---|---|---|---|---|
+| naïve | 2,23 | 5,02 | 8,54 | 11,86 |
+| modèle publié | 3,93 | 5,33 | 6,22 | 7,09 |
+| Timestral-123M, flux mensuels + 3 prédicteurs en covariables passées | 1,54 | 2,61 | 4,98 | 8,45 |
+| Chronos-2, idem | 1,55 | 2,63 | 5,03 | 8,43 |
+| moyenne 50/50 modèle publié + Timestral-209M (idem) | 2,11 | 3,00 | 4,42 | 6,99 |
+
+Ce qu'il en ressort :
+
+- **Seuls, les modèles de fondation battent le modèle publié jusqu'à 12 mois et perdent
+  au-delà** (−19 % à 13-18). Ils passent la porte d'entrée (3 blocs sur 4) mais ne
+  remplacent pas l'économétrie sur l'horizon long, qui est celui du propos du site.
+- **La combinaison 50/50 est le meilleur résultat** : −46 %, −44 %, −29 % d'erreur
+  contre le modèle sur les trois premiers blocs, égalité à 13-18 (+1,4 %, sous le seuil).
+  Elle est positive contre la naïve dans les SEPT épisodes, y compris les deux où le
+  modèle perd (2020-21 : +7,8 % contre −3,6 % ; 2025-26 : +41,3 % contre −4,2 %). Poids
+  non ajustés (50/50 fixé d'avance) : rien n'a été appris sur la fenêtre d'évaluation.
+- **Les covariables comptent plus que le modèle** : sans elles, les mêmes réseaux sur les
+  flux font 6,5-6,6 % à 7-12, autant qu'un Holt-Winters (7,1 %). La variante directe sur
+  le cumul est la moins bonne.
+- **Taille** : 123M ≈ 209M ≈ Chronos-2 ; 28M un cran en dessous ; 5M nettement moins
+  bon. Le classement des leaderboards publics (Timestral devant Chronos-2) ne se retrouve
+  pas ici.
+- **Bandes** : les quantiles 10-90 natifs (variante cumul) ne couvrent que 65-72 % des
+  réalisés, contre 80 % pour la bande calibrée du modèle. Ne pas les publier tels quels.
+- **Repère sans réseau de neurones** : la moyenne modèle + Holt-Winters sur les flux passe
+  aussi la porte (−22 % à 7-12) ; les modèles de fondation avec covariables ajoutent
+  environ 7 points de mieux à 7-12 et le gain à 13-18.
+
+**Limites.** Comme toute ligne `retro`, données révisées d'aujourd'hui. Pré-entraînement
+de Chronos-2 en partie sur séries réelles publiques, de Timestral sur synthétique puis
+mélange : une fuite sur une série macro française proche ne peut pas être exclue ; les
+épisodes récents (2022-26, postérieurs aux corpus courants) sont les plus probants, et la
+combinaison y gagne aussi.
+
+**Pas encore décidé** : intégrer la combinaison à la chaîne (archive, verdict, pages)
+suppose torch et le téléchargement des poids dans le job hebdomadaire, une bande
+recalibrée sur l'archive de la combinaison, et l'ouverture d'une nouvelle série `archive`
+— les lignes publiées du modèle actuel ne se réécrivent pas.
