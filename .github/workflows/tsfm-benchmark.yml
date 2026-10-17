@@ -43,7 +43,7 @@ jobs:
 
       - name: Rejouer la rétro-simulation
         run: |
-          python bench/tsfm_benchmark.py --models chronos2 timestral-5M timestral-28M timestral-123M timestral-209M
+          python bench/tsfm_benchmark.py --models chronos2 timestral-123M timestral-209M
           cat bench/results/rapport.md >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4

@@ -89,6 +89,22 @@ EPISODES = [
 #: Les trois prédicteurs de l'étage 2 du modèle publié (`forecast.TX_PREDICTORS`).
 COVARIABLES = ["Credit_Logement_Taux_Interet", "Intentions_Achat_Logement", "Taux_Chomage_BIT"]
 
+#: Séries du site testées UNE PAR UNE en quatrième covariable (variantes `flux_cov+<clé>`),
+#: chacune jugée contre `flux_cov` du même modèle. Absentes exprès : la demande de crédit
+#: déclarée par les banques et les anticipations de taux, déjà réfutées
+#: (`reperes.REFUTATIONS`), et l'Euribor, retiré de l'étage 1 le 2026-08-25.
+CANDIDATES = {
+    "oat": "OAT_10ans",
+    "credits": "Production_Credits_Habitat",
+    "confiance": "Insee_Confiance_Menages",
+    "prix": "Prix_Ancien_Ensemble",
+    "reno": "Reno_Activite_Batiment",
+}
+
+#: Séries trimestrielles : interpolées ENTRE deux points publiés, jamais au-delà
+#: (même règle que `forecast._macro_indexed`).
+TRIMESTRIELLES = ["Taux_Chomage_BIT", "Prix_Ancien_Ensemble"]
+
 #: Seuil d'entrée du projet (CLAUDE.md, « Porte d'entrée d'un prédicteur ») : ≥ 5 %
 #: d'erreur évitée hors échantillon sur ≥ 3 des 4 blocs. Appliqué ici contre le MODÈLE
 #: publié, pas contre la naïve : la question est de savoir s'il faut le remplacer.
@@ -101,17 +117,16 @@ def charger() -> dict:
     flux = ventes.groupby("Date")["Transactions"].sum().sort_index().asfreq("MS")
     tx12 = flux.rolling(12).sum().rename("tx12")
 
-    macro = pd.read_csv(DATA / "macro.csv", parse_dates=["Date"]).set_index("Date").sort_index()
-    macro = macro[COVARIABLES].asfreq("MS")
-    # Chômage trimestriel : interpolé ENTRE deux points publiés, jamais au-delà
-    # (même règle que `forecast._macro_indexed`).
-    macro["Taux_Chomage_BIT"] = macro["Taux_Chomage_BIT"].interpolate(limit_area="inside")
+    brut = pd.read_csv(DATA / "macro.csv", parse_dates=["Date"]).sort_values("Date")
+    macro = brut.set_index("Date")[COVARIABLES + list(CANDIDATES.values())].asfreq("MS")
+    for c in TRIMESTRIELLES:
+        macro[c] = macro[c].interpolate(limit_area="inside")
 
     archive = pd.read_csv(DATA / "forecast_archive.csv")
     retro = archive[archive["kind"] == "retro"].copy()
     millesimes = sorted(pd.to_datetime(retro["data_vintage"].unique()))
-    return {"flux": flux, "tx12": tx12, "macro": macro, "retro": retro,
-            "millesimes": millesimes}
+    return {"flux": flux, "tx12": tx12, "macro": macro, "macro_brut": brut,
+            "retro": retro, "millesimes": millesimes}
 
 
 def _lignes(nom: str, v: pd.Timestamp, point, lo=None, hi=None) -> list[dict]:
@@ -161,24 +176,102 @@ def hw_flux(d: dict) -> list[dict]:
     return lignes
 
 
+# ----------------------------------------------------------------------- XGBoost
+#: Réglages FIXÉS d'avance, jamais ajustés sur la fenêtre d'évaluation (sinon le score
+#: serait en partie appris sur ce qu'il prétend prévoir).
+XGB_PARAMS = dict(n_estimators=300, max_depth=3, learning_rate=0.05, subsample=0.8,
+                  colsample_bytree=0.8, min_child_weight=3, n_jobs=2, random_state=0)
+
+
+def _features_xgb(d: dict, v: pd.Timestamp) -> pd.DataFrame:
+    """Une ligne par mois d'origine ≤ v, uniquement de l'information connue à cette date."""
+    t = np.log(d["tx12"][:v])
+    m = d["macro"][COVARIABLES][:v].ffill()
+    X = pd.DataFrame({f"r{k}": t - t.shift(k) for k in (1, 3, 6, 12)})
+    X["taux"] = m["Credit_Logement_Taux_Interet"]
+    X["taux_d6"] = X["taux"] - X["taux"].shift(6)
+    X["taux_d12"] = X["taux"] - X["taux"].shift(12)
+    X["intentions"] = m["Intentions_Achat_Logement"]
+    X["intentions_d6"] = X["intentions"] - X["intentions"].shift(6)
+    X["chomage"] = m["Taux_Chomage_BIT"]
+    X["chomage_d12"] = X["chomage"] - X["chomage"].shift(12)
+    return X
+
+
+def xgb_direct(d: dict) -> list[dict]:
+    """XGBoost en stratégie DIRECTE : un modèle par horizon, qui prédit la variation
+    log du cumul 12 mois entre l'origine et l'horizon h. Réentraîné à chaque millésime sur
+    les seules origines dont la cible est observée à cette date."""
+    from xgboost import XGBRegressor
+    lignes = []
+    for v in d["millesimes"]:
+        X = _features_xgb(d, v)
+        logt = np.log(d["tx12"][:v])
+        x0 = X.loc[[v]]
+        pred = []
+        for h in range(1, HORIZON + 1):
+            y = (logt.shift(-h) - logt).rename("y")
+            tr = X.join(y).dropna()
+            mdl = XGBRegressor(**XGB_PARAMS).fit(tr.drop(columns="y"), tr["y"])
+            pred.append(float(np.exp(mdl.predict(x0)[0]) * d["tx12"][v]))
+        lignes += _lignes("xgb_direct", v, pred)
+    return lignes
+
+
 # ------------------------------------------------------------ modèles de fondation
-def _contextes(d: dict, variante: str) -> tuple[list[np.ndarray], list[np.ndarray] | None]:
-    """Un contexte (et, pour `_cov`, une matrice de covariables) par millésime."""
-    ctx, cov = [], [] if variante == "flux_cov" else None
-    debut = pd.Timestamp("2003-01-01") if variante == "flux_cov" else None  # 1er taux publié
+def _taux_futur(d: dict, v: pd.Timestamp, index: pd.DatetimeIndex) -> np.ndarray:
+    """Taux de crédit sur le contexte PUIS sur l'horizon, connu au millésime v.
+
+    Le barème des banques suit l'OAT avec plusieurs mois de retard (étage 1 du modèle) :
+    au millésime, les OAT déjà publiées fixent donc le taux des mois suivants. On reprend
+    EXACTEMENT `forecast.fit_rate_model` + `forecast.rate_path` sur la macro tronquée à v,
+    puis report à plat au-delà — la convention du modèle publié pour ses prédicteurs."""
+    import sys
+    sys.path.insert(0, str(RACINE))
+    import forecast
+    brut = d["macro_brut"][d["macro_brut"]["Date"] <= v]
+    futur = pd.Series(dtype=float)
+    try:
+        mod = forecast.fit_rate_model(brut)
+        chemin = forecast.rate_path(brut, mod["beta"], mod["lag"])
+        futur = chemin.set_index("Date")["taux"]
+    except Exception:          # historique trop court (millésimes 2009) : report à plat
+        pass
+    obs = d["macro"]["Credit_Logement_Taux_Interet"][:v].dropna()
+    s = pd.concat([obs, futur[futur.index > obs.index.max()]])
+    return s.reindex(index).ffill().values.astype(float)
+
+
+def _contextes(d: dict, variante: str):
+    """Par millésime : la cible, les covariables passées (C, T) et les covariables
+    futures connues (C, T + HORIZON). `None` quand la variante n'en a pas."""
+    ctx, passe, connu = [], [], []
+    avec_cov = variante.startswith("flux_cov")
+    debut = pd.Timestamp("2003-01-01") if avec_cov else None    # 1er taux de crédit publié
+    extra = [CANDIDATES[variante.split("+", 1)[1]]] if "+" in variante else []
+    futur = variante == "flux_cov_futur"
     for v in d["millesimes"]:
         if variante == "tx12":
             ctx.append(d["tx12"][:v].dropna().values.astype(float))
-        else:
-            y = d["flux"][debut:v].dropna()
-            ctx.append(y.values.astype(float))
-            if cov is not None:
-                # Dernière valeur publiée reportée à plat jusqu'au millésime (le chômage
-                # trimestriel s'arrête avant) : rien d'autre que du passé, et pas de NaN
-                # en fin de contexte, que les deux modèles ne traitent pas pareil.
-                m = d["macro"][:v].reindex(y.index).ffill()
-                cov.append(m.values.T.astype(float))                        # (C, T)
-    return ctx, cov
+            continue
+        y = d["flux"][debut:v].dropna()
+        ctx.append(y.values.astype(float))
+        if not avec_cov:
+            continue
+        # Dernière valeur publiée reportée à plat jusqu'au millésime (chômage et prix
+        # trimestriels s'arrêtent avant) : rien d'autre que du passé, et pas de NaN en
+        # fin de contexte, que les deux modèles ne traitent pas pareil.
+        cols = (COVARIABLES[1:] if futur else COVARIABLES) + extra
+        passe.append(d["macro"][cols][:v].reindex(y.index).ffill().values.T.astype(float))
+        if futur:
+            idx = pd.date_range(y.index[0], periods=len(y) + HORIZON, freq="MS")
+            connu.append(_taux_futur(d, v, idx)[None, :])
+    return ctx, (passe or None), (connu or None)
+
+
+def _noms_passe(variante: str) -> list[str]:
+    extra = [CANDIDATES[variante.split("+", 1)[1]]] if "+" in variante else []
+    return (COVARIABLES[1:] if variante == "flux_cov_futur" else COVARIABLES) + extra
 
 
 def _gauche(arrays: list[np.ndarray]) -> np.ndarray:
@@ -207,12 +300,19 @@ def chronos2(d: dict, variantes) -> list[dict]:
                                             torch_dtype=torch.float32)
     lignes = []
     for var in variantes:
-        ctx, cov = _contextes(d, var)
-        if cov is None:
+        ctx, passe, connu = _contextes(d, var)
+        if passe is None:
             entrees = [torch.tensor(c) for c in ctx]
         else:
-            entrees = [{"target": c, "past_covariates": dict(zip(COVARIABLES, m))}
-                       for c, m in zip(ctx, cov)]
+            noms = _noms_passe(var)
+            entrees = []
+            for i, c in enumerate(ctx):
+                e = {"target": c, "past_covariates": dict(zip(noms, passe[i]))}
+                if connu is not None:
+                    taux = connu[i][0]
+                    e["past_covariates"]["taux_credit"] = taux[:len(c)]
+                    e["future_covariates"] = {"taux_credit": taux[len(c):]}
+                entrees.append(e)
         q, _ = pipe.predict_quantiles(entrees, prediction_length=HORIZON,
                                       quantile_levels=list(QUANTILES))
         q = np.stack([x.cpu().numpy()[0] for x in q])          # (B, H, 3)
@@ -225,9 +325,13 @@ def timestral(d: dict, taille: str, variantes) -> list[dict]:
     fc = TimestralForecaster.from_pretrained(f"mistralai/Timestral-{taille}")
     lignes = []
     for var in variantes:
-        ctx, cov = _contextes(d, var)
+        ctx, passe, connu = _contextes(d, var)
         x = _gauche(ctx)[:, None, :]                             # (B, 1, T)
-        kw = {"past_covariates": _gauche(cov)} if cov is not None else {}
+        kw = {}
+        if passe is not None:
+            kw["past_covariates"] = _gauche(passe)
+        if connu is not None:
+            kw["known_covariates"] = _gauche(connu)              # (B, 1, T + H)
         f = fc.forecast(x, prediction_length=HORIZON, **kw)
         q10, q50, q90 = (np.asarray(f.quantile(a))[:, 0, :] for a in QUANTILES)
         lignes += _vers_lignes(d, f"timestral{taille}_{var}", var, ctx, q10, q50, q90)
@@ -355,9 +459,33 @@ def rapport(res: dict, durees: dict) -> str:
     for k in ordre:
         e = {x["label"]: x["skill"] for x in res[k]["episodes"]}
         l.append(f"| `{k}` | " + " | ".join(_pct(e.get(lab)) for lab in labels) + " |")
+    l += _section_covariables(res)
     if durees:
         l += ["", "Durées de calcul (s) : " + ", ".join(f"{k} {v:.0f}" for k, v in durees.items())]
     return "\n".join(l) + "\n"
+
+
+def _section_covariables(res: dict) -> list[str]:
+    """Chaque covariable ajoutée, jugée contre `flux_cov` DU MÊME modèle, au seuil du projet."""
+    bases = sorted(k for k in res if k.endswith("_flux_cov") and not k.startswith("combo_"))
+    if not bases:
+        return []
+    l = ["", "## Covariables supplémentaires — erreur évitée contre la variante à 3 prédicteurs",
+         "", "Seuil du projet : ≥ 5 % sur ≥ 3 des 4 blocs. `futur` = taux de crédit projeté "
+         "par l'étage 1 (OAT décalée), donné comme covariable future connue.", "",
+         "| Modèle | Ajout | 1-3 | 4-6 | 7-12 | 13-18 | Verdict |", "|---|---|---|---|---|---|---|"]
+    for base in bases:
+        modele = base[: -len("_flux_cov")]
+        ref = {b["bloc"]: b["mape"] for b in res[base]["blocs"]}
+        for k in sorted(res):
+            if not (k.startswith(modele + "_flux_cov") and k != base):
+                continue
+            ajout = k[len(base):].lstrip("+_")
+            gains = [1 - b["mape"] / ref[b["bloc"]] for b in res[k]["blocs"]]
+            ok = sum(g >= SEUIL_SKILL for g in gains) >= SEUIL_BLOCS
+            l.append(f"| `{modele}` | {ajout} | " + " | ".join(_pct(g) for g in gains)
+                     + f" | {'✅ passe' if ok else 'refusé'} |")
+    return l
 
 
 # --------------------------------------------------------------------------- main
@@ -365,7 +493,10 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--models", nargs="*", default=[],
                    help="chronos2, timestral-5M, timestral-28M, timestral-123M, timestral-209M")
-    p.add_argument("--variantes", nargs="*", default=["tx12", "flux", "flux_cov"])
+    p.add_argument("--variantes", nargs="*",
+                   default=["tx12", "flux", "flux_cov", "flux_cov_futur"]
+                   + [f"flux_cov+{k}" for k in CANDIDATES])
+    p.add_argument("--sans-xgb", action="store_true", help="ne pas lancer XGBoost")
     p.add_argument("--check", action="store_true", help="contrôle de cohérence seul")
     args = p.parse_args()
 
@@ -377,6 +508,8 @@ def main() -> None:
     lignes, durees = [], {}
     if not args.check:
         taches = {"ets_tx12": lambda: ets_tx12(d), "hw_flux": lambda: hw_flux(d)}
+        if not args.sans_xgb:
+            taches["xgb_direct"] = lambda: xgb_direct(d)
         for m in args.models:
             if m == "chronos2":
                 taches[m] = lambda: chronos2(d, args.variantes)

@@ -3,5 +3,6 @@
 pandas>=2.0.0
 numpy>=1.24
 statsmodels>=0.14       # références : Holt amorti, Holt-Winters
+xgboost>=2.0          # référence : gradient boosting, stratégie directe
 chronos-forecasting==2.3.2
 timestral @ git+https://github.com/mistralai/timestral.git@a534bdbd244d64f3d9d743f46c7bf6fc330ed4ff
