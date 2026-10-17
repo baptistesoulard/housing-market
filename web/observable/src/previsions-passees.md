@@ -459,7 +459,8 @@ if (CMP_TRAJ.length) {
     }),
     meta, active: new Set([REEL_CMP, ...cmpActifs]),
     yLabel: "Transactions (cumul 12 mois)", valueFmt: (v) => nf0.format(v), lastLabels: false,
-    zero: false, width, filename: "previsions-passees-comparaison-modeles"
+    zero: false, yTickFormat: (v) => nf0.format(v / 1000) + " k",
+    width, filename: "previsions-passees-comparaison-modeles"
   }));
 }
 ```

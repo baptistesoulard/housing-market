@@ -138,6 +138,16 @@ if (V && P && P.available) display(cardGrid([
 ```
 
 ```js
+// L'axe du temps est PARTAGÉ avec les bandes d'indicateurs sous le graphique : même
+// domaine, mêmes marges, sinon un mois du graphique ne tombe pas au-dessus du même mois
+// des bandes et l'alignement — tout leur propos — devient trompeur.
+const XDOM = P && P.available && T
+  ? [new Date(histo(T.series)[0]?.date ?? T.series[0].date),
+     new Date(P.series[P.series.length - 1].date)]
+  : null;
+```
+
+```js
 // Même manque qu'en section 2 : quatre objets sur ce graphique (l'observé, la trajectoire
 // projetée, sa bande, le repère FNAIM) et rien qui les nomme. La légende est statique —
 // aucune de ces séries ne se masque.
@@ -150,8 +160,8 @@ if (P && P.available) display(legendStatic([
 
 ```js
 if (P && P.available) display(withCsvExport(Plot.plot({
-  width, height: 360, marginLeft: 66, marginBottom: 34,
-  x: {type: "utc", label: null},
+  width, height: 360, marginLeft: 66, marginRight: 20, marginBottom: 34,
+  x: {type: "utc", label: null, domain: XDOM},
   y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
   marks: [
     // La bande et la trajectoire projetées ne reçoivent que la borne basse : elles sont
@@ -175,6 +185,57 @@ if (P && P.available) display(withCsvExport(Plot.plot({
                         fill: series.violet, fontWeight: 600, textAnchor: "end", dx: -6}) : null
   ]
 }), P.series, "previsions-projection"));
+```
+
+```js
+// LES ENTRÉES DU MODÈLE, SOUS LA COURBE — idée reprise de la démonstration de Timestral
+// (Mistral, 2026-10-15), où chaque covariable est une bande alignée sous la prévision.
+// Ici, chaque indicateur est tracé DÉCALÉ de son délai : la valeur posée sur un mois est
+// celle qui pilote les ventes de ce mois-là. Le trait plein s'arrête là où la dernière
+// valeur publiée cesse de compter ; au-delà, la zone grisée et le pointillé montrent la
+// valeur maintenue à plat. Le tableau « jusqu'où chaque entrée est observée » de la page
+// Méthode dit la même chose en chiffres ; ces bandes le font voir d'un coup d'œil, et
+// rendent visible pourquoi la courbe se fige au-delà du dernier mois piloté.
+const CLES_ENTREES = ["rate", "intentions", "unemployment"];
+const decaler = (iso, mois) => {
+  const t = new Date(iso + "T00:00:00Z"); t.setUTCMonth(t.getUTCMonth() + mois); return t;
+};
+if (P && P.available && P.predictors && XDOM) {
+  const fin = XDOM[1];
+  display(html`<div class="hm-chart-title" style="margin-top:0.4rem">Ce qui pilote la courbe
+    <span class="sub">chaque indicateur décalé de son délai : trait plein = valeurs publiées,
+    zone grisée = valeur maintenue à plat faute de publication</span></div>`);
+  P.predictors.forEach((x, i) => {
+    const serie = data.lag_sensitivity?.[CLES_ENTREES[i]]?.predictor_series ?? [];
+    const obs = serie.map((r) => ({date: decaler(r.date, x.lag), value: r.value}))
+                     .filter((r) => r.date >= XDOM[0] && r.date <= fin);
+    if (!obs.length) return;
+    const dernier = obs[obs.length - 1];
+    const plat = dernier.date < fin ? [{date: dernier.date, value: x.held_value},
+                                       {date: fin, value: x.held_value}] : [];
+    display(Plot.plot({
+      width, height: 64, marginLeft: 66, marginRight: 20, marginTop: 16, marginBottom: 4,
+      x: {type: "utc", domain: XDOM, axis: null},
+      y: {axis: null, nice: true, zero: false},
+      marks: [
+        plat.length ? Plot.rectX([{x1: dernier.date, x2: fin}], {x1: "x1", x2: "x2",
+          fill: ui.border, fillOpacity: 0.8}) : null,
+        Plot.lineY(obs, {x: "date", y: "value", stroke: ui.muted, strokeWidth: 1.6}),
+        plat.length ? Plot.lineY(plat, {x: "date", y: "value", stroke: ui.muted,
+          strokeWidth: 1.6, strokeDasharray: "3 3"}) : null,
+        Plot.text([0], {frameAnchor: "top-left", dy: -14, dx: -60, fontSize: 12,
+          fill: ui.muted, text: () => `${x.label[0].toUpperCase()}${x.label.slice(1)}` +
+            (x.lag ? `, décalé de ${x.lag} mois` : ", sans décalage")}),
+        Plot.text([dernier], {x: "date", y: "value", dx: 4, dy: -8, fontSize: 11,
+          textAnchor: "start", fill: ui.muted,
+          text: () => `${x.held_value.toLocaleString("fr-FR", {maximumFractionDigits: 2})}`}),
+        Plot.tip(obs, Plot.pointerX({x: "date", y: "value", ...TIP,
+          title: (r) => `${fmtMonthFR(r.date)} (valeur de ${x.lag} mois plus tôt)\n${
+            r.value.toLocaleString("fr-FR", {maximumFractionDigits: 2})}`})),
+      ],
+    }));
+  });
+}
 ```
 
 ```js
