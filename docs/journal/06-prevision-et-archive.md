@@ -1002,3 +1002,30 @@ XGBoost 1,6 / 4,1 / 8,4 / 12,1 ; Timestral-123M + 3 prédicteurs 1,5 / 2,6 / 5,0
 Chronos-2 idem 1,6 / 2,6 / 5,0 / 8,4 ; modèle publié + Timestral-209M 50/50
 2,1 / 3,0 / 4,4 / 7,0. La combinaison reste la seule option qui gagne sur les trois
 premiers blocs sans rien perdre au-delà d'un an.
+
+## 2026-10-17 (correction) — Erreur d'indice dans le banc d'essai, mesures refaites
+
+**Ce qui était faux.** `bench/tsfm_benchmark.flux_vers_tx12` reconstruisait le cumul 12
+mois à l'horizon h avec les mois v+h-10..v+h+1 au lieu de v+h-11..v+h : décalé d'un mois,
+et amputé d'un mois au 18e horizon. Repéré à l'œil sur la page (chaque trajectoire
+« flux » plongeait au dernier mois), confirmé par un test (`tests/test_bench.py`). Les
+variantes `*_tx12`, XGBoost, le modèle publié et la naïve n'étaient pas concernés.
+
+**Les deux entrées précédentes du même jour gardent leurs chiffres** (règle du journal) ;
+voici les mesures qui les remplacent, MAPE 1-3 / 4-6 / 7-12 / 13-18 :
+
+| | 1-3 | 4-6 | 7-12 | 13-18 |
+|---|---|---|---|---|
+| Holt-Winters sur flux | 1,36 | 3,36 | 7,05 | 11,48 |
+| Chronos-2 + 3 prédicteurs | 1,12 | 2,41 | 4,86 | 7,99 |
+| Timestral-123M + 3 prédicteurs | 1,16 | 2,54 | 5,05 | 8,05 |
+| Timestral-209M + 3 prédicteurs | 1,17 | 2,58 | 5,16 | 8,15 |
+| modèle publié + Timestral-209M 50/50 | 2,13 | 3,02 | 4,43 | 6,84 |
+
+**Les conclusions tiennent**, une seule s'affine : la combinaison passe toujours la porte
+(3 blocs sur 4) et gagne maintenant aussi un peu à 13-18 (+3,5 %, sous le seuil). Les
+modèles de fondation seuls font nettement mieux qu'annoncé aux horizons courts (environ
+1,1-1,2 % à 1-3 mois, contre 2,2 % pour la naïve), et perdent toujours au-delà d'un an.
+Chronos-2 passe légèrement devant Timestral. Aucune covariable supplémentaire ne passe ;
+le taux futur connu dégrade toujours Timestral. L'instantané du site
+(`data/comparaison_modeles.csv`) est celui des mesures corrigées.
