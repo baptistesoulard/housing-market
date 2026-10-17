@@ -28,3 +28,6 @@ data/*.parquet
 # Manifeste de provenance : artefact RÉGÉNÉRÉ par fetch_new_sources.py (horodatages
 # volatils) — inspection locale / base du fetch conditionnel, pas versionné.
 data/_manifest.json
+
+# Banc d essai TSFM : les prévisions brutes se régénèrent (artefact du job)
+bench/results/previsions.csv
