@@ -178,7 +178,7 @@ départements âgés étaient surtout les moins chers, à une époque où les m�
 décrochaient du reste du pays ; sur la seconde, le Covid, le littoral puis la correction des
 grandes villes ont inversé l'ordre. C'est pourquoi cette page décrit et ne classe pas, et
 pourquoi l'idée figure parmi
-[ce que nous avons essayé, et qui ne marche pas](/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas).
+[ce que nous avons essayé, et qui ne marche pas](/methode-prevision#ce-qu-on-a-essaye-et-qui-ne-marche-pas).
 
 ## Les départements en tableau
 

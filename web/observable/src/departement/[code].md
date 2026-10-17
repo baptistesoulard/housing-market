@@ -505,7 +505,7 @@ if (dep.profil) display(html`<div class="hm-caption">
   niveau de vie sur ${dep.profil.items.find((it) => it.key === "niveau_vie")?.n ?? "—"}. Le solde migratoire est dit « apparent » parce qu'il est déduit : variation de
   population moins solde naturel. Mesurés sur douze ans de prix, ces repères ont changé
   de sens d'un cycle à l'autre — c'est pourquoi ils décrivent et ne classent pas :
-  <a href="/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas">ce qu'on a essayé, et qui
+  <a href="/methode-prevision#ce-qu-on-a-essaye-et-qui-ne-marche-pas">ce qu'on a essayé, et qui
   ne marche pas</a>.</div>`);
 ```
 

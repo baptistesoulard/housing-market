@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {cardGrid, kpiCard, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {cardGrid, kpiCard, multiLine, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
@@ -306,6 +306,93 @@ if (EP.length) display(html`<details class="hm-howto">
 </details>`);
 ```
 
+## D'autres modèles, jugés de la même façon
+
+<div class="hm-caption">
+Un modèle ne se juge pas seul. Les mêmes millésimes ont été rejoués avec d'autres méthodes
+de prévision : la référence naïve, un lissage exponentiel saisonnier, un modèle de
+fondation pour séries temporelles, et la moyenne du modèle publié et de ce dernier. Même
+troncature des données, même réalisé, mêmes plages d'horizon. Ce sont des rétro-simulations,
+pas des prévisions publiées à leur date.
+</div>
+
+```js
+// La comparaison est un INSTANTANÉ DATÉ (data/comparaison_modeles.csv, produit par
+// bench/tsfm_benchmark.py) : le job du lundi ne fait pas tourner ces modèles. Le réalisé,
+// lui, est rejoint à chaque export, comme pour l'archive. Sans instantané, la section se
+// réduit à son chapeau.
+const CMP = A.comparaison ?? null;
+const CMP_COULEURS = {naive: ui.greyLine, modele: series.blue, holt_winters: series.gold,
+                      timestral: series.violet, combinaison: series.green};
+```
+
+```js
+if (CMP) display(html`<div class="hm-meta">Mesuré le ${CMP.mesure_le} sur
+  ${nf0.format(CMP.n_vintages)} millésimes, de ${moisFR(CMP.first_vintage)} à
+  ${moisFR(CMP.last_vintage)}. Erreur moyenne en %, par plage d'horizon comptée depuis le
+  dernier mois de données publié ; entre parenthèses, l'erreur évitée par rapport à la
+  prévision naïve.</div>`);
+```
+
+```js
+// Le meilleur score de chaque plage est mis en gras : c'est la lecture que le tableau
+// sert, et sans repère le lecteur compare cinq nombres de tête, ligne après ligne.
+if (CMP) {
+  const meilleur = CMP.methodes[0].blocs.map((_, i) =>
+    Math.min(...CMP.methodes.map((m) => m.blocs[i].mape)));
+  display(html`<div class="hm-scroller"><table class="hm-table">
+    <thead><tr><th>Méthode</th>${CMP.methodes[0].blocs.map((b) =>
+      html`<th>${b.bloc} mois</th>`)}<th>Sens annoncé juste</th></tr></thead>
+    <tbody>${CMP.methodes.map((m) => html`<tr>
+      <td><span class="hm-swatch" style=${{background: CMP_COULEURS[m.cle]}}></span>
+        <b>${m.label}</b><br><span class="hm-caption">${m.description}</span></td>
+      ${m.blocs.map((b, i) => html`<td style=${{fontWeight: b.mape === meilleur[i] ? 700 : 400}}>
+        ${nf1.format(b.mape)} %${m.cle === "naive" ? "" : html`<br><span class="hm-caption">(${
+          b.skill_pct >= 0 ? "+" : "−"}${nf0.format(Math.abs(b.skill_pct))} %)</span>`}</td>`)}
+      <td>${m.direction == null ? "—" : nf0.format(m.direction * 100) + " %"}</td>
+    </tr>`)}</tbody>
+  </table></div>`);
+}
+```
+
+```js
+// Un graphique à six courbes ne se lit pas : on choisit ce qu'on compare, le réalisé
+// reste toujours affiché. Par défaut, le modèle publié et la combinaison — la question
+// que pose cette section.
+const CMP_CHOIX = CMP ? Inputs.checkbox(
+  CMP.methodes.map((m) => m.label),
+  {label: "Afficher", value: CMP.methodes.filter((m) => ["modele", "combinaison"].includes(m.cle))
+                                        .map((m) => m.label)}) : null;
+const cmpActifs = CMP_CHOIX ? view(CMP_CHOIX) : null;
+```
+
+```js
+if (CMP) {
+  display(html`<div class="hm-chart-title">Chaque méthode à ${CMP.horizon_courbe} mois,
+    face au réel <span class="sub">chaque point est ce que la méthode annonçait
+    ${CMP.horizon_courbe} mois plus tôt pour ce mois-là, avec les seules données connues
+    alors</span></div>`);
+  const REEL_CMP = "Réalisé (cumul 12 mois)";
+  const meta = [{name: REEL_CMP, color: series.brick}].concat(
+    CMP.methodes.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle],
+                              dash: m.cle === "naive"})));
+  display(multiLine({
+    rows: CMP.courbe.flatMap((p) => [
+      {date: p.date, value: p.realise, series: REEL_CMP},
+      ...CMP.methodes.map((m) => ({date: p.date, value: p[m.cle], series: m.label}))]),
+    meta, active: new Set([REEL_CMP, ...cmpActifs]),
+    yLabel: "Transactions (cumul 12 mois)", valueFmt: (v) => nf0.format(v), lastLabels: false,
+    width, filename: "previsions-passees-comparaison-modeles"
+  }));
+}
+```
+
+```js
+if (CMP) display(html`<div class="hm-note"><p>${CMP.statut}</p>
+  <p class="hm-caption">Le détail du protocole et toutes les variantes essayées sont sur
+  <a href="/methode-prevision">la méthode de la prévision</a>.</p></div>`);
+```
+
 ## L'archive en direct
 
 ```js
@@ -349,5 +436,6 @@ display(A.current ? html`<div class="hm-meta">Prévision en cours, enregistrée 
 <div class="hm-shortcuts">
   <span class="lead">Voir aussi :</span>
   <a class="hm-shortcut" href="/previsions">📡 La prévision en cours</a>
-  <a class="hm-shortcut" href="/a-propos">ℹ️ La méthode</a>
+  <a class="hm-shortcut" href="/methode-prevision">🧮 La méthode de la prévision</a>
+  <a class="hm-shortcut" href="/a-propos">ℹ️ Les sources</a>
 </div>

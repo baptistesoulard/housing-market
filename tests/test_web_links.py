@@ -253,11 +253,18 @@ def test_les_hypotheses_ecartees_sont_publiees_avec_leur_date():
         datetime.date.fromisoformat(r["mesure_le"])       # lève si la date est mal formée
 
 
-def test_la_page_de_prevision_affiche_la_section_des_hypotheses_ecartees():
-    src = PREVISIONS_MD.read_text(encoding="utf-8")
+#: Les hypothèses écartées ont quitté /previsions pour /methode-prevision le 2026-10-17,
+#: quand la page de prévision est devenue synthétique. Le garde-fou les suit.
+METHODE_MD = WEB / "src" / "methode-prevision.md"
+
+
+def test_la_page_de_methode_affiche_la_section_des_hypotheses_ecartees():
+    src = METHODE_MD.read_text(encoding="utf-8")
     assert "refutations" in src, (
-        "previsions.md n'affiche plus les hypothèses écartées — publier uniquement ce qui "
-        "a marché est un biais de sélection, pas une simplification")
+        "methode-prevision.md n'affiche plus les hypothèses écartées — publier uniquement "
+        "ce qui a marché est un biais de sélection, pas une simplification")
+    assert "/methode-prevision" in PREVISIONS_MD.read_text(encoding="utf-8"), (
+        "la page de prévision ne renvoie plus vers sa méthode")
 
 
 def test_le_repere_de_taux_dit_sa_source_et_sa_date_de_releve():

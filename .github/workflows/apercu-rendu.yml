@@ -1,0 +1,70 @@
+name: Aperçu du rendu
+
+# Construit le site et en fait des captures d'écran (web/observable/scripts/apercu.mjs),
+# pour vérifier un rendu là où aucun navigateur n'est disponible. Rien n'est publié et main
+# n'est jamais touchée : les captures partent en artefact et sur une branche à part,
+# `apercu/<branche>`, réécrite à chaque passage, que l'on supprime une fois la revue faite.
+on:
+  push:
+    branches: ["site/**"]
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: "Pages à capturer, séparées par des espaces"
+        default: "/ /previsions /methode-prevision /previsions-passees"
+
+permissions:
+  contents: write               # pousse la branche apercu/<branche>, jamais main
+
+concurrency:
+  group: apercu-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apercu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PAGES: ${{ github.event.inputs.pages || '/ /previsions /methode-prevision /previsions-passees' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Construire le site
+        run: |
+          npm --prefix web/observable ci --no-audit --no-fund
+          npm --prefix web/observable run build
+
+      - name: Installer le navigateur de capture
+        working-directory: web/observable
+        run: |
+          npm install --no-save playwright@1 serve@14
+          npx playwright install --with-deps chromium
+
+      - name: Capturer les pages
+        working-directory: web/observable
+        run: |
+          npx serve dist -l 3000 >/dev/null 2>&1 &
+          sleep 3
+          node scripts/apercu.mjs http://localhost:3000 ../../apercus $PAGES
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apercu-rendu
+          path: apercus/
+
+      - name: Pousser les captures sur apercu/<branche>
+        if: always() && github.ref_name != 'main'
+        run: |
+          cd apercus
+          git init -q -b apercu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "aperçu du rendu de ${GITHUB_REF_NAME} (${GITHUB_SHA::7})"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+            "apercu:refs/heads/apercu/${GITHUB_REF_NAME}"

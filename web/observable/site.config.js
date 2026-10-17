@@ -211,8 +211,14 @@ export const NAV = [
    description: "Carte des 101 départements : prix au m², ventes, logements mis en " +
      "chantier, locaux et profil des habitants (DVF, SIT@DEL, INSEE), à comparer."},
   {icon: "📡", name: "Prévision & Scénarios", path: "/previsions", section: "prevision",
-   description: "Prévision des transactions de logements à 12-18 mois : modèle à deux " +
-     "étages, backtest hors échantillon et scénarios à trois leviers."},
+   description: "Prévision des transactions de logements à 12-18 mois : le verdict, sa " +
+     "fourchette, jusqu'où s'y fier, et des scénarios à trois leviers."},
+  // Scindée de /previsions le 2026-10-17 : la page Prévision garde le verdict, la courbe
+  // et les scénarios ; celle-ci, la fabrication du chiffre et les idées écartées.
+  {icon: "🧮", name: "Méthode de la prévision", path: "/methode-prevision", section: "prevision",
+   seoTitle: "Méthode de prévision des transactions immobilières",
+   description: "Comment la prévision des ventes est fabriquée : modèle à deux étages, " +
+     "décalages vérifiables, mise à l'épreuve et idées testées puis écartées."},
   // Le libellé que l'accueil employait déjà pour cette page (« Prévisions passées » avant).
   {icon: "🎯", name: "Le modèle face au réel", path: "/previsions-passees", section: "prevision",
    seoTitle: "Prévisions passées du marché immobilier, face au réel",

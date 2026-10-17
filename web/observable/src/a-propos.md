@@ -207,7 +207,7 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
   nationaux, faute d'équivalent local publié. Et cette carte **décrit sans classer** :
   l'idée d'en tirer une carte des départements qui gagneront ou perdront a été mesurée
   sur douze ans de prix, puis
-  [écartée](/previsions#ce-qu-on-a-essaye-et-qui-ne-marche-pas) — la carte montre
+  [écartée](/methode-prevision#ce-qu-on-a-essaye-et-qui-ne-marche-pas) — la carte montre
   d'ailleurs pourquoi.
 - **Des rythmes de publication différents.** Les permis et les ventes dans l'ancien sont
   mensuels, la commercialisation du neuf est trimestrielle, et chaque source a son propre

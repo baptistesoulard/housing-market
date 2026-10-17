@@ -1,10 +1,12 @@
 """Page « Le modèle face au réel » (/previsions-passees) — la seule qui juge le modèle au lieu de l'exposer."""
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import pandas as pd
 
-from commun import horodatage, iso_mois, mois_annee
+from commun import REPO_ROOT, horodatage, iso_mois, mois_annee
 
 import forecast_archive as fa                   # noqa: E402
 import queries as q                             # noqa: E402
@@ -13,6 +15,111 @@ import queries as q                             # noqa: E402
 def _fmt_vintage(value) -> str:
     """« juin 2024 » — les millésimes sont des MOIS de données, pas des jours."""
     return mois_annee(pd.Timestamp(value))
+
+
+#: Instantané daté des prévisions rétro d'autres modèles, produit par le banc d'essai
+#: (`bench/tsfm_benchmark.py`, qui demande torch et les poids des modèles : le job
+#: hebdomadaire ne le refait PAS). Copié à la main dans `data/` ; sa date est dans la
+#: colonne `mesure_le` et la page l'affiche. Le réalisé n'y est pas, comme dans l'archive.
+COMPARAISON_PATH = os.path.join(REPO_ROOT, "data", "comparaison_modeles.csv")
+
+#: L'ordre et les libellés de la comparaison. La naïve et le modèle publié viennent de
+#: l'archive ; la combinaison est la moyenne 50/50 du modèle publié et de Timestral, fixée
+#: d'avance (aucun poids appris sur la période jugée).
+_METHODES = [
+    ("naive", "Prévision naïve", "le dernier chiffre connu, prolongé"),
+    ("modele", "Modèle publié", "taux de crédit, intentions d'achat, chômage (économétrie)"),
+    ("holt_winters", "Holt-Winters", "lissage exponentiel saisonnier des ventes mensuelles"),
+    ("timestral", "Timestral (Mistral)",
+     "modèle de fondation, ventes mensuelles + les trois mêmes indicateurs"),
+    ("combinaison", "Combinaison", "moyenne du modèle publié et de Timestral"),
+]
+
+#: Mêmes plages que le seuil d'entrée (`verdict._HORIZON_BLOCS`).
+_BLOCS = [("1-3", 1, 3), ("4-6", 4, 6), ("7-12", 7, 12), ("13-18", 13, 18)]
+
+#: L'horizon du graphique « chaque modèle contre le réel » : celui que vise le verdict.
+HORIZON_COURBE = 6
+
+#: Ce que le site publie, dit en clair à côté de la comparaison. C'est un choix d'auteur :
+#: il vit dans le générateur, pas dans le texte statique de la page, parce que le verdict
+#: de la comparaison (la combinaison passe-t-elle le seuil d'entrée ?) est CALCULÉ — si un
+#: futur instantané le renverse, la phrase suit d'elle-même.
+def _statut(blocs_modele: list, blocs_combo: list | None) -> str:
+    publie = "La prévision publiée reste celle du modèle économétrique."
+    if not blocs_combo:
+        return publie
+    gains = [1 - c["mape"] / m["mape"] for m, c in zip(blocs_modele, blocs_combo) if m["mape"]]
+    if sum(g >= 0.05 for g in gains) >= 3:
+        return (publie + " La combinaison fait mieux en rétro-simulation, sur au moins trois "
+                "des quatre plages d'horizon ; mais une rétro-simulation montre que la "
+                "méthode aurait tenu, pas qu'elle tiendra. Elle devra d'abord faire ses "
+                "preuves en conditions réelles avant de remplacer le modèle.")
+    return (publie + " La combinaison ne fait pas assez mieux pour passer le seuil d'entrée "
+            "du site (au moins 5 % d'erreur évitée sur trois des quatre plages d'horizon).")
+
+
+def _comparaison_modeles(archive: pd.DataFrame, realized: pd.Series,
+                         path: str = COMPARAISON_PATH) -> dict | None:
+    """Les autres modèles du banc d'essai, jugés comme le modèle publié.
+
+    Uniquement des lignes `retro` : l'instantané est une rétro-simulation, et le modèle
+    publié y est comparé sur SES lignes `retro`, jamais sur les `archive` publiées.
+    Renvoie None tant que l'instantané n'existe pas — la page masque alors la section.
+    """
+    if not os.path.exists(path):
+        return None
+    autres = pd.read_csv(path)
+    retro = archive[archive["kind"] == "retro"]
+    if autres.empty or retro.empty:
+        return None
+    cle = ["data_vintage", "horizon"]
+    large = retro.set_index(cle)[["target_month", "predicted", "naive"]].rename(
+        columns={"predicted": "modele"})
+    for m, g in autres.groupby("methode"):
+        large = large.join(g.set_index(cle)["predicted"].rename(m), how="inner")
+    if "timestral" in large:
+        large["combinaison"] = (large["modele"] + large["timestral"]) / 2
+    obs = realized.dropna()
+    obs.index = pd.to_datetime(obs.index)
+    large["realise"] = pd.to_datetime(large["target_month"]).map(obs)
+    large = large[large["realise"].notna()].reset_index()
+
+    presentes = [m for m in _METHODES if m[0] in large]
+    ape = {m[0]: (large[m[0]] - large["realise"]).abs() / large["realise"] * 100
+           for m in presentes}
+    par_h = pd.DataFrame(ape).assign(horizon=large["horizon"]).groupby("horizon").mean()
+
+    methodes = []
+    for k, label, desc in presentes:
+        blocs = []
+        for b, lo, hi in _BLOCS:
+            if par_h.loc[lo:hi].empty:        # plage pas encore échue : pas de NaN publié
+                continue
+            mape, naive = float(par_h.loc[lo:hi, k].mean()), float(par_h.loc[lo:hi, "naive"].mean())
+            blocs.append({"bloc": b, "mape": round(mape, 2),
+                          "skill_pct": round((1 - mape / naive) * 100, 1) if naive else None})
+        sens = (np.sign(large[k] - large["naive"]) == np.sign(large["realise"] - large["naive"]))
+        methodes.append({"cle": k, "label": label, "description": desc, "blocs": blocs,
+                         "direction": (None if k == "naive"
+                                       else round(float(sens.mean()), 3))})
+
+    h = large[large["horizon"] == HORIZON_COURBE].sort_values("target_month")
+    courbe = [{"date": iso_mois(r["target_month"]), "realise": int(r["realise"]),
+               **{m[0]: int(round(r[m[0]])) for m in presentes}}
+              for _, r in h.iterrows()]
+    return {
+        "mesure_le": str(autres["mesure_le"].iloc[0]),
+        "n_vintages": int(large["data_vintage"].nunique()),
+        "first_vintage": iso_mois(large["data_vintage"].min()),
+        "last_vintage": iso_mois(large["data_vintage"].max()),
+        "horizon_courbe": HORIZON_COURBE,
+        "statut": _statut(next(m["blocs"] for m in methodes if m["cle"] == "modele"),
+                          next((m["blocs"] for m in methodes if m["cle"] == "combinaison"),
+                               None)),
+        "methodes": methodes,
+        "courbe": courbe,
+    }
 
 
 def build_archive(con, frames: dict) -> dict:
@@ -147,6 +254,7 @@ def build_archive(con, frames: dict) -> dict:
         "current": current,
         "realized": series,
         "naive_label": "Prévision naïve (le marché reste où il est)",
+        "comparaison": _comparaison_modeles(archive, realized),
     }
 
 

@@ -246,7 +246,7 @@ def test_aucun_gabarit_ne_rend_plusieurs_cellules_sans_leur_ligne():
 
 PAGES_DE_DONNEES = ["synthese", "neuf", "ancien", "carte", "non-residentiel", "macro",
                     "actualites",
-                    "previsions", "previsions-passees", "donnees"]
+                    "previsions", "methode-prevision", "previsions-passees", "donnees"]
 
 
 def _chapeau(nom):
