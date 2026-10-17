@@ -971,3 +971,34 @@ combinaison y gagne aussi.
 suppose torch et le téléchargement des poids dans le job hebdomadaire, une bande
 recalibrée sur l'archive de la combinaison, et l'ouverture d'une nouvelle série `archive`
 — les lignes publiées du modèle actuel ne se réécrivent pas.
+
+## 2026-10-17 (suite) — Covariables supplémentaires, taux futur connu, XGBoost
+
+Même banc d'essai (`bench/tsfm_benchmark.py`), même protocole. Chaque ajout est jugé
+contre la variante à trois prédicteurs DU MÊME modèle, au seuil de la porte d'entrée.
+
+**Quatrième covariable (OAT, production de crédits, confiance, prix, rénovation) : aucune
+ne passe**, sur aucun des trois modèles (Chronos-2, Timestral-123M, Timestral-209M). Le
+meilleur cas, la production de crédits sur Timestral-209M, plafonne à +4,5 % sur deux
+blocs ; les prix dégradent partout (−2 à −5 %). Les trois prédicteurs du modèle publié
+restent le bon jeu — même conclusion que pour l'économétrie, par un autre chemin.
+
+**Taux de crédit futur connu** (étage 1 : `fit_rate_model` + `rate_path` sur la macro
+tronquée, report à plat au-delà, passé en covariable future) : refusé. Chronos-2 gagne
++1 à +4 % (sous le seuil) ; Timestral PERD 7 à 12 % au-delà de 3 mois. Hypothèse : le
+report à plat au-delà des quelques mois que fixe l'OAT est lu par Timestral comme une
+information certaine, alors que les prédicteurs passés seuls le laissaient extrapoler.
+Pas une raison de re-tester sans idée nouvelle sur la forme du futur fourni.
+
+**XGBoost** (stratégie directe, un modèle par horizon, réglages fixés d'avance, mêmes
+trois prédicteurs en variables) — MAPE 1,64 / 4,07 / 8,36 / 12,06, moins bon que la
+naïve à 7-12 mois ; sa combinaison avec le modèle ne gagne que +1,4 % à 7-12. Attendu
+sur UNE série de ~280 points : le gradient boosting gagne quand il apprend sur beaucoup
+de séries à la fois, pas sur une seule.
+
+**Bilan des options (MAPE 1-3 / 4-6 / 7-12 / 13-18)** : naïve 2,2 / 5,0 / 8,5 / 11,9 ;
+modèle publié 3,9 / 5,3 / 6,2 / 7,1 ; Holt-Winters sur flux 1,8 / 3,6 / 7,1 / 12,0 ;
+XGBoost 1,6 / 4,1 / 8,4 / 12,1 ; Timestral-123M + 3 prédicteurs 1,5 / 2,6 / 5,0 / 8,5 ;
+Chronos-2 idem 1,6 / 2,6 / 5,0 / 8,4 ; modèle publié + Timestral-209M 50/50
+2,1 / 3,0 / 4,4 / 7,0. La combinaison reste la seule option qui gagne sur les trois
+premiers blocs sans rien perdre au-delà d'un an.
