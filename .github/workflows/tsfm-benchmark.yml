@@ -2,8 +2,8 @@ name: Banc d'essai TSFM
 
 # Fait tourner bench/tsfm_benchmark.py avec les modèles de fondation (Chronos-2, Timestral).
 # Les poids se téléchargent depuis Hugging Face : le runner GitHub y a accès, ce que n'ont
-# pas tous les postes de travail. Ne touche à rien de la chaîne de publication : aucun
-# commit, aucun JSON du site. Les résultats sortent en artefact et dans le résumé du job.
+# pas tous les postes de travail. Ne touche à rien de la chaîne de publication : aucun commit
+# sur main, aucun JSON du site. Résultats : artefact, résumé du job et branche de test.
 on:
   push:
     branches: ["bench/**"]
@@ -11,7 +11,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write               # le rapport revient sur la branche bench/** (pas main)
 
 concurrency:
   group: tsfm-benchmark-${{ github.ref }}
@@ -50,3 +50,19 @@ jobs:
         with:
           name: tsfm-benchmark
           path: bench/results/
+
+      # Le rapport et la synthèse reviennent aussi sur la branche de test (jamais sur
+      # main) : lisibles sans télécharger d'artefact. Un commit fait avec GITHUB_TOKEN ne
+      # relance pas ce workflow.
+      - name: Committer le rapport sur la branche de test
+        if: startsWith(github.ref, 'refs/heads/bench/')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bench/results/rapport.md bench/results/synthese.json
+          if git diff --cached --quiet; then
+            echo "Rapport inchangé."
+          else
+            git commit -m "bench: résultats du banc d'essai TSFM (${GITHUB_SHA::7})"
+            git push
+          fi
