@@ -324,6 +324,23 @@ pas des prévisions publiées à leur date.
 const CMP = A.comparaison ?? null;
 const CMP_COULEURS = {naive: ui.greyLine, modele: series.blue, holt_winters: series.gold,
                       timestral: series.violet, combinaison: series.green};
+
+// Les dix-huit mois de chaque méthode, millésime par millésime. L'export n'envoie que ce
+// que l'archive n'a pas déjà (Holt-Winters et Timestral, en chaînes compactes) : le modèle
+// publié vient des faisceaux, la naïve du réalisé au millésime (la série courante, donc
+// révisée — l'écart avec la naïve stockée dans l'archive est de l'ordre de l'arrondi), la
+// combinaison de la moyenne fixée d'avance.
+const reelParMois = new Map(A.realized.map((r) => [r.date, r.value]));
+const fansParMillesime = new Map(RETRO.fans.map((f) => [f.vintage, f.points]));
+const CMP_TRAJ = CMP ? CMP.trajectoires.map((t) => {
+  const pts = fansParMillesime.get(t.vintage) ?? [];
+  const hw = t.holt_winters.split(",").map(Number);
+  const ts = t.timestral.split(",").map(Number);
+  const naive = reelParMois.get(t.vintage);
+  return {vintage: t.vintage, mois: pts.map((q) => q[0]), valeurs: {
+    naive: pts.map(() => naive), modele: pts.map((q) => q[1]), holt_winters: hw,
+    timestral: ts, combinaison: pts.map((q, i) => Math.round((q[1] + ts[i]) / 2))}};
+}).filter((t) => t.mois.length === 18 && t.valeurs.naive[0] != null) : [];
 ```
 
 ```js
@@ -358,7 +375,7 @@ if (CMP) {
 ```js
 // Un graphique à six courbes ne se lit pas : on choisit ce qu'on compare, le réalisé
 // reste toujours affiché. Par défaut, le modèle publié et la combinaison — la question
-// que pose cette section.
+// que pose cette section. Le même choix pilote les deux graphiques qui suivent.
 const CMP_CHOIX = CMP ? Inputs.checkbox(
   CMP.methodes.map((m) => m.label),
   {label: "Afficher", value: CMP.methodes.filter((m) => ["modele", "combinaison"].includes(m.cle))
@@ -367,19 +384,77 @@ const cmpActifs = CMP_CHOIX ? view(CMP_CHOIX) : null;
 ```
 
 ```js
-if (CMP) {
+// LE DÉPART AU CHOIX — repris de la démonstration de Timestral (Mistral, 2026-10-15) : on
+// choisit une date et on voit ce que chaque méthode annonçait pour les dix-huit mois
+// suivants, avec les seules données connues alors. Par défaut, juin 2022, à l'entrée du
+// choc de taux : l'épisode où les méthodes divergent le plus.
+const CMP_DEPART = CMP_TRAJ.length ? Inputs.select(CMP_TRAJ.map((t) => t.vintage), {
+  label: "Prévision partie de", format: moisFR,
+  value: CMP_TRAJ.some((t) => t.vintage === "2022-06-01") ? "2022-06-01"
+                                                          : CMP_TRAJ[CMP_TRAJ.length - 1].vintage,
+}) : null;
+const cmpDepart = CMP_DEPART ? view(CMP_DEPART) : null;
+```
+
+```js
+if (CMP_TRAJ.length) {
+  const t = CMP_TRAJ.find((x) => x.vintage === cmpDepart);
+  const debut = new Date(t.vintage); debut.setUTCFullYear(debut.getUTCFullYear() - 2);
+  const fin = new Date(t.mois[17]);
+  const reelFenetre = A.realized.filter((r) => d(r.date) >= debut && d(r.date) <= fin)
+                                .map((r) => ({date: d(r.date), value: r.value}));
+  const actives = CMP.methodes.filter((m) => cmpActifs.includes(m.label));
+  const lignes = actives.flatMap((m) => [{date: d(t.vintage), value: reelParMois.get(t.vintage),
+                                          serie: m.label, cle: m.cle}]
+    .concat(t.mois.map((mo, i) => ({date: d(mo), value: t.valeurs[m.cle][i], serie: m.label,
+                                    cle: m.cle}))));
+  display(html`<div class="hm-chart-title">Ce que chaque méthode annonçait en
+    ${moisFR(t.vintage)} <span class="sub">dix-huit mois de prévision à partir des seules
+    données connues à cette date, face à ce qui s'est passé</span></div>`);
+  display(withCsvExport(Plot.plot({
+    width, height: 360, marginLeft: 62, marginRight: 16,
+    x: {label: null},
+    y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
+        tickFormat: (v) => nf0.format(v / 1000) + " k"},
+    marks: [
+      Plot.ruleX([d(t.vintage)], {stroke: ui.subtle, strokeDasharray: "3 3"}),
+      Plot.text([{x: d(t.vintage)}], {x: "x", frameAnchor: "top", dy: 4, dx: 4,
+        text: () => "départ de la prévision →", fill: ui.subtle, textAnchor: "start", fontSize: 12}),
+      Plot.line(lignes, {x: "date", y: "value", z: "serie",
+                         stroke: (r) => CMP_COULEURS[r.cle], strokeWidth: 2,
+                         strokeDasharray: "5 3"}),
+      Plot.line(reelFenetre, {x: "date", y: "value", stroke: series.brick, strokeWidth: 2.5}),
+      Plot.tip(lignes, Plot.pointer({x: "date", y: "value", ...TIP,
+        title: (r) => `${moisFR(r.date.toISOString().slice(0, 10))}\n${r.serie} : ${nf0.format(r.value)}`})),
+    ],
+  }), lignes.map(({date, value, serie}) => ({date, value, serie})), "previsions-passees-depart-" + t.vintage));
+  display(html`<div class="hm-legend hm-legend--static">${[
+    {name: "Réalisé (cumul 12 mois)", color: series.brick},
+    ...actives.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: true}))
+  ].map((m) => html`<span class="hm-legend-item"><span class="hm-swatch" style=${m.dash
+    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
+    : {background: m.color}}></span>${m.name}</span>`)}</div>`);
+}
+```
+
+```js
+// LA VUE D'ENSEMBLE : chaque méthode à un horizon fixe, sur toute la période. Reconstruite
+// à partir des trajectoires (le point de rang `horizon_courbe` de chaque millésime) plutôt
+// qu'exportée une seconde fois.
+if (CMP_TRAJ.length) {
+  const h = CMP.horizon_courbe - 1;
   display(html`<div class="hm-chart-title">Chaque méthode à ${CMP.horizon_courbe} mois,
-    face au réel <span class="sub">chaque point est ce que la méthode annonçait
-    ${CMP.horizon_courbe} mois plus tôt pour ce mois-là, avec les seules données connues
-    alors</span></div>`);
+    sur toute la période <span class="sub">chaque point est ce que la méthode annonçait
+    ${CMP.horizon_courbe} mois plus tôt pour ce mois-là</span></div>`);
   const REEL_CMP = "Réalisé (cumul 12 mois)";
   const meta = [{name: REEL_CMP, color: series.brick}].concat(
-    CMP.methodes.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle],
-                              dash: m.cle === "naive"})));
+    CMP.methodes.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: m.cle === "naive"})));
   display(multiLine({
-    rows: CMP.courbe.flatMap((p) => [
-      {date: p.date, value: p.realise, series: REEL_CMP},
-      ...CMP.methodes.map((m) => ({date: p.date, value: p[m.cle], series: m.label}))]),
+    rows: CMP_TRAJ.flatMap((t) => {
+      const date = t.mois[h], reel = reelParMois.get(date);
+      return (reel == null ? [] : [{date, value: reel, series: REEL_CMP}]).concat(
+        CMP.methodes.map((m) => ({date, value: t.valeurs[m.cle][h], series: m.label})));
+    }),
     meta, active: new Set([REEL_CMP, ...cmpActifs]),
     yLabel: "Transactions (cumul 12 mois)", valueFmt: (v) => nf0.format(v), lastLabels: false,
     width, filename: "previsions-passees-comparaison-modeles"

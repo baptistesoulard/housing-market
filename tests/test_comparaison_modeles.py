@@ -52,8 +52,16 @@ def test_sans_instantane_la_section_disparait(tmp_path):
 
 def test_la_combinaison_est_la_moyenne_du_modele_et_de_timestral(tmp_path):
     c = pa._comparaison_modeles(_archive(), _realise(), _instantane(tmp_path, timestral=100.0))
-    point = c["courbe"][0]
-    assert point["combinaison"] == (point["modele"] + point["timestral"]) / 2 == 105
+    combo = next(m for m in c["methodes"] if m["cle"] == "combinaison")
+    assert combo["blocs"][0]["mape"] == 5.0             # (110 + 100) / 2 contre 100
+
+
+def test_les_trajectoires_sont_des_chaines_de_dix_huit_valeurs(tmp_path):
+    """Le modèle publié n'y est pas : il est déjà dans les faisceaux de l'archive."""
+    c = pa._comparaison_modeles(_archive(), _realise(), _instantane(tmp_path, hw=97.0))
+    t = c["trajectoires"][0]
+    assert set(t) == {"vintage", "holt_winters", "timestral"}
+    assert t["holt_winters"].split(",") == ["97"] * 18
 
 
 def test_les_erreurs_et_l_erreur_evitee_par_plage(tmp_path):

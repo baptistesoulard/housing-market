@@ -104,10 +104,25 @@ def _comparaison_modeles(archive: pd.DataFrame, realized: pd.Series,
                          "direction": (None if k == "naive"
                                        else round(float(sens.mean()), 3))})
 
-    h = large[large["horizon"] == HORIZON_COURBE].sort_values("target_month")
-    courbe = [{"date": iso_mois(r["target_month"]), "realise": int(r["realise"]),
-               **{m[0]: int(round(r[m[0]])) for m in presentes}}
-              for _, r in h.iterrows()]
+    # LES TRAJECTOIRES, millésime par millésime — l'idée reprise de la démonstration de
+    # Timestral : on choisit une date de départ et on voit ce que chaque méthode annonçait
+    # pour les dix-huit mois suivants, face au réel. Seules les deux méthodes que l'archive
+    # n'a pas sont stockées : le modèle publié est déjà dans `kinds.retro.fans`, la naïve se
+    # lit sur le réalisé au millésime, la combinaison se recalcule dans la page. Chaque
+    # trajectoire est une CHAÎNE « v1,v2,…,v18 » : ce fichier est écrit indenté (on le relit
+    # dans un diff), et une liste de 18 entiers indentée y prendrait 18 lignes — 7 000 en
+    # tout. Le graphique « à six mois » se reconstruit à partir de ces trajectoires.
+    extra = [m[0] for m in presentes if m[0] in ("holt_winters", "timestral")]
+    tout = retro.set_index(cle)[["target_month"]]
+    for m, g in autres.groupby("methode"):
+        tout = tout.join(g.set_index(cle)["predicted"].rename(m), how="inner")
+    tout = tout.reset_index()
+    trajectoires = [
+        {"vintage": iso_mois(v),
+         **{m: ",".join(str(int(round(x))) for x in g.sort_values("horizon")[m]) for m in extra}}
+        for v, g in tout.groupby("data_vintage") if len(g) == 18
+    ]
+
     return {
         "mesure_le": str(autres["mesure_le"].iloc[0]),
         "n_vintages": int(large["data_vintage"].nunique()),
@@ -118,7 +133,7 @@ def _comparaison_modeles(archive: pd.DataFrame, realized: pd.Series,
                           next((m["blocs"] for m in methodes if m["cle"] == "combinaison"),
                                None)),
         "methodes": methodes,
-        "courbe": courbe,
+        "trajectoires": trajectoires,
     }
 
 
