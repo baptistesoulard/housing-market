@@ -1,13 +1,14 @@
 {
  "controle_ecarts": [],
  "durees_s": {
-  "ets_tx12": 7.877720594406128,
-  "hw_flux": 23.271265506744385,
-  "chronos2": 39.11448359489441,
-  "timestral-5M": 4.799327850341797,
-  "timestral-28M": 17.743157863616943,
-  "timestral-123M": 69.34484910964966,
-  "timestral-209M": 114.72859168052673
+  "ets_tx12": 7.864384174346924,
+  "hw_flux": 23.27504849433899,
+  "chronos2": 190.94959497451782,
+  "timestral-123M": 472.8970105648041,
+  "timestral-209M": 777.3404459953308
+ },
+ "erreurs": {
+  "xgb_direct": "Traceback (most recent call last):\n  File \"/home/runner/work/housing-market/housing-market/bench/tsfm_benchmark.py\", line 524, in main\n    lignes += f()\n              ^^^\n  File \"/home/runner/work/housing-market/housing-market/bench/tsfm_benchmark.py\", line 512, in <lambda>\n    taches[\"xgb_direct\"] = lambda: xgb_direct(d)\n                                   ^^^^^^^^^^^^^\n  File \"/home/runner/work/housing-market/housing-market/bench/tsfm_benchmark.py\", line 215, in xgb_direct\n    mdl = XGBRegressor(**XGB_PARAMS).fit(tr.drop(columns=\"y\"), tr[\"y\"])\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/core.py\", line 569, in inner_f\n    return func(**kwargs)\n           ^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/sklearn.py\", line 2058, in __init__\n    super().__init__(objective=objective, **kwargs)\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/core.py\", line 569, in inner_f\n    return func(**kwargs)\n           ^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/sklearn.py\", line 917, in __init__\n    raise ImportError(\nImportError: sklearn needs to be installed in order to use this module\n"
  },
  "resultats": {
   "chronos2_flux": {
@@ -196,6 +197,576 @@
    ],
    "mape_globale": 5.18,
    "direction": 0.781,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "chronos2_flux_cov+confiance": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.56,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.298,
+     "skill_vs_modele": 0.602
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.64,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.475,
+     "skill_vs_modele": 0.505
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.96,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.419,
+     "skill_vs_modele": 0.202
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.12,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.316,
+     "skill_vs_modele": -0.146
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 3.73,
+     "naive_mape": 13.1,
+     "skill": 0.716,
+     "direction": 0.94
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.61,
+     "naive_mape": 8.21,
+     "skill": 0.56,
+     "direction": 0.898
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.33,
+     "naive_mape": 7.33,
+     "skill": 0.274,
+     "direction": 0.799
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.53,
+     "naive_mape": 5.03,
+     "skill": 0.101,
+     "direction": 0.684
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.63,
+     "naive_mape": 7.86,
+     "skill": 0.03,
+     "direction": 0.65
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.6,
+     "naive_mape": 11.84,
+     "skill": 0.527,
+     "direction": 0.92
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.13,
+     "naive_mape": 3.9,
+     "skill": 0.454,
+     "direction": 0.729
+    }
+   ],
+   "mape_globale": 5.06,
+   "direction": 0.792,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "chronos2_flux_cov+credits": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.55,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.307,
+     "skill_vs_modele": 0.606
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.57,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.488,
+     "skill_vs_modele": 0.517
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.99,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.416,
+     "skill_vs_modele": 0.198
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.7,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.267,
+     "skill_vs_modele": -0.228
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 2.72,
+     "naive_mape": 13.1,
+     "skill": 0.792,
+     "direction": 0.94
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.95,
+     "naive_mape": 8.21,
+     "skill": 0.519,
+     "direction": 0.84
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.7,
+     "naive_mape": 7.33,
+     "skill": 0.223,
+     "direction": 0.765
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.6,
+     "naive_mape": 5.03,
+     "skill": 0.086,
+     "direction": 0.633
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.64,
+     "naive_mape": 7.86,
+     "skill": 0.028,
+     "direction": 0.648
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 6.19,
+     "naive_mape": 11.84,
+     "skill": 0.477,
+     "direction": 0.906
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.89,
+     "naive_mape": 3.9,
+     "skill": 0.516,
+     "direction": 0.803
+    }
+   ],
+   "mape_globale": 5.25,
+   "direction": 0.766,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "chronos2_flux_cov+oat": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.58,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.29,
+     "skill_vs_modele": 0.597
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.72,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.458,
+     "skill_vs_modele": 0.489
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.19,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.392,
+     "skill_vs_modele": 0.165
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.47,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.286,
+     "skill_vs_modele": -0.195
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 4.28,
+     "naive_mape": 13.1,
+     "skill": 0.673,
+     "direction": 0.912
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.89,
+     "naive_mape": 8.21,
+     "skill": 0.526,
+     "direction": 0.833
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.74,
+     "naive_mape": 7.33,
+     "skill": 0.217,
+     "direction": 0.755
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.32,
+     "naive_mape": 5.03,
+     "skill": 0.143,
+     "direction": 0.698
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.67,
+     "naive_mape": 7.86,
+     "skill": 0.024,
+     "direction": 0.62
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 6.0,
+     "naive_mape": 11.84,
+     "skill": 0.494,
+     "direction": 0.897
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.44,
+     "naive_mape": 3.9,
+     "skill": 0.374,
+     "direction": 0.707
+    }
+   ],
+   "mape_globale": 5.27,
+   "direction": 0.767,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "chronos2_flux_cov+prix": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.58,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.293,
+     "skill_vs_modele": 0.599
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.67,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.468,
+     "skill_vs_modele": 0.498
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.15,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.397,
+     "skill_vs_modele": 0.173
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.73,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.264,
+     "skill_vs_modele": -0.232
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 3.75,
+     "naive_mape": 13.1,
+     "skill": 0.714,
+     "direction": 0.931
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.86,
+     "naive_mape": 8.21,
+     "skill": 0.53,
+     "direction": 0.838
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.56,
+     "naive_mape": 7.33,
+     "skill": 0.242,
+     "direction": 0.77
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.59,
+     "naive_mape": 5.03,
+     "skill": 0.088,
+     "direction": 0.676
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.59,
+     "naive_mape": 7.86,
+     "skill": 0.035,
+     "direction": 0.623
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 6.66,
+     "naive_mape": 11.84,
+     "skill": 0.437,
+     "direction": 0.903
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.76,
+     "naive_mape": 3.9,
+     "skill": 0.55,
+     "direction": 0.835
+    }
+   ],
+   "mape_globale": 5.33,
+   "direction": 0.775,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "chronos2_flux_cov+reno": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.57,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.297,
+     "skill_vs_modele": 0.601
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.64,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.474,
+     "skill_vs_modele": 0.504
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.02,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.412,
+     "skill_vs_modele": 0.193
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.46,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.287,
+     "skill_vs_modele": -0.194
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 4.02,
+     "naive_mape": 13.1,
+     "skill": 0.693,
+     "direction": 0.931
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.07,
+     "naive_mape": 8.21,
+     "skill": 0.505,
+     "direction": 0.875
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.51,
+     "naive_mape": 7.33,
+     "skill": 0.249,
+     "direction": 0.767
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.36,
+     "naive_mape": 5.03,
+     "skill": 0.134,
+     "direction": 0.692
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.53,
+     "naive_mape": 7.86,
+     "skill": 0.042,
+     "direction": 0.613
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 6.08,
+     "naive_mape": 11.84,
+     "skill": 0.486,
+     "direction": 0.904
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.79,
+     "naive_mape": 3.9,
+     "skill": 0.54,
+     "direction": 0.787
+    }
+   ],
+   "mape_globale": 5.2,
+   "direction": 0.779,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "chronos2_flux_cov_futur": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.5,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.326,
+     "skill_vs_modele": 0.618
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.52,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.498,
+     "skill_vs_modele": 0.526
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.96,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.419,
+     "skill_vs_modele": 0.202
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.17,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.311,
+     "skill_vs_modele": -0.153
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 2.25,
+     "naive_mape": 13.1,
+     "skill": 0.829,
+     "direction": 0.977
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.99,
+     "naive_mape": 8.21,
+     "skill": 0.514,
+     "direction": 0.829
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.33,
+     "naive_mape": 7.33,
+     "skill": 0.273,
+     "direction": 0.773
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.42,
+     "naive_mape": 5.03,
+     "skill": 0.122,
+     "direction": 0.701
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.3,
+     "naive_mape": 7.86,
+     "skill": 0.071,
+     "direction": 0.653
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.87,
+     "naive_mape": 11.84,
+     "skill": 0.504,
+     "direction": 0.889
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.99,
+     "naive_mape": 3.9,
+     "skill": 0.233,
+     "direction": 0.654
+    }
+   ],
+   "mape_globale": 5.05,
+   "direction": 0.775,
    "couverture_10_90": null,
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
@@ -481,6 +1052,576 @@
    ],
    "mape_globale": 4.81,
    "direction": 0.798,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_chronos2_flux_cov+confiance": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.2,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.013,
+     "skill_vs_modele": 0.44
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.29,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.345,
+     "skill_vs_modele": 0.382
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.9,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.426,
+     "skill_vs_modele": 0.212
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.93,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.416,
+     "skill_vs_modele": 0.023
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.41,
+     "naive_mape": 13.1,
+     "skill": 0.511,
+     "direction": 0.829
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.71,
+     "naive_mape": 8.21,
+     "skill": 0.548,
+     "direction": 0.877
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.78,
+     "naive_mape": 7.33,
+     "skill": 0.212,
+     "direction": 0.771
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.8,
+     "naive_mape": 5.03,
+     "skill": 0.246,
+     "direction": 0.686
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.97,
+     "naive_mape": 7.86,
+     "skill": 0.114,
+     "direction": 0.688
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.25,
+     "naive_mape": 11.84,
+     "skill": 0.641,
+     "direction": 0.96
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.68,
+     "naive_mape": 3.9,
+     "skill": 0.313,
+     "direction": 0.601
+    }
+   ],
+   "mape_globale": 4.86,
+   "direction": 0.782,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_chronos2_flux_cov+credits": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.17,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.028,
+     "skill_vs_modele": 0.448
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.16,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.37,
+     "skill_vs_modele": 0.406
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.78,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.44,
+     "skill_vs_modele": 0.231
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.22,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.392,
+     "skill_vs_modele": -0.018
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.05,
+     "naive_mape": 13.1,
+     "skill": 0.538,
+     "direction": 0.824
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.9,
+     "naive_mape": 8.21,
+     "skill": 0.525,
+     "direction": 0.877
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.7,
+     "naive_mape": 7.33,
+     "skill": 0.223,
+     "direction": 0.808
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.88,
+     "naive_mape": 5.03,
+     "skill": 0.229,
+     "direction": 0.675
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.76,
+     "naive_mape": 7.86,
+     "skill": 0.14,
+     "direction": 0.727
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.59,
+     "naive_mape": 11.84,
+     "skill": 0.613,
+     "direction": 0.949
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.46,
+     "naive_mape": 3.9,
+     "skill": 0.369,
+     "direction": 0.67
+    }
+   ],
+   "mape_globale": 4.89,
+   "direction": 0.794,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_chronos2_flux_cov+oat": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.19,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.02,
+     "skill_vs_modele": 0.443
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.23,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.358,
+     "skill_vs_modele": 0.394
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.86,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.43,
+     "skill_vs_modele": 0.218
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.03,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.407,
+     "skill_vs_modele": 0.008
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.96,
+     "naive_mape": 13.1,
+     "skill": 0.469,
+     "direction": 0.806
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.64,
+     "naive_mape": 8.21,
+     "skill": 0.556,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.68,
+     "naive_mape": 7.33,
+     "skill": 0.225,
+     "direction": 0.787
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.64,
+     "naive_mape": 5.03,
+     "skill": 0.277,
+     "direction": 0.721
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.8,
+     "naive_mape": 7.86,
+     "skill": 0.135,
+     "direction": 0.725
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.55,
+     "naive_mape": 11.84,
+     "skill": 0.616,
+     "direction": 0.949
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.92,
+     "naive_mape": 3.9,
+     "skill": 0.251,
+     "direction": 0.606
+    }
+   ],
+   "mape_globale": 4.87,
+   "direction": 0.796,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_chronos2_flux_cov+prix": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.13,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.047,
+     "skill_vs_modele": 0.459
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.05,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.393,
+     "skill_vs_modele": 0.427
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.59,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.463,
+     "skill_vs_modele": 0.263
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.0,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.41,
+     "skill_vs_modele": 0.012
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.17,
+     "naive_mape": 13.1,
+     "skill": 0.606,
+     "direction": 0.852
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.84,
+     "naive_mape": 8.21,
+     "skill": 0.532,
+     "direction": 0.882
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.34,
+     "naive_mape": 7.33,
+     "skill": 0.272,
+     "direction": 0.806
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.78,
+     "naive_mape": 5.03,
+     "skill": 0.25,
+     "direction": 0.7
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.72,
+     "naive_mape": 7.86,
+     "skill": 0.145,
+     "direction": 0.72
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.68,
+     "naive_mape": 11.84,
+     "skill": 0.605,
+     "direction": 0.944
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.37,
+     "naive_mape": 3.9,
+     "skill": 0.392,
+     "direction": 0.654
+    }
+   ],
+   "mape_globale": 4.72,
+   "direction": 0.799,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_chronos2_flux_cov+reno": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.17,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.027,
+     "skill_vs_modele": 0.448
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.15,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.373,
+     "skill_vs_modele": 0.408
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.7,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.449,
+     "skill_vs_modele": 0.244
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.95,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.414,
+     "skill_vs_modele": 0.019
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.82,
+     "naive_mape": 13.1,
+     "skill": 0.479,
+     "direction": 0.806
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.73,
+     "naive_mape": 8.21,
+     "skill": 0.546,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.51,
+     "naive_mape": 7.33,
+     "skill": 0.249,
+     "direction": 0.799
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.67,
+     "naive_mape": 5.03,
+     "skill": 0.272,
+     "direction": 0.713
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.68,
+     "naive_mape": 7.86,
+     "skill": 0.15,
+     "direction": 0.722
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.4,
+     "naive_mape": 11.84,
+     "skill": 0.628,
+     "direction": 0.948
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.48,
+     "naive_mape": 3.9,
+     "skill": 0.363,
+     "direction": 0.66
+    }
+   ],
+   "mape_globale": 4.77,
+   "direction": 0.799,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_chronos2_flux_cov_futur": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.15,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.034,
+     "skill_vs_modele": 0.452
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.14,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.374,
+     "skill_vs_modele": 0.41
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.68,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.452,
+     "skill_vs_modele": 0.248
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.91,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.417,
+     "skill_vs_modele": 0.025
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.89,
+     "naive_mape": 13.1,
+     "skill": 0.551,
+     "direction": 0.829
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.88,
+     "naive_mape": 8.21,
+     "skill": 0.527,
+     "direction": 0.88
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.04,
+     "naive_mape": 7.33,
+     "skill": 0.313,
+     "direction": 0.782
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.67,
+     "naive_mape": 5.03,
+     "skill": 0.27,
+     "direction": 0.716
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.86,
+     "naive_mape": 7.86,
+     "skill": 0.127,
+     "direction": 0.678
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.74,
+     "naive_mape": 11.84,
+     "skill": 0.6,
+     "direction": 0.934
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 3.25,
+     "naive_mape": 3.9,
+     "skill": 0.167,
+     "direction": 0.606
+    }
+   ],
+   "mape_globale": 4.75,
+   "direction": 0.786,
    "couverture_10_90": null,
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
@@ -960,6 +2101,576 @@
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
   },
+  "combo_timestral123M_flux_cov+confiance": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.13,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.045,
+     "skill_vs_modele": 0.458
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.09,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.386,
+     "skill_vs_modele": 0.421
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.57,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.465,
+     "skill_vs_modele": 0.265
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.98,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.411,
+     "skill_vs_modele": 0.014
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.38,
+     "naive_mape": 13.1,
+     "skill": 0.589,
+     "direction": 0.852
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.99,
+     "naive_mape": 8.21,
+     "skill": 0.514,
+     "direction": 0.882
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.08,
+     "naive_mape": 7.33,
+     "skill": 0.307,
+     "direction": 0.808
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.81,
+     "naive_mape": 5.03,
+     "skill": 0.243,
+     "direction": 0.652
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.12,
+     "naive_mape": 7.86,
+     "skill": 0.094,
+     "direction": 0.671
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.49,
+     "naive_mape": 11.84,
+     "skill": 0.621,
+     "direction": 0.952
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.5,
+     "naive_mape": 3.9,
+     "skill": 0.359,
+     "direction": 0.67
+    }
+   ],
+   "mape_globale": 4.72,
+   "direction": 0.785,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral123M_flux_cov+credits": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.16,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.031,
+     "skill_vs_modele": 0.45
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.13,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.376,
+     "skill_vs_modele": 0.412
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.61,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.461,
+     "skill_vs_modele": 0.259
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.03,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.407,
+     "skill_vs_modele": 0.008
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.59,
+     "naive_mape": 13.1,
+     "skill": 0.573,
+     "direction": 0.856
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.98,
+     "naive_mape": 8.21,
+     "skill": 0.515,
+     "direction": 0.884
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.24,
+     "naive_mape": 7.33,
+     "skill": 0.286,
+     "direction": 0.804
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.93,
+     "naive_mape": 5.03,
+     "skill": 0.218,
+     "direction": 0.653
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.96,
+     "naive_mape": 7.86,
+     "skill": 0.115,
+     "direction": 0.697
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.4,
+     "naive_mape": 11.84,
+     "skill": 0.629,
+     "direction": 0.957
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.48,
+     "naive_mape": 3.9,
+     "skill": 0.363,
+     "direction": 0.697
+    }
+   ],
+   "mape_globale": 4.76,
+   "direction": 0.79,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral123M_flux_cov+oat": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.13,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.045,
+     "skill_vs_modele": 0.458
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.06,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.39,
+     "skill_vs_modele": 0.425
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.49,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.474,
+     "skill_vs_modele": 0.278
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.0,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.41,
+     "skill_vs_modele": 0.012
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.47,
+     "naive_mape": 13.1,
+     "skill": 0.583,
+     "direction": 0.852
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.9,
+     "naive_mape": 8.21,
+     "skill": 0.525,
+     "direction": 0.884
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.07,
+     "naive_mape": 7.33,
+     "skill": 0.309,
+     "direction": 0.802
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.67,
+     "naive_mape": 5.03,
+     "skill": 0.272,
+     "direction": 0.683
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.02,
+     "naive_mape": 7.86,
+     "skill": 0.107,
+     "direction": 0.678
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.62,
+     "naive_mape": 11.84,
+     "skill": 0.61,
+     "direction": 0.943
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.62,
+     "naive_mape": 3.9,
+     "skill": 0.329,
+     "direction": 0.702
+    }
+   ],
+   "mape_globale": 4.69,
+   "direction": 0.792,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral123M_flux_cov+prix": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.12,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.049,
+     "skill_vs_modele": 0.46
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.05,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.393,
+     "skill_vs_modele": 0.428
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.54,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.469,
+     "skill_vs_modele": 0.271
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.13,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.399,
+     "skill_vs_modele": -0.006
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.55,
+     "naive_mape": 13.1,
+     "skill": 0.577,
+     "direction": 0.856
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.94,
+     "naive_mape": 8.21,
+     "skill": 0.52,
+     "direction": 0.884
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.07,
+     "naive_mape": 7.33,
+     "skill": 0.309,
+     "direction": 0.809
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.82,
+     "naive_mape": 5.03,
+     "skill": 0.242,
+     "direction": 0.668
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.17,
+     "naive_mape": 7.86,
+     "skill": 0.087,
+     "direction": 0.669
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.62,
+     "naive_mape": 11.84,
+     "skill": 0.61,
+     "direction": 0.948
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.41,
+     "naive_mape": 3.9,
+     "skill": 0.381,
+     "direction": 0.718
+    }
+   ],
+   "mape_globale": 4.75,
+   "direction": 0.791,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral123M_flux_cov+reno": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.11,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.052,
+     "skill_vs_modele": 0.462
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.03,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.396,
+     "skill_vs_modele": 0.43
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.51,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.471,
+     "skill_vs_modele": 0.274
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.04,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.407,
+     "skill_vs_modele": 0.007
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.45,
+     "naive_mape": 13.1,
+     "skill": 0.584,
+     "direction": 0.861
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.89,
+     "naive_mape": 8.21,
+     "skill": 0.526,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.12,
+     "naive_mape": 7.33,
+     "skill": 0.302,
+     "direction": 0.802
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.8,
+     "naive_mape": 5.03,
+     "skill": 0.244,
+     "direction": 0.669
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.96,
+     "naive_mape": 7.86,
+     "skill": 0.115,
+     "direction": 0.681
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.57,
+     "naive_mape": 11.84,
+     "skill": 0.614,
+     "direction": 0.952
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.35,
+     "naive_mape": 3.9,
+     "skill": 0.398,
+     "direction": 0.723
+    }
+   ],
+   "mape_globale": 4.71,
+   "direction": 0.792,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral123M_flux_cov_futur": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.15,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.035,
+     "skill_vs_modele": 0.452
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.14,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.374,
+     "skill_vs_modele": 0.41
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.65,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.456,
+     "skill_vs_modele": 0.253
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.32,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.383,
+     "skill_vs_modele": -0.033
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.52,
+     "naive_mape": 13.1,
+     "skill": 0.579,
+     "direction": 0.856
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.08,
+     "naive_mape": 8.21,
+     "skill": 0.503,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.23,
+     "naive_mape": 7.33,
+     "skill": 0.287,
+     "direction": 0.782
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.94,
+     "naive_mape": 5.03,
+     "skill": 0.217,
+     "direction": 0.682
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.18,
+     "naive_mape": 7.86,
+     "skill": 0.086,
+     "direction": 0.683
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.69,
+     "naive_mape": 11.84,
+     "skill": 0.604,
+     "direction": 0.929
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.95,
+     "naive_mape": 3.9,
+     "skill": 0.243,
+     "direction": 0.654
+    }
+   ],
+   "mape_globale": 4.87,
+   "direction": 0.783,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
   "combo_timestral123M_tx12": {
    "blocs": [
     {
@@ -1245,6 +2956,576 @@
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
   },
+  "combo_timestral209M_flux_cov+confiance": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.14,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.042,
+     "skill_vs_modele": 0.456
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.07,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.389,
+     "skill_vs_modele": 0.424
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.5,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.473,
+     "skill_vs_modele": 0.277
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.89,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.42,
+     "skill_vs_modele": 0.028
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.46,
+     "naive_mape": 13.1,
+     "skill": 0.583,
+     "direction": 0.847
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.99,
+     "naive_mape": 8.21,
+     "skill": 0.515,
+     "direction": 0.882
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 4.91,
+     "naive_mape": 7.33,
+     "skill": 0.331,
+     "direction": 0.807
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.7,
+     "naive_mape": 5.03,
+     "skill": 0.265,
+     "direction": 0.689
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.3,
+     "naive_mape": 7.86,
+     "skill": 0.071,
+     "direction": 0.683
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.46,
+     "naive_mape": 11.84,
+     "skill": 0.623,
+     "direction": 0.944
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.29,
+     "naive_mape": 3.9,
+     "skill": 0.412,
+     "direction": 0.697
+    }
+   ],
+   "mape_globale": 4.66,
+   "direction": 0.794,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral209M_flux_cov+credits": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.16,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.03,
+     "skill_vs_modele": 0.449
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.1,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.383,
+     "skill_vs_modele": 0.418
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.5,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.473,
+     "skill_vs_modele": 0.276
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.92,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.417,
+     "skill_vs_modele": 0.023
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.6,
+     "naive_mape": 13.1,
+     "skill": 0.573,
+     "direction": 0.838
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.83,
+     "naive_mape": 8.21,
+     "skill": 0.533,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.02,
+     "naive_mape": 7.33,
+     "skill": 0.316,
+     "direction": 0.811
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.93,
+     "naive_mape": 5.03,
+     "skill": 0.22,
+     "direction": 0.649
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.01,
+     "naive_mape": 7.86,
+     "skill": 0.108,
+     "direction": 0.713
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.45,
+     "naive_mape": 11.84,
+     "skill": 0.624,
+     "direction": 0.948
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.1,
+     "naive_mape": 3.9,
+     "skill": 0.461,
+     "direction": 0.75
+    }
+   ],
+   "mape_globale": 4.69,
+   "direction": 0.793,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral209M_flux_cov+oat": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.12,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.049,
+     "skill_vs_modele": 0.46
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.99,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.404,
+     "skill_vs_modele": 0.438
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.36,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.489,
+     "skill_vs_modele": 0.299
+    },
+    {
+     "bloc": "13-18",
+     "mape": 6.98,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.412,
+     "skill_vs_modele": 0.015
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.56,
+     "naive_mape": 13.1,
+     "skill": 0.575,
+     "direction": 0.847
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.85,
+     "naive_mape": 8.21,
+     "skill": 0.531,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 4.88,
+     "naive_mape": 7.33,
+     "skill": 0.335,
+     "direction": 0.806
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.66,
+     "naive_mape": 5.03,
+     "skill": 0.274,
+     "direction": 0.721
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.17,
+     "naive_mape": 7.86,
+     "skill": 0.088,
+     "direction": 0.706
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.51,
+     "naive_mape": 11.84,
+     "skill": 0.619,
+     "direction": 0.946
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.35,
+     "naive_mape": 3.9,
+     "skill": 0.396,
+     "direction": 0.739
+    }
+   ],
+   "mape_globale": 4.63,
+   "direction": 0.807,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral209M_flux_cov+prix": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.11,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.054,
+     "skill_vs_modele": 0.463
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.98,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.407,
+     "skill_vs_modele": 0.441
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.42,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.482,
+     "skill_vs_modele": 0.289
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.09,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.402,
+     "skill_vs_modele": -0.001
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.63,
+     "naive_mape": 13.1,
+     "skill": 0.57,
+     "direction": 0.852
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.87,
+     "naive_mape": 8.21,
+     "skill": 0.528,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 4.79,
+     "naive_mape": 7.33,
+     "skill": 0.346,
+     "direction": 0.806
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.81,
+     "naive_mape": 5.03,
+     "skill": 0.243,
+     "direction": 0.692
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.34,
+     "naive_mape": 7.86,
+     "skill": 0.066,
+     "direction": 0.683
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.57,
+     "naive_mape": 11.84,
+     "skill": 0.614,
+     "direction": 0.941
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.29,
+     "naive_mape": 3.9,
+     "skill": 0.412,
+     "direction": 0.718
+    }
+   ],
+   "mape_globale": 4.69,
+   "direction": 0.796,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral209M_flux_cov+reno": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.11,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.053,
+     "skill_vs_modele": 0.462
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.99,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.405,
+     "skill_vs_modele": 0.439
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.42,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.482,
+     "skill_vs_modele": 0.289
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.02,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.409,
+     "skill_vs_modele": 0.01
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.53,
+     "naive_mape": 13.1,
+     "skill": 0.578,
+     "direction": 0.843
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.82,
+     "naive_mape": 8.21,
+     "skill": 0.535,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 4.92,
+     "naive_mape": 7.33,
+     "skill": 0.329,
+     "direction": 0.806
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.84,
+     "naive_mape": 5.03,
+     "skill": 0.238,
+     "direction": 0.686
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 6.93,
+     "naive_mape": 7.86,
+     "skill": 0.119,
+     "direction": 0.699
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.61,
+     "naive_mape": 11.84,
+     "skill": 0.61,
+     "direction": 0.946
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.26,
+     "naive_mape": 3.9,
+     "skill": 0.421,
+     "direction": 0.707
+    }
+   ],
+   "mape_globale": 4.66,
+   "direction": 0.796,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "combo_timestral209M_flux_cov_futur": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 2.12,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.05,
+     "skill_vs_modele": 0.46
+    },
+    {
+     "bloc": "4-6",
+     "mape": 3.0,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.403,
+     "skill_vs_modele": 0.436
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.52,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.471,
+     "skill_vs_modele": 0.273
+    },
+    {
+     "bloc": "13-18",
+     "mape": 7.45,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.372,
+     "skill_vs_modele": -0.052
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.34,
+     "naive_mape": 13.1,
+     "skill": 0.516,
+     "direction": 0.856
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.09,
+     "naive_mape": 8.21,
+     "skill": 0.502,
+     "direction": 0.884
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.01,
+     "naive_mape": 7.33,
+     "skill": 0.316,
+     "direction": 0.795
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 3.67,
+     "naive_mape": 5.03,
+     "skill": 0.272,
+     "direction": 0.709
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.29,
+     "naive_mape": 7.86,
+     "skill": 0.073,
+     "direction": 0.681
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.8,
+     "naive_mape": 11.84,
+     "skill": 0.594,
+     "direction": 0.931
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.99,
+     "naive_mape": 3.9,
+     "skill": 0.234,
+     "direction": 0.617
+    }
+   ],
+   "mape_globale": 4.84,
+   "direction": 0.79,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
   "combo_timestral209M_tx12": {
    "blocs": [
     {
@@ -1336,576 +3617,6 @@
    ],
    "mape_globale": 5.33,
    "direction": 0.746,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "combo_timestral28M_flux": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 2.12,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.051,
-     "skill_vs_modele": 0.461
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.18,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.366,
-     "skill_vs_modele": 0.402
-    },
-    {
-     "bloc": "7-12",
-     "mape": 5.03,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.411,
-     "skill_vs_modele": 0.191
-    },
-    {
-     "bloc": "13-18",
-     "mape": 8.08,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.319,
-     "skill_vs_modele": -0.141
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 6.05,
-     "naive_mape": 13.1,
-     "skill": 0.539,
-     "direction": 0.852
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.08,
-     "naive_mape": 8.21,
-     "skill": 0.504,
-     "direction": 0.882
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 4.72,
-     "naive_mape": 7.33,
-     "skill": 0.356,
-     "direction": 0.803
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 4.64,
-     "naive_mape": 5.03,
-     "skill": 0.079,
-     "direction": 0.588
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 7.81,
-     "naive_mape": 7.86,
-     "skill": 0.007,
-     "direction": 0.583
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 6.08,
-     "naive_mape": 11.84,
-     "skill": 0.486,
-     "direction": 0.946
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.45,
-     "naive_mape": 3.9,
-     "skill": 0.371,
-     "direction": 0.739
-    }
-   ],
-   "mape_globale": 5.25,
-   "direction": 0.76,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "combo_timestral28M_flux_cov": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 2.15,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.034,
-     "skill_vs_modele": 0.452
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.16,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.371,
-     "skill_vs_modele": 0.407
-    },
-    {
-     "bloc": "7-12",
-     "mape": 4.74,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.445,
-     "skill_vs_modele": 0.238
-    },
-    {
-     "bloc": "13-18",
-     "mape": 7.2,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.393,
-     "skill_vs_modele": -0.016
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 5.36,
-     "naive_mape": 13.1,
-     "skill": 0.591,
-     "direction": 0.843
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 3.96,
-     "naive_mape": 8.21,
-     "skill": 0.517,
-     "direction": 0.884
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 4.98,
-     "naive_mape": 7.33,
-     "skill": 0.321,
-     "direction": 0.799
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 3.97,
-     "naive_mape": 5.03,
-     "skill": 0.211,
-     "direction": 0.653
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 7.7,
-     "naive_mape": 7.86,
-     "skill": 0.02,
-     "direction": 0.606
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 4.81,
-     "naive_mape": 11.84,
-     "skill": 0.594,
-     "direction": 0.946
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.62,
-     "naive_mape": 3.9,
-     "skill": 0.328,
-     "direction": 0.686
-    }
-   ],
-   "mape_globale": 4.86,
-   "direction": 0.774,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "combo_timestral28M_tx12": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 2.16,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.033,
-     "skill_vs_modele": 0.451
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.21,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.36,
-     "skill_vs_modele": 0.396
-    },
-    {
-     "bloc": "7-12",
-     "mape": 5.15,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.397,
-     "skill_vs_modele": 0.173
-    },
-    {
-     "bloc": "13-18",
-     "mape": 8.06,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.321,
-     "skill_vs_modele": -0.137
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 8.17,
-     "naive_mape": 13.1,
-     "skill": 0.377,
-     "direction": 0.778
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 3.91,
-     "naive_mape": 8.21,
-     "skill": 0.524,
-     "direction": 0.87
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.23,
-     "naive_mape": 7.33,
-     "skill": 0.287,
-     "direction": 0.793
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 3.93,
-     "naive_mape": 5.03,
-     "skill": 0.22,
-     "direction": 0.632
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 7.52,
-     "naive_mape": 7.86,
-     "skill": 0.043,
-     "direction": 0.595
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 6.17,
-     "naive_mape": 11.84,
-     "skill": 0.479,
-     "direction": 0.934
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.51,
-     "naive_mape": 3.9,
-     "skill": 0.356,
-     "direction": 0.718
-    }
-   ],
-   "mape_globale": 5.3,
-   "direction": 0.761,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "combo_timestral5M_flux": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 2.12,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.049,
-     "skill_vs_modele": 0.46
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.18,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.367,
-     "skill_vs_modele": 0.403
-    },
-    {
-     "bloc": "7-12",
-     "mape": 5.17,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.394,
-     "skill_vs_modele": 0.168
-    },
-    {
-     "bloc": "13-18",
-     "mape": 8.47,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.286,
-     "skill_vs_modele": -0.196
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 6.79,
-     "naive_mape": 13.1,
-     "skill": 0.482,
-     "direction": 0.815
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.21,
-     "naive_mape": 8.21,
-     "skill": 0.487,
-     "direction": 0.88
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.02,
-     "naive_mape": 7.33,
-     "skill": 0.316,
-     "direction": 0.808
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 4.71,
-     "naive_mape": 5.03,
-     "skill": 0.065,
-     "direction": 0.579
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 7.68,
-     "naive_mape": 7.86,
-     "skill": 0.023,
-     "direction": 0.648
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 6.31,
-     "naive_mape": 11.84,
-     "skill": 0.467,
-     "direction": 0.927
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.48,
-     "naive_mape": 3.9,
-     "skill": 0.363,
-     "direction": 0.734
-    }
-   ],
-   "mape_globale": 5.43,
-   "direction": 0.761,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "combo_timestral5M_flux_cov": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 2.14,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.042,
-     "skill_vs_modele": 0.456
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.13,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.377,
-     "skill_vs_modele": 0.412
-    },
-    {
-     "bloc": "7-12",
-     "mape": 4.79,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.44,
-     "skill_vs_modele": 0.231
-    },
-    {
-     "bloc": "13-18",
-     "mape": 7.69,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.352,
-     "skill_vs_modele": -0.085
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 5.75,
-     "naive_mape": 13.1,
-     "skill": 0.561,
-     "direction": 0.861
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 3.97,
-     "naive_mape": 8.21,
-     "skill": 0.517,
-     "direction": 0.884
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.3,
-     "naive_mape": 7.33,
-     "skill": 0.277,
-     "direction": 0.81
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 4.43,
-     "naive_mape": 5.03,
-     "skill": 0.12,
-     "direction": 0.616
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 7.46,
-     "naive_mape": 7.86,
-     "skill": 0.05,
-     "direction": 0.646
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 4.73,
-     "naive_mape": 11.84,
-     "skill": 0.6,
-     "direction": 0.952
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.64,
-     "naive_mape": 3.9,
-     "skill": 0.324,
-     "direction": 0.649
-    }
-   ],
-   "mape_globale": 5.04,
-   "direction": 0.773,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "combo_timestral5M_tx12": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 2.19,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.017,
-     "skill_vs_modele": 0.442
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.34,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.334,
-     "skill_vs_modele": 0.372
-    },
-    {
-     "bloc": "7-12",
-     "mape": 5.37,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.372,
-     "skill_vs_modele": 0.137
-    },
-    {
-     "bloc": "13-18",
-     "mape": 8.31,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.3,
-     "skill_vs_modele": -0.173
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 8.24,
-     "naive_mape": 13.1,
-     "skill": 0.371,
-     "direction": 0.769
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.35,
-     "naive_mape": 8.21,
-     "skill": 0.471,
-     "direction": 0.856
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.32,
-     "naive_mape": 7.33,
-     "skill": 0.274,
-     "direction": 0.767
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 4.07,
-     "naive_mape": 5.03,
-     "skill": 0.192,
-     "direction": 0.605
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 7.51,
-     "naive_mape": 7.86,
-     "skill": 0.044,
-     "direction": 0.639
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 6.52,
-     "naive_mape": 11.84,
-     "skill": 0.449,
-     "direction": 0.917
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.7,
-     "naive_mape": 3.9,
-     "skill": 0.307,
-     "direction": 0.633
-    }
-   ],
-   "mape_globale": 5.48,
-   "direction": 0.744,
    "couverture_10_90": null,
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
@@ -2385,6 +4096,576 @@
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
   },
+  "timestral123M_flux_cov+confiance": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.55,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.303,
+     "skill_vs_modele": 0.604
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.64,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.474,
+     "skill_vs_modele": 0.504
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.0,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.415,
+     "skill_vs_modele": 0.196
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.33,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.298,
+     "skill_vs_modele": -0.176
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.38,
+     "naive_mape": 13.1,
+     "skill": 0.513,
+     "direction": 0.894
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.04,
+     "naive_mape": 8.21,
+     "skill": 0.508,
+     "direction": 0.868
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.15,
+     "naive_mape": 7.33,
+     "skill": 0.298,
+     "direction": 0.794
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.62,
+     "naive_mape": 5.03,
+     "skill": 0.083,
+     "direction": 0.697
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.15,
+     "naive_mape": 7.86,
+     "skill": -0.037,
+     "direction": 0.627
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.65,
+     "naive_mape": 11.84,
+     "skill": 0.607,
+     "direction": 0.935
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.08,
+     "naive_mape": 3.9,
+     "skill": 0.466,
+     "direction": 0.734
+    }
+   ],
+   "mape_globale": 5.14,
+   "direction": 0.788,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral123M_flux_cov+credits": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.54,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.307,
+     "skill_vs_modele": 0.607
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.57,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.489,
+     "skill_vs_modele": 0.518
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.81,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.437,
+     "skill_vs_modele": 0.227
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.26,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.304,
+     "skill_vs_modele": -0.166
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.29,
+     "naive_mape": 13.1,
+     "skill": 0.52,
+     "direction": 0.88
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.06,
+     "naive_mape": 8.21,
+     "skill": 0.505,
+     "direction": 0.875
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.08,
+     "naive_mape": 7.33,
+     "skill": 0.308,
+     "direction": 0.787
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.68,
+     "naive_mape": 5.03,
+     "skill": 0.071,
+     "direction": 0.648
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.59,
+     "naive_mape": 7.86,
+     "skill": 0.034,
+     "direction": 0.671
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.49,
+     "naive_mape": 11.84,
+     "skill": 0.621,
+     "direction": 0.921
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.06,
+     "naive_mape": 3.9,
+     "skill": 0.47,
+     "direction": 0.729
+    }
+   ],
+   "mape_globale": 5.04,
+   "direction": 0.777,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral123M_flux_cov+oat": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.56,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.3,
+     "skill_vs_modele": 0.603
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.63,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.476,
+     "skill_vs_modele": 0.506
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.02,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.412,
+     "skill_vs_modele": 0.193
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.41,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.291,
+     "skill_vs_modele": -0.187
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.79,
+     "naive_mape": 13.1,
+     "skill": 0.482,
+     "direction": 0.884
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.91,
+     "naive_mape": 8.21,
+     "skill": 0.524,
+     "direction": 0.873
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.34,
+     "naive_mape": 7.33,
+     "skill": 0.272,
+     "direction": 0.779
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.33,
+     "naive_mape": 5.03,
+     "skill": 0.14,
+     "direction": 0.734
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.86,
+     "naive_mape": 7.86,
+     "skill": 0.001,
+     "direction": 0.632
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.06,
+     "naive_mape": 11.84,
+     "skill": 0.572,
+     "direction": 0.9
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.23,
+     "naive_mape": 3.9,
+     "skill": 0.427,
+     "direction": 0.734
+    }
+   ],
+   "mape_globale": 5.17,
+   "direction": 0.787,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral123M_flux_cov+prix": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.56,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.301,
+     "skill_vs_modele": 0.603
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.67,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.469,
+     "skill_vs_modele": 0.499
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.14,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.398,
+     "skill_vs_modele": 0.173
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.71,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.266,
+     "skill_vs_modele": -0.23
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 7.44,
+     "naive_mape": 13.1,
+     "skill": 0.432,
+     "direction": 0.884
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.03,
+     "naive_mape": 8.21,
+     "skill": 0.51,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.31,
+     "naive_mape": 7.33,
+     "skill": 0.275,
+     "direction": 0.778
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.66,
+     "naive_mape": 5.03,
+     "skill": 0.075,
+     "direction": 0.703
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.33,
+     "naive_mape": 7.86,
+     "skill": -0.06,
+     "direction": 0.579
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.94,
+     "naive_mape": 11.84,
+     "skill": 0.583,
+     "direction": 0.92
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.98,
+     "naive_mape": 3.9,
+     "skill": 0.493,
+     "direction": 0.729
+    }
+   ],
+   "mape_globale": 5.32,
+   "direction": 0.778,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral123M_flux_cov+reno": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.55,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.304,
+     "skill_vs_modele": 0.605
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.62,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.478,
+     "skill_vs_modele": 0.507
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.01,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.413,
+     "skill_vs_modele": 0.194
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.5,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.283,
+     "skill_vs_modele": -0.2
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.53,
+     "naive_mape": 13.1,
+     "skill": 0.502,
+     "direction": 0.889
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.97,
+     "naive_mape": 8.21,
+     "skill": 0.517,
+     "direction": 0.877
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.35,
+     "naive_mape": 7.33,
+     "skill": 0.27,
+     "direction": 0.784
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.62,
+     "naive_mape": 5.03,
+     "skill": 0.083,
+     "direction": 0.697
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 7.97,
+     "naive_mape": 7.86,
+     "skill": -0.013,
+     "direction": 0.637
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.87,
+     "naive_mape": 11.84,
+     "skill": 0.589,
+     "direction": 0.917
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.9,
+     "naive_mape": 3.9,
+     "skill": 0.512,
+     "direction": 0.755
+    }
+   ],
+   "mape_globale": 5.2,
+   "direction": 0.785,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral123M_flux_cov_futur": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.57,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.296,
+     "skill_vs_modele": 0.6
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.84,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.436,
+     "skill_vs_modele": 0.468
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.48,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.358,
+     "skill_vs_modele": 0.119
+    },
+    {
+     "bloc": "13-18",
+     "mape": 9.1,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.233,
+     "skill_vs_modele": -0.284
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 7.53,
+     "naive_mape": 13.1,
+     "skill": 0.425,
+     "direction": 0.889
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.38,
+     "naive_mape": 8.21,
+     "skill": 0.466,
+     "direction": 0.826
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.64,
+     "naive_mape": 7.33,
+     "skill": 0.23,
+     "direction": 0.75
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.95,
+     "naive_mape": 5.03,
+     "skill": 0.016,
+     "direction": 0.681
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.08,
+     "naive_mape": 7.86,
+     "skill": -0.028,
+     "direction": 0.613
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.32,
+     "naive_mape": 11.84,
+     "skill": 0.551,
+     "direction": 0.866
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.61,
+     "naive_mape": 3.9,
+     "skill": 0.33,
+     "direction": 0.702
+    }
+   ],
+   "mape_globale": 5.59,
+   "direction": 0.753,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
   "timestral123M_tx12": {
    "blocs": [
     {
@@ -2670,6 +4951,576 @@
    "blocs_franchis_vs_modele": 3,
    "passe_le_seuil": true
   },
+  "timestral209M_flux_cov+confiance": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.57,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.294,
+     "skill_vs_modele": 0.599
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.68,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.466,
+     "skill_vs_modele": 0.497
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.01,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.413,
+     "skill_vs_modele": 0.195
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.3,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.301,
+     "skill_vs_modele": -0.171
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 5.49,
+     "naive_mape": 13.1,
+     "skill": 0.581,
+     "direction": 0.898
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.01,
+     "naive_mape": 8.21,
+     "skill": 0.512,
+     "direction": 0.863
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.05,
+     "naive_mape": 7.33,
+     "skill": 0.312,
+     "direction": 0.775
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.49,
+     "naive_mape": 5.03,
+     "skill": 0.108,
+     "direction": 0.708
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.8,
+     "naive_mape": 7.86,
+     "skill": -0.12,
+     "direction": 0.576
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.87,
+     "naive_mape": 11.84,
+     "skill": 0.588,
+     "direction": 0.915
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.99,
+     "naive_mape": 3.9,
+     "skill": 0.489,
+     "direction": 0.793
+    }
+   ],
+   "mape_globale": 5.14,
+   "direction": 0.779,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral209M_flux_cov+credits": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.58,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.291,
+     "skill_vs_modele": 0.597
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.64,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.475,
+     "skill_vs_modele": 0.505
+    },
+    {
+     "bloc": "7-12",
+     "mape": 4.85,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.432,
+     "skill_vs_modele": 0.22
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.19,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.31,
+     "skill_vs_modele": -0.156
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.13,
+     "naive_mape": 13.1,
+     "skill": 0.532,
+     "direction": 0.889
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.81,
+     "naive_mape": 8.21,
+     "skill": 0.536,
+     "direction": 0.887
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 4.66,
+     "naive_mape": 7.33,
+     "skill": 0.364,
+     "direction": 0.778
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.61,
+     "naive_mape": 5.03,
+     "skill": 0.084,
+     "direction": 0.639
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.33,
+     "naive_mape": 7.86,
+     "skill": -0.06,
+     "direction": 0.604
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 4.98,
+     "naive_mape": 11.84,
+     "skill": 0.58,
+     "direction": 0.914
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.87,
+     "naive_mape": 3.9,
+     "skill": 0.52,
+     "direction": 0.856
+    }
+   ],
+   "mape_globale": 5.05,
+   "direction": 0.772,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral209M_flux_cov+oat": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.6,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.284,
+     "skill_vs_modele": 0.593
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.69,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.465,
+     "skill_vs_modele": 0.496
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.05,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.409,
+     "skill_vs_modele": 0.189
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.56,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.279,
+     "skill_vs_modele": -0.208
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.96,
+     "naive_mape": 13.1,
+     "skill": 0.469,
+     "direction": 0.894
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.8,
+     "naive_mape": 8.21,
+     "skill": 0.537,
+     "direction": 0.87
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.15,
+     "naive_mape": 7.33,
+     "skill": 0.298,
+     "direction": 0.764
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.43,
+     "naive_mape": 5.03,
+     "skill": 0.119,
+     "direction": 0.723
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.64,
+     "naive_mape": 7.86,
+     "skill": -0.099,
+     "direction": 0.597
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.14,
+     "naive_mape": 11.84,
+     "skill": 0.566,
+     "direction": 0.898
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.06,
+     "naive_mape": 3.9,
+     "skill": 0.471,
+     "direction": 0.787
+    }
+   ],
+   "mape_globale": 5.25,
+   "direction": 0.78,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral209M_flux_cov+prix": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.6,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.284,
+     "skill_vs_modele": 0.593
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.77,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.449,
+     "skill_vs_modele": 0.48
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.31,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.379,
+     "skill_vs_modele": 0.147
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.9,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.25,
+     "skill_vs_modele": -0.256
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 7.4,
+     "naive_mape": 13.1,
+     "skill": 0.435,
+     "direction": 0.884
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.82,
+     "naive_mape": 8.21,
+     "skill": 0.535,
+     "direction": 0.875
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.28,
+     "naive_mape": 7.33,
+     "skill": 0.279,
+     "direction": 0.755
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.76,
+     "naive_mape": 5.03,
+     "skill": 0.054,
+     "direction": 0.678
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 9.22,
+     "naive_mape": 7.86,
+     "skill": -0.173,
+     "direction": 0.569
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.18,
+     "naive_mape": 11.84,
+     "skill": 0.562,
+     "direction": 0.918
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.96,
+     "naive_mape": 3.9,
+     "skill": 0.498,
+     "direction": 0.798
+    }
+   ],
+   "mape_globale": 5.46,
+   "direction": 0.768,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral209M_flux_cov+reno": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.58,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.293,
+     "skill_vs_modele": 0.598
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.66,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.47,
+     "skill_vs_modele": 0.5
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.09,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.404,
+     "skill_vs_modele": 0.181
+    },
+    {
+     "bloc": "13-18",
+     "mape": 8.65,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.271,
+     "skill_vs_modele": -0.221
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 6.27,
+     "naive_mape": 13.1,
+     "skill": 0.522,
+     "direction": 0.894
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 3.78,
+     "naive_mape": 8.21,
+     "skill": 0.539,
+     "direction": 0.88
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.2,
+     "naive_mape": 7.33,
+     "skill": 0.291,
+     "direction": 0.76
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.79,
+     "naive_mape": 5.03,
+     "skill": 0.048,
+     "direction": 0.704
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.26,
+     "naive_mape": 7.86,
+     "skill": -0.05,
+     "direction": 0.602
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.31,
+     "naive_mape": 11.84,
+     "skill": 0.552,
+     "direction": 0.903
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 1.97,
+     "naive_mape": 3.9,
+     "skill": 0.494,
+     "direction": 0.782
+    }
+   ],
+   "mape_globale": 5.29,
+   "direction": 0.777,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
+  "timestral209M_flux_cov_futur": {
+   "blocs": [
+    {
+     "bloc": "1-3",
+     "mape": 1.61,
+     "naive_mape": 2.23,
+     "skill_vs_naive": 0.277,
+     "skill_vs_modele": 0.589
+    },
+    {
+     "bloc": "4-6",
+     "mape": 2.9,
+     "naive_mape": 5.02,
+     "skill_vs_naive": 0.422,
+     "skill_vs_modele": 0.455
+    },
+    {
+     "bloc": "7-12",
+     "mape": 5.68,
+     "naive_mape": 8.54,
+     "skill_vs_naive": 0.335,
+     "skill_vs_modele": 0.086
+    },
+    {
+     "bloc": "13-18",
+     "mape": 9.46,
+     "naive_mape": 11.86,
+     "skill_vs_naive": 0.203,
+     "skill_vs_modele": -0.334
+    }
+   ],
+   "episodes": [
+    {
+     "label": "2009 · sortie de crise financière",
+     "n": 216,
+     "mape": 11.48,
+     "naive_mape": 13.1,
+     "skill": 0.124,
+     "direction": 0.759
+    },
+    {
+     "label": "2010-11 · rebond",
+     "n": 432,
+     "mape": 4.34,
+     "naive_mape": 8.21,
+     "skill": 0.471,
+     "direction": 0.84
+    },
+    {
+     "label": "2012-15 · creux long, crise de la dette",
+     "n": 864,
+     "mape": 5.36,
+     "naive_mape": 7.33,
+     "skill": 0.27,
+     "direction": 0.765
+    },
+    {
+     "label": "2016-19 · expansion, records",
+     "n": 864,
+     "mape": 4.53,
+     "naive_mape": 5.03,
+     "skill": 0.1,
+     "direction": 0.728
+    },
+    {
+     "label": "2020-21 · Covid puis record",
+     "n": 432,
+     "mape": 8.72,
+     "naive_mape": 7.86,
+     "skill": -0.109,
+     "direction": 0.544
+    },
+    {
+     "label": "2022-24 · choc de taux",
+     "n": 648,
+     "mape": 5.69,
+     "naive_mape": 11.84,
+     "skill": 0.52,
+     "direction": 0.855
+    },
+    {
+     "label": "2025-26 · reprise",
+     "n": 188,
+     "mape": 2.62,
+     "naive_mape": 3.9,
+     "skill": 0.328,
+     "direction": 0.691
+    }
+   ],
+   "mape_globale": 5.8,
+   "direction": 0.751,
+   "couverture_10_90": null,
+   "blocs_franchis_vs_modele": 3,
+   "passe_le_seuil": true
+  },
   "timestral209M_tx12": {
    "blocs": [
     {
@@ -2762,576 +5613,6 @@
    "mape_globale": 6.84,
    "direction": 0.681,
    "couverture_10_90": 0.688,
-   "blocs_franchis_vs_modele": 2,
-   "passe_le_seuil": false
-  },
-  "timestral28M_flux": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 1.71,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.233,
-     "skill_vs_modele": 0.565
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.33,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.337,
-     "skill_vs_modele": 0.375
-    },
-    {
-     "bloc": "7-12",
-     "mape": 6.56,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.232,
-     "skill_vs_modele": -0.055
-    },
-    {
-     "bloc": "13-18",
-     "mape": 10.72,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.096,
-     "skill_vs_modele": -0.513
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 10.06,
-     "naive_mape": 13.1,
-     "skill": 0.232,
-     "direction": 0.782
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.13,
-     "naive_mape": 8.21,
-     "skill": 0.498,
-     "direction": 0.882
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.56,
-     "naive_mape": 7.33,
-     "skill": 0.242,
-     "direction": 0.742
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 6.39,
-     "naive_mape": 5.03,
-     "skill": -0.27,
-     "direction": 0.411
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 9.33,
-     "naive_mape": 7.86,
-     "skill": -0.187,
-     "direction": 0.572
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 7.58,
-     "naive_mape": 11.84,
-     "skill": 0.359,
-     "direction": 0.858
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.63,
-     "naive_mape": 3.9,
-     "skill": 0.326,
-     "direction": 0.771
-    }
-   ],
-   "mape_globale": 6.6,
-   "direction": 0.684,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 2,
-   "passe_le_seuil": false
-  },
-  "timestral28M_flux_cov": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 1.61,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.279,
-     "skill_vs_modele": 0.591
-    },
-    {
-     "bloc": "4-6",
-     "mape": 2.74,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.454,
-     "skill_vs_modele": 0.485
-    },
-    {
-     "bloc": "7-12",
-     "mape": 5.27,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.383,
-     "skill_vs_modele": 0.152
-    },
-    {
-     "bloc": "13-18",
-     "mape": 8.74,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.263,
-     "skill_vs_modele": -0.233
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 4.55,
-     "naive_mape": 13.1,
-     "skill": 0.653,
-     "direction": 0.903
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 3.94,
-     "naive_mape": 8.21,
-     "skill": 0.52,
-     "direction": 0.873
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.41,
-     "naive_mape": 7.33,
-     "skill": 0.262,
-     "direction": 0.771
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 5.03,
-     "naive_mape": 5.03,
-     "skill": 0.002,
-     "direction": 0.64
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 9.02,
-     "naive_mape": 7.86,
-     "skill": -0.148,
-     "direction": 0.597
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 5.2,
-     "naive_mape": 11.84,
-     "skill": 0.561,
-     "direction": 0.917
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.25,
-     "naive_mape": 3.9,
-     "skill": 0.422,
-     "direction": 0.745
-    }
-   ],
-   "mape_globale": 5.39,
-   "direction": 0.764,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 3,
-   "passe_le_seuil": true
-  },
-  "timestral28M_tx12": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 1.49,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.332,
-     "skill_vs_modele": 0.621
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.51,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.301,
-     "skill_vs_modele": 0.341
-    },
-    {
-     "bloc": "7-12",
-     "mape": 7.09,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.17,
-     "skill_vs_modele": -0.14
-    },
-    {
-     "bloc": "13-18",
-     "mape": 11.04,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.069,
-     "skill_vs_modele": -0.558
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 15.67,
-     "naive_mape": 13.1,
-     "skill": -0.196,
-     "direction": 0.579
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.57,
-     "naive_mape": 8.21,
-     "skill": 0.444,
-     "direction": 0.794
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 6.79,
-     "naive_mape": 7.33,
-     "skill": 0.074,
-     "direction": 0.666
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 4.93,
-     "naive_mape": 5.03,
-     "skill": 0.021,
-     "direction": 0.634
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 8.53,
-     "naive_mape": 7.86,
-     "skill": -0.085,
-     "direction": 0.613
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 7.83,
-     "naive_mape": 11.84,
-     "skill": 0.339,
-     "direction": 0.827
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.58,
-     "naive_mape": 3.9,
-     "skill": 0.338,
-     "direction": 0.814
-    }
-   ],
-   "mape_globale": 6.88,
-   "direction": 0.698,
-   "couverture_10_90": 0.715,
-   "blocs_franchis_vs_modele": 2,
-   "passe_le_seuil": false
-  },
-  "timestral5M_flux": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 1.7,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.238,
-     "skill_vs_modele": 0.567
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.47,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.31,
-     "skill_vs_modele": 0.349
-    },
-    {
-     "bloc": "7-12",
-     "mape": 7.03,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.177,
-     "skill_vs_modele": -0.13
-    },
-    {
-     "bloc": "13-18",
-     "mape": 11.49,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.032,
-     "skill_vs_modele": -0.621
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 13.49,
-     "naive_mape": 13.1,
-     "skill": -0.03,
-     "direction": 0.727
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.41,
-     "naive_mape": 8.21,
-     "skill": 0.463,
-     "direction": 0.861
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.78,
-     "naive_mape": 7.33,
-     "skill": 0.212,
-     "direction": 0.734
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 6.54,
-     "naive_mape": 5.03,
-     "skill": -0.298,
-     "direction": 0.376
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 9.22,
-     "naive_mape": 7.86,
-     "skill": -0.173,
-     "direction": 0.593
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 8.25,
-     "naive_mape": 11.84,
-     "skill": 0.303,
-     "direction": 0.775
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.56,
-     "naive_mape": 3.9,
-     "skill": 0.343,
-     "direction": 0.761
-    }
-   ],
-   "mape_globale": 7.03,
-   "direction": 0.656,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 2,
-   "passe_le_seuil": false
-  },
-  "timestral5M_flux_cov": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 1.72,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.228,
-     "skill_vs_modele": 0.561
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.09,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.386,
-     "skill_vs_modele": 0.42
-    },
-    {
-     "bloc": "7-12",
-     "mape": 5.93,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.305,
-     "skill_vs_modele": 0.046
-    },
-    {
-     "bloc": "13-18",
-     "mape": 9.86,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.169,
-     "skill_vs_modele": -0.392
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 9.07,
-     "naive_mape": 13.1,
-     "skill": 0.308,
-     "direction": 0.838
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.17,
-     "naive_mape": 8.21,
-     "skill": 0.492,
-     "direction": 0.875
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 5.76,
-     "naive_mape": 7.33,
-     "skill": 0.215,
-     "direction": 0.743
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 5.96,
-     "naive_mape": 5.03,
-     "skill": -0.184,
-     "direction": 0.488
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 9.14,
-     "naive_mape": 7.86,
-     "skill": -0.163,
-     "direction": 0.597
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 5.41,
-     "naive_mape": 11.84,
-     "skill": 0.543,
-     "direction": 0.903
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.49,
-     "naive_mape": 3.9,
-     "skill": 0.361,
-     "direction": 0.713
-    }
-   ],
-   "mape_globale": 6.07,
-   "direction": 0.714,
-   "couverture_10_90": null,
-   "blocs_franchis_vs_modele": 2,
-   "passe_le_seuil": false
-  },
-  "timestral5M_tx12": {
-   "blocs": [
-    {
-     "bloc": "1-3",
-     "mape": 1.5,
-     "naive_mape": 2.23,
-     "skill_vs_naive": 0.327,
-     "skill_vs_modele": 0.618
-    },
-    {
-     "bloc": "4-6",
-     "mape": 3.65,
-     "naive_mape": 5.02,
-     "skill_vs_naive": 0.274,
-     "skill_vs_modele": 0.315
-    },
-    {
-     "bloc": "7-12",
-     "mape": 7.3,
-     "naive_mape": 8.54,
-     "skill_vs_naive": 0.145,
-     "skill_vs_modele": -0.173
-    },
-    {
-     "bloc": "13-18",
-     "mape": 11.22,
-     "naive_mape": 11.86,
-     "skill_vs_naive": 0.054,
-     "skill_vs_modele": -0.584
-    }
-   ],
-   "episodes": [
-    {
-     "label": "2009 · sortie de crise financière",
-     "n": 216,
-     "mape": 15.09,
-     "naive_mape": 13.1,
-     "skill": -0.151,
-     "direction": 0.579
-    },
-    {
-     "label": "2010-11 · rebond",
-     "n": 432,
-     "mape": 4.93,
-     "naive_mape": 8.21,
-     "skill": 0.4,
-     "direction": 0.794
-    },
-    {
-     "label": "2012-15 · creux long, crise de la dette",
-     "n": 864,
-     "mape": 6.78,
-     "naive_mape": 7.33,
-     "skill": 0.076,
-     "direction": 0.664
-    },
-    {
-     "label": "2016-19 · expansion, records",
-     "n": 864,
-     "mape": 5.18,
-     "naive_mape": 5.03,
-     "skill": -0.029,
-     "direction": 0.55
-    },
-    {
-     "label": "2020-21 · Covid puis record",
-     "n": 432,
-     "mape": 8.37,
-     "naive_mape": 7.86,
-     "skill": -0.065,
-     "direction": 0.627
-    },
-    {
-     "label": "2022-24 · choc de taux",
-     "n": 648,
-     "mape": 8.48,
-     "naive_mape": 11.84,
-     "skill": 0.283,
-     "direction": 0.819
-    },
-    {
-     "label": "2025-26 · reprise",
-     "n": 188,
-     "mape": 2.4,
-     "naive_mape": 3.9,
-     "skill": 0.385,
-     "direction": 0.798
-    }
-   ],
-   "mape_globale": 7.03,
-   "direction": 0.678,
-   "couverture_10_90": 0.714,
    "blocs_franchis_vs_modele": 2,
    "passe_le_seuil": false
   }

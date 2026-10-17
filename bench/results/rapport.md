@@ -7,38 +7,62 @@ Cible : cumul 12 mois des ventes anciennes. Rétro-simulation, millésimes de l'
 | Méthode | 1-3 | 4-6 | 7-12 | 13-18 | Globale | vs naïve 7-12 | vs modèle 7-12 | Blocs ≥ 5 % vs modèle | Bon sens | Bande 10-90 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | `modele_publie` | 3.93 | 5.33 | 6.22 | 7.09 | 5.98 | +27,2 % | +0,0 % | 0/4 | 73 % | 80 % |
+| `combo_timestral209M_flux_cov+oat` | 2.12 | 2.99 | 4.36 | 6.98 | 4.63 | +48,9 % | +29,9 % | 3/4 ✅ | 81 % | — |
 | `combo_timestral209M_flux_cov` | 2.11 | 3.00 | 4.42 | 6.99 | 4.65 | +48,3 % | +29,0 % | 3/4 ✅ | 79 % | — |
+| `combo_timestral209M_flux_cov+confiance` | 2.14 | 3.07 | 4.50 | 6.89 | 4.66 | +47,3 % | +27,7 % | 3/4 ✅ | 79 % | — |
+| `combo_timestral209M_flux_cov+reno` | 2.11 | 2.99 | 4.42 | 7.02 | 4.66 | +48,2 % | +28,9 % | 3/4 ✅ | 80 % | — |
+| `combo_timestral123M_flux_cov+oat` | 2.13 | 3.06 | 4.49 | 7.00 | 4.69 | +47,4 % | +27,8 % | 3/4 ✅ | 79 % | — |
+| `combo_timestral209M_flux_cov+credits` | 2.16 | 3.10 | 4.50 | 6.92 | 4.69 | +47,3 % | +27,6 % | 3/4 ✅ | 79 % | — |
+| `combo_timestral209M_flux_cov+prix` | 2.11 | 2.98 | 4.42 | 7.09 | 4.69 | +48,2 % | +28,9 % | 3/4 ✅ | 80 % | — |
+| `combo_timestral123M_flux_cov+reno` | 2.11 | 3.03 | 4.51 | 7.04 | 4.71 | +47,1 % | +27,4 % | 3/4 ✅ | 79 % | — |
+| `combo_chronos2_flux_cov+prix` | 2.13 | 3.05 | 4.59 | 7.00 | 4.72 | +46,3 % | +26,3 % | 3/4 ✅ | 80 % | — |
+| `combo_timestral123M_flux_cov+confiance` | 2.13 | 3.09 | 4.57 | 6.98 | 4.72 | +46,5 % | +26,5 % | 3/4 ✅ | 78 % | — |
 | `combo_timestral123M_flux_cov` | 2.13 | 3.07 | 4.55 | 7.04 | 4.73 | +46,7 % | +26,9 % | 3/4 ✅ | 79 % | — |
+| `combo_chronos2_flux_cov_futur` | 2.15 | 3.14 | 4.68 | 6.91 | 4.75 | +45,2 % | +24,8 % | 3/4 ✅ | 79 % | — |
+| `combo_timestral123M_flux_cov+prix` | 2.12 | 3.05 | 4.54 | 7.13 | 4.75 | +46,9 % | +27,1 % | 3/4 ✅ | 79 % | — |
+| `combo_timestral123M_flux_cov+credits` | 2.16 | 3.13 | 4.61 | 7.03 | 4.76 | +46,1 % | +25,9 % | 3/4 ✅ | 79 % | — |
+| `combo_chronos2_flux_cov+reno` | 2.17 | 3.15 | 4.70 | 6.95 | 4.77 | +44,9 % | +24,4 % | 3/4 ✅ | 80 % | — |
 | `combo_chronos2_flux_cov` | 2.17 | 3.18 | 4.76 | 7.00 | 4.81 | +44,2 % | +23,4 % | 3/4 ✅ | 80 % | — |
-| `combo_timestral28M_flux_cov` | 2.15 | 3.16 | 4.74 | 7.20 | 4.86 | +44,5 % | +23,8 % | 3/4 ✅ | 77 % | — |
+| `combo_timestral209M_flux_cov_futur` | 2.12 | 3.00 | 4.52 | 7.45 | 4.84 | +47,1 % | +27,3 % | 3/4 ✅ | 79 % | — |
+| `combo_chronos2_flux_cov+confiance` | 2.20 | 3.29 | 4.90 | 6.93 | 4.86 | +42,6 % | +21,2 % | 3/4 ✅ | 78 % | — |
+| `combo_chronos2_flux_cov+oat` | 2.19 | 3.23 | 4.86 | 7.03 | 4.87 | +43,0 % | +21,8 % | 3/4 ✅ | 80 % | — |
+| `combo_timestral123M_flux_cov_futur` | 2.15 | 3.14 | 4.65 | 7.32 | 4.87 | +45,6 % | +25,3 % | 3/4 ✅ | 78 % | — |
+| `combo_chronos2_flux_cov+credits` | 2.17 | 3.16 | 4.78 | 7.22 | 4.89 | +44,0 % | +23,1 % | 3/4 ✅ | 79 % | — |
 | `combo_chronos2_flux` | 2.06 | 2.99 | 4.66 | 7.84 | 5.01 | +45,4 % | +25,1 % | 3/4 ✅ | 80 % | — |
-| `combo_timestral5M_flux_cov` | 2.14 | 3.13 | 4.79 | 7.69 | 5.04 | +44,0 % | +23,1 % | 3/4 ✅ | 77 % | — |
+| `timestral123M_flux_cov+credits` | 1.54 | 2.57 | 4.81 | 8.26 | 5.04 | +43,7 % | +22,7 % | 3/4 ✅ | 78 % | — |
+| `chronos2_flux_cov_futur` | 1.50 | 2.52 | 4.96 | 8.17 | 5.05 | +41,9 % | +20,2 % | 3/4 ✅ | 78 % | — |
+| `timestral209M_flux_cov+credits` | 1.58 | 2.64 | 4.85 | 8.19 | 5.05 | +43,2 % | +22,0 % | 3/4 ✅ | 77 % | — |
+| `chronos2_flux_cov+confiance` | 1.56 | 2.64 | 4.96 | 8.12 | 5.06 | +41,9 % | +20,2 % | 3/4 ✅ | 79 % | — |
+| `timestral123M_flux_cov+confiance` | 1.55 | 2.64 | 5.00 | 8.33 | 5.14 | +41,5 % | +19,6 % | 3/4 ✅ | 79 % | — |
+| `timestral209M_flux_cov+confiance` | 1.57 | 2.68 | 5.01 | 8.30 | 5.14 | +41,3 % | +19,5 % | 3/4 ✅ | 78 % | — |
 | `timestral123M_flux_cov` | 1.54 | 2.61 | 4.98 | 8.45 | 5.17 | +41,7 % | +19,9 % | 3/4 ✅ | 79 % | — |
+| `timestral123M_flux_cov+oat` | 1.56 | 2.63 | 5.02 | 8.41 | 5.17 | +41,2 % | +19,3 % | 3/4 ✅ | 79 % | — |
 | `chronos2_flux_cov` | 1.55 | 2.63 | 5.03 | 8.43 | 5.18 | +41,1 % | +19,1 % | 3/4 ✅ | 78 % | — |
 | `combo_timestral209M_flux` | 2.06 | 3.06 | 4.92 | 8.08 | 5.19 | +42,4 % | +20,9 % | 3/4 ✅ | 78 % | — |
+| `chronos2_flux_cov+reno` | 1.57 | 2.64 | 5.02 | 8.46 | 5.20 | +41,2 % | +19,3 % | 3/4 ✅ | 78 % | — |
+| `timestral123M_flux_cov+reno` | 1.55 | 2.62 | 5.01 | 8.50 | 5.20 | +41,3 % | +19,4 % | 3/4 ✅ | 78 % | — |
 | `combo_timestral123M_flux` | 2.08 | 3.11 | 4.97 | 8.07 | 5.21 | +41,8 % | +20,1 % | 3/4 ✅ | 78 % | — |
 | `combo_hw_flux` | 2.05 | 3.00 | 4.83 | 8.33 | 5.23 | +43,5 % | +22,4 % | 3/4 ✅ | 78 % | — |
-| `combo_timestral28M_flux` | 2.12 | 3.18 | 5.03 | 8.08 | 5.25 | +41,1 % | +19,1 % | 3/4 ✅ | 76 % | — |
+| `chronos2_flux_cov+credits` | 1.55 | 2.57 | 4.99 | 8.70 | 5.25 | +41,6 % | +19,8 % | 3/4 ✅ | 77 % | — |
+| `timestral209M_flux_cov+oat` | 1.60 | 2.69 | 5.05 | 8.56 | 5.25 | +40,9 % | +18,9 % | 3/4 ✅ | 78 % | — |
+| `chronos2_flux_cov+oat` | 1.58 | 2.72 | 5.19 | 8.47 | 5.27 | +39,2 % | +16,5 % | 3/4 ✅ | 77 % | — |
 | `timestral209M_flux_cov` | 1.57 | 2.70 | 5.08 | 8.58 | 5.27 | +40,5 % | +18,3 % | 3/4 ✅ | 78 % | — |
+| `timestral209M_flux_cov+reno` | 1.58 | 2.66 | 5.09 | 8.65 | 5.29 | +40,4 % | +18,1 % | 3/4 ✅ | 78 % | — |
 | `combo_timestral123M_tx12` | 2.19 | 3.28 | 5.15 | 8.01 | 5.30 | +39,7 % | +17,2 % | 3/4 ✅ | 76 % | — |
-| `combo_timestral28M_tx12` | 2.16 | 3.21 | 5.15 | 8.06 | 5.30 | +39,7 % | +17,3 % | 3/4 ✅ | 76 % | — |
+| `timestral123M_flux_cov+prix` | 1.56 | 2.67 | 5.14 | 8.71 | 5.32 | +39,8 % | +17,3 % | 3/4 ✅ | 78 % | — |
+| `chronos2_flux_cov+prix` | 1.58 | 2.67 | 5.15 | 8.73 | 5.33 | +39,7 % | +17,3 % | 3/4 ✅ | 78 % | — |
 | `combo_timestral209M_tx12` | 2.15 | 3.23 | 5.20 | 8.08 | 5.33 | +39,1 % | +16,3 % | 3/4 ✅ | 75 % | — |
-| `timestral28M_flux_cov` | 1.61 | 2.74 | 5.27 | 8.74 | 5.39 | +38,3 % | +15,2 % | 3/4 ✅ | 76 % | — |
-| `combo_timestral5M_flux` | 2.12 | 3.18 | 5.17 | 8.47 | 5.43 | +39,4 % | +16,8 % | 3/4 ✅ | 76 % | — |
+| `timestral209M_flux_cov+prix` | 1.60 | 2.77 | 5.31 | 8.90 | 5.46 | +37,9 % | +14,7 % | 3/4 ✅ | 77 % | — |
 | `combo_ets_tx12` | 2.13 | 3.19 | 5.19 | 8.59 | 5.48 | +39,2 % | +16,5 % | 3/4 ✅ | 77 % | — |
-| `combo_timestral5M_tx12` | 2.19 | 3.34 | 5.37 | 8.31 | 5.48 | +37,2 % | +13,7 % | 3/4 ✅ | 74 % | — |
 | `combo_chronos2_tx12` | 2.24 | 3.41 | 5.36 | 8.30 | 5.49 | +37,3 % | +13,9 % | 3/4 ✅ | 74 % | — |
-| `timestral5M_flux_cov` | 1.72 | 3.09 | 5.93 | 9.86 | 6.07 | +30,5 % | +4,6 % | 2/4 | 71 % | — |
+| `timestral123M_flux_cov_futur` | 1.57 | 2.84 | 5.48 | 9.10 | 5.59 | +35,8 % | +11,9 % | 3/4 ✅ | 75 % | — |
+| `timestral209M_flux_cov_futur` | 1.61 | 2.90 | 5.68 | 9.46 | 5.80 | +33,5 % | +8,6 % | 3/4 ✅ | 75 % | — |
 | `timestral123M_flux` | 1.58 | 3.22 | 6.51 | 10.79 | 6.57 | +23,7 % | -4,7 % | 2/4 | 69 % | — |
-| `timestral28M_flux` | 1.71 | 3.33 | 6.56 | 10.72 | 6.60 | +23,2 % | -5,5 % | 2/4 | 68 % | — |
 | `chronos2_flux` | 1.66 | 3.27 | 6.54 | 10.83 | 6.61 | +23,4 % | -5,1 % | 2/4 | 71 % | — |
 | `timestral209M_flux` | 1.63 | 3.28 | 6.59 | 10.96 | 6.67 | +22,9 % | -5,9 % | 2/4 | 68 % | — |
 | `timestral123M_tx12` | 1.46 | 3.41 | 6.87 | 10.80 | 6.70 | +19,6 % | -10,4 % | 2/4 | 68 % | 70 % |
 | `timestral209M_tx12` | 1.49 | 3.55 | 7.02 | 10.98 | 6.84 | +17,8 % | -12,9 % | 2/4 | 68 % | 69 % |
-| `timestral28M_tx12` | 1.49 | 3.51 | 7.09 | 11.04 | 6.88 | +17,0 % | -14,0 % | 2/4 | 70 % | 72 % |
 | `chronos2_tx12` | 1.66 | 3.68 | 7.11 | 11.09 | 6.96 | +16,8 % | -14,3 % | 2/4 | 68 % | 65 % |
-| `timestral5M_flux` | 1.70 | 3.47 | 7.03 | 11.49 | 7.03 | +17,7 % | -13,0 % | 2/4 | 66 % | — |
-| `timestral5M_tx12` | 1.50 | 3.65 | 7.30 | 11.22 | 7.03 | +14,5 % | -17,3 % | 2/4 | 68 % | 71 % |
 | `hw_flux` | 1.76 | 3.55 | 7.13 | 11.98 | 7.26 | +16,5 % | -14,7 % | 2/4 | 69 % | — |
 | `ets_tx12` | 1.59 | 3.86 | 7.98 | 12.80 | 7.84 | +6,5 % | -28,3 % | 2/4 | 67 % | — |
 
@@ -49,39 +73,117 @@ Naïve (MAPE) : 1-3 2.23 · 4-6 5.02 · 7-12 8.54 · 13-18 11.86
 | Méthode | 2009 | 2010-11 | 2012-15 | 2016-19 | 2020-21 | 2022-24 | 2025-26 |
 |---|---|---|---|---|---|---|---|
 | `modele_publie` | +15,9 % | +41,8 % | +0,3 % | +25,0 % | -3,6 % | +56,0 % | -4,2 % |
+| `combo_timestral209M_flux_cov+oat` | +57,5 % | +53,1 % | +33,5 % | +27,4 % | +8,8 % | +61,9 % | +39,6 % |
 | `combo_timestral209M_flux_cov` | +57,9 % | +52,4 % | +32,9 % | +26,2 % | +7,8 % | +62,5 % | +41,3 % |
+| `combo_timestral209M_flux_cov+confiance` | +58,3 % | +51,5 % | +33,1 % | +26,5 % | +7,1 % | +62,3 % | +41,2 % |
+| `combo_timestral209M_flux_cov+reno` | +57,8 % | +53,5 % | +32,9 % | +23,8 % | +11,9 % | +61,0 % | +42,1 % |
+| `combo_timestral123M_flux_cov+oat` | +58,3 % | +52,5 % | +30,9 % | +27,2 % | +10,7 % | +61,0 % | +32,9 % |
+| `combo_timestral209M_flux_cov+credits` | +57,3 % | +53,3 % | +31,6 % | +22,0 % | +10,8 % | +62,4 % | +46,1 % |
+| `combo_timestral209M_flux_cov+prix` | +57,0 % | +52,8 % | +34,6 % | +24,3 % | +6,6 % | +61,4 % | +41,2 % |
+| `combo_timestral123M_flux_cov+reno` | +58,4 % | +52,6 % | +30,2 % | +24,4 % | +11,5 % | +61,4 % | +39,8 % |
+| `combo_chronos2_flux_cov+prix` | +60,6 % | +53,2 % | +27,2 % | +25,0 % | +14,5 % | +60,5 % | +39,2 % |
+| `combo_timestral123M_flux_cov+confiance` | +58,9 % | +51,4 % | +30,7 % | +24,3 % | +9,4 % | +62,1 % | +35,9 % |
 | `combo_timestral123M_flux_cov` | +58,2 % | +51,8 % | +29,6 % | +25,1 % | +10,5 % | +61,7 % | +37,9 % |
+| `combo_chronos2_flux_cov_futur` | +55,1 % | +52,7 % | +31,3 % | +27,0 % | +12,7 % | +60,0 % | +16,7 % |
+| `combo_timestral123M_flux_cov+prix` | +57,7 % | +52,0 % | +30,9 % | +24,2 % | +8,7 % | +61,0 % | +38,1 % |
+| `combo_timestral123M_flux_cov+credits` | +57,3 % | +51,5 % | +28,6 % | +21,8 % | +11,5 % | +62,9 % | +36,3 % |
+| `combo_chronos2_flux_cov+reno` | +47,9 % | +54,6 % | +24,9 % | +27,2 % | +15,0 % | +62,8 % | +36,3 % |
 | `combo_chronos2_flux_cov` | +47,5 % | +55,0 % | +23,7 % | +27,8 % | +14,2 % | +62,1 % | +33,3 % |
-| `combo_timestral28M_flux_cov` | +59,1 % | +51,7 % | +32,1 % | +21,1 % | +2,0 % | +59,4 % | +32,8 % |
+| `combo_timestral209M_flux_cov_futur` | +51,6 % | +50,2 % | +31,6 % | +27,2 % | +7,3 % | +59,4 % | +23,4 % |
+| `combo_chronos2_flux_cov+confiance` | +51,1 % | +54,8 % | +21,2 % | +24,6 % | +11,4 % | +64,1 % | +31,3 % |
+| `combo_chronos2_flux_cov+oat` | +46,9 % | +55,6 % | +22,5 % | +27,7 % | +13,5 % | +61,6 % | +25,1 % |
+| `combo_timestral123M_flux_cov_futur` | +57,9 % | +50,3 % | +28,7 % | +21,7 % | +8,6 % | +60,4 % | +24,3 % |
+| `combo_chronos2_flux_cov+credits` | +53,8 % | +52,5 % | +22,3 % | +22,9 % | +14,0 % | +61,3 % | +36,9 % |
 | `combo_chronos2_flux` | +58,1 % | +53,7 % | +37,2 % | +21,2 % | +11,2 % | +43,9 % | +34,0 % |
-| `combo_timestral5M_flux_cov` | +56,1 % | +51,7 % | +27,7 % | +12,0 % | +5,0 % | +60,0 % | +32,4 % |
+| `timestral123M_flux_cov+credits` | +52,0 % | +50,5 % | +30,8 % | +7,1 % | +3,4 % | +62,1 % | +47,0 % |
+| `chronos2_flux_cov_futur` | +82,9 % | +51,4 % | +27,3 % | +12,2 % | +7,1 % | +50,4 % | +23,3 % |
+| `timestral209M_flux_cov+credits` | +53,2 % | +53,6 % | +36,4 % | +8,4 % | -6,0 % | +58,0 % | +52,0 % |
+| `chronos2_flux_cov+confiance` | +71,6 % | +56,0 % | +27,4 % | +10,1 % | +3,0 % | +52,7 % | +45,4 % |
+| `timestral123M_flux_cov+confiance` | +51,3 % | +50,8 % | +29,8 % | +8,3 % | -3,7 % | +60,7 % | +46,6 % |
+| `timestral209M_flux_cov+confiance` | +58,1 % | +51,2 % | +31,2 % | +10,8 % | -12,0 % | +58,8 % | +48,9 % |
 | `timestral123M_flux_cov` | +49,9 % | +50,4 % | +26,8 % | +9,9 % | -0,3 % | +59,9 % | +50,2 % |
+| `timestral123M_flux_cov+oat` | +48,2 % | +52,4 % | +27,2 % | +14,0 % | +0,1 % | +57,2 % | +42,7 % |
 | `chronos2_flux_cov` | +69,1 % | +53,1 % | +23,9 % | +15,0 % | +4,9 % | +47,9 % | +52,4 % |
 | `combo_timestral209M_flux` | +52,4 % | +49,4 % | +36,6 % | +12,4 % | +4,1 % | +47,7 % | +40,6 % |
+| `chronos2_flux_cov+reno` | +69,3 % | +50,5 % | +24,9 % | +13,4 % | +4,2 % | +48,6 % | +54,0 % |
+| `timestral123M_flux_cov+reno` | +50,2 % | +51,7 % | +27,0 % | +8,3 % | -1,3 % | +58,9 % | +51,2 % |
 | `combo_timestral123M_flux` | +52,5 % | +49,4 % | +35,1 % | +10,8 % | +8,8 % | +46,4 % | +39,5 % |
 | `combo_hw_flux` | +35,5 % | +50,7 % | +29,2 % | +25,7 % | +15,7 % | +44,9 % | +40,2 % |
-| `combo_timestral28M_flux` | +53,9 % | +50,4 % | +35,6 % | +7,9 % | +0,7 % | +48,6 % | +37,1 % |
+| `chronos2_flux_cov+credits` | +79,2 % | +51,9 % | +22,3 % | +8,6 % | +2,8 % | +47,7 % | +51,6 % |
+| `timestral209M_flux_cov+oat` | +46,9 % | +53,7 % | +29,8 % | +11,9 % | -9,9 % | +56,6 % | +47,1 % |
+| `chronos2_flux_cov+oat` | +67,3 % | +52,6 % | +21,7 % | +14,3 % | +2,4 % | +49,4 % | +37,4 % |
 | `timestral209M_flux_cov` | +50,1 % | +52,0 % | +28,8 % | +9,8 % | -11,3 % | +57,7 % | +50,9 % |
+| `timestral209M_flux_cov+reno` | +52,2 % | +53,9 % | +29,1 % | +4,8 % | -5,0 % | +55,2 % | +49,4 % |
 | `combo_timestral123M_tx12` | +46,7 % | +51,7 % | +28,6 % | +18,2 % | +4,1 % | +47,3 % | +34,2 % |
-| `combo_timestral28M_tx12` | +37,7 % | +52,4 % | +28,7 % | +22,0 % | +4,3 % | +47,9 % | +35,6 % |
+| `timestral123M_flux_cov+prix` | +43,2 % | +51,0 % | +27,5 % | +7,5 % | -6,0 % | +58,3 % | +49,3 % |
+| `chronos2_flux_cov+prix` | +71,4 % | +53,0 % | +24,2 % | +8,8 % | +3,5 % | +43,7 % | +55,0 % |
 | `combo_timestral209M_tx12` | +40,7 % | +51,7 % | +26,8 % | +19,7 % | +3,2 % | +48,8 % | +38,5 % |
-| `timestral28M_flux_cov` | +65,3 % | +52,0 % | +26,2 % | +0,2 % | -14,8 % | +56,1 % | +42,2 % |
-| `combo_timestral5M_flux` | +48,2 % | +48,7 % | +31,6 % | +6,5 % | +2,3 % | +46,7 % | +36,3 % |
+| `timestral209M_flux_cov+prix` | +43,5 % | +53,5 % | +27,9 % | +5,4 % | -17,3 % | +56,2 % | +49,8 % |
 | `combo_ets_tx12` | +21,7 % | +55,0 % | +24,6 % | +31,3 % | +8,2 % | +40,2 % | +36,3 % |
-| `combo_timestral5M_tx12` | +37,1 % | +47,1 % | +27,4 % | +19,2 % | +4,4 % | +44,9 % | +30,7 % |
 | `combo_chronos2_tx12` | +45,6 % | +52,4 % | +23,0 % | +17,9 % | +4,4 % | +43,9 % | +21,4 % |
-| `timestral5M_flux_cov` | +30,8 % | +49,2 % | +21,5 % | -18,4 % | -16,3 % | +54,3 % | +36,1 % |
+| `timestral123M_flux_cov_futur` | +42,5 % | +46,6 % | +23,0 % | +1,6 % | -2,8 % | +55,1 % | +33,0 % |
+| `timestral209M_flux_cov_futur` | +12,4 % | +47,1 % | +27,0 % | +10,0 % | -10,9 % | +52,0 % | +32,8 % |
 | `timestral123M_flux` | +27,4 % | +47,0 % | +20,5 % | -20,3 % | -8,2 % | +31,6 % | +36,9 % |
-| `timestral28M_flux` | +23,2 % | +49,8 % | +24,2 % | -27,0 % | -18,7 % | +35,9 % | +32,6 % |
 | `chronos2_flux` | +34,4 % | +53,1 % | +10,4 % | -2,7 % | -8,9 % | +22,8 % | +35,4 % |
 | `timestral209M_flux` | +18,4 % | +47,6 % | +22,4 % | -18,1 % | -22,4 % | +33,3 % | +37,0 % |
 | `timestral123M_tx12` | +7,7 % | +45,0 % | +12,7 % | -5,0 % | -10,7 % | +32,1 % | +36,9 % |
 | `timestral209M_tx12` | -10,6 % | +47,4 % | +7,7 % | -1,7 % | -11,9 % | +33,6 % | +42,7 % |
-| `timestral28M_tx12` | -19,6 % | +44,4 % | +7,4 % | +2,1 % | -8,5 % | +33,9 % | +33,8 % |
 | `chronos2_tx12` | -7,0 % | +49,6 % | +8,2 % | -5,8 % | -1,2 % | +23,8 % | +31,7 % |
-| `timestral5M_flux` | -3,0 % | +46,3 % | +21,2 % | -29,8 % | -17,3 % | +30,3 % | +34,3 % |
-| `timestral5M_tx12` | -15,1 % | +40,0 % | +7,6 % | -2,9 % | -6,5 % | +28,3 % | +38,5 % |
 | `hw_flux` | -46,3 % | +41,1 % | -1,8 % | +4,7 % | +2,2 % | +28,2 % | +43,1 % |
 | `ets_tx12` | -68,4 % | +40,7 % | -11,1 % | +15,2 % | -18,1 % | +19,3 % | +50,2 % |
 
-Durées de calcul (s) : ets_tx12 8, hw_flux 23, chronos2 39, timestral-5M 5, timestral-28M 18, timestral-123M 69, timestral-209M 115
+## Covariables supplémentaires — erreur évitée contre la variante à 3 prédicteurs
+
+Seuil du projet : ≥ 5 % sur ≥ 3 des 4 blocs. `futur` = taux de crédit projeté par l'étage 1 (OAT décalée), donné comme covariable future connue.
+
+| Modèle | Ajout | 1-3 | 4-6 | 7-12 | 13-18 | Verdict |
+|---|---|---|---|---|---|---|
+| `chronos2` | confiance | -0,6 % | -0,4 % | +1,4 % | +3,7 % | refusé |
+| `chronos2` | credits | +0,0 % | +2,3 % | +0,8 % | -3,2 % | refusé |
+| `chronos2` | oat | -1,9 % | -3,4 % | -3,2 % | -0,5 % | refusé |
+| `chronos2` | prix | -1,9 % | -1,5 % | -2,4 % | -3,6 % | refusé |
+| `chronos2` | reno | -1,3 % | -0,4 % | +0,2 % | -0,4 % | refusé |
+| `chronos2` | futur | +3,2 % | +4,2 % | +1,4 % | +3,1 % | refusé |
+| `timestral123M` | confiance | -0,6 % | -1,1 % | -0,4 % | +1,4 % | refusé |
+| `timestral123M` | credits | +0,0 % | +1,5 % | +3,4 % | +2,2 % | refusé |
+| `timestral123M` | oat | -1,3 % | -0,8 % | -0,8 % | +0,5 % | refusé |
+| `timestral123M` | prix | -1,3 % | -2,3 % | -3,2 % | -3,1 % | refusé |
+| `timestral123M` | reno | -0,6 % | -0,4 % | -0,6 % | -0,6 % | refusé |
+| `timestral123M` | futur | -1,9 % | -8,8 % | -10,0 % | -7,7 % | refusé |
+| `timestral209M` | confiance | +0,0 % | +0,7 % | +1,4 % | +3,3 % | refusé |
+| `timestral209M` | credits | -0,6 % | +2,2 % | +4,5 % | +4,5 % | refusé |
+| `timestral209M` | oat | -1,9 % | +0,4 % | +0,6 % | +0,2 % | refusé |
+| `timestral209M` | prix | -1,9 % | -2,6 % | -4,5 % | -3,7 % | refusé |
+| `timestral209M` | reno | -0,6 % | +1,5 % | -0,2 % | -0,8 % | refusé |
+| `timestral209M` | futur | -2,5 % | -7,4 % | -11,8 % | -10,3 % | refusé |
+
+Durées de calcul (s) : ets_tx12 8, hw_flux 23, chronos2 191, timestral-123M 473, timestral-209M 777
+
+## Échecs
+
+### xgb_direct
+
+```
+Traceback (most recent call last):
+  File "/home/runner/work/housing-market/housing-market/bench/tsfm_benchmark.py", line 524, in main
+    lignes += f()
+              ^^^
+  File "/home/runner/work/housing-market/housing-market/bench/tsfm_benchmark.py", line 512, in <lambda>
+    taches["xgb_direct"] = lambda: xgb_direct(d)
+                                   ^^^^^^^^^^^^^
+  File "/home/runner/work/housing-market/housing-market/bench/tsfm_benchmark.py", line 215, in xgb_direct
+    mdl = XGBRegressor(**XGB_PARAMS).fit(tr.drop(columns="y"), tr["y"])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/core.py", line 569, in inner_f
+    return func(**kwargs)
+           ^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/sklearn.py", line 2058, in __init__
+    super().__init__(objective=objective, **kwargs)
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/core.py", line 569, in inner_f
+    return func(**kwargs)
+           ^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/xgboost/sklearn.py", line 917, in __init__
+    raise ImportError(
+ImportError: sklearn needs to be installed in order to use this module
+
+```
