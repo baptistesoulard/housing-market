@@ -488,6 +488,24 @@ def _section_covariables(res: dict) -> list[str]:
     return l
 
 
+#: Les prévisions rétro reprises par le site (page « Prévisions passées », section de
+#: comparaison des modèles). La naïve et le modèle publié n'y sont pas : ils sont déjà
+#: dans `data/forecast_archive.csv`. La combinaison se recalcule à la lecture. Le réalisé
+#: n'est PAS stocké, comme dans l'archive : il est rejoint à chaque export.
+METHODES_SITE = {"hw_flux": "holt_winters", "timestral209M_flux_cov": "timestral"}
+
+
+def exporter_comparaison(prev: pd.DataFrame) -> None:
+    sous = prev[prev["methode"].isin(METHODES_SITE)]
+    if sous["methode"].nunique() < len(METHODES_SITE):
+        return
+    out = sous.assign(methode=sous["methode"].map(METHODES_SITE),
+                      predicted=sous["predicted"].round(0),
+                      mesure_le=time.strftime("%Y-%m-%d"))
+    out[["methode", "data_vintage", "target_month", "horizon", "predicted", "mesure_le"]] \
+        .to_csv(SORTIE / "comparaison_modeles.csv", index=False)
+
+
 # --------------------------------------------------------------------------- main
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -542,6 +560,7 @@ def main() -> None:
         raise SystemExit(1 if ecarts else 0)
 
     prev.to_csv(SORTIE / "previsions.csv", index=False)
+    exporter_comparaison(prev)
     (SORTIE / "synthese.json").write_text(
         json.dumps({"controle_ecarts": ecarts, "durees_s": durees, "erreurs": erreurs,
                     "resultats": res},
