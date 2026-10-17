@@ -322,6 +322,8 @@ pas des prévisions publiées à leur date.
 // lui, est rejoint à chaque export, comme pour l'archive. Sans instantané, la section se
 // réduit à son chapeau.
 const CMP = A.comparaison ?? null;
+// Une décimale TOUJOURS : « 5 % » à côté de « 5,3 % » se lit comme un chiffre moins précis.
+const pct1 = (v) => v.toLocaleString("fr-FR", {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " %";
 const CMP_COULEURS = {naive: ui.greyLine, modele: series.blue, holt_winters: series.gold,
                       timestral: series.violet, combinaison: series.green};
 
@@ -364,7 +366,7 @@ if (CMP) {
       <td><span class="hm-swatch" style=${{background: CMP_COULEURS[m.cle]}}></span>
         <b>${m.label}</b><br><span class="hm-caption">${m.description}</span></td>
       ${m.blocs.map((b, i) => html`<td style=${{fontWeight: b.mape === meilleur[i] ? 700 : 400}}>
-        ${nf1.format(b.mape)} %${m.cle === "naive" ? "" : html`<br><span class="hm-caption">(${
+        ${pct1(b.mape)}${m.cle === "naive" ? "" : html`<br><span class="hm-caption">(${
           b.skill_pct >= 0 ? "+" : "−"}${nf0.format(Math.abs(b.skill_pct))} %)</span>`}</td>`)}
       <td>${m.direction == null ? "—" : nf0.format(m.direction * 100) + " %"}</td>
     </tr>`)}</tbody>
@@ -457,7 +459,7 @@ if (CMP_TRAJ.length) {
     }),
     meta, active: new Set([REEL_CMP, ...cmpActifs]),
     yLabel: "Transactions (cumul 12 mois)", valueFmt: (v) => nf0.format(v), lastLabels: false,
-    width, filename: "previsions-passees-comparaison-modeles"
+    zero: false, width, filename: "previsions-passees-comparaison-modeles"
   }));
 }
 ```

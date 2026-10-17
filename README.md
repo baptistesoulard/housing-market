@@ -46,8 +46,9 @@ reconstruction du site.
 | Carte des départements | Les départements côte à côte : prix, évolutions, ventes, profil INSEE — et pourquoi la page ne classe pas |
 | Environnement & Financement | Taux, OAT, Euribor, confiance, intentions d'achat, chômage, crédits, rénovation |
 | Actualités & Aides | Veille curatée des dispositifs publics (`actualites.py`) |
-| Prévision & Scénarios | Projection des ventes anciennes, son incertitude, un panneau de scénarios à trois leviers |
-| Prévisions passées | Toutes les prévisions produites, face à ce qui s'est passé |
+| Prévision & Scénarios | Projection des ventes anciennes, sa fourchette, jusqu'où s'y fier, un panneau de scénarios à trois leviers |
+| Méthode de la prévision | Les deux étages du modèle, le recalage, les décalages vérifiables, les idées testées puis écartées |
+| Prévisions passées | Toutes les prévisions produites, face à ce qui s'est passé, et la comparaison avec d'autres modèles |
 | Données & Sources | Confronter ses propres ventes aux indicateurs, sans que le fichier quitte le navigateur |
 | 101 pages départementales | Prix au m² et ventes (DVF), m² accessibles, profil INSEE du département |
 

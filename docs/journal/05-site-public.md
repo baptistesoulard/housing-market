@@ -918,3 +918,30 @@ Tests : `test_changements.py` (se taire quand rien ne bouge, nouveau mois, prév
 pastille, premier passage, borne du journal), le résumé et la fraîcheur dans
 `test_redaction.py`, la réponse sous le titre et la phrase de projection dans
 `test_web_links.py`.
+
+
+## 2026-10-17 — /previsions scindée : une page synthétique, une page Méthode
+
+**Constat.** Avant la première courbe, le lecteur traversait le chapeau, la méthode, le
+verdict, la note de régime et le tableau des horizons ; la courbe venait encore après deux
+cartes, la formule du recalage et le tableau des entrées figées. Et la carte de tête
+montrait la FIN d'horizon (le mois le moins informatif : au-delà de `informative_months`
+la courbe répète son niveau) alors que le verdict, juste au-dessus, visait six mois.
+
+**Décision.** /previsions garde le verdict, deux cartes (le mois du verdict, puis le
+« niveau d'atterrissage »), la courbe, UNE note « jusqu'où s'y fier » et les scénarios.
+Tout le reste part sur /methode-prevision, cellules et commentaires compris : ces
+commentaires sont la mémoire du projet, ils changent de page, pas de statut. Les liens
+vers `#ce-qu-on-a-essaye-et-qui-ne-marche-pas` suivent, le test des hypothèses écartées
+aussi.
+
+**Comparaison des modèles** sur « Le modèle face au réel » : tableau par plage d'horizon,
+départ au choix (idée reprise de la démonstration de Timestral : on choisit une date et
+on voit les dix-huit mois annoncés par chaque méthode), vue d'ensemble à six mois. Choix
+de publication (« option 1 ») : la combinaison fait mieux en rétro-simulation, mais la
+prévision publiée reste celle du modèle tant que la combinaison n'a pas fait ses preuves
+en conditions réelles ; la page le dit, par une phrase générée. Mesures : journal 06.
+
+**Vérification du rendu sans navigateur** : `apercu-rendu.yml` + `scripts/apercu.mjs`
+(captures bureau/téléphone, compte des cellules en erreur). Premier passage : 0 erreur sur
+l'accueil, /previsions, /methode-prevision et /previsions-passees.

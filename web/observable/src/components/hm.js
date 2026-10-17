@@ -154,7 +154,7 @@ export function legendStatic(meta) {
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
                            baseline = null, lastLabels = true, tipUnit = "", yPct = false,
                            width = undefined, filename = null, splitAt = null,
-                           legend = "auto"}) {
+                           legend = "auto", zero = undefined}) {
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const shown = active ? parsed.filter((d) => active.has(d.series)) : parsed;
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
@@ -170,7 +170,10 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
     // framework, sinon il flotte à 640 px dans un conteneur qui en fait 900.
     ...(width ? {width} : {}),
     height, marginLeft: 54, marginRight: 74,
-    x: {label: null}, y: {label: yLabel, grid: true, zero: baseline == null && !yPct, percent: false},
+    // `zero` explicite pour les séries de niveau élevé et peu variables (un cumul de ventes
+    // autour de 900 000) : partir de zéro y écrase toutes les courbes en une seule.
+    x: {label: null}, y: {label: yLabel, grid: true,
+                          zero: zero ?? (baseline == null && !yPct), percent: false},
     color: {domain: colorDomain, range: colorRange},
     marks: [
       baseline != null ? Plot.ruleY([baseline], {stroke: ui.rule, strokeDasharray: "3,3"}) : null,

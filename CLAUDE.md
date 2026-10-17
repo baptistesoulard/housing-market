@@ -64,6 +64,7 @@ python forecast_archive.py --calibrate      # recalibre la bande (deux passes, v
 | `web_export.py` | orchestration seule : charger, un constructeur par page, écrire ce qui a changé |
 | `page_synthese.py` | `faits()` (seule fonction qui lit l'entrepôt) → `rediger()` (phrases, pastilles) |
 | `page_marches.py`, `page_locaux.py`, `page_contexte.py`, `page_previsions.py`, `page_archive.py`, `page_departements.py`, `page_carte.py` | une page (ou deux jumelles) chacun |
+| `page_archive.py` (suite) | aussi la comparaison des modèles de « Le modèle face au réel », lue dans l'instantané `data/comparaison_modeles.csv` |
 | `commun.py` | mise en forme FR (`pct`, `pt`, `milliers`, `abrege`, `mois_annee`), palette, chemins |
 | `mesures.py` | faits calculés une fois (stock neuf, taux de transformation, décomposition volume/mix/taille des m²) |
 | `verdict.py` | verdict du modèle et sa fiabilité, partagés par Synthèse, Prévision et accueil |
@@ -216,6 +217,14 @@ Détail et mesures : journal 06.
   publiés sont une borne basse, pas la mesure de l'incertitude.
 - **Les permis ne précèdent pas les mises en chantier** dans cette série (mesuré puis
   réfuté) : le site publie un taux de transformation, pas une prévision du neuf.
+- **La comparaison des modèles est un INSTANTANÉ DATÉ** (`data/comparaison_modeles.csv`,
+  colonne `mesure_le`) : Holt-Winters et Timestral, produits par `bench/tsfm_benchmark.py`
+  (torch + poids Hugging Face, lancé par `tsfm-benchmark.yml` sur les branches `bench/**`),
+  puis copiés à la main. Le job du lundi ne le refait pas. Le réalisé n'y est pas stocké
+  (joint à l'export, comme l'archive) ; le modèle publié et la naïve sont relus dans
+  l'archive, la combinaison recalculée. Que des lignes `retro` : jamais comparées aux
+  `archive`. La phrase de statut (`page_archive._statut`) est générée : elle dit ce qui
+  est publié et suit le seuil d'entrée. Journal 06.
 
 ## Le front (`web/observable/`)
 
@@ -279,9 +288,18 @@ Détail et mesures : journal 06.
   (`test_theme_js_est_a_jour_de_theme_json`).
 - **Le formulaire de contact** : l'adresse de destination n'entre JAMAIS dans le dépôt
   (`CONTACT_TO`, `RESEND_API_KEY` côté Cloudflare) ; sans elles la route répond 503.
+- **/previsions est SYNTHÉTIQUE, /methode-prevision porte le reste** (scission du
+  2026-10-17) : verdict, courbe, une note « jusqu'où s'y fier » et scénarios d'un côté ;
+  régime, horizons, recalage, entrées figées, étages 1 et 2, décalages et idées écartées
+  de l'autre. Une explication nouvelle va sur la page Méthode, pas en tête de /previsions.
+  L'indicateur de tête de /previsions vise le mois du VERDICT, jamais la fin d'horizon.
 - **Rien ne teste le RENDU.** Vérifier sur le site construit (`dist/`). Le panneau
   navigateur intégré, masqué, n'exécute aucune cellule (`document.hidden`) : importer
   alors le module construit (`/_import/components/hm.<hash>.js`) et l'appeler à la main.
+  Sans navigateur (session distante, `cdn.jsdelivr.net` injoignable, donc pas de build
+  local) : pousser sur une branche `site/**` ; `apercu-rendu.yml` construit le site,
+  capture les pages (`scripts/apercu.mjs`, bureau et téléphone, erreurs de cellules) et
+  pousse les PNG sur `apercu/<branche>`, à supprimer après la revue.
 
 ## Pièges du poste de travail (Windows)
 

@@ -199,7 +199,7 @@ if (V && P && P.available && data.crossover_horizon) display(html`<div class="hm
   ${R && R.projected && R.projected.length ? html`<p class="hm-caption">À côté de ça, le
     <b>taux de crédit des ${R.projected.length} prochains mois est déjà déterminé</b> par
     des taux de marché publiés — c'est la seule projection du site qui ne repose sur
-    aucune hypothèse (section 1).</p>` : ""}
+    aucune hypothèse (section 3).</p>` : ""}
 </div>`);
 ```
 
