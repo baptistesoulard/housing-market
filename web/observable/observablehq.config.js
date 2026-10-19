@@ -257,6 +257,12 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-panels { display: grid; gap: 1rem 1.4rem; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
 .hm-panel-title { font-weight: 600; font-size: 0.98rem; color: var(--hm-ink); margin: 0.4rem 0 0.1rem; }
 .hm-panel-sub { color: var(--hm-ink); font-size: 0.875rem; margin-bottom: 0.2rem; }
+/* Graphique autonome (Synthèse) : titre, légende, courbe et source dans un même bloc,
+   pour qu'une capture ou une copie emporte tout ce qu'il faut pour le lire. */
+.hm-figure { margin: 0; min-width: 0; }
+.hm-figure .hm-chart-title { margin-top: 0.4rem; }
+.hm-figure .hm-legend { margin: 0.45rem 0 0.2rem; }
+.hm-figure-source { color: var(--hm-subtle); font-size: 0.8rem; margin-top: 0.15rem; }
 .hm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin: 0.6rem 0 0.1rem; }
 .hm-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-size: 0.9rem; user-select: none; }
 .hm-legend-item.off { opacity: 0.4; text-decoration: line-through; }

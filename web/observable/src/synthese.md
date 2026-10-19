@@ -223,23 +223,40 @@ function panel({ rows, y, ylabel, baseline, active }) {
 const rows = filterYears(data.chart.rows, rangeS).map((d) => ({ ...d, date: new Date(d.date) }));
 ```
 
-${legend(visible)}
-<div class="hm-caption" style="margin-top:0.1rem">Cliquez une série de la légende pour la masquer ou l'afficher (les deux graphiques suivent).</div>
+```js
+// Le DERNIER POINT de chaque série, lu sur l'historique complet (pas sur la fenêtre de la
+// frise) : c'est la date qui dit au lecteur de quand date la courbe. La date de
+// génération du JSON qu'on affichait à la place ne change que quand un chiffre change —
+// elle pouvait dater de trois semaines alors que les sources sont relues chaque lundi, et
+// elle ne disait de toute façon pas de quel MOIS parlent les données.
+const derniers = meta.map((m) => {
+  const s = data.chart.rows.filter((d) => d.series === m.name && d.level_k != null);
+  return {name: m.name, mois: s.length ? fmtMonthFR(new Date(s[s.length - 1].date)) : null};
+}).filter((d) => d.mois);
+const dernierPoint = new Set(derniers.map((d) => d.mois)).size === 1
+  ? `dernier point : ${derniers[0].mois}`
+  : "derniers points : " + derniers.map((d) => `${d.name.toLowerCase()} ${d.mois}`).join(", ");
+
+// Un graphique AUTONOME : titre qui dit ce qu'on regarde, unité et dernier point, légende
+// collée à la courbe, source en pied. Chacun peut ainsi être copié ou capturé seul et
+// rester lisible hors de la page — c'était l'usage visé, et la légende commune au-dessus
+// des deux panneaux, comme le titre « Niveaux réels — échelle unique », ne voyageaient pas
+// avec la courbe. Les deux légendes pilotent le même état `visible`.
+function figure({titre, sous_titre, ...opts}) {
+  return html`<figure class="hm-figure">
+    <div class="hm-chart-title">${titre}<span class="sub">${sous_titre} · ${dernierPoint}</span></div>
+    ${legend(opts.active)}
+    ${panel(opts)}
+    <figcaption class="hm-figure-source">Source : SIT@DEL (SDES), IGEDD (CGEDD) · France entière · Baromètre du Logement</figcaption>
+  </figure>`;
+}
+```
+
+<div class="hm-caption" style="margin-top:0.1rem">Cliquez une série dans une légende pour la masquer ou l'afficher : les deux graphiques suivent.</div>
 
 <div class="hm-panels">
-  <div>
-    <div class="hm-panel-title">Niveaux réels — échelle unique</div>
-    ${panel({ rows, y: "level_k", ylabel: "Milliers /12 m", baseline: null, active: visible })}
-  </div>
-  <div>
-    <div class="hm-panel-title">Base 100 = ${data.chart.base_label}</div>
-    ${panel({ rows, y: "index_100", ylabel: "Indice (base 100)", baseline: 100, active: visible })}
-  </div>
+  ${figure({ titre: "Logements autorisés, commencés et vendus", sous_titre: "Cumul sur 12 mois glissants, en milliers de logements", rows, y: "level_k", ylabel: "Milliers de logements", baseline: null, active: visible })}
+  ${figure({ titre: "Les mêmes volumes, en indice", sous_titre: `Base 100 = ${data.chart.base_label} ; au-dessus de 100, plus qu'en 2015`, rows, y: "index_100", ylabel: "Indice, base 100", baseline: 100, active: visible })}
 </div>
 
-<div class="hm-meta">${data.chart.source}</div>
-
-<div class="hm-meta">
-  Chiffres mis à jour le ${new Date(data.generated_at).toLocaleDateString("fr-FR", {day: "numeric", month: "long", year: "numeric"})} ·
-  sources et méthode : <a href="/a-propos">À propos</a>.
-</div>
+<div class="hm-meta">Sources et méthode : <a href="/a-propos">À propos</a>.</div>
