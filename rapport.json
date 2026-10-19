@@ -1,0 +1,44 @@
+[
+ {
+  "page": "/neuf",
+  "format": "bureau",
+  "capture": "neuf-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/neuf",
+  "format": "mobile",
+  "capture": "neuf-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/previsions-passees",
+  "format": "bureau",
+  "capture": "previsions-passees-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/previsions-passees",
+  "format": "mobile",
+  "capture": "previsions-passees-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/methode-prevision",
+  "format": "bureau",
+  "capture": "methode-prevision-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/methode-prevision",
+  "format": "mobile",
+  "capture": "methode-prevision-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ }
+]
