@@ -244,10 +244,10 @@ const dernierPoint = new Set(derniers.map((d) => d.mois)).size === 1
 // avec la courbe. Les deux légendes pilotent le même état `visible`.
 function figure({titre, sous_titre, ...opts}) {
   return html`<figure class="hm-figure">
-    <div class="hm-chart-title">${titre}<span class="sub">${sous_titre} · ${dernierPoint}</span></div>
+    <div class="hm-chart-title">${titre}<span class="sub">${sous_titre} · <span class="hm-nowrap">${dernierPoint}</span></span></div>
     ${legend(opts.active)}
     ${panel(opts)}
-    <figcaption class="hm-figure-source">Source : SIT@DEL (SDES), IGEDD (CGEDD) · France entière · Baromètre du Logement</figcaption>
+    <figcaption class="hm-figure-source">Source : SIT@DEL (SDES), IGEDD · France · Baromètre du Logement</figcaption>
   </figure>`;
 }
 ```
@@ -255,8 +255,8 @@ function figure({titre, sous_titre, ...opts}) {
 <div class="hm-caption" style="margin-top:0.1rem">Cliquez une série dans une légende pour la masquer ou l'afficher : les deux graphiques suivent.</div>
 
 <div class="hm-panels">
-  ${figure({ titre: "Logements autorisés, commencés et vendus", sous_titre: "Cumul sur 12 mois glissants, en milliers de logements", rows, y: "level_k", ylabel: "Milliers de logements", baseline: null, active: visible })}
-  ${figure({ titre: "Les mêmes volumes, en indice", sous_titre: `Base 100 = ${data.chart.base_label} ; au-dessus de 100, plus qu'en 2015`, rows, y: "index_100", ylabel: "Indice, base 100", baseline: 100, active: visible })}
+  ${figure({ titre: "Logements autorisés, commencés et vendus", sous_titre: "Cumul 12 mois glissants, en milliers", rows, y: "level_k", ylabel: "Milliers de logements", baseline: null, active: visible })}
+  ${figure({ titre: "Les mêmes volumes, en indice", sous_titre: `Base 100 = ${data.chart.base_label}`, rows, y: "index_100", ylabel: "Indice, base 100", baseline: 100, active: visible })}
 </div>
 
 <div class="hm-meta">Sources et méthode : <a href="/a-propos">À propos</a>.</div>
