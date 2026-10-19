@@ -162,7 +162,10 @@ def faits(con, frames: dict) -> dict:
         "verdict": partage(con),
         "tx12_dernier": float(tx12.iloc[-1]) if not tx12.empty else None,
         "renovation": renovation,
-        "prochain_jalon": ({"date": jalons[0][0], "libelle": jalons[0][1]["court"]["FR"]}
+        # Le dispositif ET ce qui s'y passe : « 11/2026 · PTZ » seul se lisait comme la
+        # fin du PTZ, alors que l'échéance était le vote du PLF qui le modifie.
+        "prochain_jalon": ({"date": jalons[0][0],
+                            "libelle": f"{jalons[0][1]['court']['FR']} — {jalons[0][2]}"}
                            if jalons else None),
         "fraicheur": {"sitadel": _last_valid(roll_sit, "Permis"),
                       "igedd": _last_valid(roll_va, "Transactions"),
@@ -340,9 +343,14 @@ def _puces(f: dict, pill_ancien: str, pill_fin: str) -> list:
         # d'avance mesurable. Affirmer une courroie de transmission contredirait la page
         # « Marché du neuf ». On ne rapporte que le fait : les chantiers ralentissent
         # moins vite que les permis, sans en attribuer la cause au stock de permis.
-        corps = (f"les permis reculent ({p3} sur 3 mois) plus vite que les chantiers, qui "
-                 f"marquent le pas après une forte année ({m3} sur 3 mois, "
-                 f"{m12} sur 12 mois)")
+        # « plus vite que les chantiers » supposait que les chantiers reculent aussi ; ce
+        # cas couvre aussi des chantiers stables ou en légère hausse (+0,1 % le
+        # 2026-10-19), d'où « tandis que ». Et « après une forte année » n'est écrit que
+        # si l'année l'a été.
+        y12 = k["mises"]["yoy_12m_pct"]
+        apres = " après une forte année" if y12 is not None and y12 >= 5 else ""
+        corps = (f"les permis reculent ({p3} sur 3 mois) tandis que les chantiers "
+                 f"marquent le pas{apres} ({m3} sur 3 mois, {m12} sur 12 mois)")
     elif pn["kind"] == "amont_reprise":
         corps = (f"les permis repartent ({p3} sur 3 mois) avant les chantiers "
                  f"({m3} sur 3 mois, {m12} sur 12 mois) — l'effet se verra dans 12 à 18 mois")
@@ -680,8 +688,8 @@ COMMENT_LIRE = (
     "rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de "
     "l'altitude : un marché qui progresse vite depuis un creux profond reste un "
     "petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc "
-    "« Perspective » publie la projection du modèle du site à six mois, avec sa "
+    "« Où va le marché » publie la projection du modèle du site à six mois, avec sa "
     "fourchette et la part de fois où le sens annoncé s'est avéré juste sur les "
-    "millésimes rétro-simulés — ses erreurs détaillées sont sur « Prévisions "
-    "passées ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui "
+    "millésimes rétro-simulés — ses erreurs détaillées sont sur « Le modèle face au "
+    "réel ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui "
     "s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.")

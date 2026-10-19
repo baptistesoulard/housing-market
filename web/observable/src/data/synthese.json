@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T13:25:27+00:00",
+  "generated_at": "2026-10-19T14:51:58+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -27,7 +27,7 @@
   ],
   "takeaways": [
     "🟠 **Aujourd'hui** — **Ancien** : 951 k ventes sur 12 mois, 16 % au-dessus de la normale 2010-19, mais au plateau depuis novembre 2025. **Neuf** : 300 k chantiers, 22 % sous la normale 2010-19, sur un stock de 124 027 invendus qui met 22 mois à s'écouler contre 15 habituellement.",
-    "🔴 **Le carnet** — les permis reculent (-7,2 % sur 3 mois) plus vite que les chantiers, qui marquent le pas après une forte année (+0,1 % sur 3 mois, +21,5 % sur 12 mois). Et seulement 81 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+10,9 % sur 3 mois, +27,1 % sur 12 mois).",
+    "🔴 **Le carnet** — les permis reculent (-7,2 % sur 3 mois) tandis que les chantiers marquent le pas après une forte année (+0,1 % sur 3 mois, +21,5 % sur 12 mois). Et seulement 81 % des permis deviennent des chantiers, contre 85 % dans les années 2010. La maison individuelle pure reste le segment porteur (+10,9 % sur 3 mois, +27,1 % sur 12 mois).",
     "🔴 **Financement** — taux de crédit à 3,20 % (+0,2 pt sur un an) ; les banques anticipent une demande de crédit en baisse.",
     "🎯 **Ce que ça implique** — vent contraire à 12-18 mois côté neuf : les permis reculent ; ventes anciennes projetées en recul d'environ 5 % d'ici avril 2027."
   ],
@@ -38,7 +38,7 @@
   ],
   "resume": "Aujourd'hui, les ventes de logements anciens plafonnent depuis 9 mois, les permis de construire reculent et le crédit renchérit (3,20 %, +0,2 pt sur un an).",
   "dernier_mois": "août 2026",
-  "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Les blocs sont rangés par horizon et non par source : ce qui se consomme aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, puis les conditions de crédit — qui sont les entrées du modèle, d'où leur place juste avant sa projection. Chaque carte porte deux horizons : le momentum court terme, puis la tendance sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux 3 précédents, sans repasser par une base vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc « Perspective » publie la projection du modèle du site à six mois, avec sa fourchette et la part de fois où le sens annoncé s'est avéré juste sur les millésimes rétro-simulés — ses erreurs détaillées sont sur « Prévisions passées ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
+  "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Les blocs sont rangés par horizon et non par source : ce qui se consomme aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, puis les conditions de crédit — qui sont les entrées du modèle, d'où leur place juste avant sa projection. Chaque carte porte deux horizons : le momentum court terme, puis la tendance sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux 3 précédents, sans repasser par une base vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc « Où va le marché » publie la projection du modèle du site à six mois, avec sa fourchette et la part de fois où le sens annoncé s'est avéré juste sur les millésimes rétro-simulés — ses erreurs détaillées sont sur « Le modèle face au réel ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
   "blocks": [
     {
       "title": "Aujourd'hui — ce qui se construit et se vend",
@@ -167,7 +167,7 @@
           "emoji": "🗓️",
           "title": "Prochaine échéance aides",
           "value": "11/2026",
-          "sub": "PTZ",
+          "sub": "PTZ — Adoption visée du PLF 2027 à l'Assemblée",
           "level": ""
         }
       ],

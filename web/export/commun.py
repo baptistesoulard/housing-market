@@ -56,9 +56,12 @@ def jalons_a_venir(items):
     était déjà passé — le cas s'est produit avec la suppression des forfaits monogestes
     (2026-09-01) publiée le 2026-09-02. `MAJ` reste ce qu'elle est, la date de dernière
     relecture affichée sur la page ; elle n'a simplement pas à servir d'horloge.
+
+    Rend des triplets (date, dispositif, libellé du jalon) : sans le libellé, l'échéance
+    ne s'annonçait que par le nom court du dispositif.
     """
     aujourdhui = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    return sorted([(d, it) for it in items for d, _lbl, _typ in it.get("jalons", [])
+    return sorted([(d, it, lbl["FR"] if isinstance(lbl, dict) else lbl) for it in items for d, lbl, _typ in it.get("jalons", [])
                    if d > aujourdhui], key=lambda t: t[0])
 
 

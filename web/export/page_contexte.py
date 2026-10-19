@@ -130,9 +130,9 @@ def build_actualites(con, frames: dict) -> dict:
          "subs": [actu.CHIFFRE_CLE["sub"]]},
     ]
     if next_jalons:
-        nd, nit = next_jalons[0]
+        nd, nit, nlbl = next_jalons[0]
         kpis.append({"label": "Prochaine échéance", "value": pd.Timestamp(nd).strftime("%m/%Y"),
-                     "subs": [nit["court"]["FR"]]})
+                     "subs": [f"{nit['court']['FR']} — {nlbl}"]})
 
     return {
         "generated_at": horodatage(),

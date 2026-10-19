@@ -122,7 +122,7 @@ for (const b of data.blocks) {
 
 <div class="hm-caption">
 À gauche, les niveaux réels sur une échelle unique : le rapport de masse saute aux yeux
-(l'ancien pèse 2 à 3× le neuf). À droite, base 100 sur la moyenne 2015 — la base des
+(l'ancien pèse plusieurs fois le neuf). À droite, base 100 sur la moyenne 2015 — la base des
 indices INSEE, donc celle de tous les indices du site : on compare les dynamiques sans
 distorsion d'échelle, et le repère reste le même d'un graphique à l'autre.
 </div>
