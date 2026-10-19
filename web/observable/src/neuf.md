@@ -203,21 +203,25 @@ ${SF ? sfIndices() : html`<div class="hm-caption">Surfaces indisponibles.</div>`
 // Volume, mix, taille : trois barres qui s'additionnent au recul total des m².
 const DC = SF ? SF.decomposition[sfMetric] : null;
 function sfDecomposition() {
+  // Sur téléphone, les libellés longs réclamaient une marge de 300 px dans un écran de
+  // 360 : la largeur des barres devenait négative et le graphique disparaissait. Les
+  // libellés courts gardent le sens ; le détail reste dans le tableau dessous.
+  const court = width < 600;
   const effets = [
     // Libellés NEUTRES : le sens de chaque effet est porté par la barre et son chiffre,
     // pas par le mot — « la part des grands logements recule » serait faux le jour où
     // le mix repartirait dans l'autre sens.
-    {effet: "Volume — nombre de logements", v: DC.valeurs.volume, txt: DC.volume},
-    {effet: "Mix — répartition entre les types", v: DC.valeurs.mix, txt: DC.mix},
-    {effet: "Taille — surface de chaque type", v: DC.valeurs.taille, txt: DC.taille},
-    {effet: "Total — surface de plancher", v: DC.valeurs.total, txt: DC.total},
+    {effet: court ? "Volume" : "Volume — nombre de logements", v: DC.valeurs.volume, txt: DC.volume},
+    {effet: court ? "Mix" : "Mix — répartition entre les types", v: DC.valeurs.mix, txt: DC.mix},
+    {effet: court ? "Taille" : "Taille — surface de chaque type", v: DC.valeurs.taille, txt: DC.taille},
+    {effet: court ? "Total" : "Total — surface de plancher", v: DC.valeurs.total, txt: DC.total},
   ];
   // L'étiquette se pose AU BOUT de la barre, côté extérieur, dans la couleur du texte :
   // à l'intérieur, en blanc, elle disparaissait sur les petites barres. Le domaine garde
   // une marge de chaque côté pour qu'elle ne morde ni sur les libellés ni sur le cadre.
   const bornes = [Math.min(0, ...effets.map((d) => d.v)) * 1.3, Math.max(0, ...effets.map((d) => d.v)) * 1.3 + 0.5];
   const plot = Plot.plot({
-    width, height: 210, marginLeft: 300, marginRight: 40,
+    width, height: 210, marginLeft: court ? 64 : 300, marginRight: 40,
     x: {label: `Écart à la moyenne ${DC.ref_label}, en points de %`, grid: true, domain: bornes},
     y: {label: null, domain: effets.map((d) => d.effet)},
     marks: [
