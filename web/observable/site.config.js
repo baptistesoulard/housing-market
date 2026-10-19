@@ -9,22 +9,21 @@ export const THEME = JSON.parse(readFileSync(join(_dir, "..", "theme.json"), "ut
 
 // --- Le logo -------------------------------------------------------------------------
 // Dessiné en SVG plutôt que servi en fichier binaire : les deux couleurs viennent de
-// theme.json, comme le reste du thème. Motif : le toit d'une maison au-dessus de trois
-// barres croissantes — logement + série temporelle.
+// theme.json, comme le reste du thème. Motif (depuis le 2026-10-19) : une maison au trait
+// dont le toit se prolonge en courbe de tendance, terminée par un point de donnée —
+// logement + série temporelle. Au trait et SANS FOND : un carré plein réduisait le dessin
+// à quelques pixels dans un onglet, et la maison seule se confondait avec n'importe quel
+// site immobilier. Le dessin occupe tout le carré 32×32, ce qui le garde lisible à 16 px.
 //
 // Il vit ici, et non dans observablehq.config.js, parce qu'il a maintenant TROIS
 // consommateurs : le bloc de marque de la barre latérale (en CSS, via une data URI), la
 // favicon écrite au build, et la vignette de partage. Une seule définition.
 export const MARK_SVG =
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">` +
-  `<rect width="32" height="32" rx="8" fill="${THEME.brand.brick}"/>` +
-  `<path d="M6.5 15.2 16 7.5l9.5 7.7" fill="none" stroke="${THEME.brand.bg}" ` +
-  `stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` +
-  `<g fill="${THEME.brand.bg}">` +
-  `<rect x="9.6" y="21.6" width="4" height="3.9" rx="1.1"/>` +
-  `<rect x="14.9" y="19" width="4" height="6.5" rx="1.1"/>` +
-  `<rect x="20.2" y="16.3" width="4" height="9.2" rx="1.1"/>` +
-  `</g></svg>`;
+  `<path d="M17 21V28H4V17L12 9L17 14Q22 19 25.6 9.4" fill="none" ` +
+  `stroke="${THEME.brand.brick}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>` +
+  `<circle cx="26.6" cy="6.4" r="2.9" fill="${THEME.brand.brick}"/>` +
+  `</svg>`;
 
 /** Le même logo en data URI, pour être posé directement dans du CSS (aucune requête). */
 export const MARK = "data:image/svg+xml," + encodeURIComponent(MARK_SVG);
