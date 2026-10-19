@@ -847,6 +847,8 @@ if (sens) display(multiLine({
   yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
   filename: "previsions-alignement-" + predictor,
   titre: `Ventes et ${predictorLabels[predictor].toLowerCase()}, décalé de ${lagN} mois`,
+  // Le dernier mois de VENTES : l'indicateur décalé court au-delà, par construction.
+  dernier: `${dernierPoint(histo(sens.transactions_series))} (ventes)`,
   sousTitre: "Séries centrées-réduites, en écarts-types : on compare des formes, pas des niveaux · France",
   source: "IGEDD, Banque de France, INSEE ; calcul du site"
 }));

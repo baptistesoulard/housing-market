@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {cardGrid, kpiCard, multiLine, withCsvExport, cadreGraphique, legendStatic, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {cardGrid, kpiCard, multiLine, withCsvExport, cadreGraphique, legendStatic, dernierPoint, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
@@ -456,6 +456,8 @@ if (CMP_TRAJ.length) {
     width, filename: "previsions-passees-comparaison-modeles",
     // Légende explicite : avec `active`, multiLine n'en pose aucune d'elle-même.
     titre: `Chaque méthode à ${CMP.horizon_courbe} mois, sur toute la période`,
+    // Le dernier mois RÉALISÉ : les points des méthodes visent des mois futurs.
+    dernier: `${dernierPoint(A.realized)} (réalisé)`,
     sousTitre: `Chaque point : ce que la méthode annonçait ${CMP.horizon_courbe} mois plus tôt pour ce mois-là ; ventes sur 12 mois`,
     legende: legendStatic(meta.filter((m) => m.name === REEL_CMP || cmpActifs.includes(m.name))),
     source: "IGEDD (ventes réalisées) ; méthodes rétro-simulées par le site"
