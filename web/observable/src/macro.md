@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {legend, multiLine, filterYears, withCsvExport, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
+import {legend, multiLine, filterYears, withCsvExport, cadreGraphique, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
@@ -54,45 +54,30 @@ function toggleR(name) { const s = new Set(visR.value); s.has(name) ? s.delete(n
 <div class="hm-caption">Les quatre indicateurs qui décrivent la capacité et l'envie d'acheter : moral des ménages, coût de l'argent, intentions déclarées et marché du travail.</div>
 
 <div class="hm-panels">
-  <div>
-    <div class="hm-panel-title">Indice de Confiance des Ménages (INSEE)</div>
-    <div class="hm-panel-sub">CVS, base 100 = moyenne de longue période</div>
-    ${multiLine({rows: filterYears(macro.confidence, rangeM).map((d) => ({...d, series: "Indice de Confiance"})), meta: [{name: "Indice de Confiance", color: series.brick}], yLabel: "Indice (base 100)", baseline: 100, valueFmt: (v) => nf0.format(v), filename: "macro-confiance-menages"})}
-  </div>
-  <div>
-    <div class="hm-panel-title">Taux d'intérêt et conditions de financement</div>
-    <div class="hm-panel-sub">taux crédit habitat (toutes durées) · Euribor 3 mois · OAT 10 ans — en %</div>
-    ${legend(macro.rates.meta, visR, toggleR)}
-    ${multiLine({rows: filterYears(macro.rates.rows, rangeM), meta: macro.rates.meta, active: visR, yLabel: "Taux d'intérêt (%)", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-taux-interet"})}
-  </div>
+  ${multiLine({rows: filterYears(macro.confidence, rangeM).map((d) => ({...d, series: "Indice de Confiance"})), meta: [{name: "Indice de Confiance", color: series.brick}], yLabel: "Indice, base 100", baseline: 100, valueFmt: (v) => nf0.format(v), filename: "macro-confiance-menages",
+    titre: "Confiance des ménages", sousTitre: "Indicateur synthétique CVS, base 100 = moyenne de longue période · France", source: "INSEE, enquête de conjoncture auprès des ménages"})}
+  ${multiLine({rows: filterYears(macro.rates.rows, rangeM), meta: macro.rates.meta, active: visR, yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-taux-interet",
+    titre: "Taux du crédit habitat et taux de marché", sousTitre: "Crédit habitat toutes durées, Euribor 3 mois, OAT 10 ans, en %", legende: legend(macro.rates.meta, visR, toggleR),
+    source: "Banque de France, BCE"})}
 </div>
 
 <div class="hm-panels">
-  <div>
-    <div class="hm-panel-title">Intentions d'achat de logement (1 an)</div>
-    <div class="hm-panel-sub">solde CVS centré-réduit (écarts-types)</div>
-    ${multiLine({rows: filterYears(macro.intentions, rangeM).map((d) => ({...d, series: "Intentions d'achat"})), meta: [{name: "Intentions d'achat", color: series.blue}], yLabel: "Écarts-types", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v), filename: "macro-intentions-achat"})}
-  </div>
-  <div>
-    <div class="hm-panel-title">Taux de chômage au sens du BIT</div>
-    <div class="hm-panel-sub">en % de la population active, France hors Mayotte</div>
-    ${multiLine({rows: filterYears(macro.chomage, rangeM).map((d) => ({...d, series: "Taux de chômage BIT"})), meta: [{name: "Taux de chômage BIT", color: series.brick}], yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-chomage-bit"})}
-  </div>
+  ${multiLine({rows: filterYears(macro.intentions, rangeM).map((d) => ({...d, series: "Intentions d'achat"})), meta: [{name: "Intentions d'achat", color: series.blue}], yLabel: "Écarts-types", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v), filename: "macro-intentions-achat",
+    titre: "Intentions d'achat de logement dans l'année", sousTitre: "Solde CVS centré-réduit, en écarts-types (0 = moyenne de long terme) · France", source: "INSEE, enquête de conjoncture auprès des ménages"})}
+  ${multiLine({rows: filterYears(macro.chomage, rangeM).map((d) => ({...d, series: "Taux de chômage BIT"})), meta: [{name: "Taux de chômage BIT", color: series.brick}], yLabel: "%", valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "macro-chomage-bit",
+    titre: "Taux de chômage au sens du BIT", sousTitre: "En % de la population active · France hors Mayotte", source: "INSEE"})}
 </div>
-
-<div class="hm-meta">Sources : INSEE (confiance, intentions, chômage) · Banque de France / BCE (taux crédit habitat, Euribor, OAT).</div>
 
 ```js
 // Sections conditionnelles (crédits / BLS / rénovation) rendues via display().
 const cr = macro.credit, bls = macro.bls, reno = macro.renovation;
 
-function panel(title, sub, node) {
-  return html`<div><div class="hm-panel-title">${title}</div><div class="hm-panel-sub">${sub}</div>${node}</div>`;
-}
+const SOURCE_CREDITS = "BCE, statistiques MIR (achat de logement, France) ; renégociations isolées par la décomposition BPCE, publiée depuis 2019";
 function creditMonthly() {
   if (!cr.has_split)
     return multiLine({rows: filterYears(cr.cum, rangeM).map((d) => ({date: d.date, series: "Total", value: d.total})),
-      meta: [{name: "Total", color: series.blue}], yLabel: "Md€", valueFmt: (v) => nf0.format(v), filename: "macro-credits-production-mensuelle"});
+      meta: [{name: "Total", color: series.blue}], yLabel: "Md€", valueFmt: (v) => nf0.format(v), filename: "macro-credits-production-mensuelle",
+      titre: "Production mensuelle de crédits à l'habitat", sousTitre: "Y compris renégociations, en milliards d'euros par mois", source: SOURCE_CREDITS});
   const rows = [];
   for (const d of filterYears(cr.monthly, rangeM)) {
     rows.push({date: d.date, cat: "Crédits nouveaux (hors renégo.)", value: d.pure});
@@ -102,7 +87,9 @@ function creditMonthly() {
   const plot = Plot.plot({height: 340, marginLeft: 48, x: {label: null}, y: {label: "Md€", grid: true},
     color: {domain: ["Crédits nouveaux (hors renégo.)", "Renégociations"], range: [series.blue, series.gold], legend: true},
     marks: [Plot.rectY(plotRows, {x: "date", y: "value", fill: "cat", interval: "month", tip: {...TIP}}), Plot.ruleY([0])]});
-  return withCsvExport(plot, rows, "macro-credits-production-mensuelle");
+  return cadreGraphique({titre: "Production mensuelle de crédits à l'habitat",
+    sousTitre: "Crédits nouveaux et renégociations, en milliards d'euros par mois", dernier: rows, source: SOURCE_CREDITS,
+    children: withCsvExport(plot, rows, "macro-credits-production-mensuelle")});
 }
 function creditCum() {
   const rows = [...filterYears(cr.cum, rangeM).map((d) => ({date: d.date, series: "Total (y.c. renégo.)", value: d.total}))];
@@ -111,7 +98,8 @@ function creditCum() {
     rows.push(...filterYears(cr.cum, rangeM).filter((d) => d.pure != null).map((d) => ({date: d.date, series: "Hors renégociations", value: d.pure})));
     meta.push({name: "Hors renégociations", color: series.brick, dash: true});
   }
-  return multiLine({rows, meta, yLabel: "Md€", valueFmt: (v) => nf0.format(v), filename: "macro-credits-production-cumulee"});
+  return multiLine({rows, meta, yLabel: "Md€", valueFmt: (v) => nf0.format(v), filename: "macro-credits-production-cumulee",
+    titre: "Production de crédits à l'habitat sur 12 mois", sousTitre: "Cumul sur 12 mois glissants, en milliards d'euros", source: SOURCE_CREDITS});
 }
 
 // Un titre suivi de rien se lit comme une panne du site, alors que c'est une série
@@ -123,26 +111,24 @@ const indisponible = (quoi) => html`<div class="hm-caption">${quoi} : série abs
 ## 💶 Volume de crédits à l'habitat
 
 ```js
-display(cr ? html`<div class="hm-panels">
-    ${panel("Production mensuelle de crédits à l'habitat", cr.has_split ? "crédits nouveaux vs renégociations, Md€ par mois" : "y compris renégociations, Md€ par mois", creditMonthly())}
-    ${panel("Production cumulée sur 12 mois", "Md€ / an", creditCum())}
-  </div>` : indisponible("Production de crédits à l'habitat"));
-if (cr) display(html`<div class="hm-meta">Source : BCE — statistiques MIR (achat de logement, France). Renégociations isolées (décomposition BPCE ; publiée depuis 2019).</div>`);
+display(cr ? html`<div class="hm-panels">${creditMonthly()}${creditCum()}</div>` : indisponible("Production de crédits à l'habitat"));
 ```
 
 ## 🏦 Demande de crédits à l'habitat (enquête BLS)
 
 ```js
-display(bls ? html`<div class="hm-panel-sub">solde d'opinion net des banques, en % — &gt;0 = demande en hausse · indicateur avancé</div>` : indisponible("Demande de crédits (BLS)"));
-if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %", width, filename: "macro-demande-credits-bls"}));
-if (bls) display(html`<div class="hm-meta">Source : BCE / Banque de France — Bank Lending Survey, demande de crédits à l'habitat des ménages, France, pourcentage net.</div>`);
+if (!bls) display(indisponible("Demande de crédits (BLS)"));
+if (bls) display(multiLine({rows: filterYears(bls.rows, rangeM), meta: bls.meta, yLabel: "Solde net (%)", yPct: true, valueFmt: (v) => nf0.format(v) + " %", tipUnit: " %", width, filename: "macro-demande-credits-bls",
+  titre: "Demande de crédits à l'habitat vue par les banques", sousTitre: "Solde d'opinion net, en % ; au-dessus de 0, demande en hausse · France",
+  source: "BCE, Banque de France, enquête sur la distribution du crédit (Bank Lending Survey)"}));
 ```
 
 ## 🔨 Rénovation & second œuvre
 
 ```js
-display(reno.length ? html`<div class="hm-panel-sub">solde d'opinion INSEE (enquête bâtiment) — un solde négatif = plus d'entreprises signalant une baisse d'activité</div>` : indisponible("Activité du second œuvre"));
+if (!reno.length) display(indisponible("Activité du second œuvre"));
 if (reno.length) display(multiLine({rows: reno.flatMap((r) => filterYears(r.rows, rangeM).map((d) => ({...d, series: r.title}))),
-  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v), width, filename: "macro-renovation-second-oeuvre"}));
-if (reno.length) display(html`<div class="hm-meta">Source : INSEE — Enquête mensuelle de conjoncture dans l'industrie du bâtiment, second œuvre (idbanks 001586954 / 001586886).</div>`);
+  meta: reno.map((r) => ({name: r.title, color: r.color})), yLabel: "Solde d'opinion", yPct: true, valueFmt: (v) => nf0.format(v), width, filename: "macro-renovation-second-oeuvre",
+  titre: "Activité des entreprises du second œuvre", sousTitre: "Solde d'opinion ; sous 0, plus d'entreprises signalent une baisse qu'une hausse · France",
+  source: "INSEE, enquête mensuelle de conjoncture dans l'industrie du bâtiment (second œuvre)"}));
 ```

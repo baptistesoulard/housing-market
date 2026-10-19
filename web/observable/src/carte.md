@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {carteDepartements, nuageDepartements, formatMesure} from "./components/hm.js";
+import {carteDepartements, nuageDepartements, formatMesure, cadreGraphique} from "./components/hm.js";
 const geo = await FileAttachment("./data/departements-geo.json").json();
 const data = await FileAttachment("./data/carte.json").json();
 ```
@@ -87,16 +87,17 @@ const mesure = view(mesureInput);
 ```
 
 ```js
-display(carteDepartements({geo, valeurs: valeursDe(mesure), mesure,
-                           width: Math.min(width, 760)}));
 const fmtMesure = formatMesure(mesure.unite);
-display(html`<div class="hm-meta">${mesure.periode} · source : ${mesure.source}${
-  mesure.ref != null ? ` · ${mesure.ref_libelle} : ${fmtMesure(mesure.ref)}` : ""} ·
-  ${mesure.n} départements renseignés.${mesure.note ? ` Note : ${mesure.note}.` : ""}</div>`);
+// Une carte n'a pas de « dernier point » au sens d'une courbe : sa date, c'est la période
+// de la mesure, qui va donc dans le sous-titre — avec le repère et le nombre de
+// départements renseignés, pour qu'une capture de la carte se lise seule.
+display(cadreGraphique({
+  titre: `${mesure.label}, par département`,
+  sousTitre: `${mesure.periode}${mesure.ref != null ? ` · ${mesure.ref_libelle} : ${fmtMesure(mesure.ref)}` : ""} · ${mesure.n} départements renseignés`,
+  source: `${mesure.source} ; fond de carte Etalab (IGN Admin Express), Licence ouverte 2.0`,
+  children: carteDepartements({geo, valeurs: valeursDe(mesure), mesure, width: Math.min(width, 760)})}));
+if (mesure.note) display(html`<div class="hm-meta">Note : ${mesure.note}.</div>`);
 ```
-
-<div class="hm-meta">Fond de carte : contours administratifs d'Etalab (IGN Admin Express),
-Licence ouverte 2.0, simplifiés pour le web.</div>
 
 ## Deux mesures face à face
 
@@ -123,13 +124,15 @@ const vx = valeursDe(mesureX), vy = valeursDe(mesureY);
 const pointsFace = data.departements
   .map((d) => ({code: d.code, nom: d.nom, x: vx.get(d.code).v, y: vy.get(d.code).v}))
   .filter((d) => d.x != null && d.y != null);
-display(nuageDepartements({
-  points: pointsFace, xLabel: mesureX.label, yLabel: mesureY.label,
-  fmtX: formatMesure(mesureX.unite), fmtY: formatMesure(mesureY.unite),
-  xLog: mesureX.unite === "euro", yLog: mesureY.unite === "euro",
-  width: Math.min(width, 760), etiquettes: ["75", "23"]}));
-display(html`<div class="hm-meta">${pointsFace.length} départements renseignés pour les deux
-  mesures · ${mesureX.periode} / ${mesureY.periode}.</div>`);
+display(cadreGraphique({
+  titre: `${mesureY.label}, selon : ${mesureX.label.toLowerCase()}`,
+  sousTitre: `Un point par département ; pointillés = médianes · ${pointsFace.length} départements · ${mesureX.periode === mesureY.periode ? mesureX.periode : `${mesureX.periode} / ${mesureY.periode}`}`,
+  source: mesureX.source === mesureY.source ? mesureX.source : `${mesureX.source} ; ${mesureY.source}`,
+  children: nuageDepartements({
+    points: pointsFace, xLabel: mesureX.label, yLabel: mesureY.label,
+    fmtX: formatMesure(mesureX.unite), fmtY: formatMesure(mesureY.unite),
+    xLog: mesureX.unite === "euro", yLog: mesureY.unite === "euro",
+    width: Math.min(width, 760), etiquettes: ["75", "23"]})}));
 ```
 
 ## L'âge des propriétaires et les prix : une relation qui s'est retournée
@@ -158,15 +161,15 @@ const sens = (r) => (r <= -0.2 ? "moins que les autres"
 const largeurPanneau = Math.max(300, Math.min(460, Math.floor(width / 2) - 16));
 const fmtIndice = (v) => v.toFixed(0) + " %";
 const fmtEcart = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(0) + " pts";
-display(html`<div class="hm-panels">${R.fenetres.map((f) => html`<div>
-  <div class="hm-panel-title">Prix ${f.debut} → ${f.fin}, parc du recensement ${f.millesime}</div>
-  <div class="hm-panel-sub">corrélation de rang : ${signeRho(f.rho)} · ${f.n} départements</div>
-  ${nuageDepartements({points: f.points, xLabel: "Indice d'âge du parc",
+display(html`<div class="hm-panels">${R.fenetres.map((f) => cadreGraphique({
+  titre: `Prix ${f.debut} → ${f.fin} selon l'âge du parc`,
+  sousTitre: `Écart de croissance du prix au m² au département médian ; parc du recensement ${f.millesime} · corrélation de rang ${signeRho(f.rho)} · ${f.n} départements`,
+  source: "DVF (DGFiP), recensement (INSEE) ; calcul du site",
+  children: nuageDepartements({points: f.points, xLabel: "Indice d'âge du parc",
     yLabel: "Écart de croissance du prix", fmtX: fmtIndice, fmtY: fmtEcart,
     medianes: false, tendance: true, zeroY: true, width: largeurPanneau, height: 340,
     xDomain: [Math.min(...tousX), Math.max(...tousX)],
-    yDomain: [Math.min(...tousY), Math.max(...tousY)], etiquettes: ["75", "23"]})}
-</div>`)}</div>`);
+    yDomain: [Math.min(...tousY), Math.max(...tousY)], etiquettes: ["75", "23"]})}))}</div>`);
 display(html`<p>${R.fenetres.map((f, i) => `${i ? " " : ""}Entre ${f.debut} et ${f.fin}, les
   prix des départements âgés ont progressé ${sens(f.rho)} (corrélation de rang
   ${signeRho(f.rho)}).`).join("")}</p>`);

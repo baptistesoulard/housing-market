@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {cardGrid, kpiCard, multiLine, withCsvExport, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {cardGrid, kpiCard, multiLine, withCsvExport, cadreGraphique, legendStatic, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
@@ -94,18 +94,18 @@ const legende = [
 ].concat(spot === "Aucun" ? [] : [{name: `Millésime ${moisFR(spot)}`, color: series.blue}]);
 ```
 
-<div class="hm-legend hm-legend--static">${legende.map((m) => html`<span class="hm-legend-item">
-  <span class="hm-swatch" style=${m.dash
-    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
-    : {background: m.color}}></span>${m.name}</span>`)}</div>
-
 ```js
 const faisceauExport = [
   ...reel.map((r) => ({type: "realise", date: r.date, value: r.value})),
   ...faisceaux.map((r) => ({type: "retro", vintage: r.vintage, date: r.date, value: r.value})),
   ...encours.map((r) => ({type: "en_cours", date: r.date, lo: r.lo, hi: r.hi, predicted: r.predicted})),
 ];
-display(withCsvExport(Plot.plot({
+const SOURCE_ARCHIVE = "IGEDD (ventes réalisées) ; archive des prévisions du site";
+display(cadreGraphique({
+  titre: "Toutes nos prévisions rétro-simulées, face aux ventes réelles",
+  sousTitre: "Ventes de logements anciens, cumul sur 12 mois · France", dernier: reel,
+  legende: legendStatic(legende), source: SOURCE_ARCHIVE,
+  children: withCsvExport(Plot.plot({
   width, height: 420, marginLeft: 62, marginRight: 16,
   x: {label: null},
   y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
@@ -140,7 +140,7 @@ display(withCsvExport(Plot.plot({
       title: (r) => `${fmtMonthFR(r.date)}\nRéalisé : ${nf0.format(r.value)} transactions`,
     })),
   ],
-}), faisceauExport, "previsions-passees-faisceau"));
+}), faisceauExport, "previsions-passees-faisceau")}));
 ```
 
 <div class="hm-caption">Chaque trait gris est une prévision à 18 mois produite à partir des seules
@@ -165,18 +165,12 @@ const finLignes = ["Notre modèle", A.naive_label].map((s) => {
 ```
 
 ```js
-// La légende est construite en JS, pas en HTML brut : un `${…}` placé dans un ATTRIBUT
-// (ici `style`) n'est pas interprété par le framework — il resterait affiché tel quel.
-// Les interpolations ne fonctionnent que dans le contenu d'un élément.
-display(html`<div class="hm-legend hm-legend--static">${[
-  {name: "Notre modèle", color: series.brick},
-  {name: A.naive_label, color: series.blue},
-].map((m) => html`<span class="hm-legend-item">
-  <span class="hm-swatch" style=${{background: m.color}}></span>${m.name}</span>`)}</div>`);
-```
-
-```js
-display(withCsvExport(Plot.plot({
+display(cadreGraphique({
+  titre: "Erreur moyenne des prévisions selon leur horizon",
+  sousTitre: "Écart au réalisé, en %, sur tous les millésimes rétro-simulés depuis 2009 · ventes de logements anciens",
+  legende: legendStatic([{name: "Notre modèle", color: series.brick}, {name: A.naive_label, color: series.blue}]),
+  source: SOURCE_ARCHIVE,
+  children: withCsvExport(Plot.plot({
   width, height: 360, marginLeft: 52, marginRight: 118, marginBottom: 42,
   x: {label: "Horizon de la prévision (mois)", ticks: [1, 3, 6, 9, 12, 15, 18], grid: false},
   y: {label: "Erreur moyenne (%)", grid: true, domain: [0, yMaxErr]},
@@ -200,7 +194,7 @@ display(withCsvExport(Plot.plot({
       title: (r) => `${r.horizon} mois\n${r.serie} : ${nf1.format(r.valeur)} % d'erreur`,
     })),
   ],
-}), parHorizon, "previsions-passees-erreur-par-horizon"));
+}), parHorizon, "previsions-passees-erreur-par-horizon")}));
 ```
 
 ```js
@@ -250,7 +244,11 @@ const EP = A.episodes ?? [];
 ```
 
 ```js
-if (EP.length) display(Plot.plot({
+if (EP.length) display(cadreGraphique({
+  titre: "Erreur du modèle selon l'épisode de marché",
+  sousTitre: "Écart moyen au réalisé, en %, contre une prévision naïve ; millésimes rétro-simulés",
+  source: SOURCE_ARCHIVE,
+  children: Plot.plot({
   width, height: 42 + EP.length * 38, marginLeft: 220, marginRight: 60, marginTop: 26,
   x: {label: "Erreur moyenne (%)", grid: true, domain: [0, Math.max(...EP.map((e) => e.naive_mape)) * 1.1]},
   y: {label: null, domain: EP.map((e) => e.label)},
@@ -271,7 +269,7 @@ Naïve : ${nf1.format(e.naive_mape)} %
 Bon sens : ${nf0.format(e.direction * 100)} %`,
     })),
   ],
-}));
+})}));
 ```
 
 <div class="hm-caption">
@@ -410,10 +408,14 @@ if (CMP_TRAJ.length) {
                                           serie: m.label, cle: m.cle}]
     .concat(t.mois.map((mo, i) => ({date: d(mo), value: t.valeurs[m.cle][i], serie: m.label,
                                     cle: m.cle}))));
-  display(html`<div class="hm-chart-title">Ce que chaque méthode annonçait en
-    ${moisFR(t.vintage)} <span class="sub">dix-huit mois de prévision à partir des seules
-    données connues à cette date, face à ce qui s'est passé</span></div>`);
-  display(withCsvExport(Plot.plot({
+  display(cadreGraphique({
+    titre: `Ce que chaque méthode annonçait en ${moisFR(t.vintage)}`,
+    sousTitre: "Dix-huit mois de prévision à partir des seules données connues à cette date, face aux ventes réelles (cumul 12 mois)",
+    dernier: reelFenetre, source: "IGEDD (ventes réalisées) ; méthodes rétro-simulées par le site",
+    legende: legendStatic([
+      {name: "Réalisé (cumul 12 mois)", color: series.brick},
+      ...actives.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: true}))]),
+    children: withCsvExport(Plot.plot({
     width, height: 360, marginLeft: 62, marginRight: 16,
     x: {label: null},
     y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
@@ -429,13 +431,7 @@ if (CMP_TRAJ.length) {
       Plot.tip(lignes, Plot.pointer({x: "date", y: "value", ...TIP,
         title: (r) => `${moisFR(r.date.toISOString().slice(0, 10))}\n${r.serie} : ${nf0.format(r.value)}`})),
     ],
-  }), lignes.map(({date, value, serie}) => ({date, value, serie})), "previsions-passees-depart-" + t.vintage));
-  display(html`<div class="hm-legend hm-legend--static">${[
-    {name: "Réalisé (cumul 12 mois)", color: series.brick},
-    ...actives.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: true}))
-  ].map((m) => html`<span class="hm-legend-item"><span class="hm-swatch" style=${m.dash
-    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
-    : {background: m.color}}></span>${m.name}</span>`)}</div>`);
+  }), lignes.map(({date, value, serie}) => ({date, value, serie})), "previsions-passees-depart-" + t.vintage)}));
 }
 ```
 
@@ -445,9 +441,6 @@ if (CMP_TRAJ.length) {
 // qu'exportée une seconde fois.
 if (CMP_TRAJ.length) {
   const h = CMP.horizon_courbe - 1;
-  display(html`<div class="hm-chart-title">Chaque méthode à ${CMP.horizon_courbe} mois,
-    sur toute la période <span class="sub">chaque point est ce que la méthode annonçait
-    ${CMP.horizon_courbe} mois plus tôt pour ce mois-là</span></div>`);
   const REEL_CMP = "Réalisé (cumul 12 mois)";
   const meta = [{name: REEL_CMP, color: series.brick}].concat(
     CMP.methodes.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: m.cle === "naive"})));
@@ -460,7 +453,12 @@ if (CMP_TRAJ.length) {
     meta, active: new Set([REEL_CMP, ...cmpActifs]),
     yLabel: "Transactions (cumul 12 mois)", valueFmt: (v) => nf0.format(v), lastLabels: false,
     zero: false, yTickFormat: (v) => nf0.format(v / 1000) + " k",
-    width, filename: "previsions-passees-comparaison-modeles"
+    width, filename: "previsions-passees-comparaison-modeles",
+    // Légende explicite : avec `active`, multiLine n'en pose aucune d'elle-même.
+    titre: `Chaque méthode à ${CMP.horizon_courbe} mois, sur toute la période`,
+    sousTitre: `Chaque point : ce que la méthode annonçait ${CMP.horizon_courbe} mois plus tôt pour ce mois-là ; ventes sur 12 mois`,
+    legende: legendStatic(meta.filter((m) => m.name === REEL_CMP || cmpActifs.includes(m.name))),
+    source: "IGEDD (ventes réalisées) ; méthodes rétro-simulées par le site"
   }));
 }
 ```

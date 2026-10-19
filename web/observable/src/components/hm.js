@@ -149,12 +149,72 @@ export function legendStatic(meta) {
   })}</div>`;
 }
 
+// --- Graphique AUTONOME : le standard de tous les graphiques du site ---------------
+// Un graphique doit pouvoir être copié ou capturé SEUL et rester lisible hors de la page :
+//   1. un titre qui dit ce qu'on regarde (pas « Indices de prix », mais de quoi) ;
+//   2. un sous-titre : unité, périmètre, et la DATE DU DERNIER POINT — c'est elle qui dit
+//      de quand date la courbe, pas la date de génération du JSON, qui ne bouge que
+//      quand un chiffre change ;
+//   3. la légende collée à la courbe (dès deux séries) ;
+//   4. la source en pied, suivie du nom du site.
+// Les titres de panneau courts et les sources regroupées en bas de section ne voyageaient
+// pas avec la courbe : une capture d'un seul panneau perdait son unité et sa provenance.
+
+const SITE_NOM = "Baromètre du Logement";
+const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
+              "septembre", "octobre", "novembre", "décembre"];
+
+/** « août 2026 », « 2e trimestre 2026 » ou « 2025 », selon le pas de la série. */
+export function periodeFR(date, pas = "mois") {
+  const d = date instanceof Date ? date : new Date(date);
+  const y = d.getUTCFullYear(), m = d.getUTCMonth();
+  if (pas === "annee") return String(y);
+  if (pas === "trimestre") { const q = Math.floor(m / 3) + 1; return `${q === 1 ? "1er" : q + "e"} trimestre ${y}`; }
+  return `${MOIS[m]} ${y}`;
+}
+
+/** Dernier point d'une série longue {date, value…} : la date la plus récente qui porte
+ *  une valeur, écrite au pas de la série (déduit de l'écart entre ses deux dernières
+ *  dates). `value` : nom du champ à tester, ou fonction ; `field` : champ de date. */
+export function dernierPoint(rows, {field = "date", value = "value"} = {}) {
+  if (!rows || !rows.length) return null;
+  const has = typeof value === "function" ? value : (r) => r[value] != null && !Number.isNaN(r[value]);
+  const iso = (v) => (v instanceof Date ? v.toISOString() : String(v)).slice(0, 10);
+  const dates = [...new Set(rows.filter(has).map((r) => iso(r[field])))].sort();
+  if (!dates.length) return null;
+  const last = new Date(dates[dates.length - 1]);
+  // Année seule (« 2025 ») : rien à déduire, c'est déjà le pas.
+  if (/^\d{4}$/.test(String(dates[dates.length - 1]))) return String(dates[dates.length - 1]);
+  let pas = "mois";
+  if (dates.length > 1) {
+    const jours = (last - new Date(dates[dates.length - 2])) / 864e5;
+    pas = jours > 300 ? "annee" : jours > 60 ? "trimestre" : "mois";
+  }
+  return periodeFR(last, pas);
+}
+
+/** Le cadre standard. `dernier` : une chaîne déjà écrite, ou les lignes dont la déduire.
+ *  `legende` : un nœud (légende cliquable de l'appelant, ou statique), facultatif. */
+export function cadreGraphique({titre, sousTitre = null, dernier = null, legende = null, source, children}) {
+  const fin = Array.isArray(dernier) ? dernierPoint(dernier) : dernier;
+  const sub = [sousTitre, fin ? html`<span class="hm-nowrap">dernier point : ${fin}</span>` : null].filter(Boolean);
+  return html`<figure class="hm-figure">
+    <div class="hm-chart-title">${titre}${sub.length
+      ? html`<span class="sub">${sub.flatMap((s, i) => (i ? [" · ", s] : [s]))}</span>` : ""}</div>
+    ${legende || ""}
+    ${children}
+    ${source ? html`<figcaption class="hm-figure-source">${/^sources?\s*:/i.test(source) ? "" : "Source : "}${source} · ${SITE_NOM}</figcaption>` : ""}
+  </figure>`;
+}
+
 // --- Graphique multi-séries générique (lignes) -------------------------------------
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
                            baseline = null, lastLabels = true, tipUnit = "", yPct = false,
                            width = undefined, filename = null, splitAt = null,
-                           legend = "auto", zero = undefined, yTickFormat = undefined}) {
+                           legend = "auto", zero = undefined, yTickFormat = undefined,
+                           titre = null, sousTitre = null, source = null, dernier = null,
+                           legende = null}) {
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const shown = active ? parsed.filter((d) => active.has(d.series)) : parsed;
   const colorDomain = meta.map((m) => m.name), colorRange = meta.map((m) => m.color);
@@ -211,6 +271,10 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
   // `active` non nul signifie que l'appelant pilote l'affichage avec `legend()`, la
   // version cliquable : en poser une seconde, inerte, à côté d'elle serait absurde.
   const auto = legend === "auto" && active == null && meta.length >= 2;
+  // Avec un `titre`, le graphique sort dans le cadre standard (`cadreGraphique`) : la légende —
+  // celle de l'appelant (`legende`, cliquable) ou la statique — passe sous le titre.
+  if (titre) return cadreGraphique({titre, sousTitre, source, dernier: dernier ?? dernierPoint(rows),
+    legende: legende ?? (auto ? legendStatic(meta) : null), children: carte});
   if (!auto) return carte;
   return html`<div>${legendStatic(meta)}${carte}</div>`;
 }
@@ -218,7 +282,9 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
 // --- Graphique « marché » : bascule cumul 12m / 6m / 3m / brut (+ moyennes mobiles) -
 // rows : {date, series, key, raw, roll12, roll6, roll3} (valeurs brutes, divisées par 1000 ici).
 export function marketChart({rows, meta, view, showRaw = true, showMA12 = false, showMA6 = false,
-                             active, yLabel, height = 420, width = undefined, filename = null}) {
+                             active, yLabel, height = 420, width = undefined, filename = null,
+                             titre = null, sousTitre = null, source = null, dernier = null,
+                             legende = null}) {
   const K = 1000;
   const parsed = rows.map((d) => ({...d, _x: new Date(d.date)}));
   const vis = (d) => !active || active.has(d.series);
@@ -265,12 +331,15 @@ export function marketChart({rows, meta, view, showRaw = true, showMA12 = false,
     x: {label: null}, y: {label: yLabel, grid: true, zero: true},
     color: {domain: colorDomain, range: colorRange}, marks});
   const exportRows = parsed.filter(vis).map(({_x, ...r}) => r);
-  return withCsvExport(plot, exportRows, filename || meta.map((m) => m.name).join(" "));
+  const carte = withCsvExport(plot, exportRows, filename || meta.map((m) => m.name).join(" "));
+  return titre ? cadreGraphique({titre, sousTitre, source, legende, children: carte,
+                         dernier: dernier ?? dernierPoint(rows, {value: "raw"})}) : carte;
 }
 
 // --- Comparaison mensuelle par année (barres groupées) -----------------------------
 export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd", width = undefined,
-                               filename = null}) {
+                               filename = null, titre = null, sousTitre = null, source = null,
+                               dernier = null}) {
   const data = [];
   for (const r of rows) {
     const dt = new Date(r.date), mn = dt.getUTCMonth() + 1;
@@ -291,7 +360,9 @@ export function monthlyByYear({rows, valueKey, monthNums, scheme = "YlOrRd", wid
       Plot.ruleY([0]),
     ],
   });
-  return withCsvExport(plot, data, filename || valueKey);
+  const carte = withCsvExport(plot, data, filename || valueKey);
+  return titre ? cadreGraphique({titre, sousTitre, source, children: carte,
+                         dernier: dernier ?? dernierPoint(rows, {value: valueKey})}) : carte;
 }
 
 // --- Filtre de période ------------------------------------------------------------

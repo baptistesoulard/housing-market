@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, withCsvExport, TIP} from "./components/hm.js";
+import {kpiCard, cardGrid, withCsvExport, cadreGraphique, TIP} from "./components/hm.js";
 import {series, delta, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/actualites.json").json();
@@ -105,12 +105,13 @@ function timeline(items) {
         channels: {jalon: "jalon"}, tip: {...TIP, format: {x: (d) => d.toLocaleDateString("fr-FR"), fill: false, symbol: false, y: true, jalon: true}}}),
     ],
   });
-  return withCsvExport(plot, rows, "actualites-echeancier");
+  return cadreGraphique({titre: "Échéancier des aides et dispositifs suivis",
+    sousTitre: `Entrées en vigueur, jalons et échéances ; ligne pointillée = dernière revue de la veille, le ${new Date(A.maj).toLocaleDateString("fr-FR")}`,
+    source: "textes officiels (lois de finances, Journal officiel, Union européenne) ; veille du site",
+    children: withCsvExport(plot, rows, "actualites-echeancier")});
 }
 display(timeline(items));
 ```
-
-<div class="hm-meta">🔴 mesures françaises · 🔵 mesures européennes. ● entrée en vigueur · ◆ jalon · ✕ échéance/attendu. Ligne pointillée = date de la dernière revue.</div>
 
 ## 🗞️ Le détail des mesures
 

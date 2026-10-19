@@ -46,7 +46,7 @@ toc: false
 <div class="hm-caption">France métropolitaine et d'outre-mer · d'après les ventes réellement enregistrées chez le notaire (<abbr title="Demandes de Valeurs Foncières : fichier de la DGFiP recensant les ventes immobilières réellement enregistrées">DVF</abbr>, DGFiP), les permis de construire (SIT@DEL, SDES) et le recensement (INSEE)</div>
 
 ```js
-import {multiLine, cardGrid, kpiCard, withCsvExport, legendStatic, formatMesure,
+import {multiLine, cardGrid, kpiCard, withCsvExport, legendStatic, formatMesure, cadreGraphique,
         nf0, nf1, fmtMonthFR, Plot, TIP} from "../components/hm.js";
 import {series, ui} from "../components/theme.js";
 ```
@@ -137,7 +137,10 @@ if (couvert) display(multiLine({
   meta: [{name: dep.nom, color: series.brick},
          {name: "Département médian (France)", color: series.blue, dash: true}],
   yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v), width,
-  filename: "departement-" + dep.code + "-prix-m2"
+  filename: "departement-" + dep.code + "-prix-m2",
+  titre: `Prix médian au m² des logements anciens : ${dep.nom} et département médian`,
+  sousTitre: "Par trimestre, en euros ; maisons et appartements confondus",
+  source: "DVF (DGFiP) ; calcul du site"
 }));
 ```
 
@@ -166,7 +169,10 @@ if (parType.length) display(multiLine({
   rows: parType,
   meta: [{name: "Maisons", color: series.green}, {name: "Appartements", color: series.brick}],
   yLabel: "Prix médian au m² (€)", valueFmt: (v) => euro(v), width,
-  filename: "departement-" + dep.code + "-prix-m2-par-type"
+  filename: "departement-" + dep.code + "-prix-m2-par-type",
+  titre: `Prix médian au m² des maisons et des appartements : ${dep.nom}`,
+  sousTitre: "Logements anciens, par trimestre, en euros",
+  source: "DVF (DGFiP) ; calcul du site"
 }));
 ```
 
@@ -199,18 +205,16 @@ const kNat = (ventesDep.length && ventesNat.length)
 ```
 
 ```js
-if (couvert && ventesNat.length) display(html`<div class="hm-legend hm-legend--static">${[
-  {name: `${dep.nom} — ventes par trimestre (axe de gauche)`, color: series.blue},
-  {name: "France entière — même méthode (axe de droite)", color: series.violet, dash: true},
-].map((m) => html`<span class="hm-legend-item">
-  <span class="hm-swatch" style=${m.dash
-    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
-    : {background: m.color}}></span>${m.name}</span>`)}</div>`);
-```
-
-```js
 if (couvert) display(ventesNat.length
-  ? withCsvExport(Plot.plot({
+  ? cadreGraphique({
+    titre: `Ventes de logements anciens : ${dep.nom} et France entière`,
+    sousTitre: "Ventes par trimestre ; deux axes, seules les formes se comparent",
+    dernier: ventesDep,
+    legende: legendStatic([
+      {name: `${dep.nom} — ventes par trimestre (axe de gauche)`, color: series.blue},
+      {name: "France entière — même méthode (axe de droite)", color: series.violet, dash: true}]),
+    source: "DVF (DGFiP) ; calcul du site",
+    children: withCsvExport(Plot.plot({
       width, height: 340, marginLeft: 62, marginRight: 78, marginBottom: 34,
       x: {type: "utc", label: null},
       y: {label: "Ventes retenues dans le département", grid: true, zero: true,
@@ -239,13 +243,15 @@ if (couvert) display(ventesNat.length
       ],
     }), ventesDep.map((r, i) => ({date: dep.ensemble.dates[i], departement: r.value,
                                   france: ventesNat.find((n) => +n.date === +r.date)?.value ?? null})),
-       "departement-" + dep.code + "-ventes")
+       "departement-" + dep.code + "-ventes")})
   : multiLine({
       rows: dep.ensemble.dates.map((d, i) => ({date: d, value: dep.ensemble.ventes[i],
                                                series: "Ventes par trimestre"})),
       meta: [{name: "Ventes par trimestre", color: series.blue}],
       yLabel: "Nombre de ventes retenues", valueFmt: (v) => nf0.format(v), width,
-      filename: "departement-" + dep.code + "-ventes"
+      filename: "departement-" + dep.code + "-ventes",
+      titre: `Ventes de logements anciens : ${dep.nom}`, sousTitre: "Ventes par trimestre",
+      source: "DVF (DGFiP) ; calcul du site"
     }));
 ```
 
@@ -324,10 +330,15 @@ function logementsAnnees() {
       Plot.dot(aut, {x: "annee", y: "value", fill: ui.subtle, r: 2.5}),
       Plot.ruleY([0]),
     ]});
-  return html`<div>${legendStatic([...noms.map((n, j) => ({name: n, color: couleurs[j]})),
-    {name: "Logements autorisés (total)", color: ui.subtle, dash: true}])}${withCsvExport(plot,
+  return cadreGraphique({titre: `Logements commencés et autorisés chaque année : ${dep.nom}`,
+    sousTitre: "Années civiles complètes ; barres = commencés, pointillé = autorisés ; données brutes",
+    dernier: String(A.annees[A.annees.length - 1]),
+    legende: legendStatic([...noms.map((n, j) => ({name: n, color: couleurs[j]})),
+      {name: "Logements autorisés (total)", color: ui.subtle, dash: true}]),
+    source: "SIT@DEL (SDES), date réelle estimée",
+    children: withCsvExport(plot,
     A.annees.map((a, i) => ({annee: a, commences_individuel: A.ind[i], commences_collectif: A.coll[i],
-      autorises: A.aut[i]})), "departement-" + dep.code + "-logements")}</div>`;
+      autorises: A.aut[i]})), "departement-" + dep.code + "-logements")});
 }
 ```
 
@@ -415,11 +426,16 @@ function locauxAnnees() {
       Plot.dot(aut, {x: "annee", y: "value", fill: ui.subtle, r: 3}),
       Plot.ruleY([0]),
     ]});
-  return html`<div>${legendStatic([...noms.map((n, j) => ({name: n, color: couleurs[j]})),
-    {name: "Surfaces autorisées (total)", color: ui.subtle, dash: true}])}${withCsvExport(plot,
+  return cadreGraphique({titre: `Surfaces de locaux commencées et autorisées chaque année : ${dep.nom}`,
+    sousTitre: "Années civiles complètes, en milliers de m² ; barres = commencées, par destination ; pointillé = autorisées ; données brutes",
+    dernier: String(A.annees[A.annees.length - 1]),
+    legende: legendStatic([...noms.map((n, j) => ({name: n, color: couleurs[j]})),
+      {name: "Surfaces autorisées (total)", color: ui.subtle, dash: true}]),
+    source: "SIT@DEL (SDES), date de prise en compte",
+    children: withCsvExport(plot,
     A.annees.map((a, i) => ({annee: a, autorisees: A.aut[i], commencees: A.com[i],
       ...Object.fromEntries(cles.map((k, j) => [k.toLowerCase(), A.dest[j][i]]))})),
-    "departement-" + dep.code + "-locaux")}</div>`;
+    "departement-" + dep.code + "-locaux")});
 }
 ```
 

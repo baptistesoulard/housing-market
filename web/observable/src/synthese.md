@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {status, ui} from "./components/theme.js";
-import {filterYears, withCsvExport, TIP} from "./components/hm.js";
+import {filterYears, withCsvExport, cadreGraphique, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
@@ -234,21 +234,15 @@ const derniers = meta.map((m) => {
   return {name: m.name, mois: s.length ? fmtMonthFR(new Date(s[s.length - 1].date)) : null};
 }).filter((d) => d.mois);
 const dernierPoint = new Set(derniers.map((d) => d.mois)).size === 1
-  ? `dernier point : ${derniers[0].mois}`
-  : "derniers points : " + derniers.map((d) => `${d.name.toLowerCase()} ${d.mois}`).join(", ");
+  ? derniers[0].mois
+  : derniers.map((d) => `${d.name.toLowerCase()} ${d.mois}`).join(", ");
 
-// Un graphique AUTONOME : titre qui dit ce qu'on regarde, unité et dernier point, légende
-// collée à la courbe, source en pied. Chacun peut ainsi être copié ou capturé seul et
-// rester lisible hors de la page — c'était l'usage visé, et la légende commune au-dessus
-// des deux panneaux, comme le titre « Niveaux réels — échelle unique », ne voyageaient pas
-// avec la courbe. Les deux légendes pilotent le même état `visible`.
+// Un graphique AUTONOME, au standard du site (`cadreGraphique` de components/hm.js) : titre,
+// unité et dernier point, légende collée à la courbe, source en pied. Les deux légendes
+// pilotent le même état `visible`.
 function figure({titre, sous_titre, ...opts}) {
-  return html`<figure class="hm-figure">
-    <div class="hm-chart-title">${titre}<span class="sub">${sous_titre} · <span class="hm-nowrap">${dernierPoint}</span></span></div>
-    ${legend(opts.active)}
-    ${panel(opts)}
-    <figcaption class="hm-figure-source">Source : SIT@DEL (SDES), IGEDD · France · Baromètre du Logement</figcaption>
-  </figure>`;
+  return cadreGraphique({titre, sousTitre: sous_titre, dernier: dernierPoint, legende: legend(opts.active),
+                source: "SIT@DEL (SDES), IGEDD · France", children: panel(opts)});
 }
 ```
 

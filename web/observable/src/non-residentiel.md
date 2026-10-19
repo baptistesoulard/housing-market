@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, legendStatic, multiLine, filterYears, withCsvExport,
+import {kpiCard, cardGrid, legendStatic, multiLine, filterYears, withCsvExport, cadreGraphique,
         nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {ui} from "./components/theme.js";
@@ -109,8 +109,11 @@ const mesureC = view(Inputs.radio(MESURES, {value: "SurfaceChantiers", label: "M
 ```js
 if (L.available) display(multiLine({
   rows: filterYears(L.construction.rows[mesureC], rangeL), meta: L.construction.meta,
-  yLabel: "Millions de m² (cumul 12 mois)", valueFmt: (v) => nf1.format(v), tipUnit: " M m²",
-  width, filename: "construction-neuve-m2-logements-locaux-" + LIB[mesureC]}));
+  yLabel: "Millions de m²", valueFmt: (v) => nf1.format(v), tipUnit: " M m²",
+  width, filename: "construction-neuve-m2-logements-locaux-" + LIB[mesureC],
+  titre: `Surfaces ${LIB[mesureC]} : logements et locaux non résidentiels`,
+  sousTitre: "Cumul sur 12 mois, en millions de m² · France",
+  source: "SIT@DEL (SDES), séries CVS-CJO ; locaux en date de prise en compte"}));
 ```
 
 ## 🏢 Par destination
@@ -143,7 +146,11 @@ function destinations() {
       Plot.tip(parMois, Plot.pointerX({x: "_x", y: "total", ...TIP,
         title: (d) => `${fmtMonthFR(d._x)} — total ${nf1.format(d.total)} M m²\n${d.detail}`})),
     ]});
-  return html`<div>${legendStatic(DEST.map((t) => ({name: t.type, color: t.color})))}${withCsvExport(plot, rows.map(({_x, ...r}) => r), "locaux-par-destination-" + LIB[mesureD])}</div>`;
+  return cadreGraphique({titre: `Surfaces de locaux ${LIB[mesureD]}, par destination`,
+    sousTitre: "Cumul sur 12 mois, en millions de m², aires empilées · France", dernier: rows,
+    legende: legendStatic(DEST.map((t) => ({name: t.type, color: t.color}))),
+    source: "SIT@DEL (SDES), séries CVS-CJO, date de prise en compte",
+    children: withCsvExport(plot, rows.map(({_x, ...r}) => r), "locaux-par-destination-" + LIB[mesureD])});
 }
 function parDate(rows) {
   const m = new Map();
@@ -173,8 +180,11 @@ const mesureS = view(Inputs.radio(MESURES, {value: "SurfaceChantiers", label: "M
 ```js
 if (L.available) display(multiLine({
   rows: roll12(SOUS.map((t) => t.type), mesureS), meta: SOUS.map((t) => ({name: t.type, color: t.color})),
-  yLabel: "Millions de m² (cumul 12 mois)", valueFmt: (v) => nf1.format(v), tipUnit: " M m²",
-  width, filename: "locaux-sous-destinations-" + LIB[mesureS]}));
+  yLabel: "Millions de m²", valueFmt: (v) => nf1.format(v), tipUnit: " M m²",
+  width, filename: "locaux-sous-destinations-" + LIB[mesureS],
+  titre: `Surfaces ${LIB[mesureS]} : hôtels, industrie, entrepôts, bureaux`,
+  sousTitre: "Cumul sur 12 mois, en millions de m² ; chaque série corrigée des variations saisonnières pour elle-même · France",
+  source: "SIT@DEL (SDES), séries CVS-CJO, date de prise en compte"}));
 ```
 
 ```js
@@ -204,7 +214,11 @@ function regionsBarres() {
         title: (d) => `${d.region}\n${d.type} : ${nf1.format(d.value)} M m²`, tip: {...TIP}}),
       Plot.ruleX([0]),
     ]});
-  return html`<div>${legendStatic(R.destinations.map((d) => ({name: d.type, color: d.color})))}${withCsvExport(plot, rows, "locaux-par-region-destination")}</div>`;
+  return cadreGraphique({titre: "Surfaces de locaux commencées, par région et destination",
+    sousTitre: "Cumul sur 12 mois, en millions de m² ; données brutes", dernier: R.periode,
+    legende: legendStatic(R.destinations.map((d) => ({name: d.type, color: d.color}))),
+    source: "SIT@DEL (SDES), données régionales brutes",
+    children: withCsvExport(plot, rows, "locaux-par-region-destination")});
 }
 function regionsTableau() {
   return html`<div style="overflow-x:auto"><table class="hm-table">
@@ -245,5 +259,3 @@ if (R) display(html`<div class="hm-caption">Données brutes par région, cumul d
 <p><b>L'entretien et la rénovation.</b> Seules figurent les surfaces de plancher créées par des travaux soumis à autorisation d'urbanisme. L'entretien, la rénovation ou le réaménagement de locaux existants n'y apparaissent pas.</p>
 <p><b>Le détail local, à la même précision.</b> Les régions et les départements ne sont publiés qu'en données brutes, et un département compte assez peu de grands chantiers pour qu'un seul fasse varier son chiffre d'une année sur l'autre. Leur détail se lit en niveau et sur plusieurs années, pas comme une tendance.</p>
 </div>
-
-<div class="hm-meta">Source : ${L.source ?? "SDES — SIT@DEL2"} · dernier point : ${L.last_month ?? "—"} · période affichée : ${Math.min(...rangeL)}–${Math.max(...rangeL)}</div>

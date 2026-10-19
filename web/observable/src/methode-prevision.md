@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {multiLine, cardGrid, kpiCard, legendStatic, withCsvExport, filterYears, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {multiLine, cardGrid, kpiCard, legendStatic, withCsvExport, filterYears, cadreGraphique, dernierPoint, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui, delta} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 import {computeScenario} from "./components/api.js";
@@ -320,13 +320,6 @@ const legendeTaux = R ? [
 ```
 
 ```js
-if (R) display(html`<div class="hm-legend hm-legend--static">${legendeTaux.map((m) => html`<span class="hm-legend-item">
-  <span class="hm-swatch" style=${m.dash
-    ? {borderBottom: `2px dashed ${m.color}`, background: "transparent", height: "0", marginBottom: "3px"}
-    : {background: m.color}}></span>${m.name}</span>`)}</div>`);
-```
-
-```js
 const tauxPlot = () => {
   // La courbe BRUTE est tracée d'un seul tenant, ajustement puis mois à venir. Elle
   // s'arrêtait auparavant au dernier mois observé et la projection repartait 0,5 pt plus
@@ -340,7 +333,13 @@ const tauxPlot = () => {
     depuis(R.projected).map((d) => ({date: d.date, observed: null,
                                      modelled: d.modelled, publie: d.rate})));
   const proj = depuis(R.projected).map((d) => ({date: d.date, value: d.rate}));
-  return withCsvExport(Plot.plot({
+  return cadreGraphique({
+    titre: "Taux du crédit habitat : observé, modélisé et publié",
+    sousTitre: "Taux moyen toutes durées, en % · France",
+    dernier: `${dernierPoint(histo(R.series), {value: "observed"})} (observé)`,
+    legende: legendStatic(legendeTaux),
+    source: "Banque de France (taux du crédit habitat, OAT 10 ans) ; modèle du site",
+    children: withCsvExport(Plot.plot({
     height: 300, marginLeft: 54, marginRight: 78, marginBottom: 34,
     x: {type: "utc", label: null},
     y: {label: "Taux (%)", grid: true, zero: false, tickFormat: (v) => nf1.format(v) + " %"},
@@ -406,7 +405,7 @@ const tauxPlot = () => {
         ].join("\n"),
       })) : null,
     ].filter(Boolean),
-  }), rows, "previsions-modele-taux");
+  }), rows, "previsions-modele-taux")});
 };
 ```
 
@@ -655,11 +654,10 @@ if (T) display(html`<p>Le R² de ce modèle vaut <b>${pct(T.r2)}</b>, et ce chif
 // du bruit, ce sont des vagues » — sans jamais les tracer. C'est pourtant le premier
 // graphique qu'un analyste veut voir, et le seul qui rende l'aveu vérifiable.
 if (T && T.fit && T.fit.residuals && T.fit.residuals.length) {
-  display(html`<div class="hm-chart-title">Résidus de l'ajustement
-    <span class="sub">observé moins ajusté, en ventes sur 12 mois. Un modèle sain donnerait
-    un nuage sans forme autour de zéro ; celui-ci dessine des vagues de plusieurs années —
-    c'est exactement ce que mesure l'autocorrélation de 0,88.</span></div>`);
   display(multiLine({
+    titre: "Résidus de l'ajustement du modèle de ventes",
+    sousTitre: "Observé moins ajusté, en ventes sur 12 mois ; un modèle sain donnerait un nuage sans forme autour de zéro",
+    source: "IGEDD ; ajustement du modèle du site",
     rows: T.fit.residuals.map((d) => ({date: d.date, value: d.resid, series: "Résidu"})),
     meta: [{name: "Résidu", color: series.brick}],
     yLabel: "Écart (ventes sur 12 mois)", baseline: 0, lastLabels: false,
@@ -693,10 +691,6 @@ if (T && T.fit && RATIOS_SE.length) display(html`<p>Conséquence sur l'incertitu
 // Un titre au-dessus du graphique, parce que les cartes juste au-dessus parlent d'un
 // AUTRE exercice (l'archive, ~200 prévisions depuis 2009). Sans ce rappel, le « 204 »
 // des cartes se lit comme une propriété de cette courbe-ci, qui n'en couvre que quatre ans.
-if (T) display(html`<div class="hm-chart-title">Une illustration sur une seule fenêtre
-  <span class="sub">un ajustement arrêté en ${fmtMonthFR(new Date(T.backtest.split))},
-  prolongé sur les ${T.backtest.n_test} mois suivants — à ne pas confondre avec l'archive
-  des cartes ci-dessus</span></div>`);
 
 // Deux courbes sans légende, et une courbe bleue qui démarrait en plein graphique sans
 // que rien ne dise pourquoi : impossible de voir que tout ce qui est à DROITE du trait a
@@ -715,7 +709,12 @@ if (T) {
     meta: META_BT,
     splitAt: {date: T.backtest.split, label: "← entraînement | test →"},
     yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), width,
-    filename: "previsions-backtest-transactions"
+    filename: "previsions-backtest-transactions",
+    // Le titre rappelle que ce n'est pas l'archive : les cartes juste au-dessus parlent
+    // d'un AUTRE exercice (~200 prévisions depuis 2009), celle-ci n'en couvre que quatre ans.
+    titre: "Une illustration sur une seule fenêtre : ventes observées et annoncées",
+    sousTitre: `Ajustement arrêté en ${fmtMonthFR(new Date(T.backtest.split))}, prolongé sur les ${T.backtest.n_test} mois suivants ; ventes sur 12 mois · à ne pas confondre avec l'archive`,
+    source: "IGEDD ; modèle du site"
   }));
 }
 ```
@@ -795,7 +794,11 @@ if (sens) display(html`<div class="hm-panels">
     </div>
   </div>
   <div>
-    ${withCsvExport(Plot.plot({
+    ${cadreGraphique({
+      titre: `Qualité de l'ajustement selon le décalage : ${predictorLabels[predictor].toLowerCase()}`,
+      sousTitre: "R² du modèle de ventes pour chaque décalage de l'indicateur, en mois",
+      source: "IGEDD, Banque de France, INSEE ; calcul du site",
+      children: withCsvExport(Plot.plot({
       height: 240, marginLeft: 58, marginBottom: 34,
       x: {label: "Décalage (mois)", tickFormat: "d"},
       y: {label: "R² du modèle", grid: true},
@@ -806,7 +809,7 @@ if (sens) display(html`<div class="hm-panels">
         Plot.dot(sens.curve.filter((p) => p.lag === lagN),
                  {x: "lag", y: "r2", stroke: series.brick, r: 8, strokeWidth: 2})
       ]
-    }), sens.curve, "previsions-sensibilite-decalage-" + predictor)}
+    }), sens.curve, "previsions-sensibilite-decalage-" + predictor)})}
     <div class="hm-caption">Point plein = décalage retenu · cercle = votre choix.</div>
   </div>
 </div>`);
@@ -842,7 +845,10 @@ if (sens) display(multiLine({
          {name: `${predictorLabels[predictor]} décalé +${lagN} m`, color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 320,
   yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
-  filename: "previsions-alignement-" + predictor
+  filename: "previsions-alignement-" + predictor,
+  titre: `Ventes et ${predictorLabels[predictor].toLowerCase()}, décalé de ${lagN} mois`,
+  sousTitre: "Séries centrées-réduites, en écarts-types : on compare des formes, pas des niveaux · France",
+  source: "IGEDD, Banque de France, INSEE ; calcul du site"
 }));
 ```
 

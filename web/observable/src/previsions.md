@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {multiLine, cardGrid, kpiCard, legendStatic, withCsvExport, filterYears, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {multiLine, cardGrid, kpiCard, legendStatic, withCsvExport, filterYears, cadreGraphique, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui, delta} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 import {computeScenario} from "./components/api.js";
@@ -151,15 +151,22 @@ const XDOM = P && P.available && T
 // Même manque qu'en section 2 : quatre objets sur ce graphique (l'observé, la trajectoire
 // projetée, sa bande, le repère FNAIM) et rien qui les nomme. La légende est statique —
 // aucune de ces séries ne se masque.
-if (P && P.available) display(legendStatic([
+// Le mois du dernier point OBSERVÉ : la projection, elle, court au-delà par définition.
+const moisObserve = fmtMonthFR(new Date(data.health.transactions_last_month + "T00:00:00Z"));
+const LEGENDE_PROJ = P && P.available ? legendStatic([
   {name: "Ventes réellement observées", color: series.brick},
   {name: "Projection du modèle", color: series.blue, dash: true},
   ...(B ? [{name: `Fourchette ${B.source} ${B.annee} (décembre seulement)`, color: series.violet}] : []),
-]));
+]) : null;
 ```
 
 ```js
-if (P && P.available) display(withCsvExport(Plot.plot({
+if (P && P.available) display(cadreGraphique({
+  titre: "Ventes de logements anciens : observées et projetées",
+  sousTitre: "Cumul sur 12 mois, en nombre de ventes ; bande = 80 % des erreurs passées du modèle · France",
+  dernier: `${moisObserve} (observé)`, legende: LEGENDE_PROJ,
+  source: "IGEDD ; projection du modèle du site (taux, intentions d'achat, chômage)",
+  children: withCsvExport(Plot.plot({
   width, height: 360, marginLeft: 66, marginRight: 20, marginBottom: 34,
   x: {type: "utc", label: null, domain: XDOM},
   y: {label: "Ventes sur 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
@@ -184,7 +191,7 @@ if (P && P.available) display(withCsvExport(Plot.plot({
                         text: () => `fourchette ${B.source} ${B.annee}`,
                         fill: series.violet, fontWeight: 600, textAnchor: "end", dx: -6}) : null
   ]
-}), P.series, "previsions-projection"));
+}), P.series, "previsions-projection")}));
 ```
 
 ```js
@@ -235,6 +242,7 @@ if (P && P.available && P.predictors && XDOM) {
       ],
     }));
   });
+  display(html`<div class="hm-figure-source">Source : Banque de France (taux du crédit habitat), INSEE (intentions d'achat, chômage) · Baromètre du Logement</div>`);
 }
 ```
 
@@ -405,7 +413,11 @@ if (sc) display(cardGrid([
 ```
 
 ```js
-if (sc) display(Plot.plot({
+if (sc) display(cadreGraphique({
+  titre: "Ventes sur 12 mois : aujourd'hui et dans le scénario choisi",
+  sousTitre: "Nombre de ventes de logements anciens · France", dernier: moisObserve,
+  source: "IGEDD ; scénario calculé avec le modèle du site",
+  children: Plot.plot({
   width, height: 230, marginLeft: 72, marginBottom: 30,
   x: {label: null}, y: {label: "Ventes 12 mois", grid: true, tickFormat: (v) => nf0.format(v)},
   marks: [
@@ -415,7 +427,7 @@ if (sc) display(Plot.plot({
               {x: "k", y: "v", text: (d) => nf0.format(d.v), dy: -8, fontWeight: 700}),
     Plot.ruleY([0], {stroke: ui.border})
   ]
-}));
+})}));
 ```
 
 <div class="hm-shortcuts" style="margin-top:1.6rem">

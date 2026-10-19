@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine,
-        filterYears, sumByType, withCsvExport,
+        filterYears, sumByType, withCsvExport, cadreGraphique, dernierPoint,
         nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series, ui} from "./components/theme.js";
@@ -89,6 +89,9 @@ const viewN = view(Inputs.radio(
   {value: "roll12", label: "Type de visualisation"}));
 const maN = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mois"],
   {label: "Superpositions (vue brute uniquement)"}));
+// Ce que montre la courbe, selon la vue choisie : le sous-titre du graphique.
+const VUE_LIBELLE = {roll12: "Cumul sur 12 mois glissants", roll6: "Cumul sur 6 mois glissants",
+                     roll3: "Cumul sur 3 mois glissants", raw: "Logements par mois"};
 ```
 
 ```js
@@ -99,11 +102,9 @@ function toggleN(name) { const s = new Set(visN.value); s.has(name) ? s.delete(n
 
 <div class="hm-caption">Cliquez une série de la légende pour la masquer / l'afficher.</div>
 
-${legend(neuf.main_series.meta, visN, toggleN)}
-
-${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements", width, filename: "marche-neuf"})}
-
-<div class="hm-meta">${neuf.main_series.source} · dernier point : ${neuf.main_series.last_month} · segmentation : ${segLabelN} · période affichée : ${Math.min(...rangeN)}–${Math.max(...rangeN)}</div>
+${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.meta, view: viewN, showMA12: maN.includes("Moyenne mobile 12 mois"), showMA6: maN.includes("Moyenne mobile 6 mois"), active: visN, yLabel: "Milliers de logements", width, filename: "marche-neuf",
+  titre: "Logements autorisés et commencés en France", sousTitre: `${VUE_LIBELLE[viewN]}, en milliers · ${segLabelN}`,
+  legende: legend(neuf.main_series.meta, visN, toggleN), source: neuf.main_series.source + ", séries CVS-CJO"})}
 
 ## 🏠 Dynamique Individuel vs Collectif
 
@@ -149,9 +150,10 @@ function ivSection() {
       ${ivMulti ? html`<div class="hm-panel-title">${IV_METRIC_LABELS[metric]}</div>` : ""}
       ${cardGrid(neuf.indiv_collectif[metric].kpis, (k) => kpiCard({label: k.label, value: k.val12, delta: k.roll12_yoy ? k.roll12_yoy + " sur 12 mois" : null, subs: [`${k.last3_seq} sur 3 mois vs les 3 précédents`, k.niveau]}))}
     </div>`)}
-    <div class="hm-panel-title">${ivMulti ? "Mises en Chantier & Permis de Construire" : IV_METRIC_LABELS[ivMetrics[0]]} — maison individuelle pure vs collectif <span style="color:var(--hm-subtle);font-weight:400">(cumul sur 12 mois, en milliers)</span></div>
-    ${legend(ivMeta, ivActive, toggleIv)}
-    ${multiLine({rows: filterYears(ivLines, rangeN), meta: ivMeta, active: ivActive, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", width, filename: "neuf-individuel-vs-collectif-" + ivMetrics.join("-")})}
+    ${multiLine({rows: filterYears(ivLines, rangeN), meta: ivMeta, active: ivActive, yLabel: "Milliers de logements", valueFmt: (v) => nf1.format(v), tipUnit: " k", width, filename: "neuf-individuel-vs-collectif-" + ivMetrics.join("-"),
+      titre: `${ivMulti ? "Mises en chantier et permis" : IV_METRIC_LABELS[ivMetrics[0]]} : maison individuelle pure et collectif`,
+      sousTitre: "Cumul sur 12 mois, en milliers de logements · France", legende: legend(ivMeta, ivActive, toggleIv),
+      source: "SIT@DEL (SDES), séries CVS-CJO"})}
   </div>`;
 }
 ```
@@ -188,12 +190,12 @@ if (SF) display(cardGrid(SF.kpis, kpiCard));
 function sfIndices() {
   const I = SF.indices;
   const rows = I[sfMetric].flatMap((s) => s.values.map((v, i) => ({date: I.dates[i], series: s.name, value: v})));
-  return multiLine({rows: filterYears(rows, rangeN), meta: SF.meta[sfMetric], yLabel: "Base 100 = moyenne 2015",
-    valueFmt: (v) => nf0.format(v), width, filename: "neuf-logements-vs-m2-" + sfMetric});
+  return multiLine({rows: filterYears(rows, rangeN), meta: SF.meta[sfMetric], yLabel: "Indice, base 100",
+    valueFmt: (v) => nf0.format(v), width, filename: "neuf-logements-vs-m2-" + sfMetric,
+    titre: `Logements ${sfMetric === "chantiers" ? "commencés" : "autorisés"} et surface de plancher`,
+    sousTitre: "Cumuls sur 12 mois, base 100 = moyenne 2015 · France", source: "SIT@DEL (SDES), séries CVS-CJO"});
 }
 ```
-
-<div class="hm-panel-title">Logements et surface de plancher, cumuls sur 12 mois <span style="color:var(--hm-subtle);font-weight:400">(base 100 = moyenne 2015)</span></div>
 
 ${SF ? sfIndices() : html`<div class="hm-caption">Surfaces indisponibles.</div>`}
 
@@ -225,7 +227,11 @@ function sfDecomposition() {
       Plot.text(effets.filter((d) => d.v < 0), {y: "effet", x: "v", text: "txt", fontWeight: 700, textAnchor: "end", dx: -6}),
       Plot.text(effets.filter((d) => d.v >= 0), {y: "effet", x: "v", text: "txt", fontWeight: 700, textAnchor: "start", dx: 6}),
     ]});
-  return withCsvExport(plot, effets.map(({effet, v}) => ({effet, points: v})), "neuf-decomposition-m2-" + sfMetric);
+  // Titre NEUTRE : « d'où vient le recul » ne serait plus vrai le jour où les m² repartent.
+  return cadreGraphique({titre: "Ce qui fait bouger la surface de plancher : volume, mix, taille",
+    sousTitre: `${sfMetric === "chantiers" ? "Surface commencée" : "Surface autorisée"}, 12 derniers mois contre la moyenne ${DC.ref_label}, en points de %`,
+    dernier: SF.last_month, source: "SIT@DEL (SDES) ; calcul du site",
+    children: withCsvExport(plot, effets.map(({effet, v}) => ({effet, points: v})), "neuf-decomposition-m2-" + sfMetric)});
 }
 function sfTypes() {
   return html`<table class="hm-table">
@@ -233,10 +239,6 @@ function sfTypes() {
     <tbody>${DC.types.map((t) => html`<tr><td>${t.type}</td><td>${nf1.format(t.part_ref)} %</td><td>${nf1.format(t.part_recent)} %</td><td>${nf0.format(t.m2_ref)} m²</td><td>${nf0.format(t.m2_recent)} m²</td></tr>`)}</tbody>
   </table>`;
 }
-```
-
-```js
-if (DC) display(html`<div class="hm-panel-title">D'où vient le recul des m² — ${sfMetric === "chantiers" ? "surface commencée" : "surface autorisée"}, 12 derniers mois contre la moyenne ${DC.ref_label}</div>`);
 ```
 
 ```js
@@ -262,8 +264,6 @@ if (DC) display(sfTypes());
   <p><b>Ce qu'elle ne dit pas.</b> Le m² de plancher n'est pas un tonnage : un m² de collectif mobilise davantage de béton de structure, un m² de maison davantage de toiture et d'enveloppe. La décomposition dit quel type de logement porte la baisse ; c'est à chaque ligne de produits de traduire ce déplacement dans sa propre unité.</p>
 </details>
 
-<div class="hm-meta">Source : SDES — SIT@DEL2 (CVS-CJO), France entière · dernier point : ${SF ? SF.last_month : "—"}</div>
-
 ```js
 // ============================ Section ECLN ============================
 const e = neuf.ecln;
@@ -285,7 +285,9 @@ function eclnStock() {
     ...filterYears(e.stock_rows, rangeN).map((d) => ({date: d.date, series: "Mises en vente", value: d.mises_en_vente})),
   ];
   return multiLine({rows, meta: [{name: "Encours à la vente", color: series.violet}, {name: "Mises en vente", color: series.blue}],
-    yLabel: "Nombre de logements", valueFmt: (v) => nf0.format(v), filename: "neuf-ecln-encours-mises-en-vente"});
+    yLabel: "Nombre de logements", valueFmt: (v) => nf0.format(v), filename: "neuf-ecln-encours-mises-en-vente",
+    titre: "Stock et mises en vente de logements neufs", sousTitre: "Encours = stock en fin de trimestre ; mises en vente = flux du trimestre · France",
+    source: "SDES, ECLN (CVS-CJO)"});
 }
 function eclnDelai() {
   const rows = filterYears(e.delai_rows, rangeN).map((d) => ({...d, _x: new Date(d.date)}));
@@ -297,7 +299,10 @@ function eclnDelai() {
       Plot.text([{x: rows.at(-1)._x, y: 24}], {x: "x", y: "y", text: () => "≈ 2 ans", dy: -8, fill: "grey"}),
       Plot.tip(rows, Plot.pointerX({x: "_x", y: "delai_mois", ...TIP, title: (d) => `${fmtMonthFR(d._x)}\n${nf0.format(d.delai_mois)} mois`})),
     ]});
-  return withCsvExport(plot, rows.map(({_x, ...r}) => r), "neuf-ecln-delai-ecoulement");
+  return cadreGraphique({titre: "Délai d'écoulement du stock de logements neufs",
+    sousTitre: "Mois nécessaires pour vendre le stock au rythme actuel · France",
+    dernier: dernierPoint(rows, {value: "delai_mois"}), source: "SDES, ECLN (CVS-CJO)",
+    children: withCsvExport(plot, rows.map(({_x, ...r}) => r), "neuf-ecln-delai-ecoulement")});
 }
 function eclnCat() {
   const rows = [];
@@ -307,41 +312,26 @@ function eclnCat() {
   const plot = Plot.plot({height: 340, marginLeft: 54, x: {label: null}, y: {label: "Réservations", grid: true},
     color: {domain: ["Particuliers", "Bailleurs sociaux", "Investisseurs institutionnels"], range: [series.brick, series.blue, series.gold], legend: true},
     marks: [Plot.rectY(plotRows, {x: "date", y: "value", fill: "cat", interval: "3 months", tip: {...TIP}}), Plot.ruleY([0])]});
-  return withCsvExport(plot, rows, "neuf-ecln-reservations-par-categorie");
+  return cadreGraphique({titre: "Réservations de logements neufs par type d'acquéreur",
+    sousTitre: "Logements réservés par trimestre · France", dernier: rows, source: "SDES, ECLN (CVS-CJO)",
+    children: withCsvExport(plot, rows, "neuf-ecln-reservations-par-categorie")});
 }
 function eclnPrix() {
   const rows = filterYears(e.prixm2_rows, rangeN).map((d) => ({date: d.date, series: "Prix au m²", value: d.prix}));
-  return multiLine({rows, meta: [{name: "Prix au m²", color: series.green}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²", filename: "neuf-ecln-prix-m2"});
+  return multiLine({rows, meta: [{name: "Prix au m²", color: series.green}], yLabel: "€/m²", valueFmt: (v) => nf0.format(v), tipUnit: " €/m²", filename: "neuf-ecln-prix-m2",
+    titre: "Prix des appartements neufs", sousTitre: "Prix moyen au m², en euros · France", source: "SDES, ECLN (CVS-CJO)"});
 }
 ```
 
 <div class="hm-panels">
-  <div>
-    <div class="hm-panel-title">Encours & mises en vente</div>
-    <div class="hm-panel-sub">encours = stock fin de trimestre · mises en vente = flux trimestriel</div>
-    ${e ? eclnStock() : ""}
-  </div>
-  <div>
-    <div class="hm-panel-title">Délai d'écoulement du stock</div>
-    <div class="hm-panel-sub">mois de commercialisation</div>
-    ${e ? eclnDelai() : ""}
-  </div>
+  ${e ? eclnStock() : ""}
+  ${e ? eclnDelai() : ""}
 </div>
 
 <div class="hm-panels">
-  <div>
-    <div class="hm-panel-title">Réservations par catégorie d'acquéreurs</div>
-    <div class="hm-panel-sub">logements neufs, par trimestre</div>
-    ${e ? eclnCat() : ""}
-  </div>
-  <div>
-    <div class="hm-panel-title">Prix des appartements neufs</div>
-    <div class="hm-panel-sub">prix moyen au m² (collectif)</div>
-    ${e ? eclnPrix() : ""}
-  </div>
+  ${e ? eclnCat() : ""}
+  ${e ? eclnPrix() : ""}
 </div>
-
-<div class="hm-meta">Source : SDES — ECLN (CVS-CJO)</div>
 
 ## 🔄 Du permis au chantier : ce que les autorisations disent vraiment
 
@@ -379,7 +369,11 @@ if (TR) display(cardGrid([
 </div>
 
 ```js
-if (TR) display(withCsvExport(Plot.plot({
+if (TR) display(cadreGraphique({
+  titre: "Part des logements autorisés effectivement mis en chantier",
+  sousTitre: "Mises en chantier sur 12 mois ÷ logements autorisés sur 12 mois, en % · France",
+  dernier: dernierPoint(TR.rows, {value: "taux"}), source: "SIT@DEL (SDES) ; calcul du site",
+  children: withCsvExport(Plot.plot({
   width, height: 300, marginLeft: 52, marginBottom: 34,
   x: {type: "utc", label: null},
   y: {label: "Taux de transformation (%)", grid: true, zero: false,
@@ -400,7 +394,7 @@ if (TR) display(withCsvExport(Plot.plot({
       title: (d) => `${fmtMonthFR(new Date(d.date))}\n${nf1.format(d.taux)} % des logements autorisés ouverts en chantier`,
     })),
   ],
-}), TR.rows, "neuf-taux-transformation"));
+}), TR.rows, "neuf-taux-transformation")}));
 ```
 
 ```js
@@ -427,7 +421,11 @@ modèle.
 // culminerait à un décalage POSITIF — trois mois, six mois — et redescendrait de part et
 // d'autre. Il est maximal à zéro et décroît de façon monotone : les deux séries bougent
 // ENSEMBLE, sans avance exploitable.
-if (TR && TR.lag_profile.length) display(withCsvExport(Plot.plot({
+if (TR && TR.lag_profile.length) display(cadreGraphique({
+  titre: "Lien entre permis et mises en chantier, selon le décalage appliqué aux permis",
+  sousTitre: "Part des variations des mises en chantier expliquée par les permis décalés de 0 à N mois (R²) · France",
+  dernier: dernierPoint(TR.rows, {value: "taux"}), source: "SIT@DEL (SDES) ; calcul du site",
+  children: withCsvExport(Plot.plot({
   width, height: 260, marginLeft: 56, marginBottom: 40, marginTop: 34,
   x: {label: "Décalage appliqué aux permis (mois)", tickFormat: "d", grid: false},
   // Domaine avec marge au-dessus du maximum (k=0) : sans elle, le point le plus haut
@@ -445,7 +443,7 @@ if (TR && TR.lag_profile.length) display(withCsvExport(Plot.plot({
       title: (d) => `Permis décalés de ${d.lag} mois\nR² = ${nf1.format(d.r2 * 100)} %`,
     })),
   ],
-}), TR.lag_profile, "neuf-profil-decalage"));
+}), TR.lag_profile, "neuf-profil-decalage")}));
 ```
 
 ```js

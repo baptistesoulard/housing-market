@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {multiLine, cardGrid, kpiCard, nf0, nf1, csvParse} from "./components/hm.js";
+import {multiLine, cardGrid, kpiCard, dernierPoint, nf0, nf1, csvParse} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {bestLagFit, shiftMonths} from "./components/api.js";
 ```
@@ -285,7 +285,12 @@ if (bestDriver) display(multiLine({
           color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 340,
   yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
-  filename: "donnees-alignement-ventes"
+  filename: "donnees-alignement-ventes",
+  titre: "Vos ventes et l'indicateur de marché qui les précède le mieux",
+  // Le dernier point de VOS ventes : l'indicateur décalé court au-delà, par construction.
+  dernier: `${dernierPoint(mySales)} (vos ventes)`,
+  sousTitre: `${bestDriver.name}, décalé de ${bestDriver.fit.lag} mois ; séries centrées-réduites, en écarts-types`,
+  source: `vos données, restées dans votre navigateur ; ${bestDriver.name.startsWith("Transactions") ? "IGEDD" : "SIT@DEL (SDES)"}`
 }));
 ```
 

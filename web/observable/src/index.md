@@ -259,8 +259,10 @@ const accrocheRows = filterYears(
 ```
 
 <div class="hm-accroche">
-  <div class="hm-panel-title">Activité du logement — base 100 = ${data.chart.base_label}</div>
   ${multiLine({
+    titre: "Logements autorisés, commencés et vendus, en indice",
+    sousTitre: `Cumul sur 12 mois, base 100 = ${data.chart.base_label} · France`,
+    source: "SIT@DEL (SDES), IGEDD",
     rows: accrocheRows,
     meta: data.chart.series_meta,
     yLabel: "Indice (base 100)",
@@ -273,8 +275,8 @@ const accrocheRows = filterYears(
   })}
 </div>
 
-<div class="hm-meta">${data.chart.source} · <a href="/synthese">niveaux réels, historique
-complet et chiffres du dernier mois sur la Synthèse</a>.</div>
+<div class="hm-meta"><a href="/synthese">Niveaux réels, historique complet et chiffres du
+dernier mois sur la Synthèse</a>.</div>
 
 <div class="hm-meta">Derniers mois publiés — ${data.freshness.join(" · ")}.</div>
 
