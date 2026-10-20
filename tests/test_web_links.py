@@ -347,10 +347,14 @@ def test_l_accueil_repond_a_sa_question_sous_le_titre():
 
 
 def test_la_projection_de_l_accueil_dit_son_sens_et_son_horizon_lecteur():
+    """Le chiffre porte le sens par son SIGNE (un vrai signe moins), la légende nomme le
+    mois visé et l'horizon compté devant le lecteur."""
     v = {"direction": "baisse", "change_pct": -5.9, "target_month": "avril 2027",
          "months_ahead": 6, "from_value": 956_000, "predicted": 899_439}
-    phrase = accueil.phrase_projection(v)
-    assert "reculer d'environ 6 %" in phrase and "dans six mois" in phrase
-    assert "de 956 000 à 899 000" in phrase
-    assert "progresser" in accueil.phrase_projection({**v, "direction": "hausse", "change_pct": 3.2})
-    assert accueil.phrase_projection(None) is None
+    chiffre, legende = accueil.chiffre_projection(v)
+    assert chiffre == "−6 %"
+    assert "avril 2027" in legende and "dans six mois" in legende
+    assert "de 956 000 à 899 000" in legende
+    assert accueil.chiffre_projection({**v, "direction": "hausse", "change_pct": 3.2})[0] == "+3 %"
+    assert accueil.chiffre_projection({**v, "direction": "stable"})[0] == "Stable"
+    assert accueil.chiffre_projection(None) is None

@@ -53,6 +53,13 @@ export const THEME = {
   "font": {
     "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
   },
+  "bandeau": {
+    "realise": "#EEF1F5",
+    "prevision": "#FF8A65",
+    "fourchette": "#FF8A65",
+    "grille": "rgba(255,255,255,0.14)",
+    "texte": "rgba(255,255,255,0.80)"
+  },
   "carte": {
     "sequentielle": [
       "#91b7de",
@@ -78,7 +85,7 @@ export const THEME = {
   }
 };
 
-export const {brand, series, status, delta, ui, carte} = THEME;
+export const {brand, series, status, delta, ui, carte, bandeau} = THEME;
 
 // Rampe catégorielle dans son ordre d'assignation (jamais cyclée).
 export const SERIES_ORDER = [series.brick, series.blue, series.green, series.violet, series.gold];

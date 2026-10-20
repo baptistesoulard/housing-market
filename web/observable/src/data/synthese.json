@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T13:25:15+00:00",
+  "generated_at": "2026-10-20T21:31:53+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -6615,6 +6615,66 @@
       }
     ],
     "source": "Source : SIT@DEL (SDES) · IGEDD (CGEDD) — cumul 12 mois glissant"
+  },
+  "trajectoire": {
+    "target_month": "avril 2027",
+    "target_date": "2027-04-01",
+    "direction": "baisse",
+    "change_pct": -5.1,
+    "from_value": 951000,
+    "predicted": 902161,
+    "lo": 818927,
+    "hi": 979222,
+    "trajet": [
+      {
+        "date": "2026-09-01",
+        "predicted": 922840,
+        "lo": 871724,
+        "hi": 958479
+      },
+      {
+        "date": "2026-10-01",
+        "predicted": 907996,
+        "lo": 846067,
+        "hi": 952877
+      },
+      {
+        "date": "2026-11-01",
+        "predicted": 925852,
+        "lo": 860250,
+        "hi": 976094
+      },
+      {
+        "date": "2026-12-01",
+        "predicted": 918548,
+        "lo": 849969,
+        "hi": 969819
+      },
+      {
+        "date": "2027-01-01",
+        "predicted": 915826,
+        "lo": 837282,
+        "hi": 971166
+      },
+      {
+        "date": "2027-02-01",
+        "predicted": 912187,
+        "lo": 827672,
+        "hi": 974867
+      },
+      {
+        "date": "2027-03-01",
+        "predicted": 910381,
+        "lo": 824245,
+        "hi": 980489
+      },
+      {
+        "date": "2027-04-01",
+        "predicted": 902161,
+        "lo": 818927,
+        "hi": 979222
+      }
+    ]
   },
   "period": {
     "min": 2000,

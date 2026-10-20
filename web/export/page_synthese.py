@@ -42,7 +42,18 @@ def build_synthese(con, frames: dict) -> dict:
         "how_to_read": COMMENT_LIRE,
         "blocks": texte["blocks"],
         "chart": f["graphique"],
+        # Lue par la courbe du bandeau de l'accueil, qui trace déjà les ventes réalisées
+        # depuis `chart` : la prévision jusqu'au mois du verdict, sans charger
+        # previsions.json (près d'un quart de mégaoctet) sur la page la plus visitée.
+        "trajectoire": _trajectoire(f["verdict"]),
     }
+
+
+def _trajectoire(verdict: dict | None) -> dict | None:
+    if not verdict or not verdict.get("trajet"):
+        return None
+    return {k: verdict[k] for k in ("target_month", "target_date", "direction", "change_pct",
+                                    "from_value", "predicted", "lo", "hi", "trajet")}
 
 
 # =================================== FAITS ===========================================

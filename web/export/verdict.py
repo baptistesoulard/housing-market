@@ -152,6 +152,11 @@ def _verdict(projection: dict, con) -> dict | None:
         # l'écart entre le marché et l'équation (voir `engine.decomposition`). C'est la
         # réponse au « pourquoi ? » que le verdict seul laisse en suspens.
         "pourquoi": engine.decomposition(horizon),
+        # Le chemin mois par mois jusqu'au mois du verdict, fourchette comprise : la courbe
+        # du bandeau de l'accueil le trace sans charger toute la projection.
+        "trajet": [{"date": pd.Timestamp(s["date"]).strftime("%Y-%m-%d"),
+                    "predicted": int(round(s["predicted"])), "lo": int(round(s["lo"])),
+                    "hi": int(round(s["hi"]))} for s in series[:horizon]],
     }
 
 

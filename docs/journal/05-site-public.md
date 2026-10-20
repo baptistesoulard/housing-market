@@ -980,3 +980,24 @@ autorisations d'urbanisme créant des locaux non résidentiels », 335 Mo, 797 6
   1 206 puis 1 187 ; action sociale 664 puis 561.
 
 Rien n'est publié tant que la saisie de 2026 reste trouée ; la question est posée.
+
+## 2026-10-20 — L'accueil : la réponse en un chiffre, la prévision en courbe
+
+Le premier écran répondait à sa question par une phrase de soixante mots, dont le chiffre
+(« reculer d'environ 5 % ») était un fragment en gras ; sur téléphone, elle remplissait
+l'écran. Elle s'ouvre désormais sur la variation annoncée en très grand (« −5 % », vrai
+signe moins), sa légende sur deux lignes (le mois visé, puis « dans six mois : de … à … »),
+et partage la ligne avec la courbe de la prévision : ventes réalisées depuis 2023, puis le
+chemin du modèle jusqu'au mois du verdict, fourchette comprise. Depuis 2019, les huit mois
+de prévision ne faisaient pas un dixième de la largeur et la baisse ne se voyait pas.
+
+- Le chiffre et sa légende restent du HTML généré (`accueil.chiffre_projection`, entre les
+  marqueurs `hm:reponse`) : c'est ce que lisent les robots. La courbe est un aperçu.
+- La trajectoire vient de `synthese.json` (`trajectoire`, recopiée du verdict, qui gagne
+  `trajet`) : la page d'entrée ne charge pas `previsions.json`.
+- Couleurs de la courbe : jeton `bandeau` de `theme.json` (la rampe des séries passe sous
+  3:1 sur le fond teinté de brick). Étiquettes à l'encre claire : en orangé, celle de la
+  cible disparaissait dans la fourchette.
+- Grille réponse/courbe par requête de CONTENEUR, pas de fenêtre : avec la barre latérale,
+  le bandeau d'une fenêtre de 1 100 px est plus étroit qu'un téléphone en largeur.
+- Une sixième carte-tâche (« Suivre les aides publiques ») : cinq laissaient une case vide.

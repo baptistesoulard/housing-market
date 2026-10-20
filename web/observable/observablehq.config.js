@@ -35,6 +35,9 @@ const VARS = Object.entries({
   "border-light": T.ui.borderLight,
   "delta-pos": T.delta.positive,
   "delta-neg": T.delta.negative,
+  // La courbe tracée sur le bandeau de l'accueil, et la légende qui l'accompagne.
+  "bandeau-realise": T.bandeau.realise,
+  "bandeau-prevision": T.bandeau.prevision,
 }).map(([k, v]) => `  --hm-${k}: ${v};`).join("\n");
 
 // La barre latérale ne montre pas TOUTES les pages : l'accueil en est retiré (`nav:
@@ -653,13 +656,43 @@ ${NAV_ICONS}
 /* Les cartes-tâches de l'accueil : à qui la tâche parle, en pied de carte. */
 .hm-page-card .p { display: block; font-size: 0.8rem; line-height: 1.45; margin-top: 0.55rem;
   color: var(--hm-subtle); }
-/* La réponse sous le titre de l'accueil : la première chose lue, donc le corps le plus
-   grand après le titre, sur un filet clair qui la détache du bandeau sombre. */
-.hm-reponse { border-left: 3px solid color-mix(in srgb, var(--hm-bg) 70%, var(--hm-brick));
-  padding: 0.1rem 0 0.1rem 1rem; margin: 0.4rem 0 1.3rem; max-width: 48rem; }
-.hm-reponse p { color: var(--hm-bg); font-size: 1.22rem; line-height: 1.5; margin: 0 0 0.5rem; }
+/* La réponse sous le titre de l'accueil, depuis le 2026-10-20 : UN chiffre en très grand
+   (la variation annoncée des ventes), sa légende à côté, puis l'état du marché. Elle
+   partage la ligne avec la courbe de la prévision ; la grille repasse sur une colonne
+   quand le BANDEAU (et non la fenêtre) devient étroit — d'où la requête de conteneur :
+   avec la barre latérale ouverte, une fenêtre de 1 100 px laisse au bandeau moins de
+   place qu'un téléphone tenu en largeur. */
+.hm-hero--band { container-type: inline-size; }
+.hm-hero-grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 1.2rem 2.2rem; align-items: center; margin: 0.6rem 0 1.4rem; }
+@container (max-width: 760px) { .hm-hero-grille { grid-template-columns: minmax(0, 1fr); } }
+.hm-reponse { margin: 0; max-width: 34rem; }
+.hm-reponse p { color: var(--hm-bg); font-size: 1.05rem; line-height: 1.5; margin: 0 0 0.6rem;
+  opacity: 0.92; }
 .hm-reponse strong { color: var(--hm-bg); }
-.hm-reponse .hm-reponse-maj { font-size: 0.86rem; opacity: 0.78; margin: 0; }
+.hm-reponse .hm-reponse-chiffre { opacity: 1; margin: 0 0 1rem; }
+.hm-reponse-chiffre .n { display: block; font-size: 4.6rem; font-weight: 700; line-height: 1;
+  letter-spacing: -1.5px; white-space: nowrap; margin: 0 0 0.35rem; }
+.hm-reponse-chiffre .l { display: block; font-size: 1.05rem; line-height: 1.45; }
+.hm-reponse-chiffre .l strong { display: block; font-size: 1.3rem; line-height: 1.3;
+  text-wrap: balance; }
+.hm-reponse-chiffre .l .s { display: block; margin-top: 0.15rem; opacity: 0.9; }
+.hm-reponse .hm-reponse-maj { font-size: 0.86rem; opacity: 0.75; margin: 0; }
+/* La courbe de la prévision, sur le bandeau. Couleurs : jeton bandeau de theme.json. */
+.hm-hero-courbe { margin: 0; }
+.hm-hero-courbe-titre { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--hm-bg); opacity: 0.75; margin: 0 0 0.2rem; }
+.hm-hero-courbe svg { display: block; overflow: visible; }
+.hm-hero-courbe-legende { font-size: 0.82rem; color: var(--hm-bg); opacity: 0.85;
+  margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; }
+.hm-hero-courbe-legende > span { display: inline-flex; align-items: center; gap: 0.45rem; }
+.hm-hero-courbe-legende .trait, .hm-hero-courbe-legende .pointille { display: inline-block;
+  width: 1.4rem; height: 0; border-top: 2.5px solid var(--hm-bandeau-realise); }
+.hm-hero-courbe-legende .pointille { border-top-style: dashed;
+  border-top-color: var(--hm-bandeau-prevision); }
+.hm-hero--band .hm-hero-courbe-legende a, .hm-hero--band .hm-hero-courbe-legende a:visited {
+  color: var(--hm-bg); }
+@media (max-width: 640px) { .hm-reponse-chiffre .n { font-size: 3.6rem; } }
 .hm-hero--band .hm-lead { font-size: 1rem; }
 /* Le sélecteur de département, juste sous le bandeau. */
 .hm-dep { border: 1px solid var(--hm-border); border-radius: 12px; background: var(--hm-surface);
