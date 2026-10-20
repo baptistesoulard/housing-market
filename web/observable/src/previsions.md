@@ -265,7 +265,7 @@ if (W) {
   // vide quand toutes les contributions vont dans le même sens.
   const vals = rows.map((d) => d.v);
   const etendue = (Math.max(0, ...vals) - Math.min(0, ...vals)) || 1;
-  const marge = etendue * (court ? 0.4 : 0.22);   // place pour l'étiquette au bout de la barre
+  const marge = etendue * 0.22;   // place pour l'étiquette au bout des barres courtes
   const domaine = [Math.min(0, ...vals) - marge, Math.max(0, ...vals) + marge];
   display(cadreGraphique({
     titre: `D'où vient le mouvement projeté d'ici ${V.target_month}`,
@@ -280,8 +280,12 @@ if (W) {
         Plot.barX(rows, {y: "nom", x: "v", fillOpacity: 0.9,
           fill: (d) => d.cle === "total" ? ui.subtle : d.cle === "ecart" ? series.gold : series.blue}),
         Plot.ruleX([0]),
-        Plot.text(rows.filter((d) => d.v < 0), {y: "nom", x: "v", text: (d) => signe(d.v), dx: -6, textAnchor: "end", fontWeight: 700}),
-        Plot.text(rows.filter((d) => d.v >= 0), {y: "nom", x: "v", text: (d) => Math.abs(d.v) < SEUIL ? "rien" : signe(d.v), dx: 6, textAnchor: "start", fontWeight: 700}),
+        // Étiquette au bout de la barre, à l'extérieur ; À L'INTÉRIEUR (en blanc) pour les
+        // barres longues, sans quoi elle mordait sur les libellés de gauche sur téléphone.
+        Plot.text(rows.filter((d) => d.v < 0 && -d.v <= etendue * 0.45), {y: "nom", x: "v", text: (d) => signe(d.v), dx: -6, textAnchor: "end", fontWeight: 700}),
+        Plot.text(rows.filter((d) => d.v < 0 && -d.v > etendue * 0.45), {y: "nom", x: "v", text: (d) => signe(d.v), dx: 6, textAnchor: "start", fontWeight: 700, fill: "white"}),
+        Plot.text(rows.filter((d) => d.v >= 0 && d.v <= etendue * 0.45), {y: "nom", x: "v", text: (d) => Math.abs(d.v) < SEUIL ? "rien" : signe(d.v), dx: 6, textAnchor: "start", fontWeight: 700}),
+        Plot.text(rows.filter((d) => d.v > etendue * 0.45), {y: "nom", x: "v", text: (d) => signe(d.v), dx: -6, textAnchor: "end", fontWeight: 700, fill: "white"}),
       ],
     }), rows.map(({nom, v}) => ({facteur: nom, ventes: Math.round(v)})), "previsions-decomposition"),
   }));
