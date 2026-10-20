@@ -118,7 +118,8 @@ n'exécute de JavaScript), et le seul qui reste quand Google abandonne un module
 - **Deux conventions d'horizon coexistent, chacune doit se nommer** : l'archive et ses
   tableaux comptent depuis le dernier mois de DONNÉES ; le verdict, la Synthèse et le
   bandeau de l'accueil comptent en mois devant le LECTEUR. Quand deux mesures voisines
-  n'ont pas la même étendue, chacune dit la sienne.
+  n'ont pas la même étendue, chacune dit la sienne — et sur les pages grand public, on
+  NOMME le mois (« avant février 2027 ») plutôt qu'un horizon (« en deçà de 6 mois »).
 
 ## Données et calcul
 
@@ -288,11 +289,15 @@ Détail et mesures : journal 06.
   (`test_theme_js_est_a_jour_de_theme_json`).
 - **Le formulaire de contact** : l'adresse de destination n'entre JAMAIS dans le dépôt
   (`CONTACT_TO`, `RESEND_API_KEY` côté Cloudflare) ; sans elles la route répond 503.
-- **/previsions est SYNTHÉTIQUE, /methode-prevision porte le reste** (scission du
-  2026-10-17) : verdict, courbe, une note « jusqu'où s'y fier » et scénarios d'un côté ;
-  régime, horizons, recalage, entrées figées, étages 1 et 2, décalages et idées écartées
-  de l'autre. Une explication nouvelle va sur la page Méthode, pas en tête de /previsions.
-  L'indicateur de tête de /previsions vise le mois du VERDICT, jamais la fin d'horizon.
+- **/previsions est GRAND PUBLIC, /methode-prevision porte le reste** (scission du
+  2026-10-17, refonte du 2026-10-20, journal 06) : verdict, courbe zoomée, « d'où vient ce
+  mouvement » (`engine.decomposition`, qui doit s'additionner exactement à la prévision —
+  `tests/test_decomposition.py`), « jusqu'où s'y fier » en mois nommés et scénarios en
+  unités parlantes d'un côté ; schéma, étages 1 et 2, recalage, bandes d'indicateurs,
+  régime, comparaison des modèles et idées écartées de l'autre. Sur /previsions : chiffres
+  arrondis, UNE seule mesure de fiabilité, aucun terme de statisticien. Une explication
+  nouvelle va sur la page Méthode. L'indicateur de tête vise le mois du VERDICT, et les
+  scénarios s'ajoutent à la prévision centrale, jamais au niveau d'aujourd'hui.
 - **Rien ne teste le RENDU.** Vérifier sur le site construit (`dist/`). Le panneau
   navigateur intégré, masqué, n'exécute aucune cellule (`document.hidden`) : importer
   alors le module construit (`/_import/components/hm.<hash>.js`) et l'appeler à la main.

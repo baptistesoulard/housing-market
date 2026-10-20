@@ -346,8 +346,13 @@ def anchor_of(model, tx12, max_gap=6):
     prédicteurs décalés sont observés, or le chômage est trimestriel et n'est plus
     extrapolé (voir `_macro_indexed`) — il manque donc jusqu'à deux mois par rapport aux
     transactions. Exiger la coïncidence renverrait 0.0 en pratique toujours, ce qui
-    désactiverait le recalage sans le dire. Sur une série aussi lisse qu'un cumul 12 mois,
-    le résidu d'il y a deux mois est un estimateur de niveau tout aussi bon.
+    désactiverait le recalage sans le dire.
+
+    Mesurer l'écart au dernier mois de VENTES (entrées manquantes reportées à plat, comme
+    dans la projection) supprime la marche que ce décalage crée au premier mois projeté.
+    Mesuré le 2026-10-20 sur 211 millésimes : +15,8 % d'erreur évitée à 1-3 mois, +7,9 % à
+    4-6, +1,4 % à 7-12, 0 à 13-18 — deux plages sur quatre, et rien là où le modèle est lu.
+    Refusé (voir `reperes.REFUTATIONS` et le journal 06).
 
     `max_gap` borne cette tolérance : au-delà, l'écart décrit un état du marché qui n'est
     plus le présent, et mieux vaut ne pas recaler du tout. Renvoie alors 0.0, comme quand

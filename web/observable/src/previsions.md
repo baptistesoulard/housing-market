@@ -44,8 +44,13 @@ const periode = Generators.input(periodFilter({
 // dizaine de milliers pour les bornes d'une fourchette.
 const k1 = (v) => nf0.format(Math.round(v / 1000) * 1000);
 const k10 = (v) => nf0.format(Math.round(v / 10000) * 10000);
-const signe = (v, f = k1) => (v > 0 ? "+" : v < 0 ? "−" : "") + f(Math.abs(v));
-const pct1 = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf1.format(Math.abs(v)) + " %";
+// Jamais de zéro signé (« −0 ») : une valeur qui s'arrondit à zéro s'écrit sans signe,
+// comme partout ailleurs sur le site (commun._variation côté Python).
+const signe = (v, f = k1) => {
+  const txt = f(Math.abs(v));
+  return (/^0([,.]0*)?$/.test(txt) ? "" : v > 0 ? "+" : v < 0 ? "−" : "") + txt;
+};
+const pct1 = (v) => signe(v, (x) => nf1.format(x)) + " %";
 const moisIso = (iso) => fmtMonthFR(new Date(String(iso).slice(0, 10) + "T00:00:00Z"));
 const plusMois = (iso, n) => {
   const t = new Date(String(iso).slice(0, 10) + "T00:00:00Z");
@@ -204,7 +209,8 @@ if (P && P.available) {
         // L'échéance du verdict, posée sur la courbe : le chiffre de la phrase de tête se
         // retrouve ainsi à sa place.
         Plot.dot(cible, {x: "date", y: "v", r: 4.5, fill: series.blue, stroke: "white", strokeWidth: 2}),
-        Plot.text(cible, {x: "date", y: "v", dy: 16, fontWeight: 700, fill: series.blue, fontSize: 12,
+        Plot.text(cible, {x: "date", y: "v", dy: 18, fontWeight: 700, fill: series.blue, fontSize: 12,
+                          stroke: "white", strokeWidth: 4, paintOrder: "stroke",
                           text: (d) => `${V.target_month} : ≈ ${k1(d.v)}`}),
         // Le repère FNAIM : un segment sur décembre, jamais une courbe — leur chiffre est un
         // total d'année, comparable au nôtre à ce mois-là seulement.
@@ -249,7 +255,11 @@ if (W) display(html`<p>Entre ${moisIso(W.depuis.mois)} et ${V.target_month}, la 
 ```js
 if (W) {
   const rows = CONTRIB.concat([{cle: "total", nom: "Mouvement total", v: mouvement}]);
-  const borne = Math.max(...rows.map((d) => Math.abs(d.v))) * 1.35 || 1;
+  // Le domaine suit les barres : avec un axe symétrique, la moitié du graphique restait
+  // vide quand toutes les contributions vont dans le même sens.
+  const vals = rows.map((d) => d.v);
+  const etendue = (Math.max(0, ...vals) - Math.min(0, ...vals)) || 1;
+  const domaine = [Math.min(0, ...vals) - etendue * 0.22, Math.max(0, ...vals) + etendue * 0.22];
   const court = width < 600;
   display(cadreGraphique({
     titre: `D'où vient le mouvement projeté d'ici ${V.target_month}`,
@@ -258,7 +268,7 @@ if (W) {
     source: "IGEDD, Banque de France, INSEE ; décomposition du modèle du site",
     children: withCsvExport(Plot.plot({
       width, height: 44 * rows.length + 30, marginLeft: court ? 130 : 230, marginRight: 30,
-      x: {label: "Ventes sur douze mois", grid: true, domain: [-borne, borne], tickFormat: (v) => signe(v, nf0.format)},
+      x: {label: "Ventes sur douze mois", grid: true, domain: domaine, tickFormat: (v) => signe(v, nf0.format)},
       y: {label: null, domain: rows.map((d) => d.nom)},
       marks: [
         Plot.barX(rows, {y: "nom", x: "v", fillOpacity: 0.9,
@@ -309,7 +319,7 @@ if (W) {
     })() : ""}
     ${Math.abs(W.resorption) >= SEUIL ? html`<li><b>Le marché est aujourd'hui environ
       ${k1(Math.abs(g))} ventes ${g > 0 ? "au-dessus" : "au-dessous"}</b> de ce que ces trois
-      indicateurs expliquent. Le modèle suppose que cet écart se réduit peu à peu :
+      indicateurs expliquent. Le modèle suppose que cet écart se réduit :
       ${W.resorption < 0 ? `environ ${k1(-W.resorption)} ventes en moins` : `environ ${k1(W.resorption)} ventes en plus`}
       d'ici ${V.target_month}. C'est la part la plus fragile de la prévision : un marché peut
       rester longtemps ${g > 0 ? "au-dessus" : "au-dessous"} de ce niveau.</li>` : ""}
@@ -443,7 +453,8 @@ if (sc) display(cardGrid([
    subs: ["ventes sur douze mois, si rien ne change"]},
   {label: "Dans ce scénario", value: `≈ ${k1(sc.scenario)}`,
    delta: pct1((sc.scenario / sc.centrale - 1) * 100),
-   subs: [`soit ${signe(sc.transactions_change)} ventes par rapport à la prévision centrale`]},
+   subs: [Math.abs(sc.transactions_change) < SEUIL ? "pas d'écart avec la prévision centrale"
+          : `soit ${signe(sc.transactions_change)} ventes par rapport à la prévision centrale`]},
 ], kpiCard));
 ```
 

@@ -10838,6 +10838,20 @@
       "mesure": "Le lien change de SIGNE d'un cycle à l'autre : +0,57 sur 2014-2019, −0,06 sur 2019-2025",
       "lecon": "Sur 2014-2019, les départements âgés et propriétaires ont bien vu leurs prix progresser moins que les autres — mais entièrement parce qu'ils étaient déjà les moins chers, à une époque où les métropoles chères décrochaient du reste du pays : à niveau de prix donné, l'axe n'expliquait plus rien (corrélation partielle +0,03). Sur 2019-2025, c'est l'inverse qui s'est produit : ces mêmes départements ont vu leurs prix (+0,46) et leurs ventes (+0,44) progresser PLUS que les jeunes métropoles — Covid, littoral, puis une correction qui a d'abord frappé les grandes villes. Une relation qui change de signe avec le cycle dit dans quel cycle on est, pas où en sera le marché dans quinze ans. Au passage, le solde migratoire net s'est révélé mesurer la pénurie de logements et non l'attrait : il classe Paris dernier des cent départements. Les indicateurs eux-mêmes restent publiés, en description, sur chaque page départementale — sans carte des gagnants et des perdants.",
       "mesure_le": "2026-09-20"
+    },
+    {
+      "titre": "Mesurer le recalage au dernier mois de ventes publié",
+      "idee": "La projection ajoute à l'équation l'écart qu'elle avait avec le marché. Cet écart est mesuré au dernier mois où les trois indicateurs sont publiés, quelques mois avant le dernier chiffre de ventes, car le chômage paraît plus tard. Le marché a pu bouger entre-temps, et la courbe projetée démarre alors par une marche. Le mesurer au dernier mois de ventes, en reportant à plat les indicateurs manquants comme le fait la projection, supprime cette marche.",
+      "mesure": "+15,8 % et +7,9 % d'erreur évitée à 1-3 et 4-6 mois, +1,4 % et 0 au-delà — 2 plages d'horizon sur 4",
+      "lecon": "Le gain est réel, mais il se concentre là où le site recommande déjà de s'en tenir au dernier chiffre connu : à 1-3 mois, le modèle ainsi corrigé reste battu par la prévision naïve (3,3 % d'erreur contre 2,2 %). Au-delà de six mois, là où l'on consulte vraiment le modèle, il ne change presque rien. La marche du premier mois reste donc sur la courbe, et elle est dite : la page Prévision la compte dans l'écart qui se résorbe.",
+      "mesure_le": "2026-10-20"
+    },
+    {
+      "titre": "Lisser les intentions d'achat sur trois mois",
+      "idee": "Les intentions d'achat viennent d'une enquête mensuelle, dont le solde bouge d'un mois sur l'autre au gré de l'échantillon. Appliqué tel quel à un cumul de ventes sur douze mois, ce bruit fait osciller la projection. Une moyenne des trois derniers mois devrait garder le signal et retirer le bruit.",
+      "mesure": "+18,0 % et +7,8 % d'erreur évitée à 1-3 et 4-6 mois, +2,0 % et +0,3 % au-delà — 2 plages d'horizon sur 4",
+      "lecon": "La trajectoire devient bien plus lisse et l'erreur baisse aux horizons courts. Mais le sens du marché annoncé se dégrade précisément là où le modèle sert : 73 % au lieu de 76 % à 7-12 mois, 79 % au lieu de 82 % à 13-18 mois. Combinée à la mesure précédente, elle ne franchit toujours que deux plages sur quatre. Le bruit des intentions d'achat coûte moins cher que le retard qu'introduit le lissage.",
+      "mesure_le": "2026-10-20"
     }
   ],
   "benchmark_taux": {

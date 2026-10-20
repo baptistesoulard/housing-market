@@ -597,7 +597,7 @@ if (T) {
     ],
     meta: META_BT,
     splitAt: {date: T.backtest.split, label: "← entraînement | test →"},
-    yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), width,
+    yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), width, zero: false,
     filename: "previsions-backtest-transactions",
     // Le titre rappelle que ce n'est pas l'archive : les cartes juste au-dessus parlent
     // d'un AUTRE exercice (~200 prévisions depuis 2009), celle-ci n'en couvre que quatre ans.
@@ -640,14 +640,25 @@ if (P && P.available && P.anchor != null) display(html`<div class="hm-formula">
   + ${nf0.format(Math.round(P.anchor))} × poids(<i>t</i>)
   <div class="hm-caption" style="margin-top:0.5rem">
     L'équation reconstruit un niveau à partir de la macro, sans regarder où la série se
-    trouve vraiment : au dernier mois ajusté elle se trompait de
-    <b>${nf0.format(Math.abs(Math.round(P.anchor)))}</b> ventes. La projection part donc du
-    dernier chiffre réellement observé (${nf0.format(P.last_observed)}) et rejoint sa propre
-    trajectoire progressivement — le poids vaut 1 au premier mois projeté et décroît
-    linéairement pour s'annuler au <b>${P.fade_months + 1}<sup>e</sup></b>. Gain mesuré sur
-    l'archive : 11 % d'erreur en moins au total, 42 % sur les trois premiers mois. La durée
-    n'est pas un réglage ajusté : toutes les valeurs entre 6 et 12 mois donnent le même
-    résultat à 0,1 point près.
+    trouve vraiment. L'écart est mesuré au dernier mois où les trois indicateurs sont
+    publiés (${T && T.fit ? moisIso(T.fit.end) : "le dernier mois ajusté"}) : l'équation y
+    ${P.anchor >= 0 ? "sous-estimait" : "surestimait"} le marché de <b>${nf0.format(Math.abs(Math.round(P.anchor)))}</b> ventes.
+    Cet écart est ajouté à l'équation au premier mois projeté, puis s'éteint linéairement
+    pour s'annuler au <b>${P.fade_months + 1}<sup>e</sup></b>. Gain mesuré sur l'archive :
+    11 % d'erreur en moins au total, 42 % sur les trois premiers mois. La durée n'est pas un
+    réglage ajusté : toutes les valeurs entre 6 et 12 mois donnent le même résultat à
+    0,1 point près.
+  </div>
+  <div class="hm-caption" style="margin-top:0.5rem">
+    <b>Pourquoi la courbe ne part pas exactement du dernier chiffre publié.</b> Le chômage
+    est publié avec plusieurs mois de retard sur les ventes : l'écart est donc mesuré
+    quelques mois avant le dernier chiffre de ventes (${moisIso(dernierMois)}), et le marché
+    a pu s'en éloigner depuis. Ici, la projection commence à
+    ${nf0.format(Math.round(P.series[0].predicted / 1000) * 1000)} ventes en
+    ${moisIso(P.series[0].date)}, contre ${nf0.format(P.last_observed)} publiées en
+    ${moisIso(dernierMois)}. Mesurer l'écart au dernier mois de ventes supprime cette marche,
+    mais n'améliore la prévision qu'aux horizons où le site recommande déjà le dernier
+    chiffre connu : l'idée est publiée en fin de page, parmi celles qui ont été écartées.
   </div>
   <div class="hm-caption" style="margin-top:0.5rem">
     <b>Une précision sans laquelle le calcul ne se refait pas :</b> dans l'équation, un

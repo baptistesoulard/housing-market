@@ -1029,3 +1029,68 @@ modèles de fondation seuls font nettement mieux qu'annoncé aux horizons courts
 Chronos-2 passe légèrement devant Timestral. Aucune covariable supplémentaire ne passe ;
 le taux futur connu dégrade toujours Timestral. L'instantané du site
 (`data/comparaison_modeles.csv`) est celui des mesures corrigées.
+
+## 2026-10-20 — Les trois onglets de prévision relus pour le grand public
+
+**Le constat.** Une relecture des trois pages (Prévision, Méthode, Face au réel) a relevé
+des défauts de pertinence plus que de forme :
+
+* **Le scénario « conditions actuelles prolongées » contredisait la prévision.** Il
+  affichait 949 805 ventes (−0,1 %) sous une courbe qui en annonçait 902 000 (−5 %) : la
+  formule mesure l'EFFET d'un changement par rapport à aujourd'hui, et ce delta était
+  ajouté au niveau d'aujourd'hui. Il s'ajoute désormais à la prévision centrale de fin de
+  projection, et « Sans changement » redonne la prévision.
+* **Personne ne disait pourquoi le marché reculerait.** Décomposition du mouvement
+  projeté d'août 2026 à avril 2027 (−48 839) : −15 578 viennent du taux de crédit
+  (3,0 % → 3,2 % début 2026, transmis avec dix mois de retard), 0 des intentions d'achat et
+  du chômage (reportés à plat), −33 261 de la résorption de l'écart entre le marché et
+  l'équation (38 705 ventes au-dessus en août). Les deux tiers du recul annoncé sont donc
+  une hypothèse de retour vers le modèle, pas un indicateur qui se dégrade. Publiée sur la
+  page Prévision (`engine.decomposition`, somme vérifiée par `tests/test_decomposition.py`).
+* **Trop de mesures de fiabilité, et deux « six mois ».** 75 % de bon sens (horizon du
+  verdict), 67 % (régime), 71 % et 79 % (archive) ; 6,1 % d'erreur « à six mois » sur
+  l'accueil, 5,7 % « à 6 mois » sur l'archive ; domaine utile « 6 à 10 mois » ici, « 6 à
+  18 » là. Chaque chiffre était juste dans sa convention. La page Prévision n'en garde
+  plus qu'un, dit en fréquence (« 3 fois sur 4 ») ; les bornes s'écrivent en mois nommés
+  (« avant février 2027 ») ; l'accueil nomme l'échéance (« pour une échéance comme avril
+  2027 ») ; l'archive dit « six mois après le dernier chiffre publié » et réconcilie les
+  deux domaines (bat la naïve de 6 à 18 mois, ne bouge plus au-delà de 10).
+* **L'encadré de régime concluait « favorable »** avec deux chiffres sous la moyenne
+  affichée à côté (67 % de bon sens contre 75 %, 13,9 % d'erreur évitée contre 24,9 % tous
+  régimes confondus) : il comparait des bases différentes. `fiabilite_regime` publie
+  maintenant les deux moyennes de même base, et l'encadré dit « moins favorable que
+  d'habitude ».
+* **Une source fausse** : le taux de crédit pratiqué était attribué à l'Observatoire Crédit
+  Logement ; c'est la série MIR de la BCE (Crédit Logement ne fournit que l'anticipation).
+
+**Ce qui a changé.** /previsions : verdict, fourchette arrondie, une fiabilité ;
+graphique zoomé sur les années récentes (les 18 mois projetés n'occupaient qu'un liseré),
+raccordé au dernier point observé ; « d'où vient ce mouvement » ; « jusqu'où s'y fier » en
+mois nommés ; scénarios en taux du crédit (%), chômage (%) et envie d'acheter en cinq
+crans. /methode-prevision : schéma des deux étages en tête, glossaire, sections dans
+l'ordre du modèle (taux, ventes, projection, fiabilité), et ce que /previsions a cédé
+(bandes d'indicateurs, régime, statut de la comparaison, détail FNAIM). /previsions-passees :
+erreur évitée toujours positive quand le modèle gagne (« +42 % », plus de « −0 % »),
+faisceau sans axe forcé à zéro, R² retiré de la ligne de l'archive en direct, « D'autres
+modèles » en fin de page.
+
+**Deux corrections du modèle mesurées, puis refusées** (211 millésimes, MAPE 1-3 / 4-6 /
+7-12 / 13-18 ; actuel 3,95 / 5,34 / 6,23 / 7,09 ; naïve 2,22 / 5,02 / 8,53 / 11,86) :
+
+| Variante | 1-3 | 4-6 | 7-12 | 13-18 | Porte |
+|---|---|---|---|---|---|
+| Recalage mesuré au dernier mois de ventes | 3,33 (+15,8 %) | 4,92 (+7,9 %) | 6,14 (+1,4 %) | 7,09 (0) | 2/4 |
+| Intentions lissées sur 3 mois | 3,24 (+18,0 %) | 4,92 (+7,8 %) | 6,10 (+2,0 %) | 7,06 (+0,3 %) | 2/4 |
+| Les deux | 2,83 (+28,2 %) | 4,72 (+11,7 %) | 6,07 (+2,6 %) | 7,06 (+0,3 %) | 2/4 |
+
+Bon sens par plage : actuel 57,8 / 66,8 / 75,5 / 81,6 % ; recalage 63,2 / 70,9 / 76,0 /
+81,6 % ; lissage 58,4 / 65,9 / 72,7 / 79,4 %. Les gains se concentrent là où le site
+renvoie déjà au dernier chiffre connu ; le lissage dégrade le sens annoncé là où le modèle
+sert. Publiées dans `reperes.REFUTATIONS`.
+
+**Une affirmation de la relecture, corrigée par la mesure.** La relecture disait la
+trajectoire projetée trois à quatre fois plus agitée que la série réelle. C'est vrai des
+derniers mois (le marché est calme), pas en moyenne : 0,95 % de variation mensuelle pour
+les trajectoires rétro-simulées, contre 1,22 % pour la série réelle depuis 2009. La marche
+du premier mois, elle, est réelle (3,1 % en moyenne) : elle vient de l'écart mesuré au
+dernier mois où le chômage est publié, et la page Méthode l'explique.
