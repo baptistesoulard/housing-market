@@ -972,8 +972,9 @@ autorisations d'urbanisme créant des locaux non résidentiels », 335 Mo, 797 6
   recherche, 3 santé, 4 action sociale, 5 ouvrage spécial, 6 culture et loisir,
   7 non rempli, 8 plusieurs), un par permis, rempli dans le cadre « Informations
   complémentaires ». Jusqu'en 2025, « non rempli » pèse 1 à 4 % des m² publics autorisés.
-  Depuis janvier 2026 (passage à Sitadel3), 23 à 55 % selon le mois : une série par type
-  montrerait une chute de toutes les catégories qui n'est qu'un trou de saisie.
+  Pour les permis pris en compte depuis janvier 2026 (produits par Sitadel3, en service
+  depuis mars 2026), 23 à 55 % selon le mois : une série par type montrerait une chute de
+  toutes les catégories qui n'est qu'un trou de saisie.
 - Ordres de grandeur, m² autorisés par année de l'autorisation (milliers) : enseignement
   et recherche 1 480 en 2019, 1 213 en 2025 ; santé 1 164 puis 1 184 ; culture et loisir
   1 206 puis 1 187 ; action sociale 664 puis 561.
