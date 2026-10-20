@@ -1,0 +1,16 @@
+[
+ {
+  "page": "/previsions",
+  "format": "bureau",
+  "capture": "previsions-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/previsions",
+  "format": "mobile",
+  "capture": "previsions-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ }
+]
