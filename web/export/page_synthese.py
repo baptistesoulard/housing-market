@@ -624,7 +624,7 @@ def _cartes_perspective(f: dict):
                 f"fourchette {abrege(verdict['lo'])} – {abrege(verdict['hi'])}"]
         if rel.get("direction") is not None:
             bits.append(f"sens juste {rel['direction'] * 100:.0f} % du temps à cet horizon "
-                        f"({rel['n']} millésimes)")
+                        f"(sur {rel['n']} prévisions passées)")
         # Construit depuis les CHAMPS du verdict, jamais par découpe de sa phrase :
         # `sentence` est destinée à être lue, sa forme peut changer.
         # Le titre NOMME la série projetée : sans elle, un lecteur du bâtiment y lit « le

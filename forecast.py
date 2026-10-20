@@ -374,6 +374,27 @@ def _fade(h, fade_months):
     return max(0.0, 1.0 - (h - 1) / float(fade_months))
 
 
+def inputs_at(m, t, lags, last_vals):
+    """Les trois entrées de l'étage 2 pour le mois `t`, chacune prise à son décalage.
+
+    Une entrée pas encore publiée à cette date est REPORTÉE À PLAT à sa dernière valeur
+    connue (`last_vals`, par colonne) — la convention de la projection. Renvoie
+    `(valeurs, assured)` : `assured` est faux dès qu'une entrée a été reportée.
+
+    `m` est le macro indexé par date (`_macro_indexed`). Partagé par `forecast_path` et
+    par la décomposition publiée de la prévision, pour que les deux lisent les mêmes
+    valeurs : une décomposition qui n'additionnerait pas exactement à la projection ne
+    vaudrait rien.
+    """
+    vals, assured = [], True
+    for col, key in zip(TX_PREDICTORS, ("kr", "ki", "kc")):
+        v = m[col].get(t - pd.DateOffset(months=int(lags[key])))
+        if v is None or pd.isna(v):
+            v, assured = last_vals[col], False  # carry forward the last observed value
+        vals.append(float(v))
+    return vals, assured
+
+
 def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816,
                   anchor=0.0, fade_months=FADE_MONTHS, band=None):
     """Forward monthly path of 12-month transactions out to `horizon` months.
@@ -430,12 +451,7 @@ def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816,
 
     rows = []
     for h, t in enumerate(future, start=1):
-        vals, assured = [], True
-        for col, k in preds:
-            v = m[col].get(t - pd.DateOffset(months=k))
-            if v is None or pd.isna(v):
-                v, assured = last_vals[col], False  # carry forward the last observed value
-            vals.append(float(v))
+        vals, assured = inputs_at(m, t, lags, last_vals)
         pred = float(beta[0] + beta[1] * vals[0] + beta[2] * vals[1] + beta[3] * vals[2])
         pred += float(anchor) * _fade(h, fade_months)
         lo_off, hi_off = offsets[h]

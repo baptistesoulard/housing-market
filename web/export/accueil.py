@@ -82,7 +82,11 @@ def bandeau_erreur(verdict: dict | None, depuis: str | None) -> str | None:
     return (
         "  <li>\n"
         f'    <span class="n">{_pct(rel["mape"])}</span>\n'
-        f'    <span class="d">d\'erreur moyenne à {mois} mois, mesurée sur '
+        # L'échéance est NOMMÉE (« pour une échéance comme avril 2027 ») : « à six mois »
+        # se lisait comme l'horizon « six mois » de la page « Le modèle face au réel », qui
+        # se compte depuis le dernier chiffre publié et donne un autre chiffre.
+        f'    <span class="d">d\'erreur moyenne pour une échéance comme '
+        f'{verdict["target_month"]}, dans {mois} mois, mesurée sur '
         '<abbr title="recalculées après coup en tronquant les données au mois visé">des '
         f"prévisions rétro-simulées</abbr>{periode} — une prévision naïve se trompe de "
         f"{_pct(rel['naive_mape'])}</span>\n"

@@ -10680,6 +10680,67 @@
       "mape": 6.14,
       "naive_mape": 7.5,
       "n": 204
+    },
+    "pourquoi": {
+      "horizon": 8,
+      "depuis": {
+        "mois": "2026-08-01",
+        "valeur": 951000.0
+      },
+      "cible": {
+        "mois": "2027-04-01",
+        "valeur": 902161.004
+      },
+      "entrees": [
+        {
+          "cle": "kr",
+          "label": "taux de crédit",
+          "lag": 10,
+          "de": {
+            "mois": "2025-10-01",
+            "valeur": 2.99
+          },
+          "a": {
+            "mois": "2026-06-01",
+            "valeur": 3.16,
+            "reporte": false
+          },
+          "effet": -15578.4167
+        },
+        {
+          "cle": "ki",
+          "label": "intentions d'achat",
+          "lag": 2,
+          "de": {
+            "mois": "2026-06-01",
+            "valeur": -82.0
+          },
+          "a": {
+            "mois": "2026-09-01",
+            "valeur": -82.0,
+            "reporte": true
+          },
+          "effet": 0.0
+        },
+        {
+          "cle": "kc",
+          "label": "taux de chômage",
+          "lag": 0,
+          "de": {
+            "mois": "2026-04-01",
+            "valeur": 8.3
+          },
+          "a": {
+            "mois": "2026-04-01",
+            "valeur": 8.3,
+            "reporte": true
+          },
+          "effet": -0.0
+        }
+      ],
+      "ecart_actuel": 38704.9169,
+      "ecart_restant": 5444.33745,
+      "resorption": -33260.5794
     }
   },
   "benchmark": {
@@ -10734,7 +10795,9 @@
     "skill_pct": 13.9,
     "direction": 0.687,
     "direction_horizon": 0.667,
-    "horizon": 8
+    "horizon": 8,
+    "skill_pct_tous": 24.9,
+    "direction_horizon_tous": 0.75
   },
   "refutations": [
     {

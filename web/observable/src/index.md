@@ -78,7 +78,7 @@ le jour de sa publication puis confrontée au réel.</p>
   <!-- hm:erreur:début — régénéré par web/export/accueil.py -->
   <li>
     <span class="n">6,1 %</span>
-    <span class="d">d'erreur moyenne à six mois, mesurée sur <abbr title="recalculées après coup en tronquant les données au mois visé">des prévisions rétro-simulées</abbr> depuis 2009 — une prévision naïve se trompe de 7,5 %</span>
+    <span class="d">d'erreur moyenne pour une échéance comme avril 2027, dans six mois, mesurée sur <abbr title="recalculées après coup en tronquant les données au mois visé">des prévisions rétro-simulées</abbr> depuis 2009 — une prévision naïve se trompe de 7,5 %</span>
   </li>
   <!-- hm:erreur:fin -->
   <li>
