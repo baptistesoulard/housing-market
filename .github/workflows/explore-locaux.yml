@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: pip install pandas
-      - run: mkdir -p out && python explore/locaux_detail.py 2>&1 | tee out/resultat.txt
+      - run: mkdir -p out && pip install xlrd openpyxl && python explore/locaux_detail2.py 2>&1 | tee out/resultat.txt
       - name: Pousser le résultat
         if: always()
         run: |
