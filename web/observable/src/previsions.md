@@ -209,7 +209,8 @@ if (P && P.available) {
         // L'échéance du verdict, posée sur la courbe : le chiffre de la phrase de tête se
         // retrouve ainsi à sa place.
         Plot.dot(cible, {x: "date", y: "v", r: 4.5, fill: series.blue, stroke: "white", strokeWidth: 2}),
-        Plot.text(cible, {x: "date", y: "v", dy: 18, fontWeight: 700, fill: series.blue, fontSize: 12,
+        // Ancrée à GAUCHE du point : à droite, elle sortait du cadre sur téléphone.
+        Plot.text(cible, {x: "date", y: "v", dy: 18, dx: 4, textAnchor: "end", fontWeight: 700, fill: series.blue, fontSize: 12,
                           stroke: "white", strokeWidth: 4, paintOrder: "stroke",
                           text: (d) => `${V.target_month} : ≈ ${k1(d.v)}`}),
         // Le repère FNAIM : un segment sur décembre, jamais une courbe — leur chiffre est un
@@ -238,6 +239,9 @@ if (P && P.available) {
 // indicateurs expliquent. C'est cette seconde part, la plus fragile, qu'il fallait dire.
 const SEUIL = 500;   // en deçà, un effet est du bruit d'arrondi : « n'ajoute rien »
 const NOMS = {kr: "Taux du crédit immobilier", ki: "Intentions d'achat", kc: "Chômage"};
+// Libellés courts pour le graphique sur téléphone : les longs étaient coupés par la marge.
+const NOMS_COURTS = {kr: "Taux du crédit", ki: "Intentions d'achat", kc: "Chômage",
+                     ecart: "Écart qui se résorbe", total: "Total"};
 const SUJETS = {kr: "le taux du crédit immobilier", ki: "les intentions d'achat", kc: "le chômage"};
 const CONTRIB = W ? [
   ...W.entrees.map((e) => ({cle: e.cle, nom: NOMS[e.cle], v: e.effet})),
@@ -254,20 +258,22 @@ if (W) display(html`<p>Entre ${moisIso(W.depuis.mois)} et ${V.target_month}, la 
 
 ```js
 if (W) {
-  const rows = CONTRIB.concat([{cle: "total", nom: "Mouvement total", v: mouvement}]);
+  const court = width < 600;
+  const rows = CONTRIB.concat([{cle: "total", nom: "Mouvement total", v: mouvement}])
+    .map((d) => (court ? {...d, nom: NOMS_COURTS[d.cle]} : d));
   // Le domaine suit les barres : avec un axe symétrique, la moitié du graphique restait
   // vide quand toutes les contributions vont dans le même sens.
   const vals = rows.map((d) => d.v);
   const etendue = (Math.max(0, ...vals) - Math.min(0, ...vals)) || 1;
-  const domaine = [Math.min(0, ...vals) - etendue * 0.22, Math.max(0, ...vals) + etendue * 0.22];
-  const court = width < 600;
+  const marge = etendue * (court ? 0.4 : 0.22);   // place pour l'étiquette au bout de la barre
+  const domaine = [Math.min(0, ...vals) - marge, Math.max(0, ...vals) + marge];
   display(cadreGraphique({
     titre: `D'où vient le mouvement projeté d'ici ${V.target_month}`,
     sousTitre: "Contribution de chaque facteur, en ventes sur douze mois · France",
     dernier: `${moisObserve} (observé)`,
     source: "IGEDD, Banque de France, INSEE ; décomposition du modèle du site",
     children: withCsvExport(Plot.plot({
-      width, height: 44 * rows.length + 30, marginLeft: court ? 130 : 230, marginRight: 30,
+      width, height: 44 * rows.length + 30, marginLeft: court ? 120 : 230, marginRight: 30,
       x: {label: "Ventes sur douze mois", grid: true, domain: domaine, tickFormat: (v) => signe(v, nf0.format)},
       y: {label: null, domain: rows.map((d) => d.nom)},
       marks: [
