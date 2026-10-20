@@ -265,6 +265,22 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-figure .hm-legend-item { font-size: 0.82rem; gap: 0.35rem; }
 .hm-nowrap { white-space: nowrap; }
 .hm-figure-source { color: var(--hm-subtle); font-size: 0.8rem; margin-top: 0.15rem; }
+/* Schéma du modèle (page Méthode) : des boîtes et des flèches en HTML, pas en SVG, pour
+   qu'il se réorganise seul sur téléphone (les lignes passent à la ligne). */
+.hm-schema { margin: 0.8rem 0 1.1rem; padding: 0.9rem 1rem 0.6rem; border: 1px solid var(--hm-border);
+  border-radius: 10px; display: grid; gap: 0.45rem; max-width: 46rem; }
+.hm-schema-etage { font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--hm-subtle); margin-top: 0.35rem; }
+.hm-schema-ligne { display: flex; align-items: center; gap: 0.5rem 0.7rem; flex-wrap: wrap; }
+.hm-schema-sources { display: grid; gap: 0.4rem; }
+.hm-schema-entree { display: flex; align-items: center; gap: 0.5rem 0.7rem; flex-wrap: wrap; }
+.hm-schema-boite { border: 1px solid var(--hm-border); border-radius: 8px; padding: 0.4rem 0.7rem;
+  background: var(--hm-surface); color: var(--hm-ink); font-size: 0.9rem; min-width: 12rem; }
+.hm-schema-boite--pivot { border-color: var(--hm-blue); }
+.hm-schema-boite--cible { border: 2px solid var(--hm-brick); font-weight: 600; }
+.hm-schema-boite small { font-weight: 400; color: var(--hm-subtle); }
+.hm-schema-fleche { font-size: 0.82rem; font-weight: 600; color: var(--hm-subtle); white-space: nowrap; min-width: 5.5rem; }
+.hm-schema-note { font-size: 0.9rem; color: var(--hm-ink); }
 .hm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin: 0.6rem 0 0.1rem; }
 .hm-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-size: 0.9rem; user-select: none; }
 .hm-legend-item.off { opacity: 0.4; text-decoration: line-through; }

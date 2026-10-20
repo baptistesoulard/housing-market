@@ -148,6 +148,10 @@ def _verdict(projection: dict, con) -> dict | None:
         "sentence": (f"D'ici {mois_cible}, dans {devant_txt} mois, le marché des "
                      f"logements anciens {corps}."),
         "reliability": reliability,
+        # D'où vient le mouvement annoncé : l'effet de chaque entrée et la résorption de
+        # l'écart entre le marché et l'équation (voir `engine.decomposition`). C'est la
+        # réponse au « pourquoi ? » que le verdict seul laisse en suspens.
+        "pourquoi": engine.decomposition(horizon),
     }
 
 
@@ -264,6 +268,15 @@ def fiabilite_regime(con, horizon: int = HORIZON_MIN) -> dict | None:
     h = sel[sel["horizon"] == horizon]
     hit_h = (np.sign(h["predicted"] - h["naive"])
              == np.sign(h["realized"] - h["naive"])).astype(float) if not h.empty else None
+    # Les MÊMES mesures, tous régimes confondus et sur la même base (tous horizons pour
+    # l'erreur évitée, l'horizon du verdict pour le bon sens). C'est ce qui permet de dire
+    # si le régime courant est plus ou moins favorable que d'habitude : la page comparait
+    # un bon sens à l'horizon du verdict à une erreur évitée tous horizons, et concluait
+    # « favorable » avec deux chiffres sous la moyenne affichée juste à côté.
+    tous_h = ev[ev["horizon"] == horizon]
+    hit_tous_h = (np.sign(tous_h["predicted"] - tous_h["naive"])
+                  == np.sign(tous_h["realized"] - tous_h["naive"])).astype(float)
+    mape_tous, naive_tous = float(ev["ape"].mean()), float(ev["naive_ape"].mean())
     return {
         "kind": kind,
         "label": _REGIME_LABELS[kind],
@@ -278,6 +291,9 @@ def fiabilite_regime(con, horizon: int = HORIZON_MIN) -> dict | None:
         "direction_horizon": (None if hit_h is None or hit_h.empty
                               else round(float(hit_h.mean()), 3)),
         "horizon": horizon,
+        "skill_pct_tous": round((1 - mape_tous / naive_tous) * 100, 1) if naive_tous else None,
+        "direction_horizon_tous": (None if tous_h.empty
+                                   else round(float(hit_tous_h.mean()), 3)),
     }
 
 

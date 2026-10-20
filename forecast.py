@@ -346,8 +346,13 @@ def anchor_of(model, tx12, max_gap=6):
     prédicteurs décalés sont observés, or le chômage est trimestriel et n'est plus
     extrapolé (voir `_macro_indexed`) — il manque donc jusqu'à deux mois par rapport aux
     transactions. Exiger la coïncidence renverrait 0.0 en pratique toujours, ce qui
-    désactiverait le recalage sans le dire. Sur une série aussi lisse qu'un cumul 12 mois,
-    le résidu d'il y a deux mois est un estimateur de niveau tout aussi bon.
+    désactiverait le recalage sans le dire.
+
+    Mesurer l'écart au dernier mois de VENTES (entrées manquantes reportées à plat, comme
+    dans la projection) supprime la marche que ce décalage crée au premier mois projeté.
+    Mesuré le 2026-10-20 sur 211 millésimes : +15,8 % d'erreur évitée à 1-3 mois, +7,9 % à
+    4-6, +1,4 % à 7-12, 0 à 13-18 — deux plages sur quatre, et rien là où le modèle est lu.
+    Refusé (voir `reperes.REFUTATIONS` et le journal 06).
 
     `max_gap` borne cette tolérance : au-delà, l'écart décrit un état du marché qui n'est
     plus le présent, et mieux vaut ne pas recaler du tout. Renvoie alors 0.0, comme quand
@@ -372,6 +377,27 @@ def _fade(h, fade_months):
     if not fade_months or fade_months <= 0:
         return 0.0
     return max(0.0, 1.0 - (h - 1) / float(fade_months))
+
+
+def inputs_at(m, t, lags, last_vals):
+    """Les trois entrées de l'étage 2 pour le mois `t`, chacune prise à son décalage.
+
+    Une entrée pas encore publiée à cette date est REPORTÉE À PLAT à sa dernière valeur
+    connue (`last_vals`, par colonne) — la convention de la projection. Renvoie
+    `(valeurs, assured)` : `assured` est faux dès qu'une entrée a été reportée.
+
+    `m` est le macro indexé par date (`_macro_indexed`). Partagé par `forecast_path` et
+    par la décomposition publiée de la prévision, pour que les deux lisent les mêmes
+    valeurs : une décomposition qui n'additionnerait pas exactement à la projection ne
+    vaudrait rien.
+    """
+    vals, assured = [], True
+    for col, key in zip(TX_PREDICTORS, ("kr", "ki", "kc")):
+        v = m[col].get(t - pd.DateOffset(months=int(lags[key])))
+        if v is None or pd.isna(v):
+            v, assured = last_vals[col], False  # carry forward the last observed value
+        vals.append(float(v))
+    return vals, assured
 
 
 def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816,
@@ -430,12 +456,7 @@ def forecast_path(df_macro, tx12, lags, beta, sigma, horizon=18, z=1.2816,
 
     rows = []
     for h, t in enumerate(future, start=1):
-        vals, assured = [], True
-        for col, k in preds:
-            v = m[col].get(t - pd.DateOffset(months=k))
-            if v is None or pd.isna(v):
-                v, assured = last_vals[col], False  # carry forward the last observed value
-            vals.append(float(v))
+        vals, assured = inputs_at(m, t, lags, last_vals)
         pred = float(beta[0] + beta[1] * vals[0] + beta[2] * vals[1] + beta[3] * vals[2])
         pred += float(anchor) * _fade(h, fade_months)
         lo_off, hi_off = offsets[h]

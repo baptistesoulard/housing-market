@@ -219,6 +219,12 @@ def transactions_model() -> dict:
     }
 
 
+def _anchor(s) -> float:
+    """Le recalage de la projection — un seul point de calcul pour la projection publiée et
+    sa décomposition, sinon les deux pourraient ne plus s'additionner."""
+    return fc.anchor_of(s["tx"], s["tx12"])
+
+
 def projection(horizon: int = 18) -> dict:
     """Projection à horizon : les décalages déjà observés fixent les mois à venir."""
     s = _load()
@@ -229,7 +235,7 @@ def projection(horizon: int = 18) -> dict:
     # publiée est donc corrigée par sa propre feuille de match, ce qui est le seul emploi
     # honnête d'une archive de prévisions.
     path = fc.forecast_path(s["macro"], s["tx12"], s["lags"], s["tx"]["beta"], sigma,
-                            horizon=horizon, anchor=fc.anchor_of(s["tx"], s["tx12"]),
+                            horizon=horizon, anchor=_anchor(s),
                             band=_band())
     if path is None or path.empty:
         return {"available": False, "reason": "lags_too_short", "series": []}
@@ -260,7 +266,7 @@ def projection(horizon: int = 18) -> dict:
         "horizon_months": len(path),
         "informative_months": informative,
         "assured_months": int(path["assured"].sum()),
-        "anchor": _num(fc.anchor_of(s["tx"], s["tx12"])),
+        "anchor": _num(_anchor(s)),
         "fade_months": int(fc.FADE_MONTHS),
         "predictors": _predictor_horizons(s, path),
         "sigma": sigma,
@@ -268,6 +274,73 @@ def projection(horizon: int = 18) -> dict:
         "end_value": end,
         "end_change_pct": (end / last_obs - 1) * 100 if last_obs else None,
         "series": rows,
+    }
+
+
+def decomposition(horizon: int) -> dict | None:
+    """D'où vient le mouvement projeté entre le dernier mois observé et l'horizon `horizon`.
+
+    La projection vaut, à chaque mois, l'équation de l'étage 2 plus un recalage (l'écart
+    entre le marché réel et l'équation, qui s'éteint). Le mouvement se partage donc
+    EXACTEMENT en deux familles :
+      * l'effet de chaque entrée : coefficient × (valeur qui pilote le mois cible − valeur
+        qui pilote le dernier mois observé), avec la même règle de report à plat que la
+        projection (`forecast.inputs_at`) ;
+      * la résorption de l'écart : ce qui reste du recalage à l'horizon, moins l'écart
+        constaté au dernier mois observé.
+    La somme redonne au chiffre près « projection(horizon) − dernier chiffre observé » —
+    c'est la condition pour la publier, et `tests/test_decomposition.py` la vérifie.
+
+    C'est la question que le lecteur se pose devant le verdict (« pourquoi ? »), et la
+    réponse n'est pas celle qu'il attend : à la mesure du 2026-10-20, l'essentiel du recul
+    annoncé venait de l'écart qui se résorbe, pas d'un indicateur qui se dégrade.
+    """
+    s = _load()
+    obs = s["tx12"].dropna()
+    if obs.empty or horizon < 1:
+        return None
+    m = fc._macro_indexed(s["macro"])
+    lags, beta = s["lags"], s["tx"]["beta"]
+    last_vals = {}
+    for col in fc.TX_PREDICTORS:
+        serie = m[col].dropna()
+        if serie.empty:
+            return None
+        last_vals[col] = float(serie.iloc[-1])
+    t0 = obs.index.max()
+    cible = t0 + pd.DateOffset(months=horizon)
+    v0, _ = fc.inputs_at(m, t0, lags, last_vals)
+    vh, _ = fc.inputs_at(m, cible, lags, last_vals)
+    eq0 = float(beta[0] + sum(b * v for b, v in zip(beta[1:], v0)))
+    eqh = float(beta[0] + sum(b * v for b, v in zip(beta[1:], vh)))
+    ecart_actuel = float(obs.iloc[-1]) - eq0
+    ecart_restant = float(_anchor(s)) * fc._fade(horizon, fc.FADE_MONTHS)
+
+    def _mois_lu(col, t, lag):
+        """Le mois dont la valeur est réellement utilisée (le dernier publié si reporté)."""
+        voulu = t - pd.DateOffset(months=int(lag))
+        dernier = m[col].dropna().index.max()
+        return min(voulu, dernier), voulu > dernier
+
+    entrees = []
+    for (col, label, key), b, a, z in zip(_TX_INPUTS, beta[1:], v0, vh):
+        lag = int(lags[key])
+        m0, rep0 = _mois_lu(col, t0, lag)
+        mh, reph = _mois_lu(col, cible, lag)
+        entrees.append({
+            "cle": key, "label": label, "lag": lag,
+            "de": {"mois": _iso(m0), "valeur": _num(a)},
+            "a": {"mois": _iso(mh), "valeur": _num(z), "reporte": bool(reph)},
+            "effet": _num(float(b) * (z - a)),
+        })
+    return {
+        "horizon": int(horizon),
+        "depuis": {"mois": _iso(t0), "valeur": _num(obs.iloc[-1])},
+        "cible": {"mois": _iso(cible), "valeur": _num(eqh + ecart_restant)},
+        "entrees": entrees,
+        "ecart_actuel": _num(ecart_actuel),
+        "ecart_restant": _num(ecart_restant),
+        "resorption": _num(ecart_restant - ecart_actuel),
     }
 
 

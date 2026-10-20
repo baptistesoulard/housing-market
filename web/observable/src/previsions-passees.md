@@ -8,6 +8,11 @@ import {cardGrid, kpiCard, multiLine, withCsvExport, cadreGraphique, legendStati
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
+// Pour dire jusqu'où la projection BOUGE encore (`informative_months`) : cette page juge
+// l'erreur jusqu'à 18 mois, la page Prévision dit qu'au-delà d'un certain mois la courbe
+// se fige. Les deux messages doivent être le même, sur les deux pages.
+const PREV = await FileAttachment("./data/previsions.json").json();
+const INFO = PREV.available ? PREV.projection.informative_months : null;
 ```
 
 ```js
@@ -57,16 +62,36 @@ référence à tous les horizons, et c'est précisément ce que cette page sert 
 <div class="hm-takeaways">
   <strong>Ce que dit cette page</strong>
   <ul>
-    <li>Le modèle annonce le <strong>bon sens du marché</strong> — hausse ou baisse — dans <strong>${nf0.format((RETRO.horizons.find((h) => h.horizon === 12)?.direction ?? 0) * 100)} %</strong> des cas à douze mois, et <strong>${nf0.format((RETRO.horizons.find((h) => h.horizon === 6)?.direction ?? 0) * 100)} %</strong> à six mois. C'est la mesure qui compte pour décider ; l'erreur en pourcentage vient après.</li>
-    <li>Il se trompe de <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.mape ?? 0)} %</strong> en moyenne à six mois, contre <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.naive_mape ?? 0)} %</strong> pour une prévision naïve.</li>
-    <li>En deçà de <strong>${A.crossover_horizon} mois</strong>, il fait <strong>moins bien</strong> que cette prévision naïve : à court terme, un cumul 12 mois bouge trop peu pour qu'un modèle apporte quoi que ce soit.</li>
-    <li>Son domaine utile est <strong>${A.crossover_horizon} à 18 mois</strong>. Mais ce score moyen cache l'essentiel : le modèle est piloté par les taux, donc il excelle quand ce sont les taux qui font le marché et décroche quand c'est autre chose — voir la ventilation par épisode plus bas.</li>
+    <li>Le modèle annonce le <strong>bon sens du marché</strong> — hausse ou baisse — dans <strong>${nf0.format((RETRO.horizons.find((h) => h.horizon === 12)?.direction ?? 0) * 100)} %</strong> des cas douze mois après le dernier chiffre publié, et <strong>${nf0.format((RETRO.horizons.find((h) => h.horizon === 6)?.direction ?? 0) * 100)} %</strong> six mois après. C'est la mesure qui compte pour décider ; l'erreur en pourcentage vient après.</li>
+    <li>Six mois après le dernier chiffre publié, il se trompe de <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.mape ?? 0)} %</strong> en moyenne, contre <strong>${nf1.format(RETRO.horizons.find((h) => h.horizon === 6)?.naive_mape ?? 0)} %</strong> pour une prévision naïve, qui recopie le dernier chiffre connu.</li>
+    <li>En deçà de <strong>${A.crossover_horizon} mois</strong>, il fait <strong>moins bien</strong> que cette prévision naïve : à court terme, un cumul de douze mois bouge trop peu pour qu'un modèle apporte quoi que ce soit.</li>
+    <li>À partir de ${A.crossover_horizon} mois, il la bat, et jusqu'au bout des dix-huit mois.${INFO ? html` Au-delà de ${INFO} mois, sa projection ne bouge plus : c'est alors un niveau qu'il faut lire, pas un chemin mois par mois.` : ""} Ce score moyen cache l'essentiel : piloté par les taux, le modèle excelle quand ce sont les taux qui font le marché et décroche quand c'est autre chose — voir la ventilation par épisode plus bas.</li>
   </ul>
 </div>
 
 <details class="hm-howto">
   <summary>Comment lire cette page — et pourquoi deux natures de prévisions</summary>
   <p>${A.how_to_read}</p>
+</details>
+
+<details class="hm-howto">
+  <summary>📖 Les mots de cette page</summary>
+  <div class="hm-caption">
+
+**Horizon.** Le nombre de mois qui séparent le dernier chiffre publié du mois prévu. Toutes
+les distances de cette page se comptent ainsi.
+
+**Prévision naïve.** La prévision la plus simple possible, qui recopie le dernier chiffre
+connu : « le marché restera où il est ». C'est la référence que le modèle doit battre.
+
+**Erreur évitée.** La part de l'erreur de la prévision naïve que le modèle évite. Positive,
+le modèle fait mieux ; « perd » quand il fait moins bien.
+
+**Rétro-simulation, millésime.** On rejoue le modèle comme si l'on était à une date
+passée, en ne lui donnant que les données connues ce jour-là ; chaque date de départ est un
+millésime.
+
+  </div>
 </details>
 
 ## Toutes nos prévisions, face au réel
@@ -133,7 +158,6 @@ display(cadreGraphique({
     Plot.line(reel, {x: "date", y: "value", stroke: series.brick, strokeWidth: 2.5}),
     Plot.dot([dernierReel], {x: "date", y: "value", r: 4.5, fill: series.brick,
                              stroke: "white", strokeWidth: 2}),
-    Plot.ruleY([0], {opacity: 0}),
     Plot.crosshairX(reel, {x: "date", y: "value", color: ui.subtle}),
     Plot.tip(reel, Plot.pointerX({
       x: "date", y: "value", ...TIP,
@@ -219,7 +243,7 @@ display(html`<details class="hm-howto">
         <td>${h.n}</td>
         <td>${nf1.format(h.mape)} %</td>
         <td>${nf1.format(h.naive_mape)} %</td>
-        <td>${h.skill == null ? "—" : h.skill > 0 ? nf0.format(h.skill * 100) + " %" : "aucune"}</td>
+        <td>${h.skill == null ? "—" : h.skill > 0 ? "+" + nf0.format(h.skill * 100) + " %" : "aucune"}</td>
       </tr>`)}</tbody>
     </table>
   </div>
@@ -246,7 +270,7 @@ const EP = A.episodes ?? [];
 ```js
 if (EP.length) display(cadreGraphique({
   titre: "Erreur du modèle selon l'épisode de marché",
-  sousTitre: "Écart moyen au réalisé, en %, contre une prévision naïve ; millésimes rétro-simulés",
+  sousTitre: "Écart moyen au réalisé, en %, contre une prévision naïve ; à droite, l'erreur évitée · millésimes rétro-simulés",
   source: SOURCE_ARCHIVE,
   children: Plot.plot({
   width, height: 42 + EP.length * 38, marginLeft: 220, marginRight: 60, marginTop: 26,
@@ -258,8 +282,13 @@ if (EP.length) display(cadreGraphique({
     Plot.dot(EP, {y: "label", x: "naive_mape", fill: series.blue, r: 5.5}),
     Plot.dot(EP, {y: "label", x: "mape", fill: series.brick, r: 5.5}),
     Plot.text(EP, {y: "label", x: "naive_mape", dx: 14, textAnchor: "start",
-                   text: (e) => (e.skill > 0 ? `−${nf0.format(e.skill * 100)} %` : "perd"),
-                   fill: (e) => (e.skill > 0 ? series.green : series.brick), fontWeight: 600}),
+                   // Même convention que partout ailleurs : l'erreur ÉVITÉE est positive
+                   // quand le modèle fait mieux (« +42 % »). Elle s'écrivait « −42 % » ici, et
+                   // « −0 % » pour un épisode à égalité — un zéro signé que le site s'interdit.
+                   text: (e) => (Math.abs(e.skill) < 0.01 ? "égalité"
+                     : e.skill > 0 ? `+${nf0.format(e.skill * 100)} %` : "perd"),
+                   fill: (e) => (Math.abs(e.skill) < 0.01 ? ui.subtle
+                     : e.skill > 0 ? series.green : series.brick), fontWeight: 600}),
     Plot.tip(EP, Plot.pointer({
       y: "label", x: "mape", ...TIP,
       title: (e) => `${e.label}
@@ -274,7 +303,8 @@ Bon sens : ${nf0.format(e.direction * 100)} %`,
 
 <div class="hm-caption">
 Point rouge = notre erreur, point bleu = celle d'une prévision naïve. À droite, la part
-d'erreur évitée — ou « perd » quand le modèle fait moins bien. Les trois épisodes perdants
+d'erreur évitée — « perd » quand le modèle fait moins bien, « égalité » quand les deux se
+valent. Les trois épisodes perdants
 ont un point commun : le moteur du marché n'y était pas le coût du crédit. En 2008 c'était
 le rationnement bancaire, en 2012-2015 la confiance dans un contexte de taux déjà bas, en
 2020 la fermeture administrative des études notariales.
@@ -296,12 +326,51 @@ if (EP.length) display(html`<details class="hm-howto">
         <td>${e.vintages}</td>
         <td>${nf1.format(e.mape)} %</td>
         <td>${nf1.format(e.naive_mape)} %</td>
-        <td>${e.skill == null || e.skill <= 0 ? "aucune" : nf0.format(e.skill * 100) + " %"}</td>
+        <td>${e.skill == null || e.skill <= 0 ? "aucune" : "+" + nf0.format(e.skill * 100) + " %"}</td>
         <td>${nf0.format(e.direction * 100)} %</td>
       </tr>`)}</tbody>
     </table>
   </div>
 </details>`);
+```
+
+## L'archive en direct
+
+```js
+const premierEcheance = A.current
+  ? fmtMonthFR(new Date(A.current.points[0].date))
+  : null;
+display(cardGrid([
+  {label: "Prévisions publiées et enregistrées", value: nf0.format(LIVE.n_vintages),
+   subs: [LIVE.n_vintages ? `depuis ${moisFR(LIVE.first_vintage)}` : "aucune pour l'instant"]},
+  // « 0 mois échu » se lit comme une page inachevée, alors que c'est une promesse datée :
+  // la première prévision publiée sera jugeable à un mois précis, connu d'avance. Un
+  // compte à rebours dit la même vérité en la rendant vérifiable.
+  {label: LIVE.n_evaluated ? "Mois déjà échus, jugeables" : "Première échéance jugeable",
+   value: LIVE.n_evaluated ? nf0.format(LIVE.n_evaluated) : (premierEcheance ?? "—"),
+   subs: [LIVE.n_evaluated ? "confrontés au réalisé"
+                           : "d'ici là, seules les rétro-simulations ont un verdict"]},
+  {label: "Millésimes rétro-simulés", value: nf0.format(RETRO.n_vintages),
+   subs: [`${nf0.format(RETRO.n_evaluated)} mois confrontés au réalisé`]},
+], kpiCard));
+```
+
+<div class="hm-note">
+  <p><strong>Pourquoi si peu de prévisions « publiées » pour l'instant.</strong> L'archive
+  ne peut enregistrer que l'avenir : elle a commencé le jour de sa mise en service, et
+  chaque semaine ajoute au plus une prévision — seulement si le modèle a changé d'avis.
+  Les millésimes rétro-simulés comblent le vide en montrant ce que la méthode aurait dit,
+  mais ils ne remplacent pas une promesse tenue. Cette colonne se remplira toute seule.</p>
+</div>
+
+```js
+display(A.current ? html`<div class="hm-meta">Prévision en cours, enregistrée le
+  ${A.current.run_date} sur les données arrêtées à ${A.current.vintage_label} : de
+  <strong>${nf0.format(A.current.points[0].predicted)}</strong> transactions en
+  ${fmtMonthFR(new Date(A.current.points[0].date))} à
+  <strong>${nf0.format(A.current.points[A.current.points.length - 1].predicted)}</strong> en
+  ${fmtMonthFR(new Date(A.current.points[A.current.points.length - 1].date))}.</div>`
+  : html`<div class="hm-meta">Aucune prévision en direct enregistrée pour l'instant.</div>`);
 ```
 
 ## D'autres modèles, jugés de la même façon
@@ -469,46 +538,6 @@ if (CMP_TRAJ.length) {
 if (CMP) display(html`<div class="hm-note"><p>${CMP.statut}</p>
   <p class="hm-caption">Le détail du protocole et toutes les variantes essayées sont sur
   <a href="/methode-prevision">la méthode de la prévision</a>.</p></div>`);
-```
-
-## L'archive en direct
-
-```js
-const premierEcheance = A.current
-  ? fmtMonthFR(new Date(A.current.points[0].date))
-  : null;
-display(cardGrid([
-  {label: "Prévisions publiées et enregistrées", value: nf0.format(LIVE.n_vintages),
-   subs: [LIVE.n_vintages ? `depuis ${moisFR(LIVE.first_vintage)}` : "aucune pour l'instant"]},
-  // « 0 mois échu » se lit comme une page inachevée, alors que c'est une promesse datée :
-  // la première prévision publiée sera jugeable à un mois précis, connu d'avance. Un
-  // compte à rebours dit la même vérité en la rendant vérifiable.
-  {label: LIVE.n_evaluated ? "Mois déjà échus, jugeables" : "Première échéance jugeable",
-   value: LIVE.n_evaluated ? nf0.format(LIVE.n_evaluated) : (premierEcheance ?? "—"),
-   subs: [LIVE.n_evaluated ? "confrontés au réalisé"
-                           : "d'ici là, seules les rétro-simulations ont un verdict"]},
-  {label: "Millésimes rétro-simulés", value: nf0.format(RETRO.n_vintages),
-   subs: [`${nf0.format(RETRO.n_evaluated)} mois confrontés au réalisé`]},
-], kpiCard));
-```
-
-<div class="hm-note">
-  <p><strong>Pourquoi si peu de prévisions « publiées » pour l'instant.</strong> L'archive
-  ne peut enregistrer que l'avenir : elle a commencé le jour de sa mise en service, et
-  chaque semaine ajoute au plus une prévision — seulement si le modèle a changé d'avis.
-  Les millésimes rétro-simulés comblent le vide en montrant ce que la méthode aurait dit,
-  mais ils ne remplacent pas une promesse tenue. Cette colonne se remplira toute seule.</p>
-</div>
-
-```js
-display(A.current ? html`<div class="hm-meta">Prévision en cours, enregistrée le
-  ${A.current.run_date} sur les données arrêtées à ${A.current.vintage_label} (R² =
-  ${nf1.format(A.current.r2 * 100)} %) : de
-  <strong>${nf0.format(A.current.points[0].predicted)}</strong> transactions en
-  ${fmtMonthFR(new Date(A.current.points[0].date))} à
-  <strong>${nf0.format(A.current.points[A.current.points.length - 1].predicted)}</strong> en
-  ${fmtMonthFR(new Date(A.current.points[A.current.points.length - 1].date))}.</div>`
-  : html`<div class="hm-meta">Aucune prévision en direct enregistrée pour l'instant.</div>`);
 ```
 
 <div class="hm-shortcuts">
