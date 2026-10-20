@@ -1,10 +1,12 @@
-# Exploration ponctuelle, sur une branche explore/** jamais fusionnée.
+# Exploration ponctuelle, sur une branche explore/** jamais fusionnée. Le résultat est
+# poussé sur apercu/<branche> (les journaux d'Actions ne sont pas lisibles depuis une
+# session distante).
 name: explore-locaux
 on:
   push:
     branches: ["explore/**"]
 permissions:
-  contents: read
+  contents: write
 jobs:
   explore:
     runs-on: ubuntu-latest
@@ -14,4 +16,15 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: pip install pandas
-      - run: python explore/locaux_detail.py
+      - run: mkdir -p out && python explore/locaux_detail.py 2>&1 | tee out/resultat.txt
+      - name: Pousser le résultat
+        if: always()
+        run: |
+          cd out
+          git init -q -b apercu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "exploration ${GITHUB_REF_NAME} (${GITHUB_SHA::7})"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+            "apercu:refs/heads/apercu/${GITHUB_REF_NAME}"
