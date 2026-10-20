@@ -1,0 +1,170 @@
+[
+ {
+  "page": "/",
+  "format": "bureau",
+  "capture": "accueil-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/",
+  "format": "mobile",
+  "capture": "accueil-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/synthese",
+  "format": "bureau",
+  "capture": "synthese-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/synthese",
+  "format": "mobile",
+  "capture": "synthese-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/neuf",
+  "format": "bureau",
+  "capture": "neuf-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/neuf",
+  "format": "mobile",
+  "capture": "neuf-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/ancien",
+  "format": "bureau",
+  "capture": "ancien-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/ancien",
+  "format": "mobile",
+  "capture": "ancien-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/non-residentiel",
+  "format": "bureau",
+  "capture": "non-residentiel-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/non-residentiel",
+  "format": "mobile",
+  "capture": "non-residentiel-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/macro",
+  "format": "bureau",
+  "capture": "macro-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/macro",
+  "format": "mobile",
+  "capture": "macro-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/actualites",
+  "format": "bureau",
+  "capture": "actualites-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/actualites",
+  "format": "mobile",
+  "capture": "actualites-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/carte",
+  "format": "bureau",
+  "capture": "carte-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/carte",
+  "format": "mobile",
+  "capture": "carte-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/departement/74",
+  "format": "bureau",
+  "capture": "departement_74-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/departement/74",
+  "format": "mobile",
+  "capture": "departement_74-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/donnees",
+  "format": "bureau",
+  "capture": "donnees-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/donnees",
+  "format": "mobile",
+  "capture": "donnees-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/a-propos",
+  "format": "bureau",
+  "capture": "a-propos-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/a-propos",
+  "format": "mobile",
+  "capture": "a-propos-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/previsions-passees",
+  "format": "bureau",
+  "capture": "previsions-passees-bureau.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ },
+ {
+  "page": "/previsions-passees",
+  "format": "mobile",
+  "capture": "previsions-passees-mobile.png",
+  "cellules_en_echec": 0,
+  "erreurs": []
+ }
+]
