@@ -129,17 +129,20 @@ def chiffre_projection(verdict: dict | None) -> tuple[str, str] | None:
     dans = f"dans {en_lettres(int(verdict['months_ahead']))} mois"
     if verdict["direction"] == "stable":
         chiffre = "Stable"
-        tete = f"<strong>pour les ventes de logements anciens {mois}</strong>, {dans}"
+        tete = f"pour les ventes de logements anciens {mois}"
         trajet = (f" : autour de {_milliers(verdict['predicted'])} ventes sur douze mois"
                   if verdict.get("predicted") else "")
     else:
         signe = "−" if verdict["direction"] == "baisse" else "+"
         chiffre = f"{signe}{abs(verdict['change_pct']):.0f} %".replace(".", ",")
-        tete = f"<strong>de ventes de logements anciens {mois}</strong>, {dans}"
+        tete = f"de ventes de logements anciens {mois}"
         trajet = (f" : de {_milliers(verdict['from_value'])} à "
                   f"{_milliers(verdict['predicted'])} ventes sur douze mois"
                   if verdict.get("from_value") and verdict.get("predicted") else "")
-    return chiffre, f"{tete}{trajet}, selon le modèle du site."
+    # Deux lignes à l'écran : la tête en gras sous le chiffre, la suite en dessous — qui
+    # continue la phrase, d'où sa minuscule.
+    return chiffre, (f'<strong>{tete}</strong> <span class="s">{dans}{trajet}, selon le '
+                     "modèle du site.</span>")
 
 
 def bloc_reponse(previsions: dict, synthese: dict) -> str | None:

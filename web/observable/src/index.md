@@ -50,7 +50,7 @@ const data = await FileAttachment("./data/synthese.json").json();
 <div class="hm-hero-grille">
 <!-- hm:reponse:début — régénéré par web/export/accueil.py -->
 <div class="hm-reponse">
-<p class="hm-reponse-chiffre"><span class="n">−5 %</span> <span class="l"><strong>de ventes de logements anciens d'ici avril 2027</strong>, dans six mois : de 951 000 à 902 000 ventes sur douze mois, selon le modèle du site.</span></p>
+<p class="hm-reponse-chiffre"><span class="n">−5 %</span> <span class="l"><strong>de ventes de logements anciens d'ici avril 2027</strong> <span class="s">dans six mois : de 951 000 à 902 000 ventes sur douze mois, selon le modèle du site.</span></span></p>
 <p>Aujourd'hui, les ventes de logements anciens plafonnent depuis 9 mois, les permis de construire reculent et le crédit renchérit (3,20 %, +0,2 pt sur un an).</p>
 <p class="hm-reponse-maj">Dernier mois publié par les sources : août 2026 — elles paraissent avec quelques mois de décalage.</p>
 </div>
@@ -107,15 +107,19 @@ ventes à 12-18 mois — archivée le jour même, puis confrontée au réel.</p>
 
 ```js
 // --- La courbe du bandeau -------------------------------------------------------------
-// La réponse du titre, dessinée : les ventes réalisées depuis 2019, puis la prévision du
+// La réponse du titre, dessinée : les ventes réalisées depuis 2023, puis la prévision du
 // modèle jusqu'au mois du verdict, avec sa fourchette. Un APERÇU, comme les autres blocs
 // dynamiques de la page : si elle ne s'affiche pas, le chiffre à côté dit déjà tout, et
 // c'est lui que lisent les robots. Couleurs : jeton `bandeau` de theme.json (la rampe des
 // séries manque de contraste sur ce fond). La trajectoire vient de synthese.json, que la
 // page charge déjà — pas de previsions.json, trois fois plus lourd, sur la page d'entrée.
 const TRAJ = data.trajectoire ?? null;
+// Depuis 2023 : assez pour montrer la chute de 2023-24 et la reprise, assez court pour
+// que les mois de prévision occupent une part visible de la largeur (depuis 2019, ils
+// n'en faisaient pas un dixième et la baisse annoncée ne se voyait pas).
+const DEBUT_BANDEAU = "2023-01-01";
 const realiseBandeau = data.chart.rows
-  .filter((r) => r.key === "transactions" && r.level_k != null && r.date >= "2019-01-01")
+  .filter((r) => r.key === "transactions" && r.level_k != null && r.date >= DEBUT_BANDEAU)
   .map((r) => ({date: new Date(r.date), v: r.level_k * 1000}));
 function traceBandeau(w) {
   const der = realiseBandeau[realiseBandeau.length - 1];
@@ -124,7 +128,7 @@ function traceBandeau(w) {
   const cible = prev[prev.length - 1];
   const k = (v) => `${nf0.format(v / 1000)} k`;
   const y0 = realiseBandeau[0].date.getUTCFullYear(), y1 = cible.date.getUTCFullYear();
-  const pas = w < 420 ? 2 : 1;
+  const pas = 1;
   const annees = d3.range(y0, y1 + 1, pas).map((a) => new Date(Date.UTC(a, 0, 1)));
   const survol = [...realiseBandeau.map((d) => ({...d, quoi: "réalisé"})),
                   ...prev.slice(1).map((d) => ({...d, quoi: "prévision"}))];
@@ -141,10 +145,12 @@ function traceBandeau(w) {
       Plot.lineY(prev, {x: "date", y: "v", stroke: bandeau.prevision, strokeWidth: 2.6, strokeDasharray: "5,4"}),
       Plot.dot([der], {x: "date", y: "v", r: 4, fill: bandeau.realise}),
       Plot.dot([cible], {x: "date", y: "v", r: 5, fill: bandeau.prevision}),
+      // Étiquettes à l'encre claire, pas à la couleur de la série : sur la fourchette
+      // orangée, une étiquette orangée disparaissait. Le point coloré porte l'identité.
       Plot.text([der], {x: "date", y: "v", text: (d) => `${k(d.v)} · ${fmtMonthFR(d.date)}`,
         dy: -14, textAnchor: "end", fill: bandeau.realise, fontWeight: 700}),
       Plot.text([cible], {x: "date", y: "v", text: (d) => `${k(d.v)} · ${fmtMonthFR(d.date)}`,
-        dy: 17, textAnchor: "end", fill: bandeau.prevision, fontWeight: 700}),
+        dy: 20, dx: 4, textAnchor: "end", fill: bandeau.realise, fontWeight: 700}),
       Plot.tip(survol, Plot.pointerX({x: "date", y: "v", ...TIP,
         title: (d) => `${periodeFR(d.date)} — ${d.quoi}\n${nf0.format(d.v)} ventes sur douze mois` +
           (d.quoi === "prévision" ? `\nfourchette ${nf0.format(d.lo)} – ${nf0.format(d.hi)}` : "")})),
@@ -154,9 +160,9 @@ const courbeBandeau = TRAJ && realiseBandeau.length
   ? html`<figure class="hm-hero-courbe">
       <figcaption class="hm-hero-courbe-titre">Ventes de logements anciens, cumul sur douze mois</figcaption>
       ${resize((w) => traceBandeau(w))}
-      <p class="hm-hero-courbe-legende"><span class="trait"></span>réalisé
-        <span class="pointille"></span>prévision du modèle et sa fourchette
-        · <a href="/previsions">le détail →</a></p>
+      <p class="hm-hero-courbe-legende"><span><span class="trait"></span>réalisé</span>
+        <span><span class="pointille"></span>prévision du modèle et sa fourchette</span>
+        <a href="/previsions">le détail →</a></p>
     </figure>`
   : html`<span></span>`;
 ```

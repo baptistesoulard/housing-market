@@ -670,12 +670,12 @@ ${NAV_ICONS}
 .hm-reponse p { color: var(--hm-bg); font-size: 1.05rem; line-height: 1.5; margin: 0 0 0.6rem;
   opacity: 0.92; }
 .hm-reponse strong { color: var(--hm-bg); }
-.hm-reponse .hm-reponse-chiffre { display: flex; flex-wrap: wrap; align-items: center;
-  gap: 0.3rem 1rem; opacity: 1; margin: 0 0 0.9rem; }
-.hm-reponse-chiffre .n { font-size: 4.4rem; font-weight: 700; line-height: 1;
-  letter-spacing: -1.5px; white-space: nowrap; }
-.hm-reponse-chiffre .l { flex: 1 1 13rem; font-size: 1.12rem; line-height: 1.4; }
-.hm-reponse-chiffre .l strong { display: block; font-size: 1.22rem; }
+.hm-reponse .hm-reponse-chiffre { opacity: 1; margin: 0 0 1rem; }
+.hm-reponse-chiffre .n { display: block; font-size: 4.6rem; font-weight: 700; line-height: 1;
+  letter-spacing: -1.5px; white-space: nowrap; margin: 0 0 0.35rem; }
+.hm-reponse-chiffre .l { display: block; font-size: 1.05rem; line-height: 1.45; }
+.hm-reponse-chiffre .l strong { display: block; font-size: 1.3rem; line-height: 1.3; }
+.hm-reponse-chiffre .l .s { display: block; margin-top: 0.15rem; opacity: 0.9; }
 .hm-reponse .hm-reponse-maj { font-size: 0.86rem; opacity: 0.75; margin: 0; }
 /* La courbe de la prévision, sur le bandeau. Couleurs : jeton bandeau de theme.json. */
 .hm-hero-courbe { margin: 0; }
@@ -683,11 +683,12 @@ ${NAV_ICONS}
   text-transform: uppercase; color: var(--hm-bg); opacity: 0.75; margin: 0 0 0.2rem; }
 .hm-hero-courbe svg { display: block; overflow: visible; }
 .hm-hero-courbe-legende { font-size: 0.82rem; color: var(--hm-bg); opacity: 0.85;
-  margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.45rem; }
+  margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; }
+.hm-hero-courbe-legende > span { display: inline-flex; align-items: center; gap: 0.45rem; }
 .hm-hero-courbe-legende .trait, .hm-hero-courbe-legende .pointille { display: inline-block;
   width: 1.4rem; height: 0; border-top: 2.5px solid var(--hm-bandeau-realise); }
 .hm-hero-courbe-legende .pointille { border-top-style: dashed;
-  border-top-color: var(--hm-bandeau-prevision); margin-left: 0.4rem; }
+  border-top-color: var(--hm-bandeau-prevision); }
 .hm-hero--band .hm-hero-courbe-legende a, .hm-hero--band .hm-hero-courbe-legende a:visited {
   color: var(--hm-bg); }
 @media (max-width: 640px) { .hm-reponse-chiffre .n { font-size: 3.6rem; } }
