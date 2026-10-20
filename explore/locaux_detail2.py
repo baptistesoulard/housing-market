@@ -22,15 +22,13 @@ except Exception as e:  # noqa: BLE001
     feuilles = {}
     print("lecture xls impossible :", e)
 for nom, f in feuilles.items():
-    txt = f.astype(str)
-    masque = txt.apply(lambda col: col.str.contains("SERVICE_PUB|DESTINATION_PRINC|service public",
-                                                    case=False, regex=True)).any(axis=1)
-    idx = [i for i in f.index[masque]]
-    print(f"\n=== feuille {nom} : {len(f)} lignes, {len(idx)} lignes pertinentes ===")
-    for i in idx:
-        for j in range(i, min(i + 12, len(f))):
-            print(" | ".join(v for v in txt.loc[j].tolist() if v != "nan"))
-        print("---")
+    f = f.fillna("").astype(str)
+    print(f"\n=== feuille {nom} : {len(f)} lignes ===")
+    print("variables :", ", ".join(v for v in f.iloc[:, 0].tolist() if v))
+    for i in range(len(f)):
+        ligne = " | ".join(v for v in f.iloc[i].tolist() if v)
+        if any(k in ligne.upper() for k in ("SERV", "ENSEIGN", "SANT", "SPORT", "CULTURE")):
+            print(">>", ligne)
 
 raw = get("https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/"
           "f8f0700f-806c-40a7-83b1-f21cf507e7c4/csv")
