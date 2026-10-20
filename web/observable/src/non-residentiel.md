@@ -5,9 +5,8 @@ toc: true
 
 ```js
 import {kpiCard, cardGrid, legendStatic, multiLine, filterYears, withCsvExport, cadreGraphique, enParagraphes,
-        nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
+        nf0, nf1, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
-import {ui} from "./components/theme.js";
 const L = await FileAttachment("./data/locaux.json").json();
 ```
 
@@ -125,42 +124,17 @@ const mesureD = view(Inputs.radio(MESURES, {value: "SurfaceChantiers", label: "M
 ```
 
 ```js
-// Aires empilées : les destinations partitionnent le total, l'empilement est donc exact.
-// La vignette est posée sur le TOTAL de chaque mois et liste les quatre destinations :
-// sur des aires empilées, une vignette par couche forcerait à viser une bande étroite.
-function destinations() {
-  const noms = DEST.map((t) => t.type);
-  const rows = roll12(noms, mesureD).map((d) => ({...d, _x: new Date(d.date)}));
-  const parMois = Array.from(parDate(rows), ([date, ds]) => ({
-    _x: new Date(date), total: ds.reduce((a, d) => a + d.value, 0),
-    detail: noms.map((n) => { const x = ds.find((d) => d.series === n); return `${n} : ${x ? nf1.format(x.value) : "—"}`; }).join("\n"),
-  }));
-  const plot = Plot.plot({
-    width, height: 380, marginLeft: 54, marginRight: 20,
-    x: {label: null}, y: {label: "Millions de m² (cumul 12 mois)", grid: true},
-    color: {domain: noms, range: DEST.map((t) => t.color)},
-    marks: [
-      Plot.areaY(rows, {x: "_x", y: "value", fill: "series", order: noms, fillOpacity: 0.85}),
-      Plot.ruleY([0]),
-      Plot.ruleX(parMois, Plot.pointerX({x: "_x", stroke: ui.subtle})),
-      Plot.tip(parMois, Plot.pointerX({x: "_x", y: "total", ...TIP,
-        title: (d) => `${fmtMonthFR(d._x)} — total ${nf1.format(d.total)} M m²\n${d.detail}`})),
-    ]});
-  return cadreGraphique({titre: `Surfaces de locaux ${LIB[mesureD]}, par destination`,
-    sousTitre: "Cumul sur 12 mois, en millions de m², aires empilées · France", dernier: rows,
-    legende: legendStatic(DEST.map((t) => ({name: t.type, color: t.color}))),
-    source: "SIT@DEL (SDES), séries CVS-CJO, date de prise en compte",
-    children: withCsvExport(plot, rows.map(({_x, ...r}) => r), "locaux-par-destination-" + LIB[mesureD])});
-}
-function parDate(rows) {
-  const m = new Map();
-  for (const r of rows) { if (!m.has(r.date)) m.set(r.date, []); m.get(r.date).push(r); }
-  return m;
-}
-```
-
-```js
-if (L.available) display(destinations());
+// Quatre COURBES, comme partout ailleurs sur le site. C'étaient des aires empilées
+// pleines (2026-09-26 → 2026-10-20) : seules la couche du bas et le total s'y lisaient,
+// les deux du milieu flottaient sur les autres, et le graphique était le seul du site en
+// aplats saturés. La part de chaque destination est dans le tableau juste dessous.
+if (L.available) display(multiLine({
+  rows: roll12(DEST.map((t) => t.type), mesureD), meta: DEST.map((t) => ({name: t.type, color: t.color})),
+  yLabel: "Millions de m²", valueFmt: (v) => nf1.format(v), tipUnit: " M m²",
+  width, filename: "locaux-par-destination-" + LIB[mesureD],
+  titre: `Surfaces de locaux ${LIB[mesureD]}, par destination`,
+  sousTitre: "Cumul sur 12 mois, en millions de m² · France",
+  source: "SIT@DEL (SDES), séries CVS-CJO, date de prise en compte"}));
 ```
 
 ```js
@@ -210,7 +184,9 @@ function regionsBarres() {
     y: {label: null, domain: R.lignes.map((l) => l.nom)},
     color: {domain: noms, range: R.destinations.map((d) => d.color)},
     marks: [
-      Plot.barX(rows, {y: "region", x: "value", fill: "type", order: noms, fillOpacity: 0.85,
+      // 1 px rogné de chaque côté : 2 px de blanc entre deux destinations, au lieu d'aplats
+      // qui se touchent et se lisent comme une seule barre bigarrée.
+      Plot.barX(rows, {y: "region", x: "value", fill: "type", order: noms, insetLeft: 1, insetRight: 1,
         title: (d) => `${d.region}\n${d.type} : ${nf1.format(d.value)} M m²`, tip: {...TIP}}),
       Plot.ruleX([0]),
     ]});

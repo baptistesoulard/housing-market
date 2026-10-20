@@ -220,6 +220,29 @@ export function enParagraphes(txt) {
 
 // --- Graphique multi-séries générique (lignes) -------------------------------------
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
+/** Positions verticales (px) d'étiquettes écartées d'au moins `ecart`, chacune aussi près
+ *  que possible de sa position d'origine : les étiquettes trop proches forment un groupe,
+ *  centré sur leur position moyenne, et les groupes qui se touchent fusionnent. */
+export function separerEtiquettes(ps, ecart, min = -Infinity, max = Infinity) {
+  const ordre = ps.map((_, i) => i).sort((a, b) => ps[a] - ps[b]);
+  const groupes = ordre.map((i) => ({membres: [i], centre: ps[i]}));
+  const sommet = (g) => g.centre - (g.membres.length - 1) * ecart / 2;
+  const pied = (g) => g.centre + (g.membres.length - 1) * ecart / 2;
+  for (let k = 1; k < groupes.length;) {
+    if (sommet(groupes[k]) - pied(groupes[k - 1]) < ecart) {
+      const membres = [...groupes[k - 1].membres, ...groupes[k].membres];
+      groupes.splice(k - 1, 2, {membres, centre: membres.reduce((s, i) => s + ps[i], 0) / membres.length});
+      k = Math.max(1, k - 1);
+    } else k++;
+  }
+  const out = [];
+  for (const g of groupes) {
+    const h = Math.max(min, Math.min(sommet(g), max - (g.membres.length - 1) * ecart));
+    g.membres.forEach((i, j) => { out[i] = h + j * ecart; });
+  }
+  return out;
+}
+
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,
                            baseline = null, lastLabels = true, tipUnit = "", yPct = false,
                            width = undefined, filename = null, splitAt = null,
@@ -233,8 +256,9 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
   const fmt = valueFmt || ((v) => nf1.format(v));
   const last = meta.filter((m) => !active || active.has(m.name)).map((m) => {
     const s = shown.filter((d) => d.series === m.name); return s[s.length - 1];
-  }).filter(Boolean);
-  const plot = Plot.plot({
+  }).filter(Boolean).map((d) => ({...d, _yl: d.value}));
+  const couleurDe = (d) => (meta.find((m) => m.name === d.series) || {}).color;
+  const trace = (etiquettes, domaineY) => Plot.plot({
     // `width` est facultatif : sans lui, Plot retient ses 640 px par défaut, ce que font
     // les appelants placés dans une grille (.hm-panels), déjà contrainte par ses colonnes.
     // Un graphique seul sur toute la colonne, lui, doit recevoir la largeur réactive du
@@ -247,6 +271,7 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
     // gauche ; « 1 200 k » tient.
     x: {label: null}, y: {label: yLabel, grid: true,
                           zero: zero ?? (baseline == null && !yPct), percent: false,
+                          ...(domaineY ? {domain: domaineY} : {}),
                           ...(yTickFormat ? {tickFormat: yTickFormat} : {})},
     color: {domain: colorDomain, range: colorRange},
     marks: [
@@ -260,13 +285,32 @@ export function multiLine({rows, meta, yLabel, active = null, height = 360, valu
         text: () => splitAt.label, fill: ui.subtle, textAnchor: "start", fontSize: 12}) : null,
       Plot.lineY(shown.filter((d) => !dashed.has(d.series)), {x: "_x", y: "value", stroke: "series", strokeWidth: 2.4}),
       Plot.lineY(shown.filter((d) => dashed.has(d.series)), {x: "_x", y: "value", stroke: "series", strokeWidth: 2.4, strokeDasharray: "6,4"}),
-      lastLabels ? Plot.text(last, {x: "_x", y: "value", text: (d) => fmt(d.value),
-        fill: (d) => (meta.find((m) => m.name === d.series) || {}).color, dx: 8, textAnchor: "start", fontWeight: 700}) : null,
+      // Étiquette déplacée pour ne pas en chevaucher une autre : un trait la relie au bout
+      // de SA courbe, sinon elle se lirait comme la valeur de la voisine.
+      lastLabels ? Plot.link(etiquettes.filter((d) => d._deplacee), {x1: "_x", x2: "_x", y1: "value", y2: "_yl",
+        dx: 4, stroke: couleurDe, strokeWidth: 1}) : null,
+      lastLabels ? Plot.text(etiquettes, {x: "_x", y: "_yl", text: (d) => fmt(d.value),
+        fill: couleurDe, dx: 8, textAnchor: "start", fontWeight: 700}) : null,
       Plot.dot(shown, Plot.pointer({x: "_x", y: "value", stroke: "series", r: 4, fill: "white", strokeWidth: 2})),
       Plot.tip(shown, Plot.pointer({x: "_x", y: "value", stroke: "series", ...TIP,
         title: (d) => `${d.series}\n${fmtMonthFR(d._x)}\n${fmt(d.value)}${tipUnit}`})),
     ].filter(Boolean),
   });
+  // Des courbes qui finissent au même niveau posaient leurs valeurs l'une sur l'autre
+  // (« 4 544 € » sur « 4 483 € », les destinations de locaux autour de 4 M m²). Premier
+  // tracé pour connaître l'échelle, puis, seulement si des étiquettes se gênent, second
+  // tracé à domaine figé avec les étiquettes écartées. Sans collision, rien ne change.
+  let plot = trace(last, null);
+  if (lastLabels && last.length > 1) {
+    const y = plot.scale("y");
+    const px = last.map((d) => y.apply(d.value));
+    const [haut, bas] = [Math.min(...y.range), Math.max(...y.range)];
+    const pos = separerEtiquettes(px, 15, haut + 6, bas - 6);
+    if (pos.some((p, i) => Math.abs(p - px[i]) > 0.5)) {
+      plot = trace(last.map((d, i) => ({...d, _yl: y.invert(pos[i]), _deplacee: Math.abs(pos[i] - px[i]) > 3})),
+                   y.domain);
+    }
+  }
   const carte = withCsvExport(plot, shown.map(({_x, ...r}) => r), filename || meta.map((m) => m.name).join(" "));
 
   // LÉGENDE PAR DÉFAUT, et c'est le point de ce paramètre. `multiLine` n'en posait aucune
