@@ -945,3 +945,38 @@ en conditions réelles ; la page le dit, par une phrase générée. Mesures : jo
 **Vérification du rendu sans navigateur** : `apercu-rendu.yml` + `scripts/apercu.mjs`
 (captures bureau/téléphone, compte des cellules en erreur). Premier passage : 0 erreur sur
 l'accueil, /previsions, /methode-prevision et /previsions-passees.
+
+## 2026-10-20 — Locaux par destination : des courbes, et le détail des équipements publics mesuré
+
+**Le graphique.** Les quatre destinations étaient des aires empilées pleines, seul graphique
+du site en aplats saturés : la couche du bas et le total s'y lisaient, les deux du milieu
+flottaient. Remplacées par les courbes standard (`multiLine`) ; la part de chaque
+destination reste dans le tableau. Les barres empilées (régions, pages départementales)
+gardent leur forme — un empilement y est exact et se lit barre par barre — avec 2 px de
+blanc entre segments au lieu d'aplats qui se touchent.
+
+**Les étiquettes de fin.** `multiLine` posait les valeurs finales l'une sur l'autre quand
+les courbes finissent au même niveau (« 4 544 € » sur « 4 455 € », trois destinations
+autour de 4 M m²). Second tracé à domaine figé, seulement en cas de collision, avec les
+étiquettes écartées (`separerEtiquettes`) et un trait vers le bout de leur courbe.
+
+**Écoles, santé, bureaux : ce que les sources permettent** (exploration sur la branche
+`explore/locaux-detail`, jamais fusionnée, sur le fichier détaillé « Liste des
+autorisations d'urbanisme créant des locaux non résidentiels », 335 Mo, 797 690 lignes) :
+
+- Les séries mensuelles du SDES s'arrêtent aux quatre destinations et à quatre
+  sous-destinations (hôtels, industrie, entrepôts, bureaux). Le code de l'urbanisme
+  lui-même range « établissements d'enseignement, de santé et d'action sociale » dans UNE
+  sous-destination.
+- Le fichier par permis porte `TYPE_SERVICE_PUBLIC` (1 transport, 2 enseignement et
+  recherche, 3 santé, 4 action sociale, 5 ouvrage spécial, 6 culture et loisir,
+  7 non rempli, 8 plusieurs), un par permis, rempli dans le cadre « Informations
+  complémentaires ». Jusqu'en 2025, « non rempli » pèse 1 à 4 % des m² publics autorisés.
+  Pour les permis pris en compte depuis janvier 2026 (produits par Sitadel3, en service
+  depuis mars 2026), 23 à 55 % selon le mois : une série par type montrerait une chute de
+  toutes les catégories qui n'est qu'un trou de saisie.
+- Ordres de grandeur, m² autorisés par année de l'autorisation (milliers) : enseignement
+  et recherche 1 480 en 2019, 1 213 en 2025 ; santé 1 164 puis 1 184 ; culture et loisir
+  1 206 puis 1 187 ; action sociale 664 puis 561.
+
+Rien n'est publié tant que la saisie de 2026 reste trouée ; la question est posée.

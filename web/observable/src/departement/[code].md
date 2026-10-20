@@ -325,7 +325,7 @@ function logementsAnnees() {
     y: {label: "Logements par an", grid: true, tickFormat: (v) => nf0.format(v)},
     color: {domain: noms, range: couleurs},
     marks: [
-      Plot.barY(rows, {x: "annee", y: "value", fill: "type", order: noms, fillOpacity: 0.85,
+      Plot.barY(rows, {x: "annee", y: "value", fill: "type", order: noms, insetTop: 1, insetBottom: 1,
         title: (d) => `${d.annee} — ${d.type} : ${nf0.format(d.value)} logements commencés`, tip: {...TIP}}),
       Plot.lineY(aut, {x: "annee", y: "value", stroke: ui.subtle, strokeDasharray: "5 3", strokeWidth: 1.8}),
       Plot.dot(aut, {x: "annee", y: "value", fill: ui.subtle, r: 2.5}),
@@ -421,7 +421,7 @@ function locauxAnnees() {
     x: {label: null, type: "band"}, y: {label: "Milliers de m²", grid: true},
     color: {domain: noms, range: couleurs},
     marks: [
-      Plot.barY(rows, {x: "annee", y: "value", fill: "type", order: noms, fillOpacity: 0.85,
+      Plot.barY(rows, {x: "annee", y: "value", fill: "type", order: noms, insetTop: 1, insetBottom: 1,
         title: (d) => `${d.annee} — ${d.type} : ${nf0.format(d.value)} milliers de m² commencés`, tip: {...TIP}}),
       Plot.lineY(aut, {x: "annee", y: "value", stroke: ui.subtle, strokeDasharray: "5 3", strokeWidth: 1.8}),
       Plot.dot(aut, {x: "annee", y: "value", fill: ui.subtle, r: 3}),
