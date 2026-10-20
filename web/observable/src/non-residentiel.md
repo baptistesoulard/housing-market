@@ -117,7 +117,11 @@ if (L.available) display(multiLine({
 
 ## 🏢 Par destination
 
-<div class="hm-caption">Le code de l'urbanisme range chaque local dans une destination : exploitation agricole ou forestière ; commerce et activités de service, hôtels compris ; équipements d'intérêt collectif et services publics — écoles, hôpitaux, équipements sportifs ou culturels ; et les autres activités des secteurs primaire, secondaire et tertiaire, c'est-à-dire l'industrie, les entrepôts et les bureaux. Les quatre destinations s'additionnent exactement au total : leur empilement montre à la fois le volume et le mélange.</div>
+<div class="hm-caption">Le code de l'urbanisme range chaque local dans une destination : exploitation agricole ou forestière ; commerce et activités de service, hôtels compris ; équipements d'intérêt collectif et services publics — écoles, hôpitaux, équipements sportifs ou culturels ; et les autres activités des secteurs primaire, secondaire et tertiaire, c'est-à-dire l'industrie, les entrepôts et les bureaux. Les quatre s'additionnent exactement au total ; la part de chacune est dans le tableau sous le graphique.</div>
+
+<div class="hm-caption">Le SDES publie chaque mois un détail plus fin pour les hôtels, l'industrie, les entrepôts et les bureaux, mais pas pour les équipements publics : écoles, hôpitaux, équipements sportifs ou culturels y restent ensemble.</div>
+
+<div class="hm-shortcuts"><a class="hm-shortcut" href="#entrepots-industrie-bureaux-hotels">🔍 le détail : entrepôts, industrie, bureaux, hôtels</a></div>
 
 ```js
 const mesureD = view(Inputs.radio(MESURES, {value: "SurfaceChantiers", label: "Mesure"}));
