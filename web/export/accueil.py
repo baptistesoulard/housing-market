@@ -77,7 +77,6 @@ def bandeau_erreur(verdict: dict | None, depuis: str | None) -> str | None:
     rel = (verdict or {}).get("reliability")
     if not rel or rel.get("mape") is None or rel.get("naive_mape") is None:
         return None
-    mois = en_lettres(int(verdict["months_ahead"]))
     periode = f" depuis {depuis}" if depuis else ""
     return (
         "  <li>\n"
@@ -86,10 +85,9 @@ def bandeau_erreur(verdict: dict | None, depuis: str | None) -> str | None:
         # se lisait comme l'horizon « six mois » de la page « Le modèle face au réel », qui
         # se compte depuis le dernier chiffre publié et donne un autre chiffre.
         f'    <span class="d">d\'erreur moyenne pour une échéance comme '
-        f'{verdict["target_month"]}, dans {mois} mois, mesurée sur '
-        '<abbr title="recalculées après coup en tronquant les données au mois visé">des '
-        f"prévisions rétro-simulées</abbr>{periode} — une prévision naïve se trompe de "
-        f"{_pct(rel['naive_mape'])}</span>\n"
+        f'{verdict["target_month"]} (<abbr title="recalculées après coup en tronquant les '
+        f'données au mois visé">prévisions rétro-simulées</abbr>{periode}) ; '
+        f"{_pct(rel['naive_mape'])} pour une prévision naïve</span>\n"
         "  </li>")
 
 
@@ -116,39 +114,54 @@ def _milliers(v: float) -> str:
     return f"{int(round(float(v), -3)):,}".replace(",", " ")
 
 
-def phrase_projection(verdict: dict | None) -> str | None:
-    """La projection des ventes, dans les mots de la puce « Ce que ça implique » de la
-    Synthèse. L'horizon se compte devant le LECTEUR (« dans six mois »), la convention du
-    verdict, et la phrase la nomme."""
+def chiffre_projection(verdict: dict | None) -> tuple[str, str] | None:
+    """La projection des ventes en UN chiffre, puis sa légende : (« −5 % », « de ventes de
+    logements anciens d'ici avril 2027, dans six mois : de 951 000 à 902 000… »).
+
+    Le chiffre est ce qu'un visiteur retient du premier écran ; il était noyé dans une
+    phrase de soixante mots, en gras parmi le reste (2026-10-20). Le sens est porté par le
+    signe — un vrai signe moins, pas un tiret. L'horizon se compte devant le LECTEUR
+    (« dans six mois »), la convention du verdict, et la légende le nomme.
+    """
     if not verdict or verdict.get("direction") not in ("hausse", "baisse", "stable"):
         return None
-    ampleur = f"{abs(verdict['change_pct']):.0f} %".replace(".", ",")
-    mouvement = {"hausse": f"devraient progresser d'environ {ampleur}",
-                 "baisse": f"devraient reculer d'environ {ampleur}",
-                 "stable": "devraient rester à peu près stables"}[verdict["direction"]]
-    phrase = (f"<strong>Les ventes de logements anciens {mouvement} d'ici "
-              f"{verdict['target_month']}</strong>, dans {en_lettres(int(verdict['months_ahead']))} mois")
-    if verdict.get("from_value") and verdict.get("predicted"):
-        phrase += (f" : de {_milliers(verdict['from_value'])} à "
-                   f"{_milliers(verdict['predicted'])} ventes sur douze mois")
-    return phrase + ", selon le modèle du site."
+    mois = f"d'ici {verdict['target_month']}"
+    dans = f"dans {en_lettres(int(verdict['months_ahead']))} mois"
+    if verdict["direction"] == "stable":
+        chiffre = "Stable"
+        tete = f"<strong>pour les ventes de logements anciens {mois}</strong>, {dans}"
+        trajet = (f" : autour de {_milliers(verdict['predicted'])} ventes sur douze mois"
+                  if verdict.get("predicted") else "")
+    else:
+        signe = "−" if verdict["direction"] == "baisse" else "+"
+        chiffre = f"{signe}{abs(verdict['change_pct']):.0f} %".replace(".", ",")
+        tete = f"<strong>de ventes de logements anciens {mois}</strong>, {dans}"
+        trajet = (f" : de {_milliers(verdict['from_value'])} à "
+                  f"{_milliers(verdict['predicted'])} ventes sur douze mois"
+                  if verdict.get("from_value") and verdict.get("predicted") else "")
+    return chiffre, f"{tete}{trajet}, selon le modèle du site."
 
 
 def bloc_reponse(previsions: dict, synthese: dict) -> str | None:
-    """La réponse sous le titre : projection, état du marché, dernier mois publié.
+    """La réponse sous le titre : le chiffre de la projection, l'état du marché, le
+    dernier mois publié.
 
     None si la Synthèse n'a pas de résumé : le passage reste alors tel quel."""
     resume = (synthese or {}).get("resume")
     if not resume:
         return None
-    projection = phrase_projection((previsions or {}).get("verdict"))
-    corps = f"{projection} {resume}" if projection else resume
-    lignes = ['<div class="hm-reponse">', f"<p>{corps}</p>"]
+    lignes = ['<div class="hm-reponse">']
+    projection = chiffre_projection((previsions or {}).get("verdict"))
+    if projection:
+        chiffre, legende = projection
+        lignes.append(f'<p class="hm-reponse-chiffre"><span class="n">{chiffre}</span> '
+                      f'<span class="l">{legende}</span></p>')
+    lignes.append(f"<p>{resume}</p>")
     if synthese.get("dernier_mois"):
         lignes.append(
             f'<p class="hm-reponse-maj">Dernier mois publié par les sources : '
-            f"{synthese['dernier_mois']}. Elles paraissent avec quelques mois de décalage ; "
-            "le site les relit chaque lundi.</p>")
+            f"{synthese['dernier_mois']} — elles paraissent avec quelques mois de "
+            "décalage.</p>")
     lignes.append("</div>")
     return "\n".join(lignes)
 

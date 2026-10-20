@@ -39,7 +39,14 @@
     "`divergente` un écart de part et d'autre d'un pivot (brique = sous le pivot, bleu = au-",
     "dessus, gris neutre AU pivot — jamais une teinte). Aucune ne porte de jugement : le bleu",
     "n'est pas « bien ». `sans_donnee` est le trait des HACHURES des départements non",
-    "renseignés : une texture et non un gris plein, pour ne pas se confondre avec le pivot."
+    "renseignés : une texture et non un gris plein, pour ne pas se confondre avec le pivot.",
+    "",
+    "`bandeau` sert la courbe tracée SUR le bandeau sombre de l'accueil, où la rampe `series`",
+    "manque de contraste (brick sur le fond teinté de brick : moins de 3:1). Le réalisé est",
+    "à l'encre claire (un neutre, pas une identité), la prévision en brick éclairci, en",
+    "pointillé et étiquetée : deux encodages en plus de la couleur. Vérifié au validateur de",
+    "palettes le 2026-10-20 : contraste >= 3:1 sur les deux extrémités du dégradé, séparation",
+    "daltonisme ΔE >= 20."
   ],
 
   "brand": {
@@ -86,6 +93,14 @@
 
   "font": {
     "sans": "\"Source Sans 3\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif"
+  },
+
+  "bandeau": {
+    "realise": "#EEF1F5",
+    "prevision": "#FF8A65",
+    "fourchette": "#FF8A65",
+    "grille": "rgba(255,255,255,0.14)",
+    "texte": "rgba(255,255,255,0.80)"
   },
 
   "carte": {
