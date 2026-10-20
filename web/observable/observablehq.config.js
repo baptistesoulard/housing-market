@@ -674,7 +674,8 @@ ${NAV_ICONS}
 .hm-reponse-chiffre .n { display: block; font-size: 4.6rem; font-weight: 700; line-height: 1;
   letter-spacing: -1.5px; white-space: nowrap; margin: 0 0 0.35rem; }
 .hm-reponse-chiffre .l { display: block; font-size: 1.05rem; line-height: 1.45; }
-.hm-reponse-chiffre .l strong { display: block; font-size: 1.3rem; line-height: 1.3; }
+.hm-reponse-chiffre .l strong { display: block; font-size: 1.3rem; line-height: 1.3;
+  text-wrap: balance; }
 .hm-reponse-chiffre .l .s { display: block; margin-top: 0.15rem; opacity: 0.9; }
 .hm-reponse .hm-reponse-maj { font-size: 0.86rem; opacity: 0.75; margin: 0; }
 /* La courbe de la prévision, sur le bandeau. Couleurs : jeton bandeau de theme.json. */
