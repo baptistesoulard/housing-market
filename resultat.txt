@@ -1,0 +1,147 @@
+
+=== feuille Variables_Locaux : 92 lignes ===
+variables : Nom de la variable, REG_CODE, DEP_CODE, COMM, TYPE_DAU, NUM_DAU, ETAT_DAU, DATE_REELLE_AUTORISATION, DATE_REELLE_DOC, DATE_REELLE_DAACT, AN_DEPOT, DR_DEPOT, DPC_AUT, DPC_DOC, DPC_DERN, APE_DEM, CJ_DEM, DENOM_DEM, SIREN_DEM, SIRET_DEM, CODPOST_DEM, LOCALITE_DEM, REC_ARCHI, ADR_NUM_TER, ADR_LIBVOIE_TER, ADR_LIEUDIT_TER, ADR_LOCALITE_TER, ADR_CODPOST_TER, SEC_CADASTRE1, NUM_CADASTRE1, SEC_CADASTRE2, NUM_CADASTRE2, SEC_CADASTRE3, NUM_CADASTRE3, SUPERFICIE_TERRAIN, ZONE_OP, NATURE_PROJET_DECLAREE, NATURE_PROJET_COMPLETEE, DESTINATION_PRINCIPALE, TYPE_TRANSFO_PRINCIPAL, TYPE_PRINCIP_LOCAUX_TRANSFORMES, I_EXTENSION, I_SURELEVATION, I_NIVSUPP, NB_NIV_MAX, NB_CHAMBRES, SURF_AGR_AVANT, SURF_AGR_CREEE, SURF_AGR_ISSUE_TRANSFO, SURF_AGR_DEMOLIE, SURF_AGR_TRANSFORMEE, SURF_HAB_AVANT, SURF_HAB_CREEE, SURF_HAB_ISSUE_TRANSFO, SURF_HAB_DEMOLIE, SURF_HAB_TRANSFORMEE, SURF_COM_AVANT, SURF_COM_CREEE, SURF_COM_ISSUE_TRANSFO, SURF_COM_DEMOLIE, SURF_COM_TRANSFORMEE, SURF_PUB_AVANT, SURF_PUB_CREEE, SURF_PUB_ISSUE_TRANSFO, SURF_PUB_DEMOLIE, SURF_PUB_TRANSFORMEE, SURF_LOC_AVANT, SURF_LOC_CREEE, SURF_LOC_ISSUE_TRANSFO, SURF_LOC_DEMOLIE, SURF_LOC_TRANSFORMEE, TYPE_SERVICE_PUBLIC, SURF_HEB_AVANT, SURF_HEB_CREEE, SURF_HEB_ISSUE_TRANSFO, SURF_HEB_DEMOLIE, SURF_HEB_TRANSFORMEE, SURF_BUR_AVANT, SURF_BUR_CREEE, SURF_BUR_ISSUE_TRANSFO, SURF_BUR_DEMOLIE, SURF_BUR_TRANSFORMEE, SURF_IND_AVANT, SURF_IND_CREEE, SURF_IND_ISSUE_TRANSFO, SURF_IND_DEMOLIE, SURF_IND_TRANSFORMEE, SURF_ENT_AVANT, SURF_ENT_CREEE, SURF_ENT_ISSUE_TRANSFO, SURF_ENT_DEMOLIE, SURF_ENT_TRANSFORMEE
+>> Nom de la variable | Description de la variable | Nouveau mai 2022? | Modalités | Format | Observations | Origine
+>> REC_ARCHI | Indicateur de recours à un architecte | 1 si oui, 0 si non | Booléen, 1 caractère | Insuffisamment renseigné | Formulaire
+>> SEC_CADASTRE3 | Section cadastrale 3 | Alphanumérique, 2 caractères | Un maximum de 3 parcelles peut être renseigné dans Sitadel alors qu'un terrain peut en contenir bien davantage | Formulaire
+>> ZONE_OP | Code "zone opératoire" | 1 = Lotissement
+2 = ZAC
+3 = AFU
+4 = Hors zones ou ne sais pas | numérique, 1 chiffre | Très insuffisamment renseigné | Formulaire
+>> DESTINATION_PRINCIPALE | Destination ou sous destination principale | Introduit en mai 2022 | 1 = habitation
+2 = hôtels
+3 = bureaux
+4 = commerce
+6 = industrie 
+7 = agriculture
+8 = entrepôt 
+9 = service public ou d'intérêt collectif | Numérique, 1 chiffre | Selon la première destination des surfaces créées (y compris pas changement de destination) | Codification par le SDES
+>> TYPE_PRINCIP_LOCAUX_TRANSFORMES | Type principal des locaux d'origine transformés | Introduit en mai 2022 | 1 = habitation
+2 = hôtels
+3 = bureaux
+4 = commerce
+6 = industrie 
+7 = agriculture
+8 = entrepôt 
+9 = service public ou d'intérêt collectif | Alphanumérique, 1 caractère | Selon la première destination d'origine des surfaces transformées | Codification par le SDES 
+>> NB_NIV_MAX | Nombre de niveaux du bâtiment le plus élevé | Numérique, max. 2 chiffres | Nombre de niveaux au-dessus du sol depuis le nouveau formulaire de 2020, très insuffisamment renseigné | Formulaire
+>> SURF_HAB_TRANSFORMEE | Surface de plancher de la destination ' Habitation ' transformée (changement de destination, réhabilitation, scission, regroupement ...) | Numérique, max. 7 chiffres | Surface changée de destination ou faisant l'objet d'un mouvement interne (cas où les surfaces supprimée et créée sont identiques sur une même ligne, qui correspondent le plus souvent à des réhabilitations, scissions, regroupements … | Formulaire
+>> SURF_COM_AVANT | Surface de plancher de la destination ' Commerce et activités de service ' existante avant travaux | Numérique, max. 7 chiffres | Destination ' Commerce et activités de service ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_COM_CREEE | Surface de plancher de la destination '  Commerce et activités de service ' nouvelle construite | Numérique, max. 7 chiffres | Destination ' Commerce et activités de service ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_COM_ISSUE_TRANSFO | Surface de plancher de la destination 'Commerce et activités de service ' issue d'une transformation (changement de destination, réhabilitation, scission, regroupement …) | Numérique, max. 7 chiffres | Destination ' Commerce et activités de service ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_COM_DEMOLIE | Surface de plancher de la destination ' Commerce et activités de service ' démolie | Numérique, max. 7 chiffres | Destination ' Commerce et activités de service ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_COM_TRANSFORMEE | Surface de plancher de la destination ' Commerce et activités de service ' transformée (changement de destination, réhabilitation, scission, regroupement ...) | Numérique, max. 7 chiffres | Destination ' Commerce et activités de service ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_PUB_AVANT | Surface de plancher de la destination ' Equipements d'intérêt collectif et services publics ' existante avant travaux | Numérique, max. 7 chiffres | Destination ' Equipements d'intérêt collectif et services publics '  article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_PUB_CREEE | Surface de plancher de la destination ' Equipements d'intérêt collectif et services publics ' nouvelle construite | Numérique, max. 7 chiffres | Destination ' Equipements d'intérêt collectif et services publics ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_PUB_ISSUE_TRANSFO | Surface de plancher de la destination ' Equipements d'intérêt collectif et services publics ' issue d'une transformation (changement de destination, réhabilitation, scission, regroupement …) | Numérique, max. 7 chiffres | Destination ' Equipements d'intérêt collectif et services publics ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_PUB_DEMOLIE | Surface de plancher de la destination ' Equipements d'intérêt collectif et services publics ' démolie | Numérique, max. 7 chiffres | Destination ' Equipements d'intérêt collectif et services publics ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> SURF_PUB_TRANSFORMEE | Surface de plancher de la destination ' Equipements d'intérêt collectif et services publics ' transformée (changement de destination, réhabilitation, scission, regroupement ...) | Numérique, max. 7 chiffres | Destination ' Equipements d'intérêt collectif et services publics ' article R. 151-27 du code de l'urbanisme en vigueur au 1er janvier 2016 | Formulaire
+>> TYPE_SERVICE_PUBLIC | Type de service public ou d'intérêt collectif | 1 = Transport
+2 = Enseignement et recherche
+3 = Santé
+4 = Action sociale
+5 = Ouvrage spécial
+6 = Culture et loisir
+7 = Non rempli
+8 = Plusieurs types renseignés | Numérique, 1 chiffre | Information du cadre "Informations complémentaires" | Formulaire
+
+=== m² publics autorisés par MOIS DE PRISE EN COMPTE (DPC_AUT), 2024-2026, milliers ===
+TYPE_SERVICE_PUBLIC     1      2      3     4     5      6      7     8
+DPC_AUT                                                                
+2024-01               7.0   79.0   43.0  51.0  44.0   78.0    3.0  11.0
+2024-02              10.0  104.0   64.0  42.0  63.0  130.0    4.0  27.0
+2024-03              17.0  113.0   70.0  41.0  76.0   67.0    6.0  20.0
+2024-04              17.0   70.0   42.0  51.0  55.0   77.0    8.0  16.0
+2024-05              29.0   91.0   96.0  83.0  42.0   84.0    4.0  14.0
+2024-06              51.0  111.0   97.0  51.0  59.0  103.0    7.0  30.0
+2024-07              16.0  114.0   83.0  52.0  67.0  122.0    4.0  40.0
+2024-08              11.0   71.0   91.0  28.0  50.0   62.0    3.0  46.0
+2024-09              15.0  130.0   73.0  64.0  49.0   85.0    5.0   7.0
+2024-10              20.0   77.0  120.0  51.0  49.0  115.0    3.0  22.0
+2024-11              11.0   94.0   69.0  69.0  52.0   66.0    5.0  31.0
+2024-12              28.0  110.0  102.0  49.0  42.0   97.0    4.0  19.0
+2025-01              43.0   82.0   57.0  50.0  53.0   86.0    5.0  19.0
+2025-02               7.0   80.0   68.0  44.0  54.0   73.0    4.0  26.0
+2025-03              13.0  145.0   47.0  47.0  50.0   91.0    7.0  42.0
+2025-04              42.0   94.0   61.0  44.0  52.0   98.0   11.0  15.0
+2025-05               8.0   82.0   71.0  52.0  53.0   86.0   17.0  24.0
+2025-06               9.0  121.0  108.0  58.0  57.0   74.0    6.0  19.0
+2025-07               9.0   96.0  159.0  66.0  87.0  107.0    4.0  43.0
+2025-08              42.0   80.0   60.0  52.0  53.0   80.0    3.0  61.0
+2025-09              39.0  125.0  237.0  60.0  77.0  168.0   14.0  25.0
+2025-10              13.0  164.0   80.0  43.0  76.0  117.0    6.0  36.0
+2025-11              11.0   74.0  151.0  32.0  77.0   62.0    5.0  23.0
+2025-12               5.0   96.0   97.0  40.0  64.0  180.0    7.0  22.0
+2026-01               6.0   73.0   29.0  32.0  51.0   79.0  161.0  11.0
+2026-02               1.0   70.0   87.0  19.0  48.0  116.0  126.0  24.0
+2026-03               9.0   78.0   62.0  30.0  29.0   56.0  200.0  11.0
+2026-04               8.0   65.0  250.0  16.0  17.0   49.0  129.0  26.0
+2026-05              20.0   76.0   53.0  11.0  15.0   46.0  112.0  10.0
+2026-06              31.0  102.0   60.0  17.0  38.0   53.0  158.0  43.0
+2026-07               3.0   88.0   50.0  16.0  47.0   52.0  341.0  26.0
+2026-08               9.0  130.0  116.0  14.0  31.0   26.0  119.0  31.0
+
+=== part du code 7 dans les m² publics, par mois de prise en compte ===
+DPC_AUT
+2024-01     1.0
+2024-02     1.0
+2024-03     1.0
+2024-04     2.0
+2024-05     1.0
+2024-06     1.0
+2024-07     1.0
+2024-08     1.0
+2024-09     1.0
+2024-10     1.0
+2024-11     1.0
+2024-12     1.0
+2025-01     1.0
+2025-02     1.0
+2025-03     2.0
+2025-04     3.0
+2025-05     4.0
+2025-06     1.0
+2025-07     1.0
+2025-08     1.0
+2025-09     2.0
+2025-10     1.0
+2025-11     1.0
+2025-12     1.0
+2026-01    36.0
+2026-02    26.0
+2026-03    42.0
+2026-04    23.0
+2026-05    33.0
+2026-06    32.0
+2026-07    55.0
+2026-08    25.0
+
+=== DESTINATION_PRINCIPALE (toutes lignes) ===
+DESTINATION_PRINCIPALE
+9    178936
+7    178665
+4    138885
+8     87784
+1     80491
+3     73376
+6     47870
+2     11683
+
+=== m² publics commencés par année de DOC (DATE_REELLE_DOC), milliers ===
+TYPE_SERVICE_PUBLIC      1       2      3      4      5      6      7      8
+a                                                                           
+1025                   0.0     0.0    0.0    0.0    0.0    0.0    0.0    0.0
+2013                  77.0   807.0  451.0  275.0  288.0  513.0    0.0   78.0
+2014                  53.0  1156.0  896.0  458.0  318.0  743.0    0.0   88.0
+2015                 136.0  1082.0  958.0  457.0  336.0  741.0    0.0  108.0
+2016                 175.0   987.0  926.0  374.0  352.0  628.0    0.0  201.0
+2017                 225.0  1076.0  970.0  422.0  394.0  800.0    0.0   99.0
+2018                 265.0  1170.0  824.0  517.0  385.0  879.0    0.0   93.0
+2019                 174.0  1202.0  798.0  500.0  339.0  899.0    0.0   94.0
+2020                 213.0  1107.0  925.0  388.0  356.0  680.0    0.0  116.0
+2021                 159.0  1066.0  901.0  528.0  427.0  690.0    2.0  101.0
+2022                 107.0   961.0  796.0  451.0  328.0  667.0    2.0   53.0
+2023                 166.0  1013.0  686.0  474.0  277.0  756.0    0.0  145.0
+2024                 145.0   845.0  588.0  379.0  308.0  720.0    0.0  168.0
+2025                 189.0   708.0  798.0  374.0  301.0  647.0    7.0  178.0
+2026                  57.0   502.0  621.0  176.0  172.0  342.0  130.0  121.0
