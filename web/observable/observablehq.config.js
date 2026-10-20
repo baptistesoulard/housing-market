@@ -281,6 +281,33 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-schema-boite small { font-weight: 400; color: var(--hm-subtle); }
 .hm-schema-fleche { font-size: 0.82rem; font-weight: 600; color: var(--hm-subtle); white-space: nowrap; min-width: 5.5rem; }
 .hm-schema-note { font-size: 0.9rem; color: var(--hm-ink); }
+/* Phrase-clé en tête de section (pages de prévision) : ce qu'un lecteur pressé doit
+   retenir, avant le détail. */
+.hm-enbref { font-size: 1.02rem; font-weight: 600; color: var(--hm-ink); line-height: 1.5;
+  margin: 0.4rem 0 0.8rem; }
+/* Frise « Peut-on s'y fier ? » : la projection en zones, largeur proportionnelle au nombre
+   de mois. Empilée sur téléphone, où trois colonnes étroites ne se liraient pas. */
+.hm-frise { display: flex; gap: 4px; margin: 0.8rem 0 0.5rem; }
+.hm-frise-zone { flex-basis: 0; min-width: 0; padding: 0.6rem 0.75rem; border-radius: 6px;
+  border-top: 4px solid var(--hm-border); background: var(--hm-surface); }
+.hm-frise-zone--naive { border-top-color: var(--hm-subtle); }
+.hm-frise-zone--modele { border-top-color: var(--hm-blue); }
+.hm-frise-zone--niveau { border-top-color: var(--hm-border); }
+.hm-frise-dates { font-size: 0.78rem; font-weight: 700; color: var(--hm-subtle); text-transform: uppercase;
+  letter-spacing: 0.03em; }
+.hm-frise-titre { font-weight: 600; font-size: 0.95rem; margin-top: 0.2rem; color: var(--hm-ink); }
+.hm-frise-texte { font-size: 0.85rem; color: var(--hm-muted); margin-top: 0.15rem; }
+@media (max-width: 640px) { .hm-frise { flex-direction: column; } }
+/* Scénarios prêts : un bouton par scénario, avec sa description visible (elle n'était
+   qu'en infobulle, invisible sur téléphone). */
+.hm-scenarios { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  margin: 0.6rem 0 1rem; }
+.hm-scenario { display: flex; flex-direction: column; gap: 0.2rem; text-align: left; font: inherit;
+  padding: 0.6rem 0.8rem; border: 1px solid var(--hm-border); border-radius: 8px;
+  background: var(--hm-bg); color: var(--hm-ink); cursor: pointer; min-height: 44px; }
+.hm-scenario:hover, .hm-scenario:focus-visible { border-color: var(--hm-brick); }
+.hm-scenario-nom { font-weight: 700; font-size: 0.95rem; }
+.hm-scenario-aide { font-size: 0.82rem; color: var(--hm-muted); line-height: 1.4; }
 .hm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin: 0.6rem 0 0.1rem; }
 .hm-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-size: 0.9rem; user-select: none; }
 .hm-legend-item.off { opacity: 0.4; text-decoration: line-through; }
@@ -663,17 +690,22 @@ ${NAV_ICONS}
   border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center;
   font-size: 0.95rem; color: var(--hm-ink); }
 .hm-formula b { font-weight: 700; }
+/* L'equation reste centree, ses explications non : un paragraphe de cinq lignes centre se
+   lit mal, chaque ligne commencant a un endroit different. */
+.hm-formula .hm-caption { text-align: left; }
 /* Hypotheses testees puis ecartees. Presentees en cartes et non en liste a puces : chacune
    porte trois temps -- l'idee, le chiffre, la lecon -- et une puce les aplatirait. Le
    chiffre est la seule ligne mise en avant, parce que c'est lui qui tranche ; il est en
    brique et non en vert, l'issue etant un refus. La bordure gauche reprend le motif des
    encarts .hm-note pour que la parente visuelle se voie. */
-.hm-refutations { display: grid; gap: 1rem; margin: 1.4rem 0; }
+.hm-refutations { display: grid; gap: 0.6rem; margin: 0.8rem 0 1.4rem; }
 .hm-refutation { border: 1px solid var(--hm-border); border-left: 3px solid var(--hm-brick);
-  border-radius: 6px; padding: 0.9rem 1.2rem; background: var(--hm-surface); }
-.hm-refutation h3 { margin: 0 0 0.5rem; font-size: 1.02rem; }
+  border-radius: 6px; padding: 0.7rem 1.1rem; background: var(--hm-surface); }
+.hm-refutation summary { cursor: pointer; display: flex; flex-direction: column; gap: 0.15rem; }
+.hm-refutation[open] summary { margin-bottom: 0.4rem; }
+.hm-refutation__titre { font-weight: 700; font-size: 1rem; color: var(--hm-ink); }
 .hm-refutation p { margin: 0.4rem 0; font-size: 0.92rem; }
-.hm-refutation__mesure { font-weight: 700; color: var(--hm-brick); }
+.hm-refutation__mesure { font-weight: 600; font-size: 0.88rem; color: var(--hm-brick-text); }
 .hm-refutation .hm-caption { margin-top: 0.6rem; }
 /* Tableau des sources (page À propos) : lisible sans être un tableau de données.
    Quatre colonnes ne tiennent plus sur un téléphone : le tableau défile DANS son
