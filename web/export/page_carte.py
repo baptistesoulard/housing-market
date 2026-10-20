@@ -19,7 +19,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from commun import horodatage, mois_annee
+from commun import horodatage, mois_annee, trimestre_annee
 from mesures import locaux_indicateurs, logements_indicateurs, percentiles as _percentiles
 from page_departements import DUREE_REF_ANS, MENSUALITE_REF
 
@@ -141,10 +141,10 @@ def _spearman(x, y):
 
 
 def _libelle_trimestre(date_iso):
+    """« 4e trimestre 2025 » (voir commun.trimestre_annee)."""
     if not date_iso:
         return None
-    y, m = int(date_iso[:4]), int(date_iso[5:7])
-    return f"T{(m - 1) // 3 + 1} {y}"
+    return trimestre_annee(date_iso)
 
 
 def build_carte(con, frames: dict) -> dict:

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-05T13:25:35+00:00",
-  "periode_dvf": "T4 2025",
+  "generated_at": "2026-10-20T13:25:31+00:00",
+  "periode_dvf": "4e trimestre 2025",
   "date_dvf": "2025-10-01",
   "date_dvf_libelle": "octobre 2025",
   "millesime_rp": 2023,
@@ -12,7 +12,7 @@
       "unite": "euro",
       "echelle": "sequentielle",
       "source": "DVF (DGFiP)",
-      "periode": "T4 2025",
+      "periode": "4e trimestre 2025",
       "ref": 2054.0,
       "ref_libelle": "département médian",
       "n": 97
@@ -24,7 +24,7 @@
       "unite": "pct_signe",
       "echelle": "divergente",
       "source": "DVF (DGFiP)",
-      "periode": "T4 2025, comparé au même trimestre un an plus tôt",
+      "periode": "4e trimestre 2025, comparé au même trimestre un an plus tôt",
       "ref": 2.1,
       "ref_libelle": "département médian",
       "n": 97
@@ -36,7 +36,7 @@
       "unite": "pct_signe",
       "echelle": "divergente",
       "source": "DVF (DGFiP)",
-      "periode": "T4 2025, comparé au même trimestre cinq ans plus tôt",
+      "periode": "4e trimestre 2025, comparé au même trimestre cinq ans plus tôt",
       "ref": 14.0,
       "ref_libelle": "département médian",
       "n": 97
@@ -48,7 +48,7 @@
       "unite": "m2",
       "echelle": "sequentielle",
       "source": "DVF (DGFiP) et taux de crédit (Banque de France)",
-      "periode": "prix du T4 2025, taux de crédit du dernier mois publié",
+      "periode": "prix du 4e trimestre 2025, taux de crédit du dernier mois publié",
       "ref": 86.2,
       "ref_libelle": "département médian",
       "n": 97
@@ -60,7 +60,7 @@
       "unite": "decimal",
       "echelle": "sequentielle",
       "source": "DVF (DGFiP) et recensement (INSEE)",
-      "periode": "quatre trimestres jusqu'au T4 2025",
+      "periode": "quatre trimestres jusqu'au 4e trimestre 2025",
       "ref": 10.82,
       "ref_libelle": "département médian",
       "n": 97
@@ -72,7 +72,7 @@
       "unite": "pct_signe",
       "echelle": "divergente",
       "source": "DVF (DGFiP)",
-      "periode": "quatre trimestres jusqu'au T4 2025 contre les quatre précédents",
+      "periode": "quatre trimestres jusqu'au 4e trimestre 2025 contre les quatre précédents",
       "ref": 11.4,
       "ref_libelle": "département médian",
       "n": 97

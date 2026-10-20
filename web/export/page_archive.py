@@ -254,14 +254,15 @@ def build_archive(con, frames: dict) -> dict:
                     "n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre "
                     "en défaut."),
         "how_to_read": (
-            "Deux natures de prévisions cohabitent ici et ne se valent pas. Les prévisions "
-            "PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — "
-            "personne ne peut les retoucher. Les prévisions RÉTRO-SIMULÉES ont été "
-            "recalculées après coup en tronquant les données au mois visé : elles montrent "
-            "que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il "
-            "aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles "
-            "restent séparées partout. Leur limite : les transactions sont révisées, donc "
-            "une rétro-simulation voit des données un peu meilleures que celles de l'époque."),
+            "Deux natures de prévisions cohabitent ici et ne se valent pas.\n\n"
+            "Les prévisions PUBLIÉES ont été enregistrées le jour même, avant que la suite ne "
+            "soit connue — personne ne peut les retoucher.\n\n"
+            "Les prévisions RÉTRO-SIMULÉES ont été recalculées après coup en tronquant les "
+            "données au mois visé : elles montrent que la méthode tenait, pas que nous "
+            "l'avions annoncé. Elles sont là parce qu'il aurait fallu attendre un an avant "
+            "d'avoir quoi que ce soit à montrer, et elles restent séparées partout. Leur "
+            "limite : les chiffres de ventes sont révisés, donc une rétro-simulation voit des "
+            "données un peu meilleures que celles de l'époque."),
         "kpis": kpis,
         "crossover_horizon": crossover,
         "episodes": episodes,

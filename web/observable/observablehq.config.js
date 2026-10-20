@@ -349,6 +349,7 @@ abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--hm
 .hm-chart-export:hover, .hm-chart-export:focus-visible { border-color: var(--hm-brick); color: var(--hm-brick-text); }
 details.hm-howto { margin: 0.2rem 0 0.8rem; }
 details.hm-howto summary { cursor: pointer; color: var(--hm-ink); }
+details.hm-howto .hm-caption p { margin: 0.5rem 0 0; }
 
 /* --- Frise de période (barre latérale) : miroir du curseur « Période (années) »
    de la barre latérale Streamlit. Deux <input type=range> superposés sur un rail

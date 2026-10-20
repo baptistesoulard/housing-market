@@ -47,7 +47,7 @@ toc: false
 
 ```js
 import {multiLine, cardGrid, kpiCard, withCsvExport, legendStatic, formatMesure, cadreGraphique,
-        nf0, nf1, fmtMonthFR, Plot, TIP} from "../components/hm.js";
+        periodeFR, nf0, nf1, fmtMonthFR, Plot, TIP} from "../components/hm.js";
 import {series, ui} from "../components/theme.js";
 ```
 
@@ -70,8 +70,9 @@ const dep = await fetch(`/data/departements/${observable.params.code}.json`).the
 ```js
 const euro = (v) => v == null ? "—" : nf0.format(v) + " €";
 const pct = (v) => v == null ? "—" : (v >= 0 ? "+" : "−") + nf1.format(Math.abs(v)) + " %";
-// Les dates de l'agrégat sont des débuts de trimestre : « 2025-10-01 » se lit « T4 2025 ».
-const trimestre = (iso) => `T${Math.floor(Number(iso.slice(5, 7)) / 3) + 1} ${iso.slice(0, 4)}`;
+// Les dates de l'agrégat sont des débuts de trimestre : « 2025-10-01 » se lit
+// « 4e trimestre 2025 » (« T4 2025 » est une notation de tableur).
+const trimestre = (iso) => periodeFR(`${iso}T00:00:00Z`, "trimestre");
 const couvert = dep.couvert === true;
 ```
 
@@ -596,7 +597,7 @@ méthode dont l'écart mesuré sur la médiane est inférieur à 0,2 %.
 
 ```js
 if (couvert) display(html`<div class="hm-caption">
-  Données jusqu'à ${trimestre(dep.dernier.Ensemble.date)} · source : ${dep.source} ·
+  Données jusqu'au ${trimestre(dep.dernier.Ensemble.date)} · source : ${dep.source} ·
   <a href="/a-propos">méthode et limites</a></div>`);
 ```
 

@@ -207,6 +207,17 @@ export function cadreGraphique({titre, sousTitre = null, dernier = null, legende
   </figure>`;
 }
 
+/** Un texte de l'export découpé en paragraphes (séparés par une ligne vide, « \n\n »).
+ *  Les « Comment lire cette page » tenaient en un seul bloc de huit à dix lignes : le
+ *  découpage se décide dans l'export, qui écrit le texte, et se rend ici. */
+export function enParagraphes(txt) {
+  const f = document.createDocumentFragment();
+  for (const p of String(txt ?? "").split(/\n\s*\n/)) {
+    if (p.trim()) f.append(html`<p>${p.trim()}</p>`);
+  }
+  return f;
+}
+
 // --- Graphique multi-séries générique (lignes) -------------------------------------
 // rows : format long {date, series, value}.  meta : [{name,color,dash}].
 export function multiLine({rows, meta, yLabel, active = null, height = 360, valueFmt,

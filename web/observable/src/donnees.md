@@ -179,13 +179,16 @@ const mySales = (() => {
 })();
 ```
 
-## 2. Quel driver amont explique le mieux vos ventes ?
+## 2. Quel indicateur précède le mieux vos ventes ?
 
 <div class="hm-caption">
-Deux candidats sont testés sur <i>votre</i> série, avec le même estimateur et la même
-grille de décalage (0 à 18 mois, R² maximal) : les <b>transactions</b> de logements
-anciens, et les <b>permis de construire</b>. C'est la seule façon honnête de les
-départager — deux méthodes différentes donneraient deux gagnants.
+Deux indicateurs sont testés sur <i>votre</i> série, exactement de la même façon : les
+<b>ventes de logements anciens</b>, et les <b>permis</b> (ou les mises en chantier) du type
+de logement choisi. Pour chacun, la page essaie tous les décalages de 0 à 18 mois et
+retient celui où la courbe décalée ressemble le plus à vos ventes. La ressemblance se
+mesure par le R² : 0 % pour aucun lien, 100 % pour deux courbes qui se superposent.
+Les tester de la même façon est la seule manière honnête de les départager — deux
+méthodes différentes donneraient deux gagnants.
 </div>
 
 ```js
@@ -195,6 +198,9 @@ const txSeries = ancienData.main_series.rows
   .filter((r) => r.roll12 != null)
   .map((r) => ({date: r.date, value: r.roll12}));
 const housingTypesList = neufData.by_type.types.map((t) => t.name);
+// Ce que le lecteur lit : « Maison individuelle pure », pas l'intitulé de l'entrepôt.
+const TYPE_LIB = new Map(neufData.by_type.types.map((t) => [t.name, t.label ?? t.name]));
+const METRIQUE_LIB = {Permis: "Permis de construire", MisesEnChantier: "Mises en chantier"};
 
 // Cumul 12 mois des permis (ou mises en chantier) d'UN type SIT@DEL, reconstruit depuis
 // by_type.series de neuf.json — même donnée que l'ancienne route /market/permits-run-rate,
@@ -215,9 +221,11 @@ const market = {tx: txSeries, types: housingTypesList};
 ```
 
 ```js
-const housingType = view(Inputs.select(market.types, {label: "Type de logement (permis)",
+const housingType = view(Inputs.select(market.types, {label: "Type de logement",
+  format: (t) => TYPE_LIB.get(t) ?? t,
   value: market.types.find((t) => /pure/i.test(t)) ?? market.types[0]}));
-const metric = view(Inputs.select(["Permis", "MisesEnChantier"], {label: "Métrique de construction"}));
+const metric = view(Inputs.select(new Map(Object.entries(METRIQUE_LIB).map(([k, v]) => [v, k])),
+  {label: "Indicateur de construction"}));
 ```
 
 ```js
@@ -227,7 +235,7 @@ const permits = housingType ? permitsSeries(housingType, metric) : null;
 ```js
 // Les deux ajustements tournent ICI, sur vos données qui n'ont pas bougé de la page.
 // `bestLagFit` est la transposition JS de `forecast.best_tx_to_monthly` : même grille,
-// même critère (R² maximal), donc les deux drivers sont comparés à armes égales.
+// même critère (R² maximal), donc les deux indicateurs sont comparés à armes égales.
 const fitTx = mySales ? bestLagFit(market.tx, mySales) : null;
 const fitPm = mySales && permits ? bestLagFit(permits, mySales) : null;
 ```
@@ -238,23 +246,24 @@ display(!mySales ? html`<div class="hm-caption">Chargez un fichier pour lancer l
   : !fitTx && !fitPm ? html`<div class="hm-caption">Trop peu de mois communs entre vos
       ventes et les séries de marché (8 minimum).</div>`
   : cardGrid([
-      {label: "Transactions → vos ventes",
+      {label: "Ventes dans l'ancien : avance sur vos ventes",
        value: fitTx ? `${fitTx.lag} mois` : "—",
-       delta: fitTx ? `R² = ${nf1.format(fitTx.r2 * 100)} %` : null,
-       subs: fitTx ? [`estimé sur ${fitTx.n} mois communs`] : ["trop peu de points"]},
-      {label: `${metric} → vos ventes`,
+       delta: fitTx ? `ressemblance (R²) : ${nf0.format(fitTx.r2 * 100)} %` : null,
+       subs: fitTx ? [`mesurée sur ${fitTx.n} mois communs`] : ["trop peu de mois communs"]},
+      {label: `${METRIQUE_LIB[metric]} : avance sur vos ventes`,
        value: fitPm ? `${fitPm.lag} mois` : "—",
-       delta: fitPm ? `R² = ${nf1.format(fitPm.r2 * 100)} %` : null,
-       subs: fitPm ? [`estimé sur ${fitPm.n} mois communs`] : ["trop peu de points"]},
-      {label: "Meilleur driver amont",
-       value: (fitTx && fitPm) ? (fitPm.r2 >= fitTx.r2 ? "Les permis" : "Les transactions") : "—",
+       delta: fitPm ? `ressemblance (R²) : ${nf0.format(fitPm.r2 * 100)} %` : null,
+       subs: fitPm ? [`${TYPE_LIB.get(housingType) ?? housingType} · mesurée sur ${fitPm.n} mois communs`]
+                   : ["trop peu de mois communs"]},
+      {label: "L'indicateur qui précède le mieux vos ventes",
+       value: (fitTx && fitPm) ? (fitPm.r2 >= fitTx.r2 ? METRIQUE_LIB[metric] : "Ventes dans l'ancien") : "—",
        subs: (fitTx && fitPm)
-         ? [`écart de R² : ${nf1.format(Math.abs(fitPm.r2 - fitTx.r2) * 100)} points`] : []}
+         ? [`${nf0.format(Math.abs(fitPm.r2 - fitTx.r2) * 100)} points de ressemblance d'écart`] : []}
     ], kpiCard));
 ```
 
 ```js
-// Superposition du meilleur driver, décalé, et de vos ventes. Les deux séries n'ont pas
+// Superposition du meilleur indicateur, décalé, et de vos ventes. Les deux séries n'ont pas
 // la même unité : centrées-réduites, on compare les formes.
 function zscore(rows) {
   const vals = rows.map((r) => r.value).filter((v) => v != null);
@@ -267,10 +276,10 @@ function zscore(rows) {
 
 ```js
 const bestDriver = (fitTx && fitPm)
-  ? (fitPm.r2 >= fitTx.r2 ? {rows: permits, fit: fitPm, name: `${metric} — ${housingType}`}
-                          : {rows: market.tx, fit: fitTx, name: "Transactions (IGEDD)"})
-  : (fitPm ? {rows: permits, fit: fitPm, name: `${metric} — ${housingType}`}
-           : fitTx ? {rows: market.tx, fit: fitTx, name: "Transactions (IGEDD)"} : null);
+  ? (fitPm.r2 >= fitTx.r2 ? {rows: permits, fit: fitPm, sitadel: true, name: `${METRIQUE_LIB[metric]} — ${TYPE_LIB.get(housingType) ?? housingType}`}
+                          : {rows: market.tx, fit: fitTx, name: "Ventes dans l'ancien"})
+  : (fitPm ? {rows: permits, fit: fitPm, sitadel: true, name: `${METRIQUE_LIB[metric]} — ${TYPE_LIB.get(housingType) ?? housingType}`}
+           : fitTx ? {rows: market.tx, fit: fitTx, name: "Ventes dans l'ancien"} : null);
 ```
 
 ```js
@@ -278,10 +287,10 @@ if (bestDriver) display(multiLine({
   rows: [
     ...zscore(mySales).map((d) => ({...d, series: "Vos ventes"})),
     ...zscore(shiftMonths(bestDriver.rows, bestDriver.fit.lag))
-      .map((d) => ({...d, series: `${bestDriver.name} décalé +${bestDriver.fit.lag} m`}))
+      .map((d) => ({...d, series: `${bestDriver.name}, décalé de ${bestDriver.fit.lag} mois`}))
   ],
   meta: [{name: "Vos ventes", color: series.brick},
-         {name: `${bestDriver.name} décalé +${bestDriver.fit.lag} m`,
+         {name: `${bestDriver.name}, décalé de ${bestDriver.fit.lag} mois`,
           color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 340,
   yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
@@ -289,18 +298,18 @@ if (bestDriver) display(multiLine({
   titre: "Vos ventes et l'indicateur de marché qui les précède le mieux",
   // Le dernier point de VOS ventes : l'indicateur décalé court au-delà, par construction.
   dernier: `${dernierPoint(mySales)} (vos ventes)`,
-  sousTitre: `${bestDriver.name}, décalé de ${bestDriver.fit.lag} mois ; séries centrées-réduites, en écarts-types`,
-  source: `vos données, restées dans votre navigateur ; ${bestDriver.name.startsWith("Transactions") ? "IGEDD" : "SIT@DEL (SDES)"}`
+  sousTitre: "Les deux séries ramenées à la même échelle, en écarts-types : on compare leurs formes, pas leurs niveaux",
+  source: `vos données, restées dans votre navigateur ; ${bestDriver.sitadel ? "SIT@DEL (SDES)" : "IGEDD"}`
 }));
 ```
 
 ```js
 if (bestDriver) display(html`<div class="hm-caption">
-  La partie du driver qui dépasse à droite de vos dernières ventes correspond à une
-  activité <b>déjà engagée en amont</b> : ces permis sont déposés, ou ces transactions
-  réalisées, mais les ventes correspondantes ne le sont pas encore.
-  ${bestDriver.fit.r2 < 0.3 ? html`<br><b>Attention :</b> un R² de
-    ${nf1.format(bestDriver.fit.r2 * 100)} % est faible — le décalage retenu explique mal
+  La partie de l'indicateur qui dépasse à droite de vos dernières ventes correspond à une
+  activité <b>déjà engagée en amont</b> : ces permis sont délivrés, ces chantiers ouverts
+  ou ces ventes signées, mais les vôtres qui en découlent ne sont pas encore arrivées.
+  ${bestDriver.fit.r2 < 0.3 ? html`<br><b>Attention :</b> une ressemblance de
+    ${nf0.format(bestDriver.fit.r2 * 100)} % est faible — le décalage retenu explique mal
     votre série, ne bâtissez pas de plan dessus.` : ""}
 </div>`);
 ```

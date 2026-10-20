@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T09:22:48+00:00",
+  "generated_at": "2026-10-20T13:25:15+00:00",
   "title": "🧭 Synthèse — vue d'ensemble du marché",
   "caption": "L'état du marché immobilier en un coup d'œil : tendance par pilier, chiffres clés et implication pour la demande second œuvre.",
   "pillars": [
@@ -38,22 +38,22 @@
   ],
   "resume": "Aujourd'hui, les ventes de logements anciens plafonnent depuis 9 mois, les permis de construire reculent et le crédit renchérit (3,20 %, +0,2 pt sur un an).",
   "dernier_mois": "août 2026",
-  "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Les blocs sont rangés par horizon et non par source : ce qui se consomme aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, puis les conditions de crédit — qui sont les entrées du modèle, d'où leur place juste avant sa projection. Chaque carte porte deux horizons : le momentum court terme, puis la tendance sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux 3 précédents, sans repasser par une base vieille d'un an qui n'apporterait que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis (l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc « Où va le marché » publie la projection du modèle du site à six mois, avec sa fourchette et la part de fois où le sens annoncé s'est avéré juste sur les millésimes rétro-simulés — ses erreurs détaillées sont sur « Le modèle face au réel ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.",
+  "how_to_read": "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Pour les taux et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas une valeur qui monte.\n\nLes blocs vont du présent vers l'avenir : ce qui se construit et se vend aujourd'hui, puis ce qui est déjà autorisé, puis les conditions de crédit, qui pilotent la prévision, et enfin la prévision elle-même.\n\nChaque carte porte deux lignes. La première dit si le rythme tourne : sur les 3 derniers mois comparés aux 3 précédents pour les permis et les mises en chantier, publiés corrigés des variations saisonnières ; sur douze mois pour les ventes anciennes, trop heurtées d'un mois sur l'autre, avec la date depuis laquelle leur niveau ne bouge plus. La seconde situe le NIVEAU : l'écart à la moyenne 2010-2019, une décennie de marché ordinaire, sans la bulle de crédit de 2004-2007 ni l'après-2020. Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux profond reste un petit marché.\n\nLe pilier « Neuf » ne fait pas la moyenne des permis et des chantiers : quand les deux divergent, la pastille le dit.\n\nLe bloc « Où va le marché » publie la prévision du site à six mois, avec sa fourchette et la part de fois où le sens annoncé s'est avéré juste ; ses erreurs passées sont sur « Le modèle face au réel ». Chiffres nationaux.",
   "blocks": [
     {
       "title": "Aujourd'hui — ce qui se construit et se vend",
       "cards": [
         {
           "emoji": "🟠",
-          "title": "Mises en chantier",
-          "value": "300 k /12 m",
+          "title": "Mises en chantier, sur 12 mois",
+          "value": "300 k",
           "sub": "+0,1 % sur 3 mois vs les 3 précédents · tendance 12 mois : +21,5 % · total exact : 300 244",
           "level": "22 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000"
         },
         {
           "emoji": "🟠",
-          "title": "Ventes de logements anciens",
-          "value": "951 k /12 m",
+          "title": "Ventes de logements anciens, sur 12 mois",
+          "value": "951 k",
           "sub": "+3,6 % sur 12 mois vs les 12 précédents · au plateau depuis novembre 2025 · total exact : 951 000",
           "level": "16 % au-dessus de la normale 2010-19 · plus haut que 72 % des mois depuis 2001"
         },
@@ -83,8 +83,8 @@
       "cards": [
         {
           "emoji": "🔴",
-          "title": "Permis de construire",
-          "value": "370 k /12 m",
+          "title": "Permis de construire, sur 12 mois",
+          "value": "370 k",
           "sub": "-7,2 % sur 3 mois vs les 3 précédents · tendance 12 mois : +4,5 % · total exact : 369 723",
           "level": "18 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000"
         },
@@ -97,8 +97,8 @@
         },
         {
           "emoji": "🔴",
-          "title": "Réservations particuliers neuf (ECLN)",
-          "value": "16 112 /trim.",
+          "title": "Logements neufs réservés par des particuliers, au trimestre",
+          "value": "16 112",
           "sub": "-4,8 % vs le trimestre précédent · tendance 4 trimestres : -4,3 %",
           "level": "la demande qui décide des mises en vente, donc des chantiers suivants"
         }
@@ -151,7 +151,7 @@
       "cards": [
         {
           "emoji": "🔴",
-          "title": "Ventes anciennes projetées (avril 2027)",
+          "title": "Ventes anciennes sur 12 mois, prévues pour avril 2027",
           "value": "902 k",
           "sub": "-5,1 % vs les 12 derniers mois · fourchette 819 k – 979 k · sens juste 75 % du temps à cet horizon (sur 204 prévisions passées)",
           "level": "prévision du modèle du site, ajustée sur les taux, les intentions d'achat et le chômage — voir « Le modèle face au réel » pour ses erreurs"
@@ -166,7 +166,7 @@
         {
           "emoji": "🗓️",
           "title": "Prochaine échéance aides",
-          "value": "11/2026",
+          "value": "novembre 2026",
           "sub": "PTZ — Adoption visée du PLF 2027 à l'Assemblée",
           "level": ""
         }

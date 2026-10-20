@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {cardGrid, kpiCard, multiLine, withCsvExport, cadreGraphique, legendStatic, dernierPoint, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
+import {cardGrid, kpiCard, multiLine, withCsvExport, cadreGraphique, enParagraphes, legendStatic, dernierPoint, nf0, nf1, fmtMonthFR, Plot, TIP} from "./components/hm.js";
 import {series, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/archive.json").json();
@@ -71,7 +71,7 @@ référence à tous les horizons, et c'est précisément ce que cette page sert 
 
 <details class="hm-howto">
   <summary>Comment lire cette page — et pourquoi deux natures de prévisions</summary>
-  <p>${A.how_to_read}</p>
+  <div class="hm-caption">${enParagraphes(A.how_to_read)}</div>
 </details>
 
 <details class="hm-howto">

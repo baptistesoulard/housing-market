@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {kpiCard, cardGrid, marketChart, multiLine, monthlyByYear, filterYears, withCsvExport,
-        cadreGraphique, MONTHS_FULL, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
+        cadreGraphique, enParagraphes, MONTHS_FULL, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const anc = await FileAttachment("./data/ancien.json").json();
@@ -35,7 +35,7 @@ exactement ce qu'un indice de prix seul ne montre pas.
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${anc.how_to_read}</div>
+  <div class="hm-caption">${enParagraphes(anc.how_to_read)}</div>
 </details>
 
 ```js
@@ -44,9 +44,9 @@ exactement ce qu'un indice de prix seul ne montre pas.
 const rangeA = Generators.input(periodFilter({min: anc.period.min, max: anc.period.max}));
 ```
 
-## 🔑 Chiffres Clés
+## 🔑 Chiffres clés
 
-<div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de tout filtre.</div>
+<div class="hm-caption">Chiffres nationaux au dernier mois publié, quelle que soit la période affichée.</div>
 
 <div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./neuf#chiffres-cles">🏗️ la même vue pour le neuf</a><a class="hm-shortcut" href="./carte">📍 prix et ventes dans votre département</a></div>
 
@@ -59,11 +59,11 @@ ${cardGrid([anc.kpi], kpiCard)}
 
 ```js
 const viewA = view(Inputs.radio(
-  new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"],
-           ["Cumul glissant 3 mois", "roll3"], ["Données brutes mensuelles", "raw"]]),
-  {value: "roll12", label: "Type de visualisation"}));
+  new Map([["Cumul sur 12 mois", "roll12"], ["Cumul sur 6 mois", "roll6"],
+           ["Cumul sur 3 mois", "roll3"], ["Chiffres mensuels", "raw"]]),
+  {value: "roll12", label: "Afficher"}));
 const maA = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mois"],
-  {label: "Superpositions (vue brute uniquement)"}));
+  {label: "Lisser (chiffres mensuels)"}));
 // Ce que montre la courbe, selon la vue choisie : le sous-titre du graphique.
 const VUE_LIBELLE = {roll12: "Cumul sur 12 mois glissants", roll6: "Cumul sur 6 mois glissants",
                      roll3: "Cumul sur 3 mois glissants", raw: "Ventes mensuelles"};
@@ -72,13 +72,13 @@ const VUE_LIBELLE = {roll12: "Cumul sur 12 mois glissants", roll6: "Cumul sur 6 
 ${marketChart({rows: filterYears(anc.main_series.rows, rangeA), meta: anc.main_series.meta, view: viewA, showMA12: maA.includes("Moyenne mobile 12 mois"), showMA6: maA.includes("Moyenne mobile 6 mois"), yLabel: "Milliers de ventes", width, filename: "marche-ancien",
   titre: "Ventes de logements anciens en France", sousTitre: `${VUE_LIBELLE[viewA]}, en milliers de ventes`, source: anc.main_series.source})}
 
-## 📅 Comparaison Mensuelle par Année
+## 📅 Le même mois, d'une année à l'autre
 
-<div class="hm-caption">Comparez un ou plusieurs mois d'une année à l'autre. Par défaut, les 3 derniers mois disponibles.
-Cette vue n'existe que sur l'ancien, et c'est mesuré : les ventes IGEDD sont publiées BRUTES et gardent
-une saisonnalité de près de 40 % d'amplitude, que comparer un même mois d'une année à l'autre neutralise.
-Les séries SIT@DEL du neuf sont, elles, déjà corrigées des variations saisonnières — la même vue n'y
-comparerait que du bruit résiduel (7 à 8 %), c'est pourquoi elle en a été retirée.</div>
+<div class="hm-caption">Cochez un ou plusieurs mois : chacun est comparé à lui-même, année après année. Par
+défaut, les trois derniers mois publiés. Les ventes de l'ancien sont publiées brutes et très saisonnières —
+près de 40 % d'écart entre les mois creux et les mois pleins — et comparer un même mois neutralise cet effet.</div>
+<div class="hm-caption">La page du neuf n'a pas cette vue : les permis et les mises en chantier y sont déjà
+corrigés des variations saisonnières, et elle n'y comparerait que du bruit.</div>
 
 ```js
 const lmA = anc.monthly.last_month_num;
@@ -100,15 +100,15 @@ const px = anc.prix;
 
 ## 🏷️ Prix des logements & accessibilité
 
-<div class="hm-caption">Indices de prix des logements anciens (Notaires-INSEE, base 100 = 2015, France métropolitaine) et lecture de l'accessibilité : capacité d'emprunt à mensualité constante et indice d'accessibilité (capacité rapportée aux prix).</div>
+<div class="hm-caption">Les prix des logements anciens (indices Notaires-INSEE, base 100 = moyenne 2015, France métropolitaine), puis ce qu'ils laissent acheter : la capacité d'emprunt d'un ménage à mensualité constante, et l'indice d'accessibilité, qui rapporte cette capacité aux prix.</div>
 
 ${px.available ? cardGrid(px.kpis, (k) => kpiCard({label: k.label, value: k.value, yoy: k.yoy})) : html`<div class="hm-caption">Indices de prix indisponibles.</div>`}
 
-${px.available ? html`<div class="hm-meta">Dernier point : ${px.last_date} · base 100 = moyenne 2015 · variation en glissement annuel.</div>` : ""}
+${px.available ? html`<div class="hm-meta">Dernier point : ${px.last_date} · base 100 = moyenne 2015 · variation sur un an.</div>` : ""}
 
 ```js
 const term = px.available ? view(Inputs.radio(new Map([["25 ans", "25"], ["20 ans", "20"]]),
-  {value: "25", label: "Durée d'emprunt (modèle de capacité)"})) : "25";
+  {value: "25", label: "Durée du prêt"})) : "25";
 ```
 
 ```js
@@ -127,7 +127,7 @@ function accessRows() { return filterYears(px.capacity[term], rangeA).map((d) =>
   ${px.available ? multiLine({rows: filterYears(px.price_levels, rangeA), meta: px.series_meta, yLabel: "Indice, base 100", valueFmt: (v) => nf0.format(v), filename: "ancien-prix-indices",
     titre: "Prix des logements anciens", sousTitre: "Indices Notaires-INSEE, base 100 = moyenne 2015 · France métropolitaine", source: "Notaires-INSEE"}) : ""}
   ${px.available ? multiLine({rows: filterYears(px.price_yoy, rangeA), meta: px.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "ancien-prix-evolution-annuelle",
-    titre: "Évolution annuelle des prix des logements anciens", sousTitre: "Glissement sur un an, en % · France métropolitaine", source: "Notaires-INSEE"}) : ""}
+    titre: "Évolution annuelle des prix des logements anciens", sousTitre: "Variation sur un an, en % · France métropolitaine", source: "Notaires-INSEE"}) : ""}
 </div>
 
 <div class="hm-panels">
@@ -159,12 +159,12 @@ function accessChart() {
 // Prix neuf vs ancien (conditionnel) — rendu via display() (évite les blocs inline multi-lignes).
 if (px.available && px.new_vs_old.available) {
   const nvo = px.new_vs_old;
-  display(html`<h3>Prix des logements neufs vs anciens</h3>`);
+  display(html`<h3>Prix des logements neufs et anciens</h3>`);
   display(html`<div class="hm-panels">
     ${multiLine({rows: filterYears(nvo.levels, rangeA), meta: nvo.series_meta, yLabel: "Indice, base 100", valueFmt: (v) => nf0.format(v), filename: "ancien-prix-neuf-vs-ancien-indices",
       titre: "Prix des logements neufs et anciens", sousTitre: "Indices, base 100 = 2015 · France", source: "INSEE (prix des logements neufs, indices Notaires-INSEE)"})}
     ${multiLine({rows: filterYears(nvo.yoy, rangeA), meta: nvo.series_meta, yLabel: "%", yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " %", tipUnit: " %", filename: "ancien-prix-neuf-vs-ancien-evolution-annuelle",
-      titre: "Évolution annuelle des prix, neuf et ancien", sousTitre: "Glissement sur un an, en % · France", source: "INSEE (prix des logements neufs, indices Notaires-INSEE)"})}
+      titre: "Évolution annuelle des prix, neuf et ancien", sousTitre: "Variation sur un an, en % · France", source: "INSEE (prix des logements neufs, indices Notaires-INSEE)"})}
   </div>`);
 }
 ```

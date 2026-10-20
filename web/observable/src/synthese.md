@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {status, ui} from "./components/theme.js";
-import {filterYears, withCsvExport, cadreGraphique, TIP} from "./components/hm.js";
+import {filterYears, withCsvExport, cadreGraphique, enParagraphes, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 const data = await FileAttachment("./data/synthese.json").json();
 ```
@@ -99,7 +99,7 @@ cette page », et les erreurs passées du modèle sur « Le modèle face au rée
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${data.how_to_read}</div>
+  <div class="hm-caption">${enParagraphes(data.how_to_read)}</div>
 </details>
 
 ## 📇 Les chiffres, du présent vers l'avenir

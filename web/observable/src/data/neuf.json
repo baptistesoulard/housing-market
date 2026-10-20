@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-05T13:25:27+00:00",
+  "generated_at": "2026-10-20T13:25:16+00:00",
   "title": "🏗️ Marché du neuf — de l'autorisation à la vente",
   "caption": "Le tunnel du logement neuf au niveau national : permis de construire et mises en chantier (SIT@DEL), dynamique individuel vs collectif, puis commercialisation des logements neufs (ECLN).",
-  "how_to_read": "Le tunnel se lit de gauche à droite : un permis autorisé devient une mise en chantier 6 à 12 mois plus tard, puis un logement commercialisé. SIT@DEL est publiée corrigée des variations saisonnières et des jours ouvrables : le momentum se lit donc sur les 3 derniers mois comparés aux 3 précédents, jamais aux mêmes mois d'un an plus tôt. Le cumul 12 mois glissant donne le niveau annuel courant ; la vue brute montre le mois réel, beaucoup plus volatil. L'individuel pur porte nettement plus de second œuvre par logement que le collectif — sa dynamique propre est isolée plus bas. Côté ECLN, le délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus.",
+  "how_to_read": "Les permis et les mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières : leur rythme récent se lit donc sur les 3 derniers mois comparés aux 3 précédents, jamais aux mêmes mois d'un an plus tôt.\n\nLe cumul sur 12 mois donne le niveau annuel courant ; la vue mensuelle montre le mois réel, beaucoup plus heurté.\n\nLa maison individuelle pure demande nettement plus de travaux de second œuvre par logement que l'immeuble collectif : sa dynamique est isolée plus bas.\n\nCôté commercialisation (ECLN), le délai d'écoulement est le meilleur signal de tension : il monte quand le stock ne part plus.",
   "kpis": [
     {
-      "label": "Permis de Construire (Cumul 12m glissant)",
+      "label": "Logements autorisés (permis), sur 12 mois",
       "value": "369 723",
-      "delta": "+4,5 % YoY",
+      "delta": "+4,5 % sur un an",
       "subs": [
         "-7,2 % sur 3 mois vs les 3 précédents",
         "18 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
@@ -15,9 +15,9 @@
       ]
     },
     {
-      "label": "Mises en Chantier (Cumul 12m glissant)",
+      "label": "Logements commencés, sur 12 mois",
       "value": "300 244",
-      "delta": "+21,5 % YoY",
+      "delta": "+21,5 % sur un an",
       "subs": [
         "+0,1 % sur 3 mois vs les 3 précédents",
         "22 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -25,13 +25,13 @@
       ]
     },
     {
-      "label": "Réservations particuliers ECLN (trimestre)",
+      "label": "Logements neufs réservés par des particuliers (trimestre)",
       "value": "16 112",
       "delta": "-4,3 % sur 4 trimestres",
       "subs": [
         "-4,8 % vs le trimestre précédent",
         "la demande qui décide des mises en vente, donc des chantiers suivants",
-        "Dernier trimestre disponible : 2026-T2"
+        "Dernier trimestre disponible : 2e trimestre 2026"
       ]
     }
   ],
@@ -39,13 +39,13 @@
     "meta": [
       {
         "key": "permis",
-        "name": "Permis de Construire",
+        "name": "Permis de construire",
         "color": "#E64A19",
         "dash": null
       },
       {
         "key": "mises",
-        "name": "Mises en Chantier",
+        "name": "Mises en chantier",
         "color": "#6A4C93",
         "dash": "dash"
       }
@@ -53,7 +53,7 @@
     "rows": [
       {
         "date": "2000-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32234.0,
         "roll12": null,
@@ -62,7 +62,7 @@
       },
       {
         "date": "2000-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30917.0,
         "roll12": null,
@@ -71,7 +71,7 @@
       },
       {
         "date": "2000-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32483.0,
         "roll12": null,
@@ -80,7 +80,7 @@
       },
       {
         "date": "2000-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34352.0,
         "roll12": null,
@@ -89,7 +89,7 @@
       },
       {
         "date": "2000-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36048.0,
         "roll12": null,
@@ -98,7 +98,7 @@
       },
       {
         "date": "2000-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32492.0,
         "roll12": null,
@@ -107,7 +107,7 @@
       },
       {
         "date": "2000-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33804.0,
         "roll12": null,
@@ -116,7 +116,7 @@
       },
       {
         "date": "2000-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32523.0,
         "roll12": null,
@@ -125,7 +125,7 @@
       },
       {
         "date": "2000-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31047.0,
         "roll12": null,
@@ -134,7 +134,7 @@
       },
       {
         "date": "2000-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31311.0,
         "roll12": null,
@@ -143,7 +143,7 @@
       },
       {
         "date": "2000-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33873.0,
         "roll12": null,
@@ -152,7 +152,7 @@
       },
       {
         "date": "2000-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31848.0,
         "roll12": 392932.0,
@@ -161,7 +161,7 @@
       },
       {
         "date": "2001-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31168.0,
         "roll12": 391866.0,
@@ -170,7 +170,7 @@
       },
       {
         "date": "2001-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33100.0,
         "roll12": 394049.0,
@@ -179,7 +179,7 @@
       },
       {
         "date": "2001-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33154.0,
         "roll12": 394720.0,
@@ -188,7 +188,7 @@
       },
       {
         "date": "2001-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28572.0,
         "roll12": 388940.0,
@@ -197,7 +197,7 @@
       },
       {
         "date": "2001-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30581.0,
         "roll12": 383473.0,
@@ -206,7 +206,7 @@
       },
       {
         "date": "2001-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31668.0,
         "roll12": 382649.0,
@@ -215,7 +215,7 @@
       },
       {
         "date": "2001-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33297.0,
         "roll12": 382142.0,
@@ -224,7 +224,7 @@
       },
       {
         "date": "2001-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31759.0,
         "roll12": 381378.0,
@@ -233,7 +233,7 @@
       },
       {
         "date": "2001-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30226.0,
         "roll12": 380557.0,
@@ -242,7 +242,7 @@
       },
       {
         "date": "2001-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33852.0,
         "roll12": 383098.0,
@@ -251,7 +251,7 @@
       },
       {
         "date": "2001-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32152.0,
         "roll12": 381377.0,
@@ -260,7 +260,7 @@
       },
       {
         "date": "2001-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30233.0,
         "roll12": 379762.0,
@@ -269,7 +269,7 @@
       },
       {
         "date": "2002-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30654.0,
         "roll12": 379248.0,
@@ -278,7 +278,7 @@
       },
       {
         "date": "2002-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29695.0,
         "roll12": 375843.0,
@@ -287,7 +287,7 @@
       },
       {
         "date": "2002-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30601.0,
         "roll12": 373290.0,
@@ -296,7 +296,7 @@
       },
       {
         "date": "2002-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33784.0,
         "roll12": 378502.0,
@@ -305,7 +305,7 @@
       },
       {
         "date": "2002-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29854.0,
         "roll12": 377775.0,
@@ -314,7 +314,7 @@
       },
       {
         "date": "2002-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30330.0,
         "roll12": 376437.0,
@@ -323,7 +323,7 @@
       },
       {
         "date": "2002-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31440.0,
         "roll12": 374580.0,
@@ -332,7 +332,7 @@
       },
       {
         "date": "2002-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29055.0,
         "roll12": 371876.0,
@@ -341,7 +341,7 @@
       },
       {
         "date": "2002-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33079.0,
         "roll12": 374729.0,
@@ -350,7 +350,7 @@
       },
       {
         "date": "2002-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33008.0,
         "roll12": 373885.0,
@@ -359,7 +359,7 @@
       },
       {
         "date": "2002-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33169.0,
         "roll12": 374902.0,
@@ -368,7 +368,7 @@
       },
       {
         "date": "2002-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31853.0,
         "roll12": 376522.0,
@@ -377,7 +377,7 @@
       },
       {
         "date": "2003-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31267.0,
         "roll12": 377135.0,
@@ -386,7 +386,7 @@
       },
       {
         "date": "2003-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32842.0,
         "roll12": 380282.0,
@@ -395,7 +395,7 @@
       },
       {
         "date": "2003-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32693.0,
         "roll12": 382374.0,
@@ -404,7 +404,7 @@
       },
       {
         "date": "2003-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33480.0,
         "roll12": 382070.0,
@@ -413,7 +413,7 @@
       },
       {
         "date": "2003-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33665.0,
         "roll12": 385881.0,
@@ -422,7 +422,7 @@
       },
       {
         "date": "2003-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32632.0,
         "roll12": 388183.0,
@@ -431,7 +431,7 @@
       },
       {
         "date": "2003-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36464.0,
         "roll12": 393207.0,
@@ -440,7 +440,7 @@
       },
       {
         "date": "2003-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34931.0,
         "roll12": 399083.0,
@@ -449,7 +449,7 @@
       },
       {
         "date": "2003-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37036.0,
         "roll12": 403040.0,
@@ -458,7 +458,7 @@
       },
       {
         "date": "2003-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35449.0,
         "roll12": 405481.0,
@@ -467,7 +467,7 @@
       },
       {
         "date": "2003-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37096.0,
         "roll12": 409408.0,
@@ -476,7 +476,7 @@
       },
       {
         "date": "2003-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37277.0,
         "roll12": 414832.0,
@@ -485,7 +485,7 @@
       },
       {
         "date": "2004-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38362.0,
         "roll12": 421927.0,
@@ -494,7 +494,7 @@
       },
       {
         "date": "2004-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39717.0,
         "roll12": 428802.0,
@@ -503,7 +503,7 @@
       },
       {
         "date": "2004-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37838.0,
         "roll12": 433947.0,
@@ -512,7 +512,7 @@
       },
       {
         "date": "2004-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40294.0,
         "roll12": 440761.0,
@@ -521,7 +521,7 @@
       },
       {
         "date": "2004-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40502.0,
         "roll12": 447598.0,
@@ -530,7 +530,7 @@
       },
       {
         "date": "2004-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42047.0,
         "roll12": 457013.0,
@@ -539,7 +539,7 @@
       },
       {
         "date": "2004-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40867.0,
         "roll12": 461416.0,
@@ -548,7 +548,7 @@
       },
       {
         "date": "2004-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42494.0,
         "roll12": 468979.0,
@@ -557,7 +557,7 @@
       },
       {
         "date": "2004-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42958.0,
         "roll12": 474901.0,
@@ -566,7 +566,7 @@
       },
       {
         "date": "2004-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43623.0,
         "roll12": 483075.0,
@@ -575,7 +575,7 @@
       },
       {
         "date": "2004-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 44181.0,
         "roll12": 490160.0,
@@ -584,7 +584,7 @@
       },
       {
         "date": "2004-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43708.0,
         "roll12": 496591.0,
@@ -593,7 +593,7 @@
       },
       {
         "date": "2005-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45405.0,
         "roll12": 503634.0,
@@ -602,7 +602,7 @@
       },
       {
         "date": "2005-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42340.0,
         "roll12": 506257.0,
@@ -611,7 +611,7 @@
       },
       {
         "date": "2005-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42800.0,
         "roll12": 511219.0,
@@ -620,7 +620,7 @@
       },
       {
         "date": "2005-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 44822.0,
         "roll12": 515747.0,
@@ -629,7 +629,7 @@
       },
       {
         "date": "2005-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41841.0,
         "roll12": 517086.0,
@@ -638,7 +638,7 @@
       },
       {
         "date": "2005-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 49243.0,
         "roll12": 524282.0,
@@ -647,7 +647,7 @@
       },
       {
         "date": "2005-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 46218.0,
         "roll12": 529633.0,
@@ -656,7 +656,7 @@
       },
       {
         "date": "2005-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45966.0,
         "roll12": 533105.0,
@@ -665,7 +665,7 @@
       },
       {
         "date": "2005-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 47119.0,
         "roll12": 537266.0,
@@ -674,7 +674,7 @@
       },
       {
         "date": "2005-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45046.0,
         "roll12": 538689.0,
@@ -683,7 +683,7 @@
       },
       {
         "date": "2005-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 48455.0,
         "roll12": 542963.0,
@@ -692,7 +692,7 @@
       },
       {
         "date": "2005-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 52559.0,
         "roll12": 551814.0,
@@ -701,7 +701,7 @@
       },
       {
         "date": "2006-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 49296.0,
         "roll12": 555705.0,
@@ -710,7 +710,7 @@
       },
       {
         "date": "2006-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 50321.0,
         "roll12": 563686.0,
@@ -719,7 +719,7 @@
       },
       {
         "date": "2006-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 50672.0,
         "roll12": 571558.0,
@@ -728,7 +728,7 @@
       },
       {
         "date": "2006-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 52397.0,
         "roll12": 579133.0,
@@ -737,7 +737,7 @@
       },
       {
         "date": "2006-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 49882.0,
         "roll12": 587174.0,
@@ -746,7 +746,7 @@
       },
       {
         "date": "2006-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 52601.0,
         "roll12": 590532.0,
@@ -755,7 +755,7 @@
       },
       {
         "date": "2006-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 49699.0,
         "roll12": 594013.0,
@@ -764,7 +764,7 @@
       },
       {
         "date": "2006-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 49648.0,
         "roll12": 597695.0,
@@ -773,7 +773,7 @@
       },
       {
         "date": "2006-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 46108.0,
         "roll12": 596684.0,
@@ -782,7 +782,7 @@
       },
       {
         "date": "2006-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 50372.0,
         "roll12": 602010.0,
@@ -791,7 +791,7 @@
       },
       {
         "date": "2006-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 52707.0,
         "roll12": 606262.0,
@@ -800,7 +800,7 @@
       },
       {
         "date": "2006-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 51416.0,
         "roll12": 605119.0,
@@ -809,7 +809,7 @@
       },
       {
         "date": "2007-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 46822.0,
         "roll12": 602645.0,
@@ -818,7 +818,7 @@
       },
       {
         "date": "2007-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 50703.0,
         "roll12": 603027.0,
@@ -827,7 +827,7 @@
       },
       {
         "date": "2007-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 52566.0,
         "roll12": 604921.0,
@@ -836,7 +836,7 @@
       },
       {
         "date": "2007-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 47796.0,
         "roll12": 600320.0,
@@ -845,7 +845,7 @@
       },
       {
         "date": "2007-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 50126.0,
         "roll12": 600564.0,
@@ -854,7 +854,7 @@
       },
       {
         "date": "2007-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 48911.0,
         "roll12": 596874.0,
@@ -863,7 +863,7 @@
       },
       {
         "date": "2007-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 47799.0,
         "roll12": 594974.0,
@@ -872,7 +872,7 @@
       },
       {
         "date": "2007-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 48622.0,
         "roll12": 593948.0,
@@ -881,7 +881,7 @@
       },
       {
         "date": "2007-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45251.0,
         "roll12": 593091.0,
@@ -890,7 +890,7 @@
       },
       {
         "date": "2007-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 47167.0,
         "roll12": 589886.0,
@@ -899,7 +899,7 @@
       },
       {
         "date": "2007-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41332.0,
         "roll12": 578511.0,
@@ -908,7 +908,7 @@
       },
       {
         "date": "2007-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45777.0,
         "roll12": 572872.0,
@@ -917,7 +917,7 @@
       },
       {
         "date": "2008-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45984.0,
         "roll12": 572034.0,
@@ -926,7 +926,7 @@
       },
       {
         "date": "2008-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 48016.0,
         "roll12": 569347.0,
@@ -935,7 +935,7 @@
       },
       {
         "date": "2008-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 46839.0,
         "roll12": 563620.0,
@@ -944,7 +944,7 @@
       },
       {
         "date": "2008-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42441.0,
         "roll12": 558265.0,
@@ -953,7 +953,7 @@
       },
       {
         "date": "2008-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43039.0,
         "roll12": 551178.0,
@@ -962,7 +962,7 @@
       },
       {
         "date": "2008-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39497.0,
         "roll12": 541764.0,
@@ -971,7 +971,7 @@
       },
       {
         "date": "2008-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37070.0,
         "roll12": 531035.0,
@@ -980,7 +980,7 @@
       },
       {
         "date": "2008-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36308.0,
         "roll12": 518721.0,
@@ -989,7 +989,7 @@
       },
       {
         "date": "2008-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35737.0,
         "roll12": 509207.0,
@@ -998,7 +998,7 @@
       },
       {
         "date": "2008-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38132.0,
         "roll12": 500172.0,
@@ -1007,7 +1007,7 @@
       },
       {
         "date": "2008-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33658.0,
         "roll12": 492498.0,
@@ -1016,7 +1016,7 @@
       },
       {
         "date": "2008-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31509.0,
         "roll12": 478230.0,
@@ -1025,7 +1025,7 @@
       },
       {
         "date": "2009-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32665.0,
         "roll12": 464911.0,
@@ -1034,7 +1034,7 @@
       },
       {
         "date": "2009-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28744.0,
         "roll12": 445639.0,
@@ -1043,7 +1043,7 @@
       },
       {
         "date": "2009-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30580.0,
         "roll12": 429380.0,
@@ -1052,7 +1052,7 @@
       },
       {
         "date": "2009-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30515.0,
         "roll12": 417454.0,
@@ -1061,7 +1061,7 @@
       },
       {
         "date": "2009-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28820.0,
         "roll12": 403235.0,
@@ -1070,7 +1070,7 @@
       },
       {
         "date": "2009-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29229.0,
         "roll12": 392967.0,
@@ -1079,7 +1079,7 @@
       },
       {
         "date": "2009-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32977.0,
         "roll12": 388874.0,
@@ -1088,7 +1088,7 @@
       },
       {
         "date": "2009-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30813.0,
         "roll12": 383379.0,
@@ -1097,7 +1097,7 @@
       },
       {
         "date": "2009-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32869.0,
         "roll12": 380511.0,
@@ -1106,7 +1106,7 @@
       },
       {
         "date": "2009-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35148.0,
         "roll12": 377527.0,
@@ -1115,7 +1115,7 @@
       },
       {
         "date": "2009-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34282.0,
         "roll12": 378151.0,
@@ -1124,7 +1124,7 @@
       },
       {
         "date": "2009-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34571.0,
         "roll12": 381213.0,
@@ -1133,7 +1133,7 @@
       },
       {
         "date": "2010-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35827.0,
         "roll12": 384375.0,
@@ -1142,7 +1142,7 @@
       },
       {
         "date": "2010-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38041.0,
         "roll12": 393672.0,
@@ -1151,7 +1151,7 @@
       },
       {
         "date": "2010-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41799.0,
         "roll12": 404891.0,
@@ -1160,7 +1160,7 @@
       },
       {
         "date": "2010-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40773.0,
         "roll12": 415149.0,
@@ -1169,7 +1169,7 @@
       },
       {
         "date": "2010-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39152.0,
         "roll12": 425481.0,
@@ -1178,7 +1178,7 @@
       },
       {
         "date": "2010-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40391.0,
         "roll12": 436643.0,
@@ -1187,7 +1187,7 @@
       },
       {
         "date": "2010-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43628.0,
         "roll12": 447294.0,
@@ -1196,7 +1196,7 @@
       },
       {
         "date": "2010-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38225.0,
         "roll12": 454706.0,
@@ -1205,7 +1205,7 @@
       },
       {
         "date": "2010-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40685.0,
         "roll12": 462522.0,
@@ -1214,7 +1214,7 @@
       },
       {
         "date": "2010-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39246.0,
         "roll12": 466620.0,
@@ -1223,7 +1223,7 @@
       },
       {
         "date": "2010-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37265.0,
         "roll12": 469603.0,
@@ -1232,7 +1232,7 @@
       },
       {
         "date": "2010-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39413.0,
         "roll12": 474445.0,
@@ -1241,7 +1241,7 @@
       },
       {
         "date": "2011-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43062.0,
         "roll12": 481680.0,
@@ -1250,7 +1250,7 @@
       },
       {
         "date": "2011-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39308.0,
         "roll12": 482947.0,
@@ -1259,7 +1259,7 @@
       },
       {
         "date": "2011-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38865.0,
         "roll12": 480013.0,
@@ -1268,7 +1268,7 @@
       },
       {
         "date": "2011-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40778.0,
         "roll12": 480018.0,
@@ -1277,7 +1277,7 @@
       },
       {
         "date": "2011-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 44528.0,
         "roll12": 485394.0,
@@ -1286,7 +1286,7 @@
       },
       {
         "date": "2011-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43562.0,
         "roll12": 488565.0,
@@ -1295,7 +1295,7 @@
       },
       {
         "date": "2011-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45424.0,
         "roll12": 490361.0,
@@ -1304,7 +1304,7 @@
       },
       {
         "date": "2011-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 46341.0,
         "roll12": 498477.0,
@@ -1313,7 +1313,7 @@
       },
       {
         "date": "2011-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 46681.0,
         "roll12": 504473.0,
@@ -1322,7 +1322,7 @@
       },
       {
         "date": "2011-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41984.0,
         "roll12": 507211.0,
@@ -1331,7 +1331,7 @@
       },
       {
         "date": "2011-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43610.0,
         "roll12": 513556.0,
@@ -1340,7 +1340,7 @@
       },
       {
         "date": "2011-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45105.0,
         "roll12": 519248.0,
@@ -1349,7 +1349,7 @@
       },
       {
         "date": "2012-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41382.0,
         "roll12": 517568.0,
@@ -1358,7 +1358,7 @@
       },
       {
         "date": "2012-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40126.0,
         "roll12": 518386.0,
@@ -1367,7 +1367,7 @@
       },
       {
         "date": "2012-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39791.0,
         "roll12": 519312.0,
@@ -1376,7 +1376,7 @@
       },
       {
         "date": "2012-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43226.0,
         "roll12": 521760.0,
@@ -1385,7 +1385,7 @@
       },
       {
         "date": "2012-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41516.0,
         "roll12": 518748.0,
@@ -1394,7 +1394,7 @@
       },
       {
         "date": "2012-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40350.0,
         "roll12": 515536.0,
@@ -1403,7 +1403,7 @@
       },
       {
         "date": "2012-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39829.0,
         "roll12": 509941.0,
@@ -1412,7 +1412,7 @@
       },
       {
         "date": "2012-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 48147.0,
         "roll12": 511747.0,
@@ -1421,7 +1421,7 @@
       },
       {
         "date": "2012-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38302.0,
         "roll12": 503368.0,
@@ -1430,7 +1430,7 @@
       },
       {
         "date": "2012-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38370.0,
         "roll12": 499754.0,
@@ -1439,7 +1439,7 @@
       },
       {
         "date": "2012-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36692.0,
         "roll12": 492836.0,
@@ -1448,7 +1448,7 @@
       },
       {
         "date": "2012-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38828.0,
         "roll12": 486559.0,
@@ -1457,7 +1457,7 @@
       },
       {
         "date": "2013-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41600.0,
         "roll12": 486777.0,
@@ -1466,7 +1466,7 @@
       },
       {
         "date": "2013-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 47894.0,
         "roll12": 494545.0,
@@ -1475,7 +1475,7 @@
       },
       {
         "date": "2013-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40096.0,
         "roll12": 494850.0,
@@ -1484,7 +1484,7 @@
       },
       {
         "date": "2013-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33867.0,
         "roll12": 485491.0,
@@ -1493,7 +1493,7 @@
       },
       {
         "date": "2013-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32259.0,
         "roll12": 476234.0,
@@ -1502,7 +1502,7 @@
       },
       {
         "date": "2013-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32584.0,
         "roll12": 468468.0,
@@ -1511,7 +1511,7 @@
       },
       {
         "date": "2013-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31307.0,
         "roll12": 459946.0,
@@ -1520,7 +1520,7 @@
       },
       {
         "date": "2013-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30029.0,
         "roll12": 441828.0,
@@ -1529,7 +1529,7 @@
       },
       {
         "date": "2013-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29817.0,
         "roll12": 433343.0,
@@ -1538,7 +1538,7 @@
       },
       {
         "date": "2013-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33708.0,
         "roll12": 428681.0,
@@ -1547,7 +1547,7 @@
       },
       {
         "date": "2013-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32158.0,
         "roll12": 424147.0,
@@ -1556,7 +1556,7 @@
       },
       {
         "date": "2013-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31844.0,
         "roll12": 417163.0,
@@ -1565,7 +1565,7 @@
       },
       {
         "date": "2014-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31974.0,
         "roll12": 407537.0,
@@ -1574,7 +1574,7 @@
       },
       {
         "date": "2014-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33226.0,
         "roll12": 392869.0,
@@ -1583,7 +1583,7 @@
       },
       {
         "date": "2014-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36169.0,
         "roll12": 388942.0,
@@ -1592,7 +1592,7 @@
       },
       {
         "date": "2014-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28346.0,
         "roll12": 383421.0,
@@ -1601,7 +1601,7 @@
       },
       {
         "date": "2014-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31802.0,
         "roll12": 382964.0,
@@ -1610,7 +1610,7 @@
       },
       {
         "date": "2014-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31139.0,
         "roll12": 381519.0,
@@ -1619,7 +1619,7 @@
       },
       {
         "date": "2014-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32936.0,
         "roll12": 383148.0,
@@ -1628,7 +1628,7 @@
       },
       {
         "date": "2014-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29834.0,
         "roll12": 382953.0,
@@ -1637,7 +1637,7 @@
       },
       {
         "date": "2014-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29663.0,
         "roll12": 382799.0,
@@ -1646,7 +1646,7 @@
       },
       {
         "date": "2014-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30295.0,
         "roll12": 379386.0,
@@ -1655,7 +1655,7 @@
       },
       {
         "date": "2014-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28008.0,
         "roll12": 375236.0,
@@ -1664,7 +1664,7 @@
       },
       {
         "date": "2014-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30467.0,
         "roll12": 373859.0,
@@ -1673,7 +1673,7 @@
       },
       {
         "date": "2015-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31675.0,
         "roll12": 373560.0,
@@ -1682,7 +1682,7 @@
       },
       {
         "date": "2015-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29677.0,
         "roll12": 370011.0,
@@ -1691,7 +1691,7 @@
       },
       {
         "date": "2015-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31577.0,
         "roll12": 365419.0,
@@ -1700,7 +1700,7 @@
       },
       {
         "date": "2015-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32758.0,
         "roll12": 369831.0,
@@ -1709,7 +1709,7 @@
       },
       {
         "date": "2015-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30407.0,
         "roll12": 368436.0,
@@ -1718,7 +1718,7 @@
       },
       {
         "date": "2015-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34892.0,
         "roll12": 372189.0,
@@ -1727,7 +1727,7 @@
       },
       {
         "date": "2015-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32693.0,
         "roll12": 371946.0,
@@ -1736,7 +1736,7 @@
       },
       {
         "date": "2015-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33746.0,
         "roll12": 375858.0,
@@ -1745,7 +1745,7 @@
       },
       {
         "date": "2015-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32056.0,
         "roll12": 378251.0,
@@ -1754,7 +1754,7 @@
       },
       {
         "date": "2015-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34307.0,
         "roll12": 382263.0,
@@ -1763,7 +1763,7 @@
       },
       {
         "date": "2015-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36872.0,
         "roll12": 391127.0,
@@ -1772,7 +1772,7 @@
       },
       {
         "date": "2015-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35840.0,
         "roll12": 396500.0,
@@ -1781,7 +1781,7 @@
       },
       {
         "date": "2016-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34292.0,
         "roll12": 399117.0,
@@ -1790,7 +1790,7 @@
       },
       {
         "date": "2016-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37830.0,
         "roll12": 407270.0,
@@ -1799,7 +1799,7 @@
       },
       {
         "date": "2016-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33657.0,
         "roll12": 409350.0,
@@ -1808,7 +1808,7 @@
       },
       {
         "date": "2016-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38781.0,
         "roll12": 415373.0,
@@ -1817,7 +1817,7 @@
       },
       {
         "date": "2016-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37825.0,
         "roll12": 422791.0,
@@ -1826,7 +1826,7 @@
       },
       {
         "date": "2016-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37114.0,
         "roll12": 425013.0,
@@ -1835,7 +1835,7 @@
       },
       {
         "date": "2016-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37927.0,
         "roll12": 430247.0,
@@ -1844,7 +1844,7 @@
       },
       {
         "date": "2016-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38729.0,
         "roll12": 435230.0,
@@ -1853,7 +1853,7 @@
       },
       {
         "date": "2016-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41616.0,
         "roll12": 444790.0,
@@ -1862,7 +1862,7 @@
       },
       {
         "date": "2016-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38716.0,
         "roll12": 449199.0,
@@ -1871,7 +1871,7 @@
       },
       {
         "date": "2016-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42020.0,
         "roll12": 454347.0,
@@ -1880,7 +1880,7 @@
       },
       {
         "date": "2016-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41781.0,
         "roll12": 460288.0,
@@ -1889,7 +1889,7 @@
       },
       {
         "date": "2017-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35829.0,
         "roll12": 461825.0,
@@ -1898,7 +1898,7 @@
       },
       {
         "date": "2017-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38450.0,
         "roll12": 462445.0,
@@ -1907,7 +1907,7 @@
       },
       {
         "date": "2017-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43444.0,
         "roll12": 472232.0,
@@ -1916,7 +1916,7 @@
       },
       {
         "date": "2017-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39409.0,
         "roll12": 472860.0,
@@ -1925,7 +1925,7 @@
       },
       {
         "date": "2017-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40952.0,
         "roll12": 475987.0,
@@ -1934,7 +1934,7 @@
       },
       {
         "date": "2017-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41888.0,
         "roll12": 480761.0,
@@ -1943,7 +1943,7 @@
       },
       {
         "date": "2017-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43343.0,
         "roll12": 486177.0,
@@ -1952,7 +1952,7 @@
       },
       {
         "date": "2017-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41394.0,
         "roll12": 488842.0,
@@ -1961,7 +1961,7 @@
       },
       {
         "date": "2017-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 43518.0,
         "roll12": 490744.0,
@@ -1970,7 +1970,7 @@
       },
       {
         "date": "2017-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39332.0,
         "roll12": 491360.0,
@@ -1979,7 +1979,7 @@
       },
       {
         "date": "2017-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37932.0,
         "roll12": 487272.0,
@@ -1988,7 +1988,7 @@
       },
       {
         "date": "2017-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41187.0,
         "roll12": 486678.0,
@@ -1997,7 +1997,7 @@
       },
       {
         "date": "2018-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37779.0,
         "roll12": 488628.0,
@@ -2006,7 +2006,7 @@
       },
       {
         "date": "2018-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42037.0,
         "roll12": 492215.0,
@@ -2015,7 +2015,7 @@
       },
       {
         "date": "2018-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39040.0,
         "roll12": 487811.0,
@@ -2024,7 +2024,7 @@
       },
       {
         "date": "2018-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39009.0,
         "roll12": 487411.0,
@@ -2033,7 +2033,7 @@
       },
       {
         "date": "2018-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40919.0,
         "roll12": 487378.0,
@@ -2042,7 +2042,7 @@
       },
       {
         "date": "2018-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36168.0,
         "roll12": 481658.0,
@@ -2051,7 +2051,7 @@
       },
       {
         "date": "2018-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35517.0,
         "roll12": 473832.0,
@@ -2060,7 +2060,7 @@
       },
       {
         "date": "2018-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38473.0,
         "roll12": 470911.0,
@@ -2069,7 +2069,7 @@
       },
       {
         "date": "2018-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39850.0,
         "roll12": 467243.0,
@@ -2078,7 +2078,7 @@
       },
       {
         "date": "2018-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38354.0,
         "roll12": 466265.0,
@@ -2087,7 +2087,7 @@
       },
       {
         "date": "2018-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36738.0,
         "roll12": 465071.0,
@@ -2096,7 +2096,7 @@
       },
       {
         "date": "2018-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35855.0,
         "roll12": 459739.0,
@@ -2105,7 +2105,7 @@
       },
       {
         "date": "2019-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37579.0,
         "roll12": 459539.0,
@@ -2114,7 +2114,7 @@
       },
       {
         "date": "2019-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33641.0,
         "roll12": 451143.0,
@@ -2123,7 +2123,7 @@
       },
       {
         "date": "2019-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37398.0,
         "roll12": 449501.0,
@@ -2132,7 +2132,7 @@
       },
       {
         "date": "2019-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39129.0,
         "roll12": 449621.0,
@@ -2141,7 +2141,7 @@
       },
       {
         "date": "2019-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36471.0,
         "roll12": 445173.0,
@@ -2150,7 +2150,7 @@
       },
       {
         "date": "2019-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36692.0,
         "roll12": 445697.0,
@@ -2159,7 +2159,7 @@
       },
       {
         "date": "2019-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36254.0,
         "roll12": 446434.0,
@@ -2168,7 +2168,7 @@
       },
       {
         "date": "2019-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34825.0,
         "roll12": 442786.0,
@@ -2177,7 +2177,7 @@
       },
       {
         "date": "2019-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34695.0,
         "roll12": 437631.0,
@@ -2186,7 +2186,7 @@
       },
       {
         "date": "2019-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41229.0,
         "roll12": 440506.0,
@@ -2195,7 +2195,7 @@
       },
       {
         "date": "2019-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37940.0,
         "roll12": 441708.0,
@@ -2204,7 +2204,7 @@
       },
       {
         "date": "2019-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41183.0,
         "roll12": 447036.0,
@@ -2213,7 +2213,7 @@
       },
       {
         "date": "2020-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40397.0,
         "roll12": 449854.0,
@@ -2222,7 +2222,7 @@
       },
       {
         "date": "2020-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39881.0,
         "roll12": 456094.0,
@@ -2231,7 +2231,7 @@
       },
       {
         "date": "2020-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35255.0,
         "roll12": 453951.0,
@@ -2240,7 +2240,7 @@
       },
       {
         "date": "2020-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 16012.0,
         "roll12": 430834.0,
@@ -2249,7 +2249,7 @@
       },
       {
         "date": "2020-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 22581.0,
         "roll12": 416944.0,
@@ -2258,7 +2258,7 @@
       },
       {
         "date": "2020-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30931.0,
         "roll12": 411183.0,
@@ -2267,7 +2267,7 @@
       },
       {
         "date": "2020-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29364.0,
         "roll12": 404293.0,
@@ -2276,7 +2276,7 @@
       },
       {
         "date": "2020-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32444.0,
         "roll12": 401912.0,
@@ -2285,7 +2285,7 @@
       },
       {
         "date": "2020-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34420.0,
         "roll12": 401637.0,
@@ -2294,7 +2294,7 @@
       },
       {
         "date": "2020-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36283.0,
         "roll12": 396691.0,
@@ -2303,7 +2303,7 @@
       },
       {
         "date": "2020-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39388.0,
         "roll12": 398139.0,
@@ -2312,7 +2312,7 @@
       },
       {
         "date": "2020-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37096.0,
         "roll12": 394052.0,
@@ -2321,7 +2321,7 @@
       },
       {
         "date": "2021-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37653.0,
         "roll12": 391308.0,
@@ -2330,7 +2330,7 @@
       },
       {
         "date": "2021-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37708.0,
         "roll12": 389135.0,
@@ -2339,7 +2339,7 @@
       },
       {
         "date": "2021-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 37717.0,
         "roll12": 391597.0,
@@ -2348,7 +2348,7 @@
       },
       {
         "date": "2021-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39078.0,
         "roll12": 414663.0,
@@ -2357,7 +2357,7 @@
       },
       {
         "date": "2021-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38896.0,
         "roll12": 430978.0,
@@ -2366,7 +2366,7 @@
       },
       {
         "date": "2021-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38383.0,
         "roll12": 438430.0,
@@ -2375,7 +2375,7 @@
       },
       {
         "date": "2021-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39810.0,
         "roll12": 448876.0,
@@ -2384,7 +2384,7 @@
       },
       {
         "date": "2021-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 36653.0,
         "roll12": 453085.0,
@@ -2393,7 +2393,7 @@
       },
       {
         "date": "2021-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 42221.0,
         "roll12": 460886.0,
@@ -2402,7 +2402,7 @@
       },
       {
         "date": "2021-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39079.0,
         "roll12": 463682.0,
@@ -2411,7 +2411,7 @@
       },
       {
         "date": "2021-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39724.0,
         "roll12": 464018.0,
@@ -2420,7 +2420,7 @@
       },
       {
         "date": "2021-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 39008.0,
         "roll12": 465930.0,
@@ -2429,7 +2429,7 @@
       },
       {
         "date": "2022-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40948.0,
         "roll12": 469225.0,
@@ -2438,7 +2438,7 @@
       },
       {
         "date": "2022-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 50068.0,
         "roll12": 481585.0,
@@ -2447,7 +2447,7 @@
       },
       {
         "date": "2022-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 49714.0,
         "roll12": 493582.0,
@@ -2456,7 +2456,7 @@
       },
       {
         "date": "2022-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 45640.0,
         "roll12": 500144.0,
@@ -2465,7 +2465,7 @@
       },
       {
         "date": "2022-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 44919.0,
         "roll12": 506167.0,
@@ -2474,7 +2474,7 @@
       },
       {
         "date": "2022-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 41198.0,
         "roll12": 508982.0,
@@ -2483,7 +2483,7 @@
       },
       {
         "date": "2022-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 40745.0,
         "roll12": 509917.0,
@@ -2492,7 +2492,7 @@
       },
       {
         "date": "2022-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 48939.0,
         "roll12": 522203.0,
@@ -2501,7 +2501,7 @@
       },
       {
         "date": "2022-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34121.0,
         "roll12": 514103.0,
@@ -2510,7 +2510,7 @@
       },
       {
         "date": "2022-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29859.0,
         "roll12": 504883.0,
@@ -2519,7 +2519,7 @@
       },
       {
         "date": "2022-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31181.0,
         "roll12": 496340.0,
@@ -2528,7 +2528,7 @@
       },
       {
         "date": "2022-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31011.0,
         "roll12": 488343.0,
@@ -2537,7 +2537,7 @@
       },
       {
         "date": "2023-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33273.0,
         "roll12": 480668.0,
@@ -2546,7 +2546,7 @@
       },
       {
         "date": "2023-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34453.0,
         "roll12": 465053.0,
@@ -2555,7 +2555,7 @@
       },
       {
         "date": "2023-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31540.0,
         "roll12": 446879.0,
@@ -2564,7 +2564,7 @@
       },
       {
         "date": "2023-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32478.0,
         "roll12": 433717.0,
@@ -2573,7 +2573,7 @@
       },
       {
         "date": "2023-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29873.0,
         "roll12": 418671.0,
@@ -2582,7 +2582,7 @@
       },
       {
         "date": "2023-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 33151.0,
         "roll12": 410624.0,
@@ -2591,7 +2591,7 @@
       },
       {
         "date": "2023-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30140.0,
         "roll12": 400019.0,
@@ -2600,7 +2600,7 @@
       },
       {
         "date": "2023-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31404.0,
         "roll12": 382484.0,
@@ -2609,7 +2609,7 @@
       },
       {
         "date": "2023-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 27187.0,
         "roll12": 375550.0,
@@ -2618,7 +2618,7 @@
       },
       {
         "date": "2023-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31007.0,
         "roll12": 376698.0,
@@ -2627,7 +2627,7 @@
       },
       {
         "date": "2023-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31028.0,
         "roll12": 376545.0,
@@ -2636,7 +2636,7 @@
       },
       {
         "date": "2023-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30865.0,
         "roll12": 376399.0,
@@ -2645,7 +2645,7 @@
       },
       {
         "date": "2024-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28296.0,
         "roll12": 371422.0,
@@ -2654,7 +2654,7 @@
       },
       {
         "date": "2024-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28981.0,
         "roll12": 365950.0,
@@ -2663,7 +2663,7 @@
       },
       {
         "date": "2024-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 26150.0,
         "roll12": 360560.0,
@@ -2672,7 +2672,7 @@
       },
       {
         "date": "2024-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 25949.0,
         "roll12": 354031.0,
@@ -2681,7 +2681,7 @@
       },
       {
         "date": "2024-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 25430.0,
         "roll12": 349588.0,
@@ -2690,7 +2690,7 @@
       },
       {
         "date": "2024-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 25748.0,
         "roll12": 342185.0,
@@ -2699,7 +2699,7 @@
       },
       {
         "date": "2024-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 27154.0,
         "roll12": 339199.0,
@@ -2708,7 +2708,7 @@
       },
       {
         "date": "2024-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 26926.0,
         "roll12": 334721.0,
@@ -2717,7 +2717,7 @@
       },
       {
         "date": "2024-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 25157.0,
         "roll12": 332691.0,
@@ -2726,7 +2726,7 @@
       },
       {
         "date": "2024-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 27280.0,
         "roll12": 328964.0,
@@ -2735,7 +2735,7 @@
       },
       {
         "date": "2024-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 26974.0,
         "roll12": 324910.0,
@@ -2744,7 +2744,7 @@
       },
       {
         "date": "2024-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 26620.0,
         "roll12": 320665.0,
@@ -2753,7 +2753,7 @@
       },
       {
         "date": "2025-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 26872.0,
         "roll12": 319241.0,
@@ -2762,7 +2762,7 @@
       },
       {
         "date": "2025-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 28071.0,
         "roll12": 318331.0,
@@ -2771,7 +2771,7 @@
       },
       {
         "date": "2025-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29722.0,
         "roll12": 321903.0,
@@ -2780,7 +2780,7 @@
       },
       {
         "date": "2025-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 34775.0,
         "roll12": 330729.0,
@@ -2789,7 +2789,7 @@
       },
       {
         "date": "2025-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30438.0,
         "roll12": 335737.0,
@@ -2798,7 +2798,7 @@
       },
       {
         "date": "2025-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 35311.0,
         "roll12": 345300.0,
@@ -2807,7 +2807,7 @@
       },
       {
         "date": "2025-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32548.0,
         "roll12": 350694.0,
@@ -2816,7 +2816,7 @@
       },
       {
         "date": "2025-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30166.0,
         "roll12": 353934.0,
@@ -2825,7 +2825,7 @@
       },
       {
         "date": "2025-09-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 32356.0,
         "roll12": 361133.0,
@@ -2834,7 +2834,7 @@
       },
       {
         "date": "2025-10-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29983.0,
         "roll12": 363836.0,
@@ -2843,7 +2843,7 @@
       },
       {
         "date": "2025-11-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29391.0,
         "roll12": 366253.0,
@@ -2852,7 +2852,7 @@
       },
       {
         "date": "2025-12-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30872.0,
         "roll12": 370505.0,
@@ -2861,7 +2861,7 @@
       },
       {
         "date": "2026-01-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30974.0,
         "roll12": 374607.0,
@@ -2870,7 +2870,7 @@
       },
       {
         "date": "2026-02-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29379.0,
         "roll12": 375915.0,
@@ -2879,7 +2879,7 @@
       },
       {
         "date": "2026-03-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 38386.0,
         "roll12": 384579.0,
@@ -2888,7 +2888,7 @@
       },
       {
         "date": "2026-04-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 26982.0,
         "roll12": 376786.0,
@@ -2897,7 +2897,7 @@
       },
       {
         "date": "2026-05-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 31510.0,
         "roll12": 377858.0,
@@ -2906,7 +2906,7 @@
       },
       {
         "date": "2026-06-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30068.0,
         "roll12": 372615.0,
@@ -2915,7 +2915,7 @@
       },
       {
         "date": "2026-07-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 30073.0,
         "roll12": 370140.0,
@@ -2924,7 +2924,7 @@
       },
       {
         "date": "2026-08-01",
-        "series": "Permis de Construire",
+        "series": "Permis de construire",
         "key": "permis",
         "raw": 29749.0,
         "roll12": 369723.0,
@@ -2933,7 +2933,7 @@
       },
       {
         "date": "2000-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26815.0,
         "roll12": null,
@@ -2942,7 +2942,7 @@
       },
       {
         "date": "2000-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30008.0,
         "roll12": null,
@@ -2951,7 +2951,7 @@
       },
       {
         "date": "2000-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30119.0,
         "roll12": null,
@@ -2960,7 +2960,7 @@
       },
       {
         "date": "2000-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26298.0,
         "roll12": null,
@@ -2969,7 +2969,7 @@
       },
       {
         "date": "2000-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29397.0,
         "roll12": null,
@@ -2978,7 +2978,7 @@
       },
       {
         "date": "2000-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27566.0,
         "roll12": null,
@@ -2987,7 +2987,7 @@
       },
       {
         "date": "2000-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26986.0,
         "roll12": null,
@@ -2996,7 +2996,7 @@
       },
       {
         "date": "2000-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32045.0,
         "roll12": null,
@@ -3005,7 +3005,7 @@
       },
       {
         "date": "2000-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27939.0,
         "roll12": null,
@@ -3014,7 +3014,7 @@
       },
       {
         "date": "2000-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27884.0,
         "roll12": null,
@@ -3023,7 +3023,7 @@
       },
       {
         "date": "2000-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27668.0,
         "roll12": null,
@@ -3032,7 +3032,7 @@
       },
       {
         "date": "2000-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28271.0,
         "roll12": 340996.0,
@@ -3041,7 +3041,7 @@
       },
       {
         "date": "2001-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28907.0,
         "roll12": 343088.0,
@@ -3050,7 +3050,7 @@
       },
       {
         "date": "2001-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28020.0,
         "roll12": 341100.0,
@@ -3059,7 +3059,7 @@
       },
       {
         "date": "2001-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26697.0,
         "roll12": 337678.0,
@@ -3068,7 +3068,7 @@
       },
       {
         "date": "2001-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29082.0,
         "roll12": 340462.0,
@@ -3077,7 +3077,7 @@
       },
       {
         "date": "2001-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28660.0,
         "roll12": 339725.0,
@@ -3086,7 +3086,7 @@
       },
       {
         "date": "2001-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27829.0,
         "roll12": 339988.0,
@@ -3095,7 +3095,7 @@
       },
       {
         "date": "2001-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27519.0,
         "roll12": 340521.0,
@@ -3104,7 +3104,7 @@
       },
       {
         "date": "2001-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26935.0,
         "roll12": 335411.0,
@@ -3113,7 +3113,7 @@
       },
       {
         "date": "2001-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27928.0,
         "roll12": 335400.0,
@@ -3122,7 +3122,7 @@
       },
       {
         "date": "2001-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29251.0,
         "roll12": 336767.0,
@@ -3131,7 +3131,7 @@
       },
       {
         "date": "2001-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27167.0,
         "roll12": 336266.0,
@@ -3140,7 +3140,7 @@
       },
       {
         "date": "2001-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29581.0,
         "roll12": 337576.0,
@@ -3149,7 +3149,7 @@
       },
       {
         "date": "2002-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28529.0,
         "roll12": 337198.0,
@@ -3158,7 +3158,7 @@
       },
       {
         "date": "2002-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29283.0,
         "roll12": 338461.0,
@@ -3167,7 +3167,7 @@
       },
       {
         "date": "2002-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27910.0,
         "roll12": 339674.0,
@@ -3176,7 +3176,7 @@
       },
       {
         "date": "2002-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29292.0,
         "roll12": 339884.0,
@@ -3185,7 +3185,7 @@
       },
       {
         "date": "2002-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27339.0,
         "roll12": 338563.0,
@@ -3194,7 +3194,7 @@
       },
       {
         "date": "2002-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28120.0,
         "roll12": 338854.0,
@@ -3203,7 +3203,7 @@
       },
       {
         "date": "2002-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29424.0,
         "roll12": 340759.0,
@@ -3212,7 +3212,7 @@
       },
       {
         "date": "2002-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28688.0,
         "roll12": 342512.0,
@@ -3221,7 +3221,7 @@
       },
       {
         "date": "2002-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27627.0,
         "roll12": 342211.0,
@@ -3230,7 +3230,7 @@
       },
       {
         "date": "2002-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28614.0,
         "roll12": 341574.0,
@@ -3239,7 +3239,7 @@
       },
       {
         "date": "2002-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28098.0,
         "roll12": 342505.0,
@@ -3248,7 +3248,7 @@
       },
       {
         "date": "2002-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30261.0,
         "roll12": 343185.0,
@@ -3257,7 +3257,7 @@
       },
       {
         "date": "2003-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27706.0,
         "roll12": 342362.0,
@@ -3266,7 +3266,7 @@
       },
       {
         "date": "2003-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28945.0,
         "roll12": 342024.0,
@@ -3275,7 +3275,7 @@
       },
       {
         "date": "2003-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31325.0,
         "roll12": 345439.0,
@@ -3284,7 +3284,7 @@
       },
       {
         "date": "2003-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29001.0,
         "roll12": 345148.0,
@@ -3293,7 +3293,7 @@
       },
       {
         "date": "2003-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29278.0,
         "roll12": 347087.0,
@@ -3302,7 +3302,7 @@
       },
       {
         "date": "2003-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30765.0,
         "roll12": 349732.0,
@@ -3311,7 +3311,7 @@
       },
       {
         "date": "2003-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31548.0,
         "roll12": 351856.0,
@@ -3320,7 +3320,7 @@
       },
       {
         "date": "2003-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28005.0,
         "roll12": 351173.0,
@@ -3329,7 +3329,7 @@
       },
       {
         "date": "2003-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31895.0,
         "roll12": 355441.0,
@@ -3338,7 +3338,7 @@
       },
       {
         "date": "2003-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30839.0,
         "roll12": 357666.0,
@@ -3347,7 +3347,7 @@
       },
       {
         "date": "2003-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30908.0,
         "roll12": 360476.0,
@@ -3356,7 +3356,7 @@
       },
       {
         "date": "2003-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32572.0,
         "roll12": 362787.0,
@@ -3365,7 +3365,7 @@
       },
       {
         "date": "2004-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32345.0,
         "roll12": 367426.0,
@@ -3374,7 +3374,7 @@
       },
       {
         "date": "2004-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33932.0,
         "roll12": 372413.0,
@@ -3383,7 +3383,7 @@
       },
       {
         "date": "2004-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32764.0,
         "roll12": 373852.0,
@@ -3392,7 +3392,7 @@
       },
       {
         "date": "2004-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34278.0,
         "roll12": 379129.0,
@@ -3401,7 +3401,7 @@
       },
       {
         "date": "2004-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32612.0,
         "roll12": 382463.0,
@@ -3410,7 +3410,7 @@
       },
       {
         "date": "2004-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34849.0,
         "roll12": 386547.0,
@@ -3419,7 +3419,7 @@
       },
       {
         "date": "2004-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34953.0,
         "roll12": 389952.0,
@@ -3428,7 +3428,7 @@
       },
       {
         "date": "2004-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34680.0,
         "roll12": 396627.0,
@@ -3437,7 +3437,7 @@
       },
       {
         "date": "2004-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35053.0,
         "roll12": 399785.0,
@@ -3446,7 +3446,7 @@
       },
       {
         "date": "2004-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34415.0,
         "roll12": 403361.0,
@@ -3455,7 +3455,7 @@
       },
       {
         "date": "2004-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37992.0,
         "roll12": 410445.0,
@@ -3464,7 +3464,7 @@
       },
       {
         "date": "2004-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35718.0,
         "roll12": 413591.0,
@@ -3473,7 +3473,7 @@
       },
       {
         "date": "2005-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38843.0,
         "roll12": 420089.0,
@@ -3482,7 +3482,7 @@
       },
       {
         "date": "2005-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35955.0,
         "roll12": 422112.0,
@@ -3491,7 +3491,7 @@
       },
       {
         "date": "2005-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37460.0,
         "roll12": 426808.0,
@@ -3500,7 +3500,7 @@
       },
       {
         "date": "2005-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 36653.0,
         "roll12": 429183.0,
@@ -3509,7 +3509,7 @@
       },
       {
         "date": "2005-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 41004.0,
         "roll12": 437575.0,
@@ -3518,7 +3518,7 @@
       },
       {
         "date": "2005-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37860.0,
         "roll12": 440586.0,
@@ -3527,7 +3527,7 @@
       },
       {
         "date": "2005-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37465.0,
         "roll12": 443098.0,
@@ -3536,7 +3536,7 @@
       },
       {
         "date": "2005-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39983.0,
         "roll12": 448401.0,
@@ -3545,7 +3545,7 @@
       },
       {
         "date": "2005-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40610.0,
         "roll12": 453958.0,
@@ -3554,7 +3554,7 @@
       },
       {
         "date": "2005-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38006.0,
         "roll12": 457549.0,
@@ -3563,7 +3563,7 @@
       },
       {
         "date": "2005-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38122.0,
         "roll12": 457679.0,
@@ -3572,7 +3572,7 @@
       },
       {
         "date": "2005-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 41747.0,
         "roll12": 463708.0,
@@ -3581,7 +3581,7 @@
       },
       {
         "date": "2006-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39784.0,
         "roll12": 464649.0,
@@ -3590,7 +3590,7 @@
       },
       {
         "date": "2006-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40415.0,
         "roll12": 469109.0,
@@ -3599,7 +3599,7 @@
       },
       {
         "date": "2006-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 41157.0,
         "roll12": 472806.0,
@@ -3608,7 +3608,7 @@
       },
       {
         "date": "2006-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 42423.0,
         "roll12": 478576.0,
@@ -3617,7 +3617,7 @@
       },
       {
         "date": "2006-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 43440.0,
         "roll12": 481012.0,
@@ -3626,7 +3626,7 @@
       },
       {
         "date": "2006-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 43003.0,
         "roll12": 486155.0,
@@ -3635,7 +3635,7 @@
       },
       {
         "date": "2006-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38874.0,
         "roll12": 487564.0,
@@ -3644,7 +3644,7 @@
       },
       {
         "date": "2006-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 45011.0,
         "roll12": 492592.0,
@@ -3653,7 +3653,7 @@
       },
       {
         "date": "2006-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40248.0,
         "roll12": 492230.0,
@@ -3662,7 +3662,7 @@
       },
       {
         "date": "2006-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40190.0,
         "roll12": 494414.0,
@@ -3671,7 +3671,7 @@
       },
       {
         "date": "2006-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 41685.0,
         "roll12": 497977.0,
@@ -3680,7 +3680,7 @@
       },
       {
         "date": "2006-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39526.0,
         "roll12": 495756.0,
@@ -3689,7 +3689,7 @@
       },
       {
         "date": "2007-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40680.0,
         "roll12": 496652.0,
@@ -3698,7 +3698,7 @@
       },
       {
         "date": "2007-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40682.0,
         "roll12": 496919.0,
@@ -3707,7 +3707,7 @@
       },
       {
         "date": "2007-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40607.0,
         "roll12": 496369.0,
@@ -3716,7 +3716,7 @@
       },
       {
         "date": "2007-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 41160.0,
         "roll12": 495106.0,
@@ -3725,7 +3725,7 @@
       },
       {
         "date": "2007-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 42648.0,
         "roll12": 494314.0,
@@ -3734,7 +3734,7 @@
       },
       {
         "date": "2007-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 41476.0,
         "roll12": 492787.0,
@@ -3743,7 +3743,7 @@
       },
       {
         "date": "2007-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 43680.0,
         "roll12": 497593.0,
@@ -3752,7 +3752,7 @@
       },
       {
         "date": "2007-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39195.0,
         "roll12": 491777.0,
@@ -3761,7 +3761,7 @@
       },
       {
         "date": "2007-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39987.0,
         "roll12": 491516.0,
@@ -3770,7 +3770,7 @@
       },
       {
         "date": "2007-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 42332.0,
         "roll12": 493658.0,
@@ -3779,7 +3779,7 @@
       },
       {
         "date": "2007-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38138.0,
         "roll12": 490111.0,
@@ -3788,7 +3788,7 @@
       },
       {
         "date": "2007-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37103.0,
         "roll12": 487688.0,
@@ -3797,7 +3797,7 @@
       },
       {
         "date": "2008-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40061.0,
         "roll12": 487069.0,
@@ -3806,7 +3806,7 @@
       },
       {
         "date": "2008-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40536.0,
         "roll12": 486923.0,
@@ -3815,7 +3815,7 @@
       },
       {
         "date": "2008-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 36171.0,
         "roll12": 482487.0,
@@ -3824,7 +3824,7 @@
       },
       {
         "date": "2008-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35367.0,
         "roll12": 476694.0,
@@ -3833,7 +3833,7 @@
       },
       {
         "date": "2008-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34806.0,
         "roll12": 468852.0,
@@ -3842,7 +3842,7 @@
       },
       {
         "date": "2008-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34178.0,
         "roll12": 461554.0,
@@ -3851,7 +3851,7 @@
       },
       {
         "date": "2008-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31720.0,
         "roll12": 449594.0,
@@ -3860,7 +3860,7 @@
       },
       {
         "date": "2008-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32676.0,
         "roll12": 443075.0,
@@ -3869,7 +3869,7 @@
       },
       {
         "date": "2008-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31832.0,
         "roll12": 434920.0,
@@ -3878,7 +3878,7 @@
       },
       {
         "date": "2008-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30291.0,
         "roll12": 422879.0,
@@ -3887,7 +3887,7 @@
       },
       {
         "date": "2008-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25535.0,
         "roll12": 410276.0,
@@ -3896,7 +3896,7 @@
       },
       {
         "date": "2008-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25428.0,
         "roll12": 398601.0,
@@ -3905,7 +3905,7 @@
       },
       {
         "date": "2009-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27017.0,
         "roll12": 385557.0,
@@ -3914,7 +3914,7 @@
       },
       {
         "date": "2009-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25689.0,
         "roll12": 370710.0,
@@ -3923,7 +3923,7 @@
       },
       {
         "date": "2009-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26083.0,
         "roll12": 360622.0,
@@ -3932,7 +3932,7 @@
       },
       {
         "date": "2009-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28968.0,
         "roll12": 354223.0,
@@ -3941,7 +3941,7 @@
       },
       {
         "date": "2009-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27286.0,
         "roll12": 346703.0,
@@ -3950,7 +3950,7 @@
       },
       {
         "date": "2009-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29543.0,
         "roll12": 342068.0,
@@ -3959,7 +3959,7 @@
       },
       {
         "date": "2009-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32213.0,
         "roll12": 342561.0,
@@ -3968,7 +3968,7 @@
       },
       {
         "date": "2009-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33806.0,
         "roll12": 343691.0,
@@ -3977,7 +3977,7 @@
       },
       {
         "date": "2009-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27886.0,
         "roll12": 339745.0,
@@ -3986,7 +3986,7 @@
       },
       {
         "date": "2009-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28380.0,
         "roll12": 337834.0,
@@ -3995,7 +3995,7 @@
       },
       {
         "date": "2009-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28640.0,
         "roll12": 340939.0,
@@ -4004,7 +4004,7 @@
       },
       {
         "date": "2009-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30917.0,
         "roll12": 346428.0,
@@ -4013,7 +4013,7 @@
       },
       {
         "date": "2010-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28167.0,
         "roll12": 347578.0,
@@ -4022,7 +4022,7 @@
       },
       {
         "date": "2010-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29013.0,
         "roll12": 350902.0,
@@ -4031,7 +4031,7 @@
       },
       {
         "date": "2010-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30533.0,
         "roll12": 355352.0,
@@ -4040,7 +4040,7 @@
       },
       {
         "date": "2010-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31816.0,
         "roll12": 358200.0,
@@ -4049,7 +4049,7 @@
       },
       {
         "date": "2010-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33273.0,
         "roll12": 364187.0,
@@ -4058,7 +4058,7 @@
       },
       {
         "date": "2010-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33975.0,
         "roll12": 368619.0,
@@ -4067,7 +4067,7 @@
       },
       {
         "date": "2010-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35110.0,
         "roll12": 371516.0,
@@ -4076,7 +4076,7 @@
       },
       {
         "date": "2010-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39744.0,
         "roll12": 377454.0,
@@ -4085,7 +4085,7 @@
       },
       {
         "date": "2010-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37467.0,
         "roll12": 387035.0,
@@ -4094,7 +4094,7 @@
       },
       {
         "date": "2010-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 39009.0,
         "roll12": 397664.0,
@@ -4103,7 +4103,7 @@
       },
       {
         "date": "2010-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37847.0,
         "roll12": 406871.0,
@@ -4112,7 +4112,7 @@
       },
       {
         "date": "2010-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35367.0,
         "roll12": 411321.0,
@@ -4121,7 +4121,7 @@
       },
       {
         "date": "2011-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34418.0,
         "roll12": 417572.0,
@@ -4130,7 +4130,7 @@
       },
       {
         "date": "2011-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33340.0,
         "roll12": 421899.0,
@@ -4139,7 +4139,7 @@
       },
       {
         "date": "2011-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34566.0,
         "roll12": 425932.0,
@@ -4148,7 +4148,7 @@
       },
       {
         "date": "2011-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34350.0,
         "roll12": 428466.0,
@@ -4157,7 +4157,7 @@
       },
       {
         "date": "2011-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37026.0,
         "roll12": 432219.0,
@@ -4166,7 +4166,7 @@
       },
       {
         "date": "2011-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30805.0,
         "roll12": 429049.0,
@@ -4175,7 +4175,7 @@
       },
       {
         "date": "2011-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34184.0,
         "roll12": 428123.0,
@@ -4184,7 +4184,7 @@
       },
       {
         "date": "2011-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 36907.0,
         "roll12": 425286.0,
@@ -4193,7 +4193,7 @@
       },
       {
         "date": "2011-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35597.0,
         "roll12": 423416.0,
@@ -4202,7 +4202,7 @@
       },
       {
         "date": "2011-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35332.0,
         "roll12": 419739.0,
@@ -4211,7 +4211,7 @@
       },
       {
         "date": "2011-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 42699.0,
         "roll12": 424591.0,
@@ -4220,7 +4220,7 @@
       },
       {
         "date": "2011-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37419.0,
         "roll12": 426643.0,
@@ -4229,7 +4229,7 @@
       },
       {
         "date": "2012-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32015.0,
         "roll12": 424240.0,
@@ -4238,7 +4238,7 @@
       },
       {
         "date": "2012-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33390.0,
         "roll12": 424290.0,
@@ -4247,7 +4247,7 @@
       },
       {
         "date": "2012-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35980.0,
         "roll12": 425704.0,
@@ -4256,7 +4256,7 @@
       },
       {
         "date": "2012-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27505.0,
         "roll12": 418859.0,
@@ -4265,7 +4265,7 @@
       },
       {
         "date": "2012-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28996.0,
         "roll12": 410829.0,
@@ -4274,7 +4274,7 @@
       },
       {
         "date": "2012-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31336.0,
         "roll12": 411360.0,
@@ -4283,7 +4283,7 @@
       },
       {
         "date": "2012-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30829.0,
         "roll12": 408005.0,
@@ -4292,7 +4292,7 @@
       },
       {
         "date": "2012-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31573.0,
         "roll12": 402671.0,
@@ -4301,7 +4301,7 @@
       },
       {
         "date": "2012-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28751.0,
         "roll12": 395825.0,
@@ -4310,7 +4310,7 @@
       },
       {
         "date": "2012-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32628.0,
         "roll12": 393121.0,
@@ -4319,7 +4319,7 @@
       },
       {
         "date": "2012-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30448.0,
         "roll12": 380870.0,
@@ -4328,7 +4328,7 @@
       },
       {
         "date": "2012-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 36137.0,
         "roll12": 379588.0,
@@ -4337,7 +4337,7 @@
       },
       {
         "date": "2013-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30461.0,
         "roll12": 378034.0,
@@ -4346,7 +4346,7 @@
       },
       {
         "date": "2013-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33554.0,
         "roll12": 378198.0,
@@ -4355,7 +4355,7 @@
       },
       {
         "date": "2013-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33892.0,
         "roll12": 376110.0,
@@ -4364,7 +4364,7 @@
       },
       {
         "date": "2013-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30019.0,
         "roll12": 378624.0,
@@ -4373,7 +4373,7 @@
       },
       {
         "date": "2013-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30584.0,
         "roll12": 380212.0,
@@ -4382,7 +4382,7 @@
       },
       {
         "date": "2013-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30536.0,
         "roll12": 379412.0,
@@ -4391,7 +4391,7 @@
       },
       {
         "date": "2013-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29229.0,
         "roll12": 377812.0,
@@ -4400,7 +4400,7 @@
       },
       {
         "date": "2013-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28950.0,
         "roll12": 375189.0,
@@ -4409,7 +4409,7 @@
       },
       {
         "date": "2013-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28568.0,
         "roll12": 375006.0,
@@ -4418,7 +4418,7 @@
       },
       {
         "date": "2013-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28362.0,
         "roll12": 370740.0,
@@ -4427,7 +4427,7 @@
       },
       {
         "date": "2013-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27523.0,
         "roll12": 367815.0,
@@ -4436,7 +4436,7 @@
       },
       {
         "date": "2013-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27604.0,
         "roll12": 359282.0,
@@ -4445,7 +4445,7 @@
       },
       {
         "date": "2014-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29176.0,
         "roll12": 357997.0,
@@ -4454,7 +4454,7 @@
       },
       {
         "date": "2014-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26098.0,
         "roll12": 350541.0,
@@ -4463,7 +4463,7 @@
       },
       {
         "date": "2014-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28549.0,
         "roll12": 345198.0,
@@ -4472,7 +4472,7 @@
       },
       {
         "date": "2014-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29316.0,
         "roll12": 344495.0,
@@ -4481,7 +4481,7 @@
       },
       {
         "date": "2014-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27617.0,
         "roll12": 341528.0,
@@ -4490,7 +4490,7 @@
       },
       {
         "date": "2014-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27582.0,
         "roll12": 338574.0,
@@ -4499,7 +4499,7 @@
       },
       {
         "date": "2014-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29788.0,
         "roll12": 339133.0,
@@ -4508,7 +4508,7 @@
       },
       {
         "date": "2014-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26306.0,
         "roll12": 336489.0,
@@ -4517,7 +4517,7 @@
       },
       {
         "date": "2014-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28812.0,
         "roll12": 336733.0,
@@ -4526,7 +4526,7 @@
       },
       {
         "date": "2014-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27684.0,
         "roll12": 336055.0,
@@ -4535,7 +4535,7 @@
       },
       {
         "date": "2014-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26857.0,
         "roll12": 335389.0,
@@ -4544,7 +4544,7 @@
       },
       {
         "date": "2014-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27807.0,
         "roll12": 335592.0,
@@ -4553,7 +4553,7 @@
       },
       {
         "date": "2015-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27088.0,
         "roll12": 333504.0,
@@ -4562,7 +4562,7 @@
       },
       {
         "date": "2015-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26518.0,
         "roll12": 333924.0,
@@ -4571,7 +4571,7 @@
       },
       {
         "date": "2015-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28403.0,
         "roll12": 333778.0,
@@ -4580,7 +4580,7 @@
       },
       {
         "date": "2015-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25958.0,
         "roll12": 330420.0,
@@ -4589,7 +4589,7 @@
       },
       {
         "date": "2015-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 24898.0,
         "roll12": 327701.0,
@@ -4598,7 +4598,7 @@
       },
       {
         "date": "2015-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28981.0,
         "roll12": 329100.0,
@@ -4607,7 +4607,7 @@
       },
       {
         "date": "2015-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28187.0,
         "roll12": 327499.0,
@@ -4616,7 +4616,7 @@
       },
       {
         "date": "2015-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30593.0,
         "roll12": 331786.0,
@@ -4625,7 +4625,7 @@
       },
       {
         "date": "2015-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30653.0,
         "roll12": 333627.0,
@@ -4634,7 +4634,7 @@
       },
       {
         "date": "2015-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28661.0,
         "roll12": 334604.0,
@@ -4643,7 +4643,7 @@
       },
       {
         "date": "2015-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29646.0,
         "roll12": 337393.0,
@@ -4652,7 +4652,7 @@
       },
       {
         "date": "2015-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30511.0,
         "roll12": 340097.0,
@@ -4661,7 +4661,7 @@
       },
       {
         "date": "2016-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27789.0,
         "roll12": 340798.0,
@@ -4670,7 +4670,7 @@
       },
       {
         "date": "2016-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31973.0,
         "roll12": 346253.0,
@@ -4679,7 +4679,7 @@
       },
       {
         "date": "2016-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25881.0,
         "roll12": 343731.0,
@@ -4688,7 +4688,7 @@
       },
       {
         "date": "2016-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29841.0,
         "roll12": 347614.0,
@@ -4697,7 +4697,7 @@
       },
       {
         "date": "2016-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34002.0,
         "roll12": 356718.0,
@@ -4706,7 +4706,7 @@
       },
       {
         "date": "2016-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30241.0,
         "roll12": 357978.0,
@@ -4715,7 +4715,7 @@
       },
       {
         "date": "2016-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29416.0,
         "roll12": 359207.0,
@@ -4724,7 +4724,7 @@
       },
       {
         "date": "2016-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31508.0,
         "roll12": 360122.0,
@@ -4733,7 +4733,7 @@
       },
       {
         "date": "2016-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31945.0,
         "roll12": 361414.0,
@@ -4742,7 +4742,7 @@
       },
       {
         "date": "2016-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32573.0,
         "roll12": 365326.0,
@@ -4751,7 +4751,7 @@
       },
       {
         "date": "2016-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31708.0,
         "roll12": 367388.0,
@@ -4760,7 +4760,7 @@
       },
       {
         "date": "2016-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32670.0,
         "roll12": 369547.0,
@@ -4769,7 +4769,7 @@
       },
       {
         "date": "2017-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34800.0,
         "roll12": 376558.0,
@@ -4778,7 +4778,7 @@
       },
       {
         "date": "2017-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35047.0,
         "roll12": 379632.0,
@@ -4787,7 +4787,7 @@
       },
       {
         "date": "2017-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38182.0,
         "roll12": 391933.0,
@@ -4796,7 +4796,7 @@
       },
       {
         "date": "2017-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34613.0,
         "roll12": 396705.0,
@@ -4805,7 +4805,7 @@
       },
       {
         "date": "2017-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34466.0,
         "roll12": 397169.0,
@@ -4814,7 +4814,7 @@
       },
       {
         "date": "2017-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35399.0,
         "roll12": 402327.0,
@@ -4823,7 +4823,7 @@
       },
       {
         "date": "2017-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35775.0,
         "roll12": 408686.0,
@@ -4832,7 +4832,7 @@
       },
       {
         "date": "2017-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35658.0,
         "roll12": 412836.0,
@@ -4841,7 +4841,7 @@
       },
       {
         "date": "2017-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35019.0,
         "roll12": 415910.0,
@@ -4850,7 +4850,7 @@
       },
       {
         "date": "2017-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35126.0,
         "roll12": 418463.0,
@@ -4859,7 +4859,7 @@
       },
       {
         "date": "2017-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37241.0,
         "roll12": 423996.0,
@@ -4868,7 +4868,7 @@
       },
       {
         "date": "2017-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 40686.0,
         "roll12": 432012.0,
@@ -4877,7 +4877,7 @@
       },
       {
         "date": "2018-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32452.0,
         "roll12": 429664.0,
@@ -4886,7 +4886,7 @@
       },
       {
         "date": "2018-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32659.0,
         "roll12": 427276.0,
@@ -4895,7 +4895,7 @@
       },
       {
         "date": "2018-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33235.0,
         "roll12": 422329.0,
@@ -4904,7 +4904,7 @@
       },
       {
         "date": "2018-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34556.0,
         "roll12": 422272.0,
@@ -4913,7 +4913,7 @@
       },
       {
         "date": "2018-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35537.0,
         "roll12": 423343.0,
@@ -4922,7 +4922,7 @@
       },
       {
         "date": "2018-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34356.0,
         "roll12": 422300.0,
@@ -4931,7 +4931,7 @@
       },
       {
         "date": "2018-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32200.0,
         "roll12": 418725.0,
@@ -4940,7 +4940,7 @@
       },
       {
         "date": "2018-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31263.0,
         "roll12": 414330.0,
@@ -4949,7 +4949,7 @@
       },
       {
         "date": "2018-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33170.0,
         "roll12": 412481.0,
@@ -4958,7 +4958,7 @@
       },
       {
         "date": "2018-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 36081.0,
         "roll12": 413436.0,
@@ -4967,7 +4967,7 @@
       },
       {
         "date": "2018-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33128.0,
         "roll12": 409323.0,
@@ -4976,7 +4976,7 @@
       },
       {
         "date": "2018-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31648.0,
         "roll12": 400285.0,
@@ -4985,7 +4985,7 @@
       },
       {
         "date": "2019-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33522.0,
         "roll12": 401355.0,
@@ -4994,7 +4994,7 @@
       },
       {
         "date": "2019-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32569.0,
         "roll12": 401265.0,
@@ -5003,7 +5003,7 @@
       },
       {
         "date": "2019-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30571.0,
         "roll12": 398601.0,
@@ -5012,7 +5012,7 @@
       },
       {
         "date": "2019-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33804.0,
         "roll12": 397849.0,
@@ -5021,7 +5021,7 @@
       },
       {
         "date": "2019-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31004.0,
         "roll12": 393316.0,
@@ -5030,7 +5030,7 @@
       },
       {
         "date": "2019-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 29898.0,
         "roll12": 388858.0,
@@ -5039,7 +5039,7 @@
       },
       {
         "date": "2019-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33901.0,
         "roll12": 390559.0,
@@ -5048,7 +5048,7 @@
       },
       {
         "date": "2019-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26760.0,
         "roll12": 386056.0,
@@ -5057,7 +5057,7 @@
       },
       {
         "date": "2019-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32652.0,
         "roll12": 385538.0,
@@ -5066,7 +5066,7 @@
       },
       {
         "date": "2019-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32642.0,
         "roll12": 382099.0,
@@ -5075,7 +5075,7 @@
       },
       {
         "date": "2019-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32616.0,
         "roll12": 381587.0,
@@ -5084,7 +5084,7 @@
       },
       {
         "date": "2019-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32778.0,
         "roll12": 382717.0,
@@ -5093,7 +5093,7 @@
       },
       {
         "date": "2020-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34212.0,
         "roll12": 383407.0,
@@ -5102,7 +5102,7 @@
       },
       {
         "date": "2020-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32562.0,
         "roll12": 383400.0,
@@ -5111,7 +5111,7 @@
       },
       {
         "date": "2020-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 24530.0,
         "roll12": 377359.0,
@@ -5120,7 +5120,7 @@
       },
       {
         "date": "2020-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 16904.0,
         "roll12": 360459.0,
@@ -5129,7 +5129,7 @@
       },
       {
         "date": "2020-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27360.0,
         "roll12": 356815.0,
@@ -5138,7 +5138,7 @@
       },
       {
         "date": "2020-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32868.0,
         "roll12": 359785.0,
@@ -5147,7 +5147,7 @@
       },
       {
         "date": "2020-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35159.0,
         "roll12": 361043.0,
@@ -5156,7 +5156,7 @@
       },
       {
         "date": "2020-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 38408.0,
         "roll12": 372691.0,
@@ -5165,7 +5165,7 @@
       },
       {
         "date": "2020-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32891.0,
         "roll12": 372930.0,
@@ -5174,7 +5174,7 @@
       },
       {
         "date": "2020-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33346.0,
         "roll12": 373634.0,
@@ -5183,7 +5183,7 @@
       },
       {
         "date": "2020-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33003.0,
         "roll12": 374021.0,
@@ -5192,7 +5192,7 @@
       },
       {
         "date": "2020-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31058.0,
         "roll12": 372301.0,
@@ -5201,7 +5201,7 @@
       },
       {
         "date": "2021-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33010.0,
         "roll12": 371099.0,
@@ -5210,7 +5210,7 @@
       },
       {
         "date": "2021-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34717.0,
         "roll12": 373254.0,
@@ -5219,7 +5219,7 @@
       },
       {
         "date": "2021-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37131.0,
         "roll12": 385855.0,
@@ -5228,7 +5228,7 @@
       },
       {
         "date": "2021-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35589.0,
         "roll12": 404540.0,
@@ -5237,7 +5237,7 @@
       },
       {
         "date": "2021-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35856.0,
         "roll12": 413036.0,
@@ -5246,7 +5246,7 @@
       },
       {
         "date": "2021-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32843.0,
         "roll12": 413011.0,
@@ -5255,7 +5255,7 @@
       },
       {
         "date": "2021-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33497.0,
         "roll12": 411349.0,
@@ -5264,7 +5264,7 @@
       },
       {
         "date": "2021-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35179.0,
         "roll12": 408120.0,
@@ -5273,7 +5273,7 @@
       },
       {
         "date": "2021-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34477.0,
         "roll12": 409706.0,
@@ -5282,7 +5282,7 @@
       },
       {
         "date": "2021-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 37213.0,
         "roll12": 413573.0,
@@ -5291,7 +5291,7 @@
       },
       {
         "date": "2021-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34380.0,
         "roll12": 414950.0,
@@ -5300,7 +5300,7 @@
       },
       {
         "date": "2021-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32662.0,
         "roll12": 416554.0,
@@ -5309,7 +5309,7 @@
       },
       {
         "date": "2022-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 35201.0,
         "roll12": 418745.0,
@@ -5318,7 +5318,7 @@
       },
       {
         "date": "2022-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 34600.0,
         "roll12": 418628.0,
@@ -5327,7 +5327,7 @@
       },
       {
         "date": "2022-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 36888.0,
         "roll12": 418385.0,
@@ -5336,7 +5336,7 @@
       },
       {
         "date": "2022-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31956.0,
         "roll12": 414752.0,
@@ -5345,7 +5345,7 @@
       },
       {
         "date": "2022-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32387.0,
         "roll12": 411283.0,
@@ -5354,7 +5354,7 @@
       },
       {
         "date": "2022-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 32846.0,
         "roll12": 411286.0,
@@ -5363,7 +5363,7 @@
       },
       {
         "date": "2022-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30736.0,
         "roll12": 408525.0,
@@ -5372,7 +5372,7 @@
       },
       {
         "date": "2022-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 33985.0,
         "roll12": 407331.0,
@@ -5381,7 +5381,7 @@
       },
       {
         "date": "2022-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31313.0,
         "roll12": 404167.0,
@@ -5390,7 +5390,7 @@
       },
       {
         "date": "2022-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30831.0,
         "roll12": 397785.0,
@@ -5399,7 +5399,7 @@
       },
       {
         "date": "2022-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30650.0,
         "roll12": 394055.0,
@@ -5408,7 +5408,7 @@
       },
       {
         "date": "2022-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 31084.0,
         "roll12": 392477.0,
@@ -5417,7 +5417,7 @@
       },
       {
         "date": "2023-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 30221.0,
         "roll12": 387497.0,
@@ -5426,7 +5426,7 @@
       },
       {
         "date": "2023-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26887.0,
         "roll12": 379784.0,
@@ -5435,7 +5435,7 @@
       },
       {
         "date": "2023-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26438.0,
         "roll12": 369334.0,
@@ -5444,7 +5444,7 @@
       },
       {
         "date": "2023-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26126.0,
         "roll12": 363504.0,
@@ -5453,7 +5453,7 @@
       },
       {
         "date": "2023-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26608.0,
         "roll12": 357725.0,
@@ -5462,7 +5462,7 @@
       },
       {
         "date": "2023-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25178.0,
         "roll12": 350057.0,
@@ -5471,7 +5471,7 @@
       },
       {
         "date": "2023-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 24105.0,
         "roll12": 343426.0,
@@ -5480,7 +5480,7 @@
       },
       {
         "date": "2023-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 20365.0,
         "roll12": 329806.0,
@@ -5489,7 +5489,7 @@
       },
       {
         "date": "2023-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 24020.0,
         "roll12": 322513.0,
@@ -5498,7 +5498,7 @@
       },
       {
         "date": "2023-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22053.0,
         "roll12": 313735.0,
@@ -5507,7 +5507,7 @@
       },
       {
         "date": "2023-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22227.0,
         "roll12": 305312.0,
@@ -5516,7 +5516,7 @@
       },
       {
         "date": "2023-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22887.0,
         "roll12": 297115.0,
@@ -5525,7 +5525,7 @@
       },
       {
         "date": "2024-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 20768.0,
         "roll12": 287662.0,
@@ -5534,7 +5534,7 @@
       },
       {
         "date": "2024-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21553.0,
         "roll12": 282328.0,
@@ -5543,7 +5543,7 @@
       },
       {
         "date": "2024-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21123.0,
         "roll12": 277013.0,
@@ -5552,7 +5552,7 @@
       },
       {
         "date": "2024-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21608.0,
         "roll12": 272495.0,
@@ -5561,7 +5561,7 @@
       },
       {
         "date": "2024-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 23683.0,
         "roll12": 269570.0,
@@ -5570,7 +5570,7 @@
       },
       {
         "date": "2024-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 20741.0,
         "roll12": 265133.0,
@@ -5579,7 +5579,7 @@
       },
       {
         "date": "2024-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22608.0,
         "roll12": 263636.0,
@@ -5588,7 +5588,7 @@
       },
       {
         "date": "2024-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22670.0,
         "roll12": 265941.0,
@@ -5597,7 +5597,7 @@
       },
       {
         "date": "2024-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 19421.0,
         "roll12": 261342.0,
@@ -5606,7 +5606,7 @@
       },
       {
         "date": "2024-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21723.0,
         "roll12": 261012.0,
@@ -5615,7 +5615,7 @@
       },
       {
         "date": "2024-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21220.0,
         "roll12": 260005.0,
@@ -5624,7 +5624,7 @@
       },
       {
         "date": "2024-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21972.0,
         "roll12": 259090.0,
@@ -5633,7 +5633,7 @@
       },
       {
         "date": "2025-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21412.0,
         "roll12": 259734.0,
@@ -5642,7 +5642,7 @@
       },
       {
         "date": "2025-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 20101.0,
         "roll12": 258282.0,
@@ -5651,7 +5651,7 @@
       },
       {
         "date": "2025-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 19708.0,
         "roll12": 256867.0,
@@ -5660,7 +5660,7 @@
       },
       {
         "date": "2025-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 20123.0,
         "roll12": 255382.0,
@@ -5669,7 +5669,7 @@
       },
       {
         "date": "2025-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 17586.0,
         "roll12": 249285.0,
@@ -5678,7 +5678,7 @@
       },
       {
         "date": "2025-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 23282.0,
         "roll12": 251826.0,
@@ -5687,7 +5687,7 @@
       },
       {
         "date": "2025-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22381.0,
         "roll12": 251599.0,
@@ -5696,7 +5696,7 @@
       },
       {
         "date": "2025-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 18228.0,
         "roll12": 247157.0,
@@ -5705,7 +5705,7 @@
       },
       {
         "date": "2025-09-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 21422.0,
         "roll12": 249158.0,
@@ -5714,7 +5714,7 @@
       },
       {
         "date": "2025-10-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 23240.0,
         "roll12": 250675.0,
@@ -5723,7 +5723,7 @@
       },
       {
         "date": "2025-11-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22383.0,
         "roll12": 251838.0,
@@ -5732,7 +5732,7 @@
       },
       {
         "date": "2025-12-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26257.0,
         "roll12": 256123.0,
@@ -5741,7 +5741,7 @@
       },
       {
         "date": "2026-01-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25391.0,
         "roll12": 260102.0,
@@ -5750,7 +5750,7 @@
       },
       {
         "date": "2026-02-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 22949.0,
         "roll12": 262950.0,
@@ -5759,7 +5759,7 @@
       },
       {
         "date": "2026-03-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 28868.0,
         "roll12": 272110.0,
@@ -5768,7 +5768,7 @@
       },
       {
         "date": "2026-04-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25719.0,
         "roll12": 277706.0,
@@ -5777,7 +5777,7 @@
       },
       {
         "date": "2026-05-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 24661.0,
         "roll12": 284781.0,
@@ -5786,7 +5786,7 @@
       },
       {
         "date": "2026-06-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 25114.0,
         "roll12": 286613.0,
@@ -5795,7 +5795,7 @@
       },
       {
         "date": "2026-07-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 26577.0,
         "roll12": 290809.0,
@@ -5804,7 +5804,7 @@
       },
       {
         "date": "2026-08-01",
-        "series": "Mises en Chantier",
+        "series": "Mises en chantier",
         "key": "mises",
         "raw": 27663.0,
         "roll12": 300244.0,
@@ -6141,19 +6141,23 @@
     "types": [
       {
         "code": "co",
-        "name": "Logement Collectif"
+        "name": "Logement Collectif",
+        "label": "Logement collectif"
       },
       {
         "code": "re",
-        "name": "Logement en Résidence"
+        "name": "Logement en Résidence",
+        "label": "Logement en résidence"
       },
       {
         "code": "ig",
-        "name": "Maison Individuelle Groupée"
+        "name": "Maison Individuelle Groupée",
+        "label": "Maison individuelle groupée"
       },
       {
         "code": "ip",
-        "name": "Maison Individuelle Pure"
+        "name": "Maison Individuelle Pure",
+        "label": "Maison individuelle pure"
       }
     ],
     "series": [
@@ -16498,9 +16502,9 @@
   "kpis_by_type": {
     "co": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "173 884",
-        "delta": "-3,2 % YoY",
+        "delta": "-3,2 % sur un an",
         "subs": [
           "-11,1 % sur 3 mois vs les 3 précédents",
           "22 % sous la normale 2010-19 · plus bas que 79 % des mois depuis 2000",
@@ -16508,9 +16512,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "147 324",
-        "delta": "+17,6 % YoY",
+        "delta": "+17,6 % sur un an",
         "subs": [
           "+4,2 % sur 3 mois vs les 3 précédents",
           "20 % sous la normale 2010-19 · plus bas que 73 % des mois depuis 2000",
@@ -16520,9 +16524,9 @@
     ],
     "re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "57 090",
-        "delta": "+13,6 % YoY",
+        "delta": "+13,6 % sur un an",
         "subs": [
           "-13,5 % sur 3 mois vs les 3 précédents",
           "81 % au-dessus de la normale 2010-19 · plus haut que 99 % des mois depuis 2000",
@@ -16530,9 +16534,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "42 848",
-        "delta": "+37,4 % YoY",
+        "delta": "+37,4 % sur un an",
         "subs": [
           "-30,1 % sur 3 mois vs les 3 précédents",
           "67 % au-dessus de la normale 2010-19 · plus haut que 99 % des mois depuis 2000",
@@ -16542,9 +16546,9 @@
     ],
     "ig": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "41 203",
-        "delta": "-6,7 % YoY",
+        "delta": "-6,7 % sur un an",
         "subs": [
           "+1,8 % sur 3 mois vs les 3 précédents",
           "25 % sous la normale 2010-19 · plus bas que 100 % des mois depuis 2000",
@@ -16552,9 +16556,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "33 918",
-        "delta": "+10,3 % YoY",
+        "delta": "+10,3 % sur un an",
         "subs": [
           "+2,5 % sur 3 mois vs les 3 précédents",
           "25 % sous la normale 2010-19 · plus bas que 89 % des mois depuis 2000",
@@ -16564,9 +16568,9 @@
     ],
     "ip": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "97 546",
-        "delta": "+22,0 % YoY",
+        "delta": "+22,0 % sur un an",
         "subs": [
           "+0,3 % sur 3 mois vs les 3 précédents",
           "30 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16574,9 +16578,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "76 154",
-        "delta": "+27,1 % YoY",
+        "delta": "+27,1 % sur un an",
         "subs": [
           "+10,9 % sur 3 mois vs les 3 précédents",
           "40 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
@@ -16586,9 +16590,9 @@
     ],
     "co+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "230 974",
-        "delta": "+0,5 % YoY",
+        "delta": "+0,5 % sur un an",
         "subs": [
           "-11,8 % sur 3 mois vs les 3 précédents",
           "9 % sous la normale 2010-19 · plus bas que 61 % des mois depuis 2000",
@@ -16596,9 +16600,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "190 172",
-        "delta": "+21,5 % YoY",
+        "delta": "+21,5 % sur un an",
         "subs": [
           "-4,5 % sur 3 mois vs les 3 précédents",
           "10 % sous la normale 2010-19 · plus bas que 59 % des mois depuis 2000",
@@ -16608,9 +16612,9 @@
     ],
     "co+ig": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "215 087",
-        "delta": "-3,9 % YoY",
+        "delta": "-3,9 % sur un an",
         "subs": [
           "-8,8 % sur 3 mois vs les 3 précédents",
           "22 % sous la normale 2010-19 · plus bas que 82 % des mois depuis 2000",
@@ -16618,9 +16622,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "181 242",
-        "delta": "+16,1 % YoY",
+        "delta": "+16,1 % sur un an",
         "subs": [
           "+3,9 % sur 3 mois vs les 3 précédents",
           "21 % sous la normale 2010-19 · plus bas que 76 % des mois depuis 2000",
@@ -16630,9 +16634,9 @@
     ],
     "co+ip": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "271 430",
-        "delta": "+4,6 % YoY",
+        "delta": "+4,6 % sur un an",
         "subs": [
           "-7,1 % sur 3 mois vs les 3 précédents",
           "25 % sous la normale 2010-19 · plus bas que 94 % des mois depuis 2000",
@@ -16640,9 +16644,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "223 478",
-        "delta": "+20,7 % YoY",
+        "delta": "+20,7 % sur un an",
         "subs": [
           "+6,5 % sur 3 mois vs les 3 précédents",
           "28 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16652,9 +16656,9 @@
     ],
     "ig+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "98 293",
-        "delta": "+4,1 % YoY",
+        "delta": "+4,1 % sur un an",
         "subs": [
           "-7,6 % sur 3 mois vs les 3 précédents",
           "13 % au-dessus de la normale 2010-19 · plus haut que 72 % des mois depuis 2000",
@@ -16662,9 +16666,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "76 766",
-        "delta": "+23,9 % YoY",
+        "delta": "+23,9 % sur un an",
         "subs": [
           "-17,1 % sur 3 mois vs les 3 précédents",
           "9 % au-dessus de la normale 2010-19 · plus haut que 79 % des mois depuis 2000",
@@ -16674,9 +16678,9 @@
     ],
     "ip+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "154 636",
-        "delta": "+18,8 % YoY",
+        "delta": "+18,8 % sur un an",
         "subs": [
           "-5,1 % sur 3 mois vs les 3 précédents",
           "10 % sous la normale 2010-19 · plus bas que 80 % des mois depuis 2000",
@@ -16684,9 +16688,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "119 002",
-        "delta": "+30,6 % YoY",
+        "delta": "+30,6 % sur un an",
         "subs": [
           "-5,2 % sur 3 mois vs les 3 précédents",
           "22 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16696,9 +16700,9 @@
     ],
     "ig+ip": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "138 749",
-        "delta": "+11,8 % YoY",
+        "delta": "+11,8 % sur un an",
         "subs": [
           "+0,7 % sur 3 mois vs les 3 précédents",
           "29 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16706,9 +16710,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "110 072",
-        "delta": "+21,4 % YoY",
+        "delta": "+21,4 % sur un an",
         "subs": [
           "+8,3 % sur 3 mois vs les 3 précédents",
           "36 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
@@ -16718,9 +16722,9 @@
     ],
     "co+ig+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "272 177",
-        "delta": "-0,7 % YoY",
+        "delta": "-0,7 % sur un an",
         "subs": [
           "-9,9 % sur 3 mois vs les 3 précédents",
           "12 % sous la normale 2010-19 · plus bas que 68 % des mois depuis 2000",
@@ -16728,9 +16732,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "224 090",
-        "delta": "+19,7 % YoY",
+        "delta": "+19,7 % sur un an",
         "subs": [
           "-3,5 % sur 3 mois vs les 3 précédents",
           "12 % sous la normale 2010-19 · plus bas que 68 % des mois depuis 2000",
@@ -16740,9 +16744,9 @@
     ],
     "co+ip+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "328 520",
-        "delta": "+6,1 % YoY",
+        "delta": "+6,1 % sur un an",
         "subs": [
           "-8,2 % sur 3 mois vs les 3 précédents",
           "17 % sous la normale 2010-19 · plus bas que 88 % des mois depuis 2000",
@@ -16750,9 +16754,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "266 326",
-        "delta": "+23,1 % YoY",
+        "delta": "+23,1 % sur un an",
         "subs": [
           "-0,1 % sur 3 mois vs les 3 précédents",
           "21 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16762,9 +16766,9 @@
     ],
     "co+ig+ip": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "312 633",
-        "delta": "+2,9 % YoY",
+        "delta": "+2,9 % sur un an",
         "subs": [
           "-6,0 % sur 3 mois vs les 3 précédents",
           "25 % sous la normale 2010-19 · plus bas que 94 % des mois depuis 2000",
@@ -16772,9 +16776,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "257 396",
-        "delta": "+19,2 % YoY",
+        "delta": "+19,2 % sur un an",
         "subs": [
           "+6,0 % sur 3 mois vs les 3 précédents",
           "28 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16784,9 +16788,9 @@
     ],
     "ig+ip+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "195 839",
-        "delta": "+12,3 % YoY",
+        "delta": "+12,3 % sur un an",
         "subs": [
           "-3,7 % sur 3 mois vs les 3 précédents",
           "14 % sous la normale 2010-19 · plus bas que 81 % des mois depuis 2000",
@@ -16794,9 +16798,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "152 920",
-        "delta": "+25,5 % YoY",
+        "delta": "+25,5 % sur un an",
         "subs": [
           "-3,6 % sur 3 mois vs les 3 précédents",
           "22 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -16806,9 +16810,9 @@
     ],
     "co+ig+ip+re": [
       {
-        "label": "Permis de Construire (Cumul 12m glissant)",
+        "label": "Logements autorisés (permis), sur 12 mois",
         "value": "369 723",
-        "delta": "+4,5 % YoY",
+        "delta": "+4,5 % sur un an",
         "subs": [
           "-7,2 % sur 3 mois vs les 3 précédents",
           "18 % sous la normale 2010-19 · plus bas que 92 % des mois depuis 2000",
@@ -16816,9 +16820,9 @@
         ]
       },
       {
-        "label": "Mises en Chantier (Cumul 12m glissant)",
+        "label": "Logements commencés, sur 12 mois",
         "value": "300 244",
-        "delta": "+21,5 % YoY",
+        "delta": "+21,5 % sur un an",
         "subs": [
           "+0,1 % sur 3 mois vs les 3 précédents",
           "22 % sous la normale 2010-19 · plus bas que 90 % des mois depuis 2000",
@@ -24306,7 +24310,7 @@
     }
   },
   "ecln": {
-    "last_quarter": "2026-T2",
+    "last_quarter": "2e trimestre 2026",
     "kpis": [
       {
         "label": "Réservations particuliers (trim.)",
@@ -26362,9 +26366,9 @@
   "surfaces": {
     "kpis": [
       {
-        "label": "Surface de logements autorisée (Cumul 12m glissant)",
+        "label": "Surface de logements autorisée, sur 12 mois",
         "value": "27,1 M m²",
-        "delta": "+1,4 % YoY",
+        "delta": "+1,4 % sur un an",
         "subs": [
           "-5,1 % sur 3 mois vs les 3 précédents",
           "28 % sous la normale 2010-19 · plus bas que 95 % des mois depuis 2000",
@@ -26372,9 +26376,9 @@
         ]
       },
       {
-        "label": "Surface de logements commencée (Cumul 12m glissant)",
+        "label": "Surface de logements commencée, sur 12 mois",
         "value": "23,0 M m²",
-        "delta": "+20,5 % YoY",
+        "delta": "+20,5 % sur un an",
         "subs": [
           "+4,6 % sur 3 mois vs les 3 précédents",
           "30 % sous la normale 2010-19 · plus bas que 91 % des mois depuis 2000",
@@ -26412,28 +26416,32 @@
             "part_ref": 48.7,
             "part_recent": 49.1,
             "m2_ref": 64.6,
-            "m2_recent": 63.3
+            "m2_recent": 63.3,
+            "label": "Logement collectif"
           },
           {
             "type": "Logement en Résidence",
             "part_ref": 6.8,
             "part_recent": 14.3,
             "m2_ref": 47.1,
-            "m2_recent": 46.7
+            "m2_recent": 46.7,
+            "label": "Logement en résidence"
           },
           {
             "type": "Maison Individuelle Groupée",
             "part_ref": 11.6,
             "part_recent": 11.3,
             "m2_ref": 88.6,
-            "m2_recent": 88.9
+            "m2_recent": 88.9,
+            "label": "Maison individuelle groupée"
           },
           {
             "type": "Maison Individuelle Pure",
             "part_ref": 32.9,
             "part_recent": 25.4,
             "m2_ref": 121.1,
-            "m2_recent": 113.4
+            "m2_recent": 113.4,
+            "label": "Maison individuelle pure"
           }
         ]
       },
@@ -26456,28 +26464,32 @@
             "part_ref": 49.9,
             "part_recent": 47.0,
             "m2_ref": 64.4,
-            "m2_recent": 61.6
+            "m2_recent": 61.6,
+            "label": "Logement collectif"
           },
           {
             "type": "Logement en Résidence",
             "part_ref": 7.0,
             "part_recent": 15.4,
             "m2_ref": 47.2,
-            "m2_recent": 46.5
+            "m2_recent": 46.5,
+            "label": "Logement en résidence"
           },
           {
             "type": "Maison Individuelle Groupée",
             "part_ref": 12.1,
             "part_recent": 11.1,
             "m2_ref": 88.5,
-            "m2_recent": 85.0
+            "m2_recent": 85.0,
+            "label": "Maison individuelle groupée"
           },
           {
             "type": "Maison Individuelle Pure",
             "part_ref": 31.0,
             "part_recent": 26.4,
             "m2_ref": 121.0,
-            "m2_recent": 105.2
+            "m2_recent": 105.2,
+            "label": "Maison individuelle pure"
           }
         ]
       }

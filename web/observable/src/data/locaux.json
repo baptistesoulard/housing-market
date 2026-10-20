@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T13:25:27+00:00",
+  "generated_at": "2026-10-20T13:25:16+00:00",
   "available": true,
   "regions": {
     "date": "2026-08-01",
@@ -529,7 +529,7 @@
       }
     ]
   },
-  "how_to_read": "Toutes les valeurs sont des surfaces de plancher, en m², cumulées sur 12 mois glissants. La tendance compare les 12 derniers mois aux 12 précédents : d'un mois à l'autre, ces séries sont trop bruitées pour qu'un rythme sur trois mois veuille dire quelque chose, même corrigées des variations saisonnières. Le niveau se lit par rapport à la moyenne 2013-2019, la série commençant en 2013. Les quatre destinations s'additionnent au total ; les sous-destinations (hôtels, industrie, entrepôts, bureaux) sont un zoom à l'intérieur de la leur. Les m² commencés sont datés du jour où l'administration enregistre la déclaration, pas du premier coup de pelle : ils arrivent avec retard, et les m² autorisés sont le signal le plus frais.",
+  "how_to_read": "Toutes les valeurs sont des surfaces de plancher, en m², cumulées sur 12 mois glissants.\n\nLa tendance compare les 12 derniers mois aux 12 précédents : d'un mois à l'autre, ces séries sont trop heurtées pour qu'un rythme sur trois mois veuille dire quelque chose. Le niveau se lit par rapport à la moyenne 2013-2019, la série commençant en 2013.\n\nLes quatre destinations s'additionnent au total ; les sous-destinations (hôtels, industrie, entrepôts, bureaux) sont un zoom à l'intérieur de la leur.\n\nLes m² commencés sont datés du jour où l'administration enregistre la déclaration, pas du premier coup de pelle : ils arrivent avec retard, et les m² autorisés sont le signal le plus frais.",
   "last_month": "août 2026",
   "ref_label": "2013-19",
   "mesures": [
@@ -544,18 +544,18 @@
   ],
   "kpis": [
     {
-      "label": "Surfaces de locaux commencées (cumul 12 mois)",
+      "label": "Surfaces de locaux commencées, sur 12 mois",
       "value": "20,8 M m²",
-      "delta": "+4,6 % YoY",
+      "delta": "+4,6 % sur un an",
       "subs": [
         "16 % sous la normale 2013-19 · plus bas que 88 % des mois depuis 2013",
         "Dernier mois (août 2026) : 1,5 M m²"
       ]
     },
     {
-      "label": "Surfaces de locaux autorisées (cumul 12 mois)",
+      "label": "Surfaces de locaux autorisées, sur 12 mois",
       "value": "35,7 M m²",
-      "delta": "-6,5 % YoY",
+      "delta": "-6,5 % sur un an",
       "subs": [
         "6 % sous la normale 2013-19 · plus bas que 80 % des mois depuis 2013",
         "Dernier mois (août 2026) : 2,8 M m²"

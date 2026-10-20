@@ -5,7 +5,7 @@ toc: true
 
 ```js
 import {kpiCard, cardGrid, legend, marketChart, multiLine,
-        filterYears, sumByType, withCsvExport, cadreGraphique, dernierPoint,
+        filterYears, sumByType, withCsvExport, cadreGraphique, enParagraphes, dernierPoint,
         nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series, ui} from "./components/theme.js";
@@ -23,22 +23,24 @@ const neuf = await FileAttachment("./data/neuf.json").json();
 
 # 🏗️ Logement neuf — de l'autorisation à la vente
 
-Le logement neuf se lit comme un tunnel : un permis de construire autorisé devient une mise
-en chantier six à douze mois plus tard, puis un logement livré et mis en vente. Cette page
-suit ce parcours d'un bout à l'autre, à l'échelle nationale — les permis et les mises en
-chantier publiés par le SDES (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier — voir « Le vocabulaire » sur la page À propos">SIT@DEL</abbr>), la répartition entre maisons individuelles et
-logements collectifs, puis la commercialisation des logements neufs (<abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>) : encours à la
-vente, délai d'écoulement, réservations et prix au m².
+Un logement neuf passe par trois étapes, que cette page suit à l'échelle nationale :
+l'autorisation (le permis de construire), l'ouverture du chantier, et, pour les programmes
+des promoteurs, la vente — souvent sur plan, avant la fin des travaux. Les permis et les
+mises en chantier sont publiés par le SDES (<abbr title="Fichier du SDES qui recense les permis de construire et mises en chantier — voir « Le vocabulaire » sur la page À propos">SIT@DEL</abbr>), avec la répartition entre
+maisons individuelles et logements collectifs ; la vente, par l'enquête sur la
+commercialisation des logements neufs (<abbr title="Enquête trimestrielle du SDES sur la commercialisation des logements neufs">ECLN</abbr>) : logements mis en vente, réservés, encore
+à vendre, et leur prix au m².
 
-Les permis sont l'indicateur le plus précoce du cycle de la construction : ils bougent avant
-les chantiers, qui bougent avant les livraisons. Un retournement du marché du neuf se lit
-donc ici avant de se voir ailleurs, et c'est ce qui en fait un signal avancé de l'activité
-du bâtiment.
+Un permis n'est pas encore un chantier : une partie des projets autorisés n'est jamais
+commencée, et le délai entre les deux varie. Mesuré sur cette série, le rythme des permis
+n'annonce d'ailleurs pas de façon fiable celui des chantiers des mois suivants. La page
+publie donc la part des logements autorisés qui sont réellement mis en chantier, plutôt
+qu'une prévision du neuf.
 
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${neuf.how_to_read}</div>
+  <div class="hm-caption">${enParagraphes(neuf.how_to_read)}</div>
 </details>
 
 ```js
@@ -48,8 +50,8 @@ du bâtiment.
 // même contrôle et même valeur sur tous les onglets, comme le curseur d'années de la
 // barre latérale Streamlit.
 const rangeN = Generators.input(periodFilter({min: neuf.period.min, max: neuf.period.max}));
-const typesN = view(Inputs.checkbox(neuf.by_type.types.map((t) => t.name),
-  {value: neuf.by_type.types.map((t) => t.name), label: "Types de logement (SIT@DEL)"}));
+const typesN = view(Inputs.checkbox(new Map(neuf.by_type.types.map((t) => [t.label ?? t.name, t.name])),
+  {value: neuf.by_type.types.map((t) => t.name), label: "Types de logement"}));
 ```
 
 ```js
@@ -66,12 +68,12 @@ const kpisN = allTypesN
   ? neuf.kpis
   : [...neuf.kpis_by_type[codesN.slice().sort().join("+")], ...neuf.kpis.slice(2)];
 const segLabelN = allTypesN ? "tous types" :
-  neuf.by_type.types.filter((t) => codesN.includes(t.code)).map((t) => t.name).join(" + ");
+  neuf.by_type.types.filter((t) => codesN.includes(t.code)).map((t) => (t.label ?? t.name).toLowerCase()).join(" + ");
 ```
 
-## 🔑 Chiffres Clés
+## 🔑 Chiffres clés
 
-<div class="hm-caption">Chiffres nationaux au dernier mois disponible — indépendants de la période affichée, mais calculés sur la segmentation retenue (${segLabelN}).</div>
+<div class="hm-caption">Chiffres nationaux au dernier mois publié, quelle que soit la période affichée ; ils portent sur les types de logement cochés en haut de page (${segLabelN}).</div>
 
 <div class="hm-shortcuts hm-shortcuts--twin"><a class="hm-shortcut" href="./ancien#chiffres-cles">🏠 la même vue pour l'ancien</a><a class="hm-shortcut" href="./carte">📍 logements commencés dans votre département</a></div>
 
@@ -84,11 +86,11 @@ ${cardGrid(kpisN, kpiCard)}
 
 ```js
 const viewN = view(Inputs.radio(
-  new Map([["Cumul glissant 12 mois", "roll12"], ["Cumul glissant 6 mois", "roll6"],
-           ["Cumul glissant 3 mois", "roll3"], ["Données brutes mensuelles", "raw"]]),
-  {value: "roll12", label: "Type de visualisation"}));
+  new Map([["Cumul sur 12 mois", "roll12"], ["Cumul sur 6 mois", "roll6"],
+           ["Cumul sur 3 mois", "roll3"], ["Chiffres mensuels", "raw"]]),
+  {value: "roll12", label: "Afficher"}));
 const maN = view(Inputs.checkbox(["Moyenne mobile 12 mois", "Moyenne mobile 6 mois"],
-  {label: "Superpositions (vue brute uniquement)"}));
+  {label: "Lisser (chiffres mensuels)"}));
 // Ce que montre la courbe, selon la vue choisie : le sous-titre du graphique.
 const VUE_LIBELLE = {roll12: "Cumul sur 12 mois glissants", roll6: "Cumul sur 6 mois glissants",
                      roll3: "Cumul sur 3 mois glissants", raw: "Logements par mois"};
@@ -106,17 +108,19 @@ ${marketChart({rows: filterYears(seriesRowsN, rangeN), meta: neuf.main_series.me
   titre: "Logements autorisés et commencés en France", sousTitre: `${VUE_LIBELLE[viewN]}, en milliers · ${segLabelN}`,
   legende: legend(neuf.main_series.meta, visN, toggleN), source: neuf.main_series.source + ", séries CVS-CJO"})}
 
-## 🏠 Dynamique Individuel vs Collectif
+## 🏠 Maisons individuelles et logements collectifs
 
-<div class="hm-caption">Le logement individuel — surtout l'individuel pur — porte bien plus de contenu second œuvre par logement qu'un logement collectif : c'est le driver de volume le plus direct.
-Lire chaque segment sur ses deux lignes, parce qu'elles peuvent s'inverser : une croissance forte sur douze mois
-décrit parfois un rebond depuis un plancher historique, et le segment le moins dégradé peut être celui dont le rythme
-se retourne le premier. C'est l'écart entre ces deux lectures qui décide d'un arbitrage de lignes de produits, pas le
-taux annuel seul.</div>
+<div class="hm-caption">Une maison individuelle — surtout « pure », c'est-à-dire construite seule, hors
+lotissement — demande bien plus de travaux de second œuvre par logement qu'un appartement : pour un fabricant
+de matériaux, c'est le segment qui pèse le plus à l'unité.</div>
+<div class="hm-caption">Chaque carte se lit sur ses deux lignes, qui peuvent se contredire : une forte hausse sur douze mois décrit
+parfois un simple rebond depuis un plancher historique, et le segment le moins dégradé peut être celui dont le
+rythme se retourne le premier. C'est l'écart entre les deux lectures qui éclaire un arbitrage entre gammes de
+produits, pas le taux annuel seul.</div>
 
 ```js
 const ivMetrics = view(Inputs.checkbox(
-  new Map([["Mises en Chantier", "MisesEnChantier"], ["Permis de Construire", "Permis"]]),
+  new Map([["Mises en chantier", "MisesEnChantier"], ["Permis de construire", "Permis"]]),
   {value: ["MisesEnChantier"], label: "Indicateur"}));
 ```
 
@@ -130,7 +134,7 @@ function toggleIv(name) { const s = new Set(ivHidden.value); s.has(name) ? s.del
 ```
 
 ```js
-const IV_METRIC_LABELS = {MisesEnChantier: "Mises en Chantier", Permis: "Permis de Construire"};
+const IV_METRIC_LABELS = {MisesEnChantier: "Mises en chantier", Permis: "Permis de construire"};
 const ivMulti = ivMetrics.length > 1;
 // Une ligne par (groupe, indicateur) : quand les deux indicateurs sont cochés, le nom de
 // série est suffixé pour que la légende les distingue, et les Mises en Chantier passent en
@@ -240,7 +244,7 @@ function sfDecomposition() {
 function sfTypes() {
   return html`<table class="hm-table">
     <thead><tr><th>Type de logement</th><th>Part des logements, ${DC.ref_label}</th><th>Part, 12 derniers mois</th><th>m² par logement, ${DC.ref_label}</th><th>m² par logement, 12 derniers mois</th></tr></thead>
-    <tbody>${DC.types.map((t) => html`<tr><td>${t.type}</td><td>${nf1.format(t.part_ref)} %</td><td>${nf1.format(t.part_recent)} %</td><td>${nf0.format(t.m2_ref)} m²</td><td>${nf0.format(t.m2_recent)} m²</td></tr>`)}</tbody>
+    <tbody>${DC.types.map((t) => html`<tr><td>${t.label ?? t.type}</td><td>${nf1.format(t.part_ref)} %</td><td>${nf1.format(t.part_recent)} %</td><td>${nf0.format(t.m2_ref)} m²</td><td>${nf0.format(t.m2_recent)} m²</td></tr>`)}</tbody>
   </table>`;
 }
 ```
@@ -275,7 +279,7 @@ const e = neuf.ecln;
 
 ## 🏗️ Commercialisation des logements neufs (ECLN)
 
-<div class="hm-caption">Commercialisation des logements neufs (SDES — ECLN, national, trimestriel CVS-CJO) : encours, mises en vente, délai d'écoulement, prix au m² et réservations par catégorie d'acquéreurs. Le délai d'écoulement — le temps qu'il faudrait pour vendre le stock au rythme actuel — est un signal avancé de la demande de second œuvre : il monte quand le stock ne part plus.</div>
+<div class="hm-caption">Ce que les promoteurs mettent en vente, ce que les acquéreurs réservent et ce qui reste à vendre, chaque trimestre et pour la France entière (enquête ECLN du SDES, corrigée des variations saisonnières). Le délai d'écoulement est le temps qu'il faudrait pour vendre ce stock au rythme actuel des réservations : il monte quand le stock ne part plus — et un stock qui ne part plus retarde le lancement des programmes suivants.</div>
 
 ${e ? cardGrid(e.kpis, (k) => kpiCard({label: k.label, value: k.value})) : html`<div class="hm-caption">Données ECLN indisponibles.</div>`}
 

@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-from commun import COLOR_BLUE, COLOR_BRICK, COLOR_GREEN, COLOR_TEXT, horodatage, jalons_a_venir
+from commun import (COLOR_BLUE, COLOR_BRICK, COLOR_GREEN, COLOR_TEXT, horodatage, jalons_a_venir,
+                    jour_mois_annee, mois_annee)
 
 import actualites as actu                       # noqa: E402
 import queries as q                             # noqa: E402
@@ -86,11 +87,15 @@ def build_macro(con, frames: dict) -> dict:
                     "(BCE), intentions d'achat de logement et taux de chômage BIT (INSEE)."),
         "how_to_read": (
             "Ces indicateurs expliquent le marché plus qu'ils ne le décrivent, et la plupart le "
-            "précèdent. Les soldes d'opinion (confiance, intentions, rénovation, BLS) se lisent en "
-            "écart à leur repère — le zéro ou la moyenne de longue période — pas en niveau absolu. "
-            "La demande de crédits (BLS) est l'indicateur le plus avancé de la page : les banques la "
-            "constatent avant que les transactions ne bougent. Sur les volumes, les renégociations "
-            "sont isolées car elles ne déclenchent ni transaction ni chantier."),
+            "précèdent.\n\n"
+            "Les soldes d'opinion (confiance, intentions d'achat, rénovation, demande de crédits) "
+            "se lisent en écart à leur repère — le zéro ou la moyenne de longue période — et non "
+            "en niveau absolu : c'est leur mouvement qui informe.\n\n"
+            "La demande de crédits (enquête BLS) paraît avant les chiffres de ventes. Testée "
+            "comme indicateur avancé, elle n'a pourtant pas amélioré la prévision du site : la "
+            "mesure est publiée sur la page Méthode de la prévision.\n\n"
+            "Dans les volumes de crédit, les renégociations sont isolées : elles ne déclenchent "
+            "ni vente ni chantier."),
         "confidence": series("Insee_Confiance_Menages"),
         "rates": {"rows": rate_rows, "meta": rate_meta},
         "intentions": intentions,
@@ -113,7 +118,7 @@ def build_actualites(con, frames: dict) -> dict:
             "montant": it["montant"][L] if it.get("montant") else None,
             "horizon": it["horizon"][L], "impacts": it["impacts"],
             "impact_detail": it["impact_detail"][L],
-            "echeance": ({"date": pd.Timestamp(echs[0][0]).strftime("%d/%m/%Y"),
+            "echeance": ({"date": jour_mois_annee(echs[0][0]),
                           "label": echs[0][1][L]} if echs else None),
             "jalons": [{"date": pd.Timestamp(d).strftime("%Y-%m-%d"), "label": lbl[L], "type": typ}
                        for d, lbl, typ in it.get("jalons", [])],
@@ -131,7 +136,7 @@ def build_actualites(con, frames: dict) -> dict:
     ]
     if next_jalons:
         nd, nit, nlbl = next_jalons[0]
-        kpis.append({"label": "Prochaine échéance", "value": pd.Timestamp(nd).strftime("%m/%Y"),
+        kpis.append({"label": "Prochaine échéance", "value": mois_annee(nd),
                      "subs": [f"{nit['court']['FR']} — {nlbl}"]})
 
     return {
@@ -141,12 +146,14 @@ def build_actualites(con, frames: dict) -> dict:
                     "freinent) le marché du logement, avec pour chaque mesure : statut, jalons, montants et "
                     "impact potentiel sur les trois piliers du modèle (neuf, ancien, rénovation)."),
         "how_to_read": (
-            "Cette page est une grille de lecture qualitative, pas une sortie de modèle. Chaque mesure "
-            "est notée de ⬇⬇ à ⬆⬆ sur les trois piliers selon le sens et l'intensité de son effet "
-            "attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé. Le statut "
-            "distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion — seules "
-            "les mesures en vigueur agissent déjà sur les séries des autres pages."),
+            "Chaque mesure est notée de ⬇⬇ (frein fort) à ⬆⬆ (soutien fort) sur le neuf, "
+            "l'ancien et la rénovation, selon le sens et l'intensité de l'effet attendu : c'est "
+            "une appréciation d'auteur, révisable, pas un résultat calculé.\n\n"
+            "Le statut distingue ce qui est en vigueur de ce qui est seulement adopté ou en "
+            "discussion : seules les mesures en vigueur agissent déjà sur les chiffres des autres "
+            "pages."),
         "maj": actu.MAJ,
+        "maj_fr": jour_mois_annee(actu.MAJ),
         "kpis": kpis,
         "items": items,
         "impact_labels": actu.IMPACT_LABELS[L],

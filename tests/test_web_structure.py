@@ -40,7 +40,7 @@ _WEB = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 # que la source a déjà retirée. La section reste donc sur « ancien » seulement, et son
 # chapeau dit pourquoi. Le socle garantit la symétrie de FORME, pas celle du sens : quand
 # les deux divergent, c'est le sens qui gagne.
-SOCLE = ["🔑 Chiffres Clés",
+SOCLE = ["🔑 Chiffres clés",
          "📊 Courbes d'évolution du marché"]
 
 JUMELLES = {"neuf": "ancien", "ancien": "neuf"}
@@ -88,7 +88,7 @@ def _ancre(titre):
 
 def test_l_ancre_reproduit_le_build():
     """Valeurs relevées dans dist/neuf.html et dist/ancien.html après `npm run build`."""
-    assert _ancre("🔑 Chiffres Clés") == "chiffres-cles"
+    assert _ancre("🔑 Chiffres clés") == "chiffres-cles"
     assert _ancre("📊 Courbes d'évolution du marché") == "courbes-d-evolution-du-marche"
     assert _ancre("📅 Comparaison Mensuelle par Année") == "comparaison-mensuelle-par-annee"
     assert _ancre("🏷️ Prix des logements & accessibilité") == "prix-des-logements-and-accessibilite"
