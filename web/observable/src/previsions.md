@@ -26,6 +26,20 @@ const P = data.available ? data.projection : null;
 const V = data.available ? data.verdict : null;
 const B = data.available ? data.benchmark : null;
 const W = V?.pourquoi ?? null;
+const ARCHIVE = await FileAttachment("./data/archive.json").json();
+// Les ventes OBSERVÉES jusqu'au dernier chiffre publié. La série du modèle (T.series)
+// s'arrête au dernier mois AJUSTÉ — celui où les trois indicateurs sont connus, quelques
+// mois plus tôt — et la courbe rouge laissait un trou de plusieurs mois avant la
+// projection. Le réalisé complet est celui de l'archive des prévisions.
+// Le réalisé de l'archive commence en 2009 : avant, on reprend la série du modèle, pour
+// que « Tout l'historique » montre bien tout l'historique.
+const REALISE = (() => {
+  const archive = (ARCHIVE.realized ?? []).map((r) => ({date: new Date(r.date), v: r.value}));
+  const debut = archive.length ? archive[0].date : null;
+  const avant = (T?.series ?? []).filter((r) => r.observed != null && (!debut || new Date(r.date) < debut))
+    .map((r) => ({date: new Date(r.date), v: r.observed}));
+  return avant.concat(archive);
+})();
 ```
 
 ```js
@@ -158,7 +172,7 @@ const XDOM = P && P.available && T ? (() => {
   const lo = Math.min(periode[0], periode[1]);
   const debutFrise = new Date(Date.UTC(lo, 0, 1));
   const debutRecent = new Date(Date.UTC(new Date(dernierMois).getUTCFullYear() - 5, 0, 1));
-  const debutSerie = new Date(T.series[0].date);
+  const debutSerie = REALISE.length ? REALISE[0].date : new Date(T.series[0].date);
   const debut = vue === "recent"
     ? new Date(Math.max(debutFrise, debutRecent, debutSerie))
     : new Date(Math.max(debutFrise, debutSerie));
@@ -177,9 +191,7 @@ const LEGENDE_PROJ = P && P.available ? legendStatic([
 
 ```js
 if (P && P.available) {
-  const dansFenetre = (r) => new Date(r.date) >= XDOM[0];
-  const observe = T.series.filter((r) => r.observed != null && dansFenetre(r))
-    .map((r) => ({date: new Date(r.date), v: r.observed}));
+  const observe = REALISE.filter((r) => r.date >= XDOM[0]);
   // La projection est raccordée au dernier point observé : sans ce raccord, la courbe
   // projetée commençait un mois plus tard, à un autre niveau, et rien ne reliait les deux.
   const projete = [{date: new Date(dernierMois + "T00:00:00Z"), v: P.last_observed}]
@@ -500,8 +512,7 @@ if (sc) display(cardGrid([
 ```js
 if (sc) {
   const debut = new Date(Date.UTC(new Date(dernierMois).getUTCFullYear() - 3, 0, 1));
-  const observe = T.series.filter((r) => r.observed != null && new Date(r.date) >= debut)
-    .map((r) => ({date: new Date(r.date), v: r.observed}));
+  const observe = REALISE.filter((r) => r.date >= debut);
   const projete = [{date: new Date(dernierMois + "T00:00:00Z"), v: P.last_observed}]
     .concat(P.series.map((r) => ({date: new Date(r.date), v: r.predicted})));
   const fin = projete[projete.length - 1].date;
