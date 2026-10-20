@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, withCsvExport, cadreGraphique, TIP} from "./components/hm.js";
+import {kpiCard, cardGrid, withCsvExport, cadreGraphique, enParagraphes, TIP} from "./components/hm.js";
 import {series, delta, ui} from "./components/theme.js";
 import {periodFilter} from "./components/period.js";
 const A = await FileAttachment("./data/actualites.json").json();
@@ -42,9 +42,9 @@ appréciation d'auteur, révisable, et signalée comme telle.
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${A.how_to_read}</div>
+  <div class="hm-caption">${enParagraphes(A.how_to_read)}</div>
 </details>
-<div class="hm-meta">⚠️ Contenu éditorial mis à jour manuellement (dernière revue : ${A.maj}). Les impacts sont des lectures qualitatives, pas des sorties de modèle.</div>
+<div class="hm-meta">📝 Veille tenue à la main — dernière relecture le ${A.maj_fr ?? A.maj}.</div>
 
 ${cardGrid(A.kpis, kpiCard)}
 
@@ -53,7 +53,7 @@ ${cardGrid(A.kpis, kpiCard)}
 ```js
 const catSel = view(Inputs.checkbox(Object.keys(A.category_labels), {value: Object.keys(A.category_labels), format: (k) => A.category_labels[k], label: "Périmètre"}));
 const statSel = view(Inputs.checkbox(Object.keys(A.statut_labels), {value: Object.keys(A.statut_labels), format: (k) => A.statut_labels[k], label: "Statut"}));
-const pilSel = view(Inputs.checkbox(Object.keys(A.pilier_labels), {value: Object.keys(A.pilier_labels), format: (k) => A.pilier_labels[k], label: "Pilier impacté (non neutre)"}));
+const pilSel = view(Inputs.checkbox(Object.keys(A.pilier_labels), {value: Object.keys(A.pilier_labels), format: (k) => A.pilier_labels[k], label: "Agit sur"}));
 ```
 
 ```js
@@ -106,7 +106,7 @@ function timeline(items) {
     ],
   });
   return cadreGraphique({titre: "Échéancier des aides et dispositifs suivis",
-    sousTitre: `Entrées en vigueur, jalons et échéances ; ligne pointillée = dernière revue de la veille, le ${new Date(A.maj).toLocaleDateString("fr-FR")}`,
+    sousTitre: `Entrées en vigueur, jalons et échéances ; ligne pointillée = dernière relecture de la veille, le ${A.maj_fr ?? A.maj}`,
     source: "textes officiels (lois de finances, Journal officiel, Union européenne) ; veille du site",
     children: withCsvExport(plot, rows, "actualites-echeancier")});
 }

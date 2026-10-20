@@ -304,12 +304,15 @@ dernier mois sur la Synthèse</a>.</div>
   </div>
 </div>
 
-## Revenir
+<!-- L'ancre « revenir » est celle des liens du flux RSS (scripts/postbuild.mjs) : elle
+     est posée en dur pour survivre au libellé, qui s'appelait « Revenir ». -->
 
-Le site relit ses sources chaque lundi et ne republie que ce qui a changé : un nouveau
+## <span id="revenir"></span>Ce qui a changé récemment
+
+Chaque lundi, le site relit ses sources et ne republie que ce qui a changé : un nouveau
 mois de données, une prévision qui bouge, une pastille qui change de couleur. Les derniers
-changements sont datés ci-dessous — les mêmes que dans le flux RSS, à suivre dans un
-lecteur de flux ou à brancher sur un canal d'équipe.
+changements sont datés ci-dessous ; ce sont les mêmes que dans le flux RSS, à suivre dans
+un lecteur de flux ou à brancher sur un canal d'équipe.
 
 ```js
 // --- Le journal des changements --------------------------------------------------------

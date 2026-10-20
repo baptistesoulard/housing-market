@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {kpiCard, cardGrid, legendStatic, multiLine, filterYears, withCsvExport, cadreGraphique,
+import {kpiCard, cardGrid, legendStatic, multiLine, filterYears, withCsvExport, cadreGraphique, enParagraphes,
         nf0, nf1, fmtMonthFR, TIP, Plot} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {ui} from "./components/theme.js";
@@ -35,7 +35,7 @@ et c'est aussi l'unité dans laquelle un fabricant de matériaux mesure son marc
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${L.available ? L.how_to_read : "Données indisponibles."}</div>
+  <div class="hm-caption">${enParagraphes(L.available ? L.how_to_read : "Données indisponibles.")}</div>
 </details>
 
 ```js
@@ -88,9 +88,9 @@ function tableau(lignes, avecPart) {
 }
 ```
 
-## 🔑 Chiffres Clés
+## 🔑 Chiffres clés
 
-<div class="hm-caption">Chiffres nationaux au dernier mois disponible, indépendants de la période affichée. La tendance compare les douze derniers mois aux douze précédents ; le niveau se lit par rapport à la moyenne de la période de référence, nommée sur chaque carte.</div>
+<div class="hm-caption">Chiffres nationaux au dernier mois publié, quelle que soit la période affichée. La tendance compare les douze derniers mois aux douze précédents ; le niveau se lit par rapport à la moyenne de la période de référence, nommée sur chaque carte.</div>
 
 ```js
 if (L.available) display(cardGrid(L.kpis, kpiCard));

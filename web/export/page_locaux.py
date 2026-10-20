@@ -152,7 +152,7 @@ def build_locaux(con, frames: dict) -> dict:
 
     # --- Cartes de tête : régime 12 mois, niveau 2013-19 --------------------------------
     kpis = [_yoy_kpi(ana.calculate_kpis(total, col), ana.momentum_metrics(total, col),
-                     f"Surfaces de locaux {lib} (cumul 12 mois)", mois,
+                     f"Surfaces de locaux {lib}, sur 12 mois", mois,
                      regime=ana.RAW_TWELVE_MONTHS,
                      level=ana.level_context(total, col, ref=REF_LOCAUX), fmt=surface)
             for col, lib in MESURES.items()]
@@ -218,15 +218,16 @@ def build_locaux(con, frames: dict) -> dict:
         "regions": _regions(con),
         "how_to_read": (
             "Toutes les valeurs sont des surfaces de plancher, en m², cumulées sur 12 mois "
-            "glissants. La tendance compare les 12 derniers mois aux 12 précédents : d'un "
-            "mois à l'autre, ces séries sont trop bruitées pour qu'un rythme sur trois mois "
-            "veuille dire quelque chose, même corrigées des variations saisonnières. Le "
-            "niveau se lit par rapport à la moyenne 2013-2019, la série commençant en 2013. "
-            "Les quatre destinations s'additionnent au total ; les sous-destinations "
-            "(hôtels, industrie, entrepôts, bureaux) sont un zoom à l'intérieur de la leur. "
+            "glissants.\n\n"
+            "La tendance compare les 12 derniers mois aux 12 précédents : d'un mois à "
+            "l'autre, ces séries sont trop heurtées pour qu'un rythme sur trois mois veuille "
+            "dire quelque chose. Le niveau se lit par rapport à la moyenne 2013-2019, la série "
+            "commençant en 2013.\n\n"
+            "Les quatre destinations s'additionnent au total ; les sous-destinations (hôtels, "
+            "industrie, entrepôts, bureaux) sont un zoom à l'intérieur de la leur.\n\n"
             "Les m² commencés sont datés du jour où l'administration enregistre la "
-            "déclaration, pas du premier coup de pelle : ils arrivent avec retard, et les "
-            "m² autorisés sont le signal le plus frais."),
+            "déclaration, pas du premier coup de pelle : ils arrivent avec retard, et les m² "
+            "autorisés sont le signal le plus frais."),
         "last_month": mois,
         "ref_label": f"{REF_LOCAUX[0]}-{REF_LOCAUX[1][-2:]}",
         "mesures": [{"key": k, "label": v} for k, v in MESURES.items()],

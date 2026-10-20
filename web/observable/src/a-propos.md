@@ -45,10 +45,10 @@ incertitude, que le temps qui passe suffit à contredire.
 ## La méthode, en bref
 
 **La prévision est estimée en deux étages.** Le premier explique le taux de crédit
-immobilier par les taux de marché (OAT 10 ans, Euribor 3 mois). Le second explique les
-transactions de logements par ce taux de crédit, les intentions d'achat des ménages et le
-chômage — chacun pris avec un décalage, parce qu'une décision d'achat ne se lit dans les
-volumes que plusieurs mois plus tard.
+immobilier par le taux auquel l'État emprunte à dix ans (l'OAT). Le second explique les
+ventes de logements anciens par ce taux de crédit, les intentions d'achat des ménages et
+le chômage — chacun pris avec un décalage, parce qu'une décision d'achat ne se lit dans
+les volumes que plusieurs mois plus tard.
 
 **Les décalages sont cherchés sur la seule fenêtre d'entraînement.** C'est le point qui
 décide de la valeur du reste : chercher le meilleur décalage sur l'historique complet
@@ -56,15 +56,18 @@ reviendrait à choisir ses paramètres en regardant les réponses, puis à s'aut
 la même copie. La recherche en grille s'arrête donc à la date de coupure, et la période
 qui suit ne sert qu'à noter le résultat.
 
-**Le score est affiché, pas résumé.** La page Prévision montre le backtest hors
-échantillon, le R² du modèle et une bande d'incertitude autour de la projection. Un
-expander permet de déplacer un décalage à la main et de voir le R² bouger : la recherche
-automatique reste auditable.
+**Le score est affiché, pas résumé.** Chaque prévision est archivée le jour de sa
+publication, puis confrontée aux ventes réellement enregistrées sur la page « Le modèle
+face au réel », à côté d'une prévision naïve qui recopie le dernier chiffre connu — y
+compris aux échéances où le modèle fait moins bien qu'elle. La page « Méthode de la
+prévision » publie les équations, la bande d'incertitude et les idées testées puis
+écartées.
 
 **Ce qui est projeté est distingué de ce qui est observé.** Tant que les indicateurs
 décalés qui alimentent le modèle sont déjà publiés, la projection n'a besoin d'aucune
-hypothèse ; au-delà, elle prolonge ces indicateurs et le graphique le signale. Le panneau
-de scénarios sert à explorer l'après, pas à le prédire.
+hypothèse ; au-delà, elle prolonge ces indicateurs à leur dernier niveau connu et le
+graphique le signale. Les scénarios de la page Prévision servent à explorer l'après, pas à
+le prédire.
 
 ## D'où viennent les données
 
@@ -153,8 +156,8 @@ veut pas y vivre : Paris est négatif faute de logements, pas faute d'envie.
 emprunte, référence du coût du crédit à long terme, y compris immobilier.
 
 **Euribor** — le taux auquel les banques de la zone euro se prêtent entre elles à court
-terme (ici, à 3 mois). Avec l'OAT, il explique le taux de crédit immobilier dans le
-modèle de ce site.
+terme (ici, à 3 mois). Publié sur la page « Crédit & conjoncture » ; le modèle de ce site
+ne s'en sert pas : testé à côté de l'OAT, il dégradait la prévision.
 
 **BLS** — la Bank Lending Survey, une enquête trimestrielle de la BCE auprès des banques
 sur leurs conditions d'octroi de crédit et la demande qu'elles observent.
@@ -175,6 +178,10 @@ réellement passé. C'est le chiffre publié sur la page « Le modèle face au r
 **Backtest** — un test du modèle sur des données qu'il n'a pas vues à l'entraînement :
 il mesure sa valeur prédictive, pas seulement sa capacité à s'ajuster au passé.
 
+**Prévision naïve** — la prévision la plus simple possible : recopier le dernier chiffre
+connu. Le modèle n'a d'intérêt que là où il fait mieux qu'elle, et c'est à elle qu'il est
+comparé.
+
 **Base 100** — une convention d'indice où une période de référence (ici la moyenne de
 l'année 2015) vaut 100 : un niveau de 110 se lit « +10 % depuis 2015 ».
 
@@ -184,8 +191,8 @@ l'année 2015) vaut 100 : un niveau de 110 se lit « +10 % depuis 2015 ».
 ## Comment le site est fabriqué
 
 Le calcul est en Python ; l'agrégation des séries passe par une seule couche SQL (DuckDB
-sur des fichiers Parquet), pour que le tableau de bord, le rapport PDF et ce site affichent
-les mêmes chiffres par construction plutôt que par coïncidence. Chaque requête est comparée
+sur des fichiers Parquet), pour que toutes les pages affichent les mêmes chiffres par
+construction plutôt que par coïncidence. Chaque requête est comparée
 automatiquement à une implémentation de référence indépendante : si les deux divergent, les
 tests échouent.
 
@@ -199,12 +206,14 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
 
 ## Limites à connaître
 
-- **Les pages de marché sont nationales.** Aucune ventilation régionale : les séries
-  qu'elles retiennent sont celles de la France entière. Seuls le prix au m² et les ventes
-  (DVF) et le profil du recensement ont une déclinaison départementale, sur les
+- **Les pages de marché sont nationales.** Les séries qu'elles retiennent sont celles de
+  la France entière ; seule la construction non résidentielle détaille aussi les régions.
+  Le prix au m² et les ventes (DVF), les logements et les locaux autorisés et commencés
+  (SIT@DEL) et le profil du recensement ont une déclinaison départementale, sur les
   [101 pages dédiées](/departement/75) et sur la [carte des départements](/carte) — les
   taux, le chômage et les intentions d'achat qui alimentent la prévision restent
-  nationaux, faute d'équivalent local publié. Et cette carte **décrit sans classer** :
+  nationaux, faute d'équivalent local publié : il n'y a donc pas de prévision par
+  département. Et cette carte **décrit sans classer** :
   l'idée d'en tirer une carte des départements qui gagneront ou perdront a été mesurée
   sur douze ans de prix, puis
   [écartée](/methode-prevision#ce-qu-on-a-essaye-et-qui-ne-marche-pas) — la carte montre
@@ -215,11 +224,10 @@ réellement modifiés, et déclenche la reconstruction du site dans la foulée.
 - **Une prévision reste une prévision.** Elle est publiée avec sa bande d'incertitude
   précisément parce qu'elle se trompera ; elle ne constitue pas un conseil en
   investissement, ni une recommandation d'achat ou de vente.
-- **Le site n'est disponible qu'en français**, alors que le tableau de bord d'origine est
-  bilingue.
 - **Vos propres données ne quittent pas votre navigateur.** Le fichier de ventes que la
-  page Données permet de charger est lu localement : il n'est envoyé ni à l'API, ni à
-  l'hébergeur, et rien n'en est conservé.
+  page « Confronter vos ventes » permet de charger est lu localement : il n'est envoyé
+  nulle part, ni au site ni à son hébergeur, et n'est gardé sur votre appareil que si vous
+  le demandez.
 
 <!--
   SECTION AUTEUR — la seule du site qui parle d'une personne, et c'est délibéré : le sujet

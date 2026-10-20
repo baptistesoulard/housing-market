@@ -9,7 +9,7 @@ publication précédente, telle que commitée) et en tire des lignes datées :
 * la projection des ventes change d'horizon, de sens ou d'ampleur (au point près) ;
 * une pastille de la Synthèse change de couleur.
 
-Le journal (`changements.json`) est lu par l'accueil (section « Revenir ») et par
+Le journal (`changements.json`) est lu par l'accueil (section « Ce qui a changé récemment », ancre `#revenir`) et par
 `scripts/postbuild.mjs`, qui en écrit le flux RSS (`/flux.xml`). Il ne s'écrit que s'il
 y a quelque chose à dire : une semaine sans nouveauté ne produit ni ligne ni diff.
 

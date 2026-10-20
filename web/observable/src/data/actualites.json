@@ -1,9 +1,10 @@
 {
-  "generated_at": "2026-10-19T14:51:59+00:00",
+  "generated_at": "2026-10-20T13:25:17+00:00",
   "title": "📰 Actualités — aides & plans de relance logement",
   "caption": "Veille sur les grands dispositifs publics français et européens qui soutiennent (ou freinent) le marché du logement, avec pour chaque mesure : statut, jalons, montants et impact potentiel sur les trois piliers du modèle (neuf, ancien, rénovation).",
-  "how_to_read": "Cette page est une grille de lecture qualitative, pas une sortie de modèle. Chaque mesure est notée de ⬇⬇ à ⬆⬆ sur les trois piliers selon le sens et l'intensité de son effet attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé. Le statut distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion — seules les mesures en vigueur agissent déjà sur les séries des autres pages.",
+  "how_to_read": "Chaque mesure est notée de ⬇⬇ (frein fort) à ⬆⬆ (soutien fort) sur le neuf, l'ancien et la rénovation, selon le sens et l'intensité de l'effet attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé.\n\nLe statut distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion : seules les mesures en vigueur agissent déjà sur les chiffres des autres pages.",
   "maj": "2026-10-04",
+  "maj_fr": "4 octobre 2026",
   "kpis": [
     {
       "label": "Dispositifs suivis",
@@ -22,7 +23,7 @@
     },
     {
       "label": "Prochaine échéance",
-      "value": "11/2026",
+      "value": "novembre 2026",
       "subs": [
         "PTZ — Adoption visée du PLF 2027 à l'Assemblée"
       ]
@@ -45,7 +46,7 @@
       },
       "impact_detail": "Principal levier de solvabilisation des primo-accédants : soutien direct aux ventes de maisons neuves puis aux permis. Le volet « ancien avec travaux » alimente aussi les transactions et la rénovation (25 % de travaux imposés). Le PTZ « parentalité » élargit le public sans changer le mécanisme ; l'absence de prolongation écrite au-delà de 2027 reste le point à surveiller pour les programmes neufs lancés en 2027.",
       "echeance": {
-        "date": "17/11/2026",
+        "date": "17 novembre 2026",
         "label": "Adoption visée du PLF 2027 à l'Assemblée"
       },
       "jalons": [
@@ -101,7 +102,7 @@
       },
       "impact_detail": "Pour l'**ancien**, l'article 6 retire une partie des ventes contraintes de passoires que l'échéance F-2028 aurait provoquées, et garde des biens sur le marché locatif. Pour la **rénovation**, l'effet est ambigu : moins d'urgence réglementaire, mais des travaux contractualisés et étalés sur 3 à 5 ans plutôt qu'un retrait du marché. Pour le **neuf**, l'effet passe par le statut du bailleur privé (voir l'entrée dédiée).",
       "echeance": {
-        "date": "31/12/2026",
+        "date": "31 décembre 2026",
         "label": "Adoption définitive visée avant la fin de l'année"
       },
       "jalons": [
@@ -283,7 +284,7 @@
       },
       "impact_detail": "Relance de la demande d'investissement locatif → soutien aux réservations de logements neufs (ECLN), puis aux permis (transmission 12-24 mois). L'éligibilité de l'**ancien rénové** joue doublement : transactions, et travaux sur les biens achetés pour être loués.",
       "echeance": {
-        "date": "31/12/2028",
+        "date": "31 décembre 2028",
         "label": "Fin des acquisitions éligibles"
       },
       "jalons": [
@@ -325,7 +326,7 @@
       },
       "impact_detail": "Double lecture : la sortie de 850 000 logements du statut F/G **fluidifie les transactions dans l'ancien** (moins de décotes, moins de ventes contraintes) mais **réduit la pression réglementaire à rénover** ces biens — léger frein pour la rénovation, que l'assouplissement en discussion accentuerait.",
       "echeance": {
-        "date": "01/01/2028",
+        "date": "1er janvier 2028",
         "label": "Interdiction de louer les logements F (loi actuelle)"
       },
       "jalons": [
@@ -367,7 +368,7 @@
       },
       "impact_detail": "Soutien structurel à la rénovation sur cinq ans, financé par les vendeurs d'énergie et non par le budget de l'État : c'est le contrepoids au recentrage de MaPrimeRénov', et désormais le principal financement des travaux d'isolation et de menuiserie réalisés seuls.",
       "echeance": {
-        "date": "31/12/2030",
+        "date": "31 décembre 2030",
         "label": "Fin de la 6e période"
       },
       "jalons": [
@@ -409,7 +410,7 @@
       },
       "impact_detail": "Effet surtout **moyen-long terme** via le financement BEI du logement social et abordable et de la rénovation : renfort potentiel des ventes en bloc aux bailleurs sociaux (visibles dans les réservations ECLN de la page Logement neuf) et des programmes de rénovation du parc social.",
       "echeance": {
-        "date": "31/12/2029",
+        "date": "31 décembre 2029",
         "label": "Horizon des 375 Md€ mobilisés"
       },
       "jalons": [
@@ -456,7 +457,7 @@
       },
       "impact_detail": "L'échéance du 31/12/2026, désormais confirmée, devrait **concentrer des réservations neuves et des travaux au dernier trimestre 2026**, puis laisser un **contrecoup début 2027**.",
       "echeance": {
-        "date": "31/12/2026",
+        "date": "31 décembre 2026",
         "label": "Fin du dispositif, non prolongé au PLF 2027"
       },
       "jalons": [

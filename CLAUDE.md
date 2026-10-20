@@ -240,7 +240,8 @@ Détail et mesures : journal 06.
 - **L'accueil suit les questions du visiteur, pas le plan du site** : la réponse sous le
   titre (générée), le département, « Ce que vous pouvez faire ici » (des TÂCHES, avec des
   profils donnés « par exemple », jamais des cases où se ranger), le marché, la preuve,
-  « Revenir » (journal des changements, flux RSS, contact). Pas de catalogue des pages :
+  « Ce qui a changé récemment » (journal des changements, flux RSS, contact ; ancre
+  `#revenir`, visée par le flux). Pas de catalogue des pages :
   la barre latérale et le pied de page le portent déjà.
 - **Aucune requête vers un tiers.** La police (Source Sans 3) est servie par le site :
   `assets/fonts/`, copiée à `/fonts/` par `postbuild.mjs` (la préversion `dev` ne la sert

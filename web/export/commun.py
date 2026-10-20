@@ -70,11 +70,28 @@ def _manquant(v) -> bool:
     return v is None or (isinstance(v, float) and pd.isna(v))
 
 
+def trimestre_annee(date) -> str:
+    """« 2e trimestre 2026 » — et non « 2026-T2 », une notation de tableur."""
+    if pd.isna(date):
+        return "—"
+    d = pd.Timestamp(date)
+    q = (d.month - 1) // 3 + 1
+    return f"{'1er' if q == 1 else f'{q}e'} trimestre {d.year}"
+
+
 def mois_annee(date) -> str:
     if pd.isna(date):
         return "—"
     d = pd.Timestamp(date)
     return f"{MOIS_FR[d.month - 1]} {d.year}"
+
+
+def jour_mois_annee(date) -> str:
+    """« 4 octobre 2026 », « 1er septembre 2026 » — et non « 2026-10-04 » ni « 04/10/2026 »."""
+    if pd.isna(date):
+        return "—"
+    d = pd.Timestamp(date)
+    return f"{d.day}{'er' if d.day == 1 else ''} {MOIS_FR[d.month - 1]} {d.year}"
 
 
 def milliers(v) -> str:

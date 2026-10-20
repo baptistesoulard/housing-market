@@ -4,7 +4,7 @@ toc: true
 ---
 
 ```js
-import {legend, multiLine, filterYears, withCsvExport, cadreGraphique, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
+import {legend, multiLine, filterYears, withCsvExport, cadreGraphique, enParagraphes, nf0, nf1, fmtMonthFR, TIP} from "./components/hm.js";
 import {periodFilter} from "./components/period.js";
 import {series} from "./components/theme.js";
 const macro = await FileAttachment("./data/macro.json").json();
@@ -29,12 +29,14 @@ et <abbr title="Obligation d'État française à 10 ans, référence du coût du
 
 Les soldes d'opinion — confiance, intentions d'achat, demande de crédits — se lisent en
 écart à leur repère et non en niveau absolu : c'est leur mouvement qui informe, pas leur
-valeur. Ce sont ces séries qui alimentent la prévision de transactions publiée sur ce site.
+valeur. Trois de ces séries alimentent la prévision des ventes publiée sur ce site : le
+taux du crédit immobilier (lui-même expliqué par l'OAT), les intentions d'achat et le
+chômage. Les autres décrivent le contexte, sans entrer dans le modèle.
 
 
 <details class="hm-howto">
   <summary>ℹ️ Comment lire cette page</summary>
-  <div class="hm-caption">${macro.how_to_read}</div>
+  <div class="hm-caption">${enParagraphes(macro.how_to_read)}</div>
 </details>
 
 ```js

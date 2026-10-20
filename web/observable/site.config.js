@@ -334,7 +334,10 @@ const _fr = (v, d = 0) => Number(v).toLocaleString("fr-FR", {minimumFractionDigi
 const _evol = (v) => v == null ? null
   : Math.abs(v) < 0.05 ? "stable"
   : `${v > 0 ? "en hausse" : "en baisse"} de ${_fr(Math.abs(v), 1)} %`;
-const _trim = (iso) => `T${Math.floor(Number(iso.slice(5, 7)) / 3) + 1} ${iso.slice(0, 4)}`;
+// « 4e trimestre 2025 » plutôt que « T4 2025 » : le chapeau est la phrase qu'un lecteur
+// venu de Google lit en premier, pas une cellule de tableau.
+const _trim = (iso) => { const q = Math.floor(Number(iso.slice(5, 7)) / 3) + 1;
+  return `${q === 1 ? "1er" : q + "e"} trimestre ${iso.slice(0, 4)}`; };
 
 // La phrase du profil INSEE (recensement) : le repère qui porte le plus de sens pour un
 // lecteur — la part des résidences principales détenues par un ménage de 65 ans ou plus —

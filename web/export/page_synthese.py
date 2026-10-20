@@ -455,13 +455,13 @@ def _blocs(f: dict, pill_ancien: str) -> list:
 
     # ---------------------- Bloc 1 : aujourd'hui ----------------------------------
     cards_act = [
-        {"emoji": pastille(statut_seq(head["mises"]["value"])), "title": "Mises en chantier",
-         "value": abrege(k["mises"]["current_12m"]) + " /12 m",
+        {"emoji": pastille(statut_seq(head["mises"]["value"])), "title": "Mises en chantier, sur 12 mois",
+         "value": abrege(k["mises"]["current_12m"]),
          "sub": ligne_momentum(head["mises"], trend_12m=k["mises"]["yoy_12m_pct"],
                                exact=k["mises"]["current_12m"]),
          "level": ligne_niveau(niv["mises"])},
-        {"emoji": pastille(pill_ancien), "title": "Ventes de logements anciens",
-         "value": abrege(k["tx"]["current_12m"]) + " /12 m",
+        {"emoji": pastille(pill_ancien), "title": "Ventes de logements anciens, sur 12 mois",
+         "value": abrege(k["tx"]["current_12m"]),
          "sub": ligne_momentum(head["tx"], plateau=f["plateau_tx"], exact=k["tx"]["current_12m"]),
          "level": ligne_niveau(niv["tx"])},
     ]
@@ -482,8 +482,8 @@ def _blocs(f: dict, pill_ancien: str) -> list:
 
     # ------------ Bloc 2 : le carnet — ce qui est déjà autorisé (12-18 mois) ----------
     cards_carnet = [
-        {"emoji": pastille(statut_seq(head["permis"]["value"])), "title": "Permis de construire",
-         "value": abrege(k["permis"]["current_12m"]) + " /12 m",
+        {"emoji": pastille(statut_seq(head["permis"]["value"])), "title": "Permis de construire, sur 12 mois",
+         "value": abrege(k["permis"]["current_12m"]),
          "sub": ligne_momentum(head["permis"], trend_12m=k["permis"]["yoy_12m_pct"],
                                exact=k["permis"]["current_12m"]),
          "level": ligne_niveau(niv["permis"])},
@@ -508,8 +508,8 @@ def _blocs(f: dict, pill_ancien: str) -> list:
     if e:
         cards_carnet.append({
             "emoji": pastille(statut_seq(e["seq"])),
-            "title": "Réservations particuliers neuf (ECLN)",
-            "value": milliers(e["dernier"]) + " /trim.",
+            "title": "Logements neufs réservés par des particuliers, au trimestre",
+            "value": milliers(e["dernier"]),
             "sub": (pct(e["seq"]) + " vs le trimestre précédent · tendance 4 trimestres : "
                     + pct(e["tendance"])),
             "level": "la demande qui décide des mises en vente, donc des chantiers suivants"})
@@ -562,7 +562,7 @@ def _blocs(f: dict, pill_ancien: str) -> list:
     if f["prochain_jalon"]:
         j = f["prochain_jalon"]
         cards_persp.append({"emoji": "🗓️", "title": "Prochaine échéance aides",
-                            "value": pd.Timestamp(j["date"]).strftime("%m/%Y"),
+                            "value": mois_annee(j["date"]),
                             "sub": j["libelle"], "level": ""})
 
     return [
@@ -639,7 +639,7 @@ def _cartes_perspective(f: dict):
         }[verdict["direction"]]
         cards.append({
             "emoji": pastille(v_status),
-            "title": f"Ventes anciennes projetées ({verdict['target_month']})",
+            "title": f"Ventes anciennes sur 12 mois, prévues pour {verdict['target_month']}",
             "value": abrege(verdict["predicted"]),
             "sub": " · ".join(bits),
             "level": "prévision du modèle du site, ajustée sur les taux, les intentions "
@@ -650,7 +650,7 @@ def _cartes_perspective(f: dict):
     gap = (None if last_tx is None
            else (last_tx - BPCE_TX_ANCIEN_2026) / BPCE_TX_ANCIEN_2026 * 100.0)
     if gap is None:
-        cards.append({"emoji": "⚪", "title": "Ventes 12 m vs cible BPCE 2026",
+        cards.append({"emoji": "⚪", "title": "Ventes anciennes sur 12 mois, face à la cible BPCE 2026",
                       "value": "—", "sub": "", "level": ""})
         return cards, ""
     persp_verdict = ("marché au-dessus de la cible BPCE 2026" if gap > 3
@@ -658,7 +658,7 @@ def _cartes_perspective(f: dict):
                            else "marché sous la cible BPCE 2026"))
     cards.append({
         "emoji": pastille("up" if gap > 3 else ("flat" if gap > -3 else "down")),
-        "title": "Ventes 12 m vs cible BPCE 2026", "value": abrege(last_tx),
+        "title": "Ventes anciennes sur 12 mois, face à la cible BPCE 2026", "value": abrege(last_tx),
         "sub": pct(gap) + (" au-dessus de la cible BPCE 2026 (890 k)" if gap >= 0
                            else " sous la cible BPCE 2026 (890 k)"),
         "level": "modèle non calibrable à cette publication — repli sur la cible BPCE"})
@@ -666,30 +666,22 @@ def _cartes_perspective(f: dict):
 
 
 COMMENT_LIRE = (
-    "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. "
-    "Les blocs sont rangés par horizon et non par source : ce qui se consomme "
-    "aujourd'hui, puis ce qui est déjà autorisé pour les 12 à 18 prochains mois, "
-    "puis les conditions de crédit — qui sont les entrées du modèle, d'où leur "
-    "place juste avant sa projection. "
-    "Chaque carte porte deux horizons : le momentum court terme, puis la tendance "
-    "sur douze mois. La fenêtre du momentum dépend de la série. Les permis et les "
-    "mises en chantier (SIT@DEL) sont publiés corrigés des variations saisonnières "
-    "et des jours ouvrables : on les lit donc sur les 3 derniers mois comparés aux "
-    "3 précédents, sans repasser par une base vieille d'un an qui n'apporterait "
-    "que son propre bruit. Les ventes anciennes (IGEDD) sont reconstruites à "
-    "partir d'un cumul annuel, donc trop bruitées d'un mois sur l'autre : on les "
-    "lit sur douze mois, complétées par la date depuis laquelle le niveau ne bouge "
-    "plus. Le pilier « Neuf » ne moyenne pas ses deux étages : quand les permis "
-    "(l'amont, qui alimente les chantiers 12 à 18 mois plus tard) et les mises en "
-    "chantier (l'aval, qui consomme aujourd'hui) divergent, la pastille le dit. "
-    "Les cartes d'activité portent une seconde ligne : le NIVEAU, c'est-à-dire "
-    "l'écart à la moyenne d'une décennie de marché ordinaire (2010-2019, choisie "
-    "parce qu'elle exclut la bulle de crédit de 2004-2007 et l'après-2020) et le "
-    "rang de ce niveau dans toute l'histoire de la série. Une pente ne dit rien de "
-    "l'altitude : un marché qui progresse vite depuis un creux profond reste un "
-    "petit marché, et c'est le niveau qui dimensionne un outil industriel. Le bloc "
-    "« Où va le marché » publie la projection du modèle du site à six mois, avec sa "
-    "fourchette et la part de fois où le sens annoncé s'est avéré juste sur les "
-    "millésimes rétro-simulés — ses erreurs détaillées sont sur « Le modèle face au "
-    "réel ». Pour les taux et l'accessibilité, 🟢 signifie des conditions qui "
-    "s'améliorent (taux en baisse), pas une valeur qui monte. Chiffres nationaux.")
+    "🟢 vent favorable · 🟠 stable ou signaux partagés · 🔴 vent contraire. Pour les taux "
+    "et l'accessibilité, 🟢 signifie des conditions qui s'améliorent (taux en baisse), pas "
+    "une valeur qui monte.\n\n"
+    "Les blocs vont du présent vers l'avenir : ce qui se construit et se vend aujourd'hui, "
+    "puis ce qui est déjà autorisé, puis les conditions de crédit, qui pilotent la "
+    "prévision, et enfin la prévision elle-même.\n\n"
+    "Chaque carte porte deux lignes. La première dit si le rythme tourne : sur les 3 "
+    "derniers mois comparés aux 3 précédents pour les permis et les mises en chantier, "
+    "publiés corrigés des variations saisonnières ; sur douze mois pour les ventes "
+    "anciennes, trop heurtées d'un mois sur l'autre, avec la date depuis laquelle leur "
+    "niveau ne bouge plus. La seconde situe le NIVEAU : l'écart à la moyenne 2010-2019, une "
+    "décennie de marché ordinaire, sans la bulle de crédit de 2004-2007 ni l'après-2020. "
+    "Une pente ne dit rien de l'altitude : un marché qui progresse vite depuis un creux "
+    "profond reste un petit marché.\n\n"
+    "Le pilier « Neuf » ne fait pas la moyenne des permis et des chantiers : quand les deux "
+    "divergent, la pastille le dit.\n\n"
+    "Le bloc « Où va le marché » publie la prévision du site à six mois, avec sa fourchette "
+    "et la part de fois où le sens annoncé s'est avéré juste ; ses erreurs passées sont sur "
+    "« Le modèle face au réel ». Chiffres nationaux.")
