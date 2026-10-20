@@ -50,7 +50,7 @@ const encours = (A.current?.points ?? []).map((p) => ({...p, date: d(p.date)}));
 # 🎯 Le modèle face au réel — ce que nous annoncions
 
 Une prévision qui n'est jamais vérifiée n'est qu'une opinion. Chaque prévision de
-transactions publiée par ce site est enregistrée le jour de sa publication, avant que la
+ventes publiée par ce site est enregistrée le jour de sa publication, avant que la
 suite ne soit connue, puis confrontée aux chiffres réellement observés — y compris quand
 elle a eu tort.
 
@@ -112,7 +112,7 @@ const spotRows = spot === "Aucun" ? [] : faisceaux.filter((r) => r.vintage === s
 const dernierReel = reel[reel.length - 1];
 
 const legende = [
-  {name: "Réalisé (transactions, cumul 12 mois)", color: series.brick},
+  {name: "Ventes réelles (cumul 12 mois)", color: series.brick},
   {name: "Prévisions rétro-simulées, un trait par millésime", color: ui.greyLine},
   {name: `Prévision en cours (millésime ${A.current ? A.current.vintage_label : "—"})`,
    color: series.green, dash: true},
@@ -133,7 +133,7 @@ display(cadreGraphique({
   children: withCsvExport(Plot.plot({
   width, height: 420, marginLeft: 62, marginRight: 16,
   x: {label: null},
-  y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
+  y: {label: "Ventes sur 12 mois", grid: true, zero: false,
       tickFormat: (v) => nf0.format(v / 1000) + " k"},
   marks: [
     // Le nuage des trajectoires : trait fin, teinte neutre, très transparent. Il doit se
@@ -143,7 +143,7 @@ display(cadreGraphique({
     // porte — disparaît. Aucune trajectoire n'est retirée : le nuage doit rester complet,
     // c'est ce qui rend l'export CSV honnête.
     Plot.line(faisceaux, {x: "date", y: "value", z: "vintage",
-                          stroke: ui.greyLine, strokeWidth: 0.6, strokeOpacity: 0.14}),
+                          stroke: ui.greyLine, strokeWidth: 0.7, strokeOpacity: 0.22}),
     // La bande de la prévision en cours, sous les traits : c'est elle que les millésimes
     // à venir viendront juger.
     encours.length ? Plot.areaY(encours, {x: "date", y1: "lo", y2: "hi",
@@ -161,7 +161,7 @@ display(cadreGraphique({
     Plot.crosshairX(reel, {x: "date", y: "value", color: ui.subtle}),
     Plot.tip(reel, Plot.pointerX({
       x: "date", y: "value", ...TIP,
-      title: (r) => `${fmtMonthFR(r.date)}\nRéalisé : ${nf0.format(r.value)} transactions`,
+      title: (r) => `${fmtMonthFR(r.date)}\nVentes réelles : ${nf0.format(r.value)}`,
     })),
   ],
 }), faisceauExport, "previsions-passees-faisceau")}));
@@ -366,7 +366,7 @@ display(cardGrid([
 ```js
 display(A.current ? html`<div class="hm-meta">Prévision en cours, enregistrée le
   ${A.current.run_date} sur les données arrêtées à ${A.current.vintage_label} : de
-  <strong>${nf0.format(A.current.points[0].predicted)}</strong> transactions en
+  <strong>${nf0.format(A.current.points[0].predicted)}</strong> ventes en
   ${fmtMonthFR(new Date(A.current.points[0].date))} à
   <strong>${nf0.format(A.current.points[A.current.points.length - 1].predicted)}</strong> en
   ${fmtMonthFR(new Date(A.current.points[A.current.points.length - 1].date))}.</div>`
@@ -382,6 +382,13 @@ fondation pour séries temporelles, et la moyenne du modèle publié et de ce de
 troncature des données, même réalisé, mêmes plages d'horizon. Ce sont des rétro-simulations,
 pas des prévisions publiées à leur date.
 </div>
+
+```js
+// LA CONCLUSION D'ABORD : elle fermait la section, après un tableau de cinq méthodes et
+// deux graphiques. Un lecteur qui s'arrêtait au tableau repartait sans savoir ce qui est
+// publié, ni pourquoi.
+if (A.comparaison) display(html`<p class="hm-enbref">${A.comparaison.statut}</p>`);
+```
 
 ```js
 // La comparaison est un INSTANTANÉ DATÉ (data/comparaison_modeles.csv, produit par
@@ -482,12 +489,12 @@ if (CMP_TRAJ.length) {
     sousTitre: "Dix-huit mois de prévision à partir des seules données connues à cette date, face aux ventes réelles (cumul 12 mois)",
     dernier: reelFenetre, source: "IGEDD (ventes réalisées) ; méthodes rétro-simulées par le site",
     legende: legendStatic([
-      {name: "Réalisé (cumul 12 mois)", color: series.brick},
+      {name: "Ventes réelles (cumul 12 mois)", color: series.brick},
       ...actives.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: true}))]),
     children: withCsvExport(Plot.plot({
     width, height: 360, marginLeft: 62, marginRight: 16,
     x: {label: null},
-    y: {label: "Transactions (cumul 12 mois)", grid: true, zero: false,
+    y: {label: "Ventes sur 12 mois", grid: true, zero: false,
         tickFormat: (v) => nf0.format(v / 1000) + " k"},
     marks: [
       Plot.ruleX([d(t.vintage)], {stroke: ui.subtle, strokeDasharray: "3 3"}),
@@ -510,7 +517,7 @@ if (CMP_TRAJ.length) {
 // qu'exportée une seconde fois.
 if (CMP_TRAJ.length) {
   const h = CMP.horizon_courbe - 1;
-  const REEL_CMP = "Réalisé (cumul 12 mois)";
+  const REEL_CMP = "Ventes réelles (cumul 12 mois)";
   const meta = [{name: REEL_CMP, color: series.brick}].concat(
     CMP.methodes.map((m) => ({name: m.label, color: CMP_COULEURS[m.cle], dash: m.cle === "naive"})));
   display(multiLine({
@@ -520,7 +527,7 @@ if (CMP_TRAJ.length) {
         CMP.methodes.map((m) => ({date, value: t.valeurs[m.cle][h], series: m.label})));
     }),
     meta, active: new Set([REEL_CMP, ...cmpActifs]),
-    yLabel: "Transactions (cumul 12 mois)", valueFmt: (v) => nf0.format(v), lastLabels: false,
+    yLabel: "Ventes sur 12 mois", valueFmt: (v) => nf0.format(v), lastLabels: false,
     zero: false, yTickFormat: (v) => nf0.format(v / 1000) + " k",
     width, filename: "previsions-passees-comparaison-modeles",
     // Légende explicite : avec `active`, multiLine n'en pose aucune d'elle-même.
@@ -535,9 +542,8 @@ if (CMP_TRAJ.length) {
 ```
 
 ```js
-if (CMP) display(html`<div class="hm-note"><p>${CMP.statut}</p>
-  <p class="hm-caption">Le détail du protocole et toutes les variantes essayées sont sur
-  <a href="/methode-prevision">la méthode de la prévision</a>.</p></div>`);
+if (CMP) display(html`<p class="hm-caption">Le détail du protocole et toutes les variantes
+  essayées sont sur <a href="/methode-prevision">la méthode de la prévision</a>.</p>`);
 ```
 
 <div class="hm-shortcuts">

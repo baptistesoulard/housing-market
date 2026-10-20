@@ -38,6 +38,27 @@ const plusMois = (iso, n) => {
   return t;
 };
 const dernierMois = data.available ? data.health.transactions_last_month : null;
+// « 75 % » se dit « 3 fois sur 4 » quand la fraction simple tombe juste (à 2 points près).
+function frequence(p) {
+  for (const d of [2, 3, 4, 5, 10]) {
+    const n = Math.round(p * d);
+    if (n > 0 && n < d && Math.abs(n / d - p) <= 0.02) return `${n} fois sur ${d}`;
+  }
+  return `${nf0.format(p * 100)} % du temps`;
+}
+// Le régime de taux courant, comparé à la moyenne SUR LA MÊME BASE : le bon sens à
+// l'horizon du verdict, et l'erreur évitée tous horizons. Partagé par la phrase-clé de la
+// section 4 et par l'encadré du régime, pour qu'ils ne puissent pas se contredire.
+function lectureRegime() {
+  if (!RG || !V) return null;
+  const dir = RG.direction_horizon ?? RG.direction;
+  const dirTous = RG.direction_horizon_tous ?? V.reliability?.direction ?? null;
+  const ecarts = [dirTous == null ? 0 : (dir - dirTous) * 100,
+                  RG.skill_pct_tous == null ? 0 : RG.skill_pct - RG.skill_pct_tous];
+  return ecarts.every((e) => e >= 1) ? "plus favorable que d'habitude"
+    : ecarts.every((e) => e <= -1) ? "moins favorable que d'habitude"
+    : "proche de la moyenne";
+}
 ```
 
 ```js
@@ -184,6 +205,21 @@ else display(html`<div class="hm-api-offline">
 ```
 
 ## 1. Le taux de crédit : ce que l'OAT 10 ans détermine d'avance
+
+```js
+// EN BREF — chaque section de cette page ouvre sur la phrase à retenir ; le détail suit
+// pour qui veut vérifier. La page faisait près de dix écrans sans un seul résumé.
+if (R) {
+  const derObs = R.series.filter((r) => r.observed != null).at(-1);
+  const derProj = R.projected?.at(-1);
+  display(html`<p class="hm-enbref">En bref : le taux du crédit suit les taux d'emprunt de
+    l'État à 10 ans avec environ ${R.lag} mois de retard, et en répercute à peu près
+    ${nf0.format(R.coefficients.oat * 100)} %.${derProj && derObs ? html` Les taux déjà publiés
+    fixent donc le taux du crédit jusqu'en ${moisIso(derProj.date)} : environ
+    ${nf1.format(derProj.rate)} %, contre ${nf1.format(derObs.observed)} % en
+    ${moisIso(derObs.date)}.` : ""}</p>`);
+}
+```
 
 Le crédit immobilier français est à taux fixe, et les banques publient des barèmes qu'elles
 lissent : leur réaction aux taux de marché n'est pas immédiate. Le modèle **mesure ce délai**
@@ -424,13 +460,22 @@ if (R) display(html`<p>Sans délai, le modèle expliquait <b>83,8 %</b> de la va
   sur-prédit le niveau, parce que les banques ne répercutent jamais la totalité d'un
   mouvement — c'est pourquoi tout ce qui en découle, projection comme scénarios, est ancré
   sur le dernier taux réellement observé et n'en utilise que les <i>variations</i>. Enfin ce
-  modèle n'améliore <b>pas</b> la prévision de transactions : celle-ci utilise le taux de
+  modèle n'améliore <b>pas</b> la prévision des ventes : celle-ci utilise le taux de
   crédit observé, jamais le taux reconstitué.</p>`);
 ```
 
 </details>
 
 ## 2. Les ventes : l'équation, et sa mise à l'épreuve
+
+```js
+const delaiTxt = (k) => (k ? `${k} mois de retard` : "sans délai");
+if (T) display(html`<p class="hm-enbref">En bref : les ventes s'expliquent par le taux du
+  crédit (${delaiTxt(T.lags.kr)}), l'envie d'acheter des ménages (${delaiTxt(T.lags.ki)}) et
+  le chômage (${delaiTxt(T.lags.kc)}).${V && V.reliability ? html` Rejoué sur
+  ${nf0.format(V.reliability.n)} prévisions passées, le modèle annonce le bon sens du marché
+  ${frequence(V.reliability.direction)} à l'échéance de la page Prévision.` : ""}</p>`);
+```
 
 ```js
 // Le R² a QUITTÉ les cartes de tête, et ce n'est pas un détail de mise en page. Deux
@@ -629,6 +674,13 @@ if (T) display(html`<div class="hm-caption">
 ## 3. De l'équation à la projection
 
 ```js
+if (P && P.available) display(html`<p class="hm-enbref">En bref : pour projeter, chaque
+  indicateur est maintenu à son dernier chiffre publié, et la courbe est recalée sur le
+  niveau réel du marché. Après ${moisIso(plusMois(dernierMois, P.informative_months).toISOString())},
+  plus aucun indicateur ne bouge : la projection se fige.</p>`);
+```
+
+```js
 // CE QUE LA PROJECTION AJOUTE À L'ÉQUATION. Le modèle est une régression de NIVEAU : il
 // reconstruit la série depuis la macro sans jamais regarder où elle se trouve réellement,
 // et son erreur au premier mois projeté valait donc son résidu d'ajustement (~4,2 %) là
@@ -803,6 +855,14 @@ if (B) display(html`<div class="hm-note">
 ## 4. Jusqu'où se fier à la projection
 
 ```js
+if (P && P.available && data.crossover_horizon) display(html`<p class="hm-enbref">En bref : le
+  modèle fait mieux qu'une simple reconduction du dernier chiffre à partir de
+  ${moisIso(plusMois(dernierMois, data.crossover_horizon).toISOString())}.${lectureRegime()
+    ? html` Sa fiabilité dépend surtout des mouvements de taux : le régime actuel est
+      ${lectureRegime()} pour lui.` : ""}</p>`);
+```
+
+```js
 // LE RÉGIME COURANT — la ventilation qui manquait, et la seule qui porte sur AUJOURD'HUI.
 //
 // La page publie déjà sa performance par horizon et par épisode : deux descriptions du
@@ -823,11 +883,7 @@ if (RG && V) {
   const dir = RG.direction_horizon ?? RG.direction;
   const dirTous = RG.direction_horizon_tous ?? V.reliability?.direction ?? null;
   const skTous = RG.skill_pct_tous;
-  const ecarts = [dirTous == null ? 0 : (dir - dirTous) * 100,
-                  skTous == null ? 0 : RG.skill_pct - skTous];
-  const lecture = ecarts.every((e) => e >= 1) ? "plus favorable que d'habitude"
-    : ecarts.every((e) => e <= -1) ? "moins favorable que d'habitude"
-    : "proche de la moyenne";
+  const lecture = lectureRegime();
   const faible = RG.skill_pct !== null && RG.skill_pct < 5;
   display(html`<div class="hm-note">
     <p><strong>Dans quel régime cette prévision est-elle publiée ?</strong>
@@ -1004,7 +1060,7 @@ function zscore(rows) {
 ```js
 if (sens) display(multiLine({
   rows: [
-    ...histo(zscore(sens.transactions_series)).map((d) => ({...d, series: "Transactions (cumul 12 m)"})),
+    ...histo(zscore(sens.transactions_series)).map((d) => ({...d, series: "Ventes (cumul 12 mois)"})),
     // Rogné APRÈS le décalage : filtrer avant ferait glisser la fenêtre affichée du
     // nombre de mois du décalage, et les deux courbes ne couvriraient plus la même période.
     ...histo(zscore(sens.predictor_series).map((d) => {
@@ -1014,7 +1070,7 @@ if (sens) display(multiLine({
               series: `${predictorLabels[predictor]} décalé +${lagN} m`};
     }))
   ],
-  meta: [{name: "Transactions (cumul 12 m)", color: series.brick},
+  meta: [{name: "Ventes (cumul 12 mois)", color: series.brick},
          {name: `${predictorLabels[predictor]} décalé +${lagN} m`, color: series.blue, dash: true}],
   yLabel: "Écarts-types (séries centrées-réduites)", height: 320,
   yPct: true, lastLabels: false, valueFmt: (v) => nf1.format(v) + " σ", width,
@@ -1073,15 +1129,20 @@ const REF = data.refutations ?? [];
 ```
 
 ```js
+// Une liste DÉPLIABLE : sept cartes ouvertes faisaient plusieurs écrans de texte dense.
+// Fermées, elles se lisent comme un sommaire — l'idée et son verdict chiffré ; ouvertes,
+// elles donnent le raisonnement complet.
+if (REF.length) display(html`<p class="hm-caption">Cliquez une idée pour lire ce qu'elle
+  promettait et ce qu'on en a retenu.</p>`);
 if (REF.length) display(html`<div class="hm-refutations">
-  ${REF.map((r) => html`<article class="hm-refutation">
-    <h3>${r.titre}</h3>
+  ${REF.map((r) => html`<details class="hm-refutation">
+    <summary><span class="hm-refutation__titre">${r.titre}</span>
+      <span class="hm-refutation__mesure">${r.mesure}</span></summary>
     <p class="hm-refutation__idee"><b>L'idée.</b> ${r.idee}</p>
-    <p class="hm-refutation__mesure">${r.mesure}</p>
     <p class="hm-refutation__lecon"><b>Ce qu'on en retient.</b> ${r.lecon}</p>
     ${r.page ? html`<p class="hm-caption"><a href=${r.page.href}>${r.page.libelle}</a></p>` : ""}
     <p class="hm-caption">Mesuré le ${r.mesure_le}.</p>
-  </article>`)}
+  </details>`)}
 </div>`);
 ```
 

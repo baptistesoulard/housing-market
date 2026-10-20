@@ -138,9 +138,9 @@ _LETTRES = {2: "deux", 3: "trois", 4: "quatre", 5: "cinq"}
 
 def test_le_nombre_de_leviers_annonce_est_celui_de_la_page():
     page = (WEB / "src" / "previsions.md").read_text(encoding="utf-8")
-    # Curseurs ET boutons radio : l'envie d'acheter se règle en crans (radio) depuis le
+    # Curseurs ET listes : l'envie d'acheter se règle en crans (liste déroulante) depuis le
     # 2026-10-20 ; c'est toujours un levier.
-    n = len(re.findall(r"const \w+Input = base \? Inputs\.(?:range|radio)\(", page))
+    n = len(re.findall(r"const \w+Input = base \? Inputs\.(?:range|radio|select)\(", page))
     assert n in _LETTRES, f"{n} curseurs de scénario trouvés"
     for chemin in (INDEX, CONFIG):
         texte = chemin.read_text(encoding="utf-8")
