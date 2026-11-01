@@ -266,6 +266,7 @@ def test_postbuild_complete_le_html_et_ecrit_le_sitemap(heads, tmp_path):
     assert '<html lang="fr">' in html, "WCAG 3.1.1 : la langue du document doit être déclarée"
     assert 'class="hm-skip"' in html, "lien d'évitement absent"
     assert 'rel="icon"' in html
+    assert (tmp_path / "favicon-96.png").exists() and (tmp_path / "favicon.ico").exists()
 
     sitemap = (tmp_path / "sitemap.xml").read_text(encoding="utf-8")
     attendus = {SITE_URL + p for p in heads["indexable"]}
@@ -284,7 +285,8 @@ def test_postbuild_est_idempotent(tmp_path):
         subprocess.run([NODE, str(WEB / "scripts" / "postbuild.mjs"), str(tmp_path)],
                        capture_output=True, text=True, encoding="utf-8", timeout=120, check=True)
     html = page.read_text(encoding="utf-8")
-    assert html.count("hm-skip") == 1 and html.count('lang="fr"') == 1 and html.count('rel="icon"') == 1
+    # Deux favicons : le PNG (pour Google) et le SVG.
+    assert html.count("hm-skip") == 1 and html.count('lang="fr"') == 1 and html.count('rel="icon"') == 2
 
 
 # --- Le chapeau chiffré des pages départementales ---------------------------------------
@@ -376,6 +378,17 @@ def test_chaque_page_porte_la_garde_de_rechargement(heads):
         assert "sessionStorage" in head, f"{path} : la garde doit être à usage unique"
         assert "`" not in head.split("<script>", 1)[1].split("</script>", 1)[0], \
             "un accent grave dans le script refermerait le littéral gabarit"
+
+
+def test_les_favicons_matricielles_sont_transparentes():
+    """Google pixellise la favicon SVG sur un fond blanc opaque : le logo s'affichait dans
+    un carré blanc. Le PNG committé doit garder ses coins transparents (type couleur 6 =
+    RGBA dans l'entête IHDR) et une taille multiple de 48 px."""
+    for nom, cote, debut in (("favicon-96.png", 96, 0), ("favicon.ico", 48, 22)):
+        octets = (WEB / "assets" / nom).read_bytes()[debut:]
+        assert octets[:8] == b"\x89PNG\r\n\x1a\n", f"{nom} — régénérer avec `npm run og-image`"
+        assert int.from_bytes(octets[16:20], "big") == cote == int.from_bytes(octets[20:24], "big")
+        assert octets[25] == 6, f"{nom} n'a pas de canal alpha"
 
 
 def test_la_vignette_de_partage_existe(heads):

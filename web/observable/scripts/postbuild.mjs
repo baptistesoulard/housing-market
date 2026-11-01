@@ -56,7 +56,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // script sur un dist/ jetable plutôt que sur celui du dépôt.
 const DIST = process.argv[2] ? resolve(process.argv[2]) : join(ROOT, "dist");
 const SKIP = `<a class="hm-skip" href="#observablehq-main">Aller au contenu</a>`;
-const ICON = `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`;
+// Le PNG pour Google (qui aplatit le SVG sur du blanc, voir og-image.mjs), le SVG ensuite
+// pour les navigateurs, qui le préfèrent.
+const ICON = `<link rel="icon" href="/favicon-96.png" sizes="96x96" type="image/png">\n` +
+  `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`;
 // Le flux RSS, annoncé dans le <head> de chaque page (un lecteur de flux le découvre ainsi
 // depuis n'importe quelle adresse du site). Posé ici pour la même raison que la favicon :
 // le framework réécrirait le chemin d'un <link href> déclaré dans sa config.
@@ -89,6 +92,12 @@ for (const file of pages) {
 }
 
 await writeFile(join(DIST, "favicon.svg"), MARK_SVG + "\n");
+// Les favicons matricielles sont COMMITÉES, comme la vignette ci-dessous (og-image.mjs).
+for (const f of ["favicon-96.png", "favicon.ico"]) {
+  const src = join(ROOT, "assets", f);
+  if (existsSync(src)) await copyFile(src, join(DIST, f));
+  else console.warn(`postbuild: ATTENTION — ${src} est absent. Régénérer avec \`npm run og-image\`.`);
+}
 
 // La vignette de partage est un fichier COMMITÉ (scripts/og-image.mjs la régénère), pas
 // un artefact de build : Cloudflare Pages ne construit que du Node, et la produire

@@ -93,5 +93,32 @@ const page = await browser.newPage({viewport: {width, height}, deviceScaleFactor
 await page.setContent(html, {waitUntil: "load"});
 await mkdir(join(ROOT, "assets"), {recursive: true});
 await writeFile(OUT, await page.screenshot({type: "png"}));
-await browser.close();
 console.log(`og-image : ${OUT} (${width}×${height})`);
+
+// Les favicons matricielles, rendues ici pour la même raison (il faut un navigateur).
+// La favicon SVG suffit aux navigateurs, pas à Google : il la pixellise sur un fond BLANC
+// opaque, et le logo apparaissait dans un carré blanc au milieu de sa pastille grise
+// (constaté le 2026-11-01). Un PNG transparent, lui, est repris tel quel. Taille multiple
+// de 48 px, comme Google le demande ; favicon.ico (le même PNG à 48 px dans un conteneur
+// ICO) parce que des robots la cherchent à la racine sans lire le <head>.
+const icon = async (size) => {
+  const p = await browser.newPage({viewport: {width: size, height: size}, deviceScaleFactor: 1});
+  await p.setContent(`<!doctype html><style>*{margin:0}svg{display:block;width:${size}px;height:${size}px}</style>${MARK_SVG}`);
+  const png = await p.screenshot({type: "png", omitBackground: true});
+  await p.close();
+  return png;
+};
+await writeFile(join(ROOT, "assets", "favicon-96.png"), await icon(96));
+const png48 = await icon(48);
+// En-tête ICO (6 octets) + une entrée de répertoire (16 octets), puis le PNG brut.
+const ico = Buffer.alloc(22);
+ico.writeUInt16LE(1, 2);                 // type : icône
+ico.writeUInt16LE(1, 4);                 // une image
+ico.writeUInt8(48, 6); ico.writeUInt8(48, 7);
+ico.writeUInt16LE(1, 10);                // plans
+ico.writeUInt16LE(32, 12);               // bits par pixel
+ico.writeUInt32LE(png48.length, 14);
+ico.writeUInt32LE(22, 18);               // décalage de l'image
+await writeFile(join(ROOT, "assets", "favicon.ico"), Buffer.concat([ico, png48]));
+await browser.close();
+console.log("og-image : assets/favicon-96.png et assets/favicon.ico");
