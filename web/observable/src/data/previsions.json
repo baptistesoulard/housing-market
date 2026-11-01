@@ -10663,33 +10663,33 @@
     "tx_now": 951000.0
   },
   "verdict": {
-    "horizon": 8,
+    "horizon": 9,
     "months_ahead": 6,
-    "target_month": "avril 2027",
-    "target_date": "2027-04-01",
+    "target_month": "mai 2027",
+    "target_date": "2027-05-01",
     "direction": "baisse",
-    "change_pct": -5.1,
+    "change_pct": -5.6,
     "from_value": 951000,
-    "predicted": 902161,
-    "lo": 818927,
-    "hi": 979222,
-    "sentence": "D'ici avril 2027, dans six mois, le marché des logements anciens devrait reculer d'environ 5 %, en passant de 951 000 à 902 000 ventes sur douze mois.",
+    "predicted": 897606,
+    "lo": 815253,
+    "hi": 981550,
+    "sentence": "D'ici mai 2027, dans six mois, le marché des logements anciens devrait reculer d'environ 6 %, en passant de 951 000 à 898 000 ventes sur douze mois.",
     "reliability": {
-      "horizon": 8,
-      "direction": 0.75,
-      "mape": 6.14,
-      "naive_mape": 7.5,
-      "n": 204
+      "horizon": 9,
+      "direction": 0.744,
+      "mape": 6.29,
+      "naive_mape": 8.24,
+      "n": 203
     },
     "pourquoi": {
-      "horizon": 8,
+      "horizon": 9,
       "depuis": {
         "mois": "2026-08-01",
         "valeur": 951000.0
       },
       "cible": {
-        "mois": "2027-04-01",
-        "valeur": 902161.004
+        "mois": "2027-05-01",
+        "valeur": 897606.08
       },
       "entrees": [
         {
@@ -10701,11 +10701,11 @@
             "valeur": 2.99
           },
           "a": {
-            "mois": "2026-06-01",
-            "valeur": 3.16,
+            "mois": "2026-07-01",
+            "valeur": 3.18,
             "reporte": false
           },
-          "effet": -15578.4167
+          "effet": -17411.1716
         },
         {
           "cle": "ki",
@@ -10739,8 +10739,8 @@
         }
       ],
       "ecart_actuel": 38704.9169,
-      "ecart_restant": 5444.33745,
-      "resorption": -33260.5794
+      "ecart_restant": 2722.16872,
+      "resorption": -35982.7481
     },
     "trajet": [
       {
@@ -10790,6 +10790,12 @@
         "predicted": 902161,
         "lo": 818927,
         "hi": 979222
+      },
+      {
+        "date": "2027-05-01",
+        "predicted": 897606,
+        "lo": 815253,
+        "hi": 981550
       }
     ]
   },
@@ -10844,10 +10850,10 @@
     "naive_mape": 6.36,
     "skill_pct": 13.9,
     "direction": 0.687,
-    "direction_horizon": 0.667,
-    "horizon": 8,
+    "direction_horizon": 0.71,
+    "horizon": 9,
     "skill_pct_tous": 24.9,
-    "direction_horizon_tous": 0.75
+    "direction_horizon_tous": 0.744
   },
   "refutations": [
     {
