@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-10-20T13:25:16+00:00",
+  "generated_at": "2026-11-02T14:35:44+00:00",
   "title": "🏠 Marché de l'ancien — transactions, prix & accessibilité",
   "caption": "Le marché des logements anciens au niveau national : volumes de transactions (IGEDD), puis prix Notaires-INSEE et lecture de l'accessibilité.",
   "how_to_read": "Le cumul sur 12 mois reproduit la série publiée par l'IGEDD (« ventes sur un an ») ; les ventes mensuelles en sont reconstruites, utiles pour la dynamique récente mais plus heurtées.\n\nLa capacité d'emprunt est calculée à mensualité constante : elle baisse quand les taux montent, quels que soient les prix. L'indice d'accessibilité rapporte cette capacité aux prix : sous 100, un ménage type achète moins de surface qu'en 2015.",
   "kpi": {
     "label": "Ventes de logements anciens, sur 12 mois",
     "value": "951 000",
-    "delta": "+3,6 % sur un an",
+    "delta": "+2,7 % sur un an",
     "subs": [
-      "au plateau depuis novembre 2025 (9 mois)",
+      "au plateau depuis novembre 2025 (10 mois)",
       "16 % au-dessus de la normale 2010-19 · plus haut que 72 % des mois depuis 2001",
-      "Dernier mois (août 2026) : 59 500"
+      "Dernier mois (septembre 2026) : 60 500"
     ]
   },
   "main_series": {
@@ -2781,22 +2781,31 @@
         "date": "2026-07-01",
         "series": "Transactions Ancien",
         "key": "tx",
-        "raw": 80500.0,
-        "roll12": 957000.0,
-        "roll6": 496000.0,
-        "roll3": 244500.0
+        "raw": 82500.0,
+        "roll12": 959000.0,
+        "roll6": 498000.0,
+        "roll3": 246500.0
       },
       {
         "date": "2026-08-01",
         "series": "Transactions Ancien",
         "key": "tx",
-        "raw": 59500.0,
+        "raw": 60500.0,
+        "roll12": 954000.0,
+        "roll6": 457000.0,
+        "roll3": 237500.0
+      },
+      {
+        "date": "2026-09-01",
+        "series": "Transactions Ancien",
+        "key": "tx",
+        "raw": 60500.0,
         "roll12": 951000.0,
-        "roll6": 454000.0,
-        "roll3": 234500.0
+        "roll6": 448000.0,
+        "roll3": 203500.0
       }
     ],
-    "last_month": "août 2026",
+    "last_month": "septembre 2026",
     "source": "Source : IGEDD"
   },
   "monthly": {
@@ -4027,14 +4036,18 @@
       },
       {
         "date": "2026-07-01",
-        "tx": 80500.0
+        "tx": 82500.0
       },
       {
         "date": "2026-08-01",
-        "tx": 59500.0
+        "tx": 60500.0
+      },
+      {
+        "date": "2026-09-01",
+        "tx": 60500.0
       }
     ],
-    "last_month_num": 8
+    "last_month_num": 9
   },
   "prix": {
     "available": true,
@@ -11235,7 +11248,7 @@
     ]
   },
   "period": {
-    "min": 2000,
+    "min": 2001,
     "max": 2026
   }
 }

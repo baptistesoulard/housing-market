@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T13:25:17+00:00",
+  "generated_at": "2026-11-02T14:35:45+00:00",
   "title": "🎯 Prévisions passées — ce que nous annoncions",
   "caption": "Toutes les prévisions de transactions produites par le modèle, face à ce qui s'est réellement passé. Une prévision publiée sans son historique n'est qu'une opinion : cette page est là pour qu'on puisse nous prendre en défaut.",
   "how_to_read": "Deux natures de prévisions cohabitent ici et ne se valent pas.\n\nLes prévisions PUBLIÉES ont été enregistrées le jour même, avant que la suite ne soit connue — personne ne peut les retoucher.\n\nLes prévisions RÉTRO-SIMULÉES ont été recalculées après coup en tronquant les données au mois visé : elles montrent que la méthode tenait, pas que nous l'avions annoncé. Elles sont là parce qu'il aurait fallu attendre un an avant d'avoir quoi que ce soit à montrer, et elles restent séparées partout. Leur limite : les chiffres de ventes sont révisés, donc une rétro-simulation voit des données un peu meilleures que celles de l'époque.",
@@ -13,16 +13,16 @@
     },
     {
       "label": "Prévisions publiées en direct",
-      "value": "3",
+      "value": "4",
       "subs": [
         "l'archive commence à sa première publication"
       ]
     },
     {
       "label": "Erreur moyenne à 6 mois",
-      "value": "5,7 %",
+      "value": "5,6 %",
       "subs": [
-        "une prévision naïve se trompe de 5,9 %",
+        "une prévision naïve se trompe de 5,8 %",
         "horizon compté depuis le dernier mois de données publié"
       ]
     },
@@ -93,37 +93,46 @@
     },
     {
       "label": "2025-26 · reprise",
-      "n": 188,
+      "n": 204,
       "vintages": 18,
-      "mape": 4.06,
-      "naive_mape": 3.9,
-      "skill": -0.042,
-      "direction": 0.516
+      "mape": 4.03,
+      "naive_mape": 3.81,
+      "skill": -0.058,
+      "direction": 0.51
     }
   ],
   "kinds": {
     "archive": {
-      "n_rows": 126,
-      "n_vintages": 3,
-      "n_evaluated": 10,
+      "n_rows": 144,
+      "n_vintages": 4,
+      "n_evaluated": 17,
       "first_vintage": "2026-06-01",
-      "last_vintage": "2026-08-01",
+      "last_vintage": "2026-09-01",
       "horizons": [
         {
           "horizon": 1,
-          "n": 6,
-          "mape": 2.32,
-          "naive_mape": 0.38,
-          "skill": -5.044,
-          "direction": 0.333,
+          "n": 7,
+          "mape": 2.62,
+          "naive_mape": 0.36,
+          "skill": -6.316,
+          "direction": 0.286,
           "coverage": 1.0
         },
         {
           "horizon": 2,
+          "n": 6,
+          "mape": 3.25,
+          "naive_mape": 0.18,
+          "skill": -17.539,
+          "direction": 0.333,
+          "coverage": 1.0
+        },
+        {
+          "horizon": 3,
           "n": 4,
-          "mape": 2.95,
+          "mape": 3.86,
           "naive_mape": 0.32,
-          "skill": -8.336,
+          "skill": -11.249,
           "direction": 1.0,
           "coverage": 1.0
         }
@@ -647,13 +656,90 @@
               893051
             ]
           ]
+        },
+        {
+          "vintage": "2026-09-01",
+          "points": [
+            [
+              "2026-10-01",
+              910674
+            ],
+            [
+              "2026-11-01",
+              915502
+            ],
+            [
+              "2026-12-01",
+              895141
+            ],
+            [
+              "2027-01-01",
+              892414
+            ],
+            [
+              "2027-02-01",
+              888770
+            ],
+            [
+              "2027-03-01",
+              886959
+            ],
+            [
+              "2027-04-01",
+              878735
+            ],
+            [
+              "2027-05-01",
+              874175
+            ],
+            [
+              "2027-06-01",
+              869616
+            ],
+            [
+              "2027-07-01",
+              867805
+            ],
+            [
+              "2027-08-01",
+              867805
+            ],
+            [
+              "2027-09-01",
+              867805
+            ],
+            [
+              "2027-10-01",
+              867805
+            ],
+            [
+              "2027-11-01",
+              867805
+            ],
+            [
+              "2027-12-01",
+              867805
+            ],
+            [
+              "2028-01-01",
+              867805
+            ],
+            [
+              "2028-02-01",
+              867805
+            ],
+            [
+              "2028-03-01",
+              867805
+            ]
+          ]
         }
       ]
     },
     "retro": {
       "n_rows": 3780,
       "n_vintages": 210,
-      "n_evaluated": 3644,
+      "n_evaluated": 3660,
       "first_vintage": "2009-01-01",
       "last_vintage": "2026-06-01",
       "horizons": [
@@ -662,162 +748,162 @@
           "n": 210,
           "mape": 3.23,
           "naive_mape": 1.22,
-          "skill": -1.655,
+          "skill": -1.654,
           "direction": 0.548,
           "coverage": 0.8
         },
         {
           "horizon": 2,
           "n": 210,
-          "mape": 3.94,
+          "mape": 3.95,
           "naive_mape": 2.24,
-          "skill": -0.76,
-          "direction": 0.59,
+          "skill": -0.761,
+          "direction": 0.586,
           "coverage": 0.8
         },
         {
           "horizon": 3,
-          "n": 209,
-          "mape": 4.6,
-          "naive_mape": 3.23,
-          "skill": -0.425,
-          "direction": 0.589,
-          "coverage": 0.794
+          "n": 210,
+          "mape": 4.59,
+          "naive_mape": 3.22,
+          "skill": -0.427,
+          "direction": 0.59,
+          "coverage": 0.795
         },
         {
           "horizon": 4,
-          "n": 208,
-          "mape": 5.01,
-          "naive_mape": 4.16,
+          "n": 209,
+          "mape": 4.99,
+          "naive_mape": 4.14,
           "skill": -0.204,
-          "direction": 0.644,
-          "coverage": 0.793
+          "direction": 0.641,
+          "coverage": 0.794
         },
         {
           "horizon": 5,
-          "n": 207,
+          "n": 208,
           "mape": 5.32,
-          "naive_mape": 5.03,
-          "skill": -0.056,
-          "direction": 0.647,
-          "coverage": 0.797
+          "naive_mape": 5.01,
+          "skill": -0.062,
+          "direction": 0.654,
+          "coverage": 0.793
         },
         {
           "horizon": 6,
-          "n": 206,
-          "mape": 5.65,
-          "naive_mape": 5.88,
+          "n": 207,
+          "mape": 5.62,
+          "naive_mape": 5.85,
           "skill": 0.038,
+          "direction": 0.715,
+          "coverage": 0.797
+        },
+        {
+          "horizon": 7,
+          "n": 206,
+          "mape": 5.9,
+          "naive_mape": 6.7,
+          "skill": 0.119,
           "direction": 0.714,
           "coverage": 0.796
         },
         {
-          "horizon": 7,
-          "n": 205,
-          "mape": 5.92,
-          "naive_mape": 6.73,
-          "skill": 0.119,
-          "direction": 0.717,
-          "coverage": 0.795
-        },
-        {
           "horizon": 8,
-          "n": 204,
-          "mape": 6.14,
-          "naive_mape": 7.5,
-          "skill": 0.181,
-          "direction": 0.75,
-          "coverage": 0.794
+          "n": 205,
+          "mape": 6.13,
+          "naive_mape": 7.47,
+          "skill": 0.18,
+          "direction": 0.741,
+          "coverage": 0.79
         },
         {
           "horizon": 9,
-          "n": 203,
-          "mape": 6.29,
-          "naive_mape": 8.24,
-          "skill": 0.236,
-          "direction": 0.744,
-          "coverage": 0.803
+          "n": 204,
+          "mape": 6.28,
+          "naive_mape": 8.21,
+          "skill": 0.235,
+          "direction": 0.745,
+          "coverage": 0.804
         },
         {
           "horizon": 10,
+          "n": 203,
+          "mape": 6.32,
+          "naive_mape": 8.92,
+          "skill": 0.292,
+          "direction": 0.759,
+          "coverage": 0.803
+        },
+        {
+          "horizon": 11,
           "n": 202,
-          "mape": 6.31,
-          "naive_mape": 8.96,
-          "skill": 0.296,
+          "mape": 6.28,
+          "naive_mape": 9.57,
+          "skill": 0.344,
           "direction": 0.762,
           "coverage": 0.802
         },
         {
-          "horizon": 11,
+          "horizon": 12,
           "n": 201,
-          "mape": 6.3,
-          "naive_mape": 9.61,
-          "skill": 0.345,
-          "direction": 0.766,
+          "mape": 6.32,
+          "naive_mape": 10.17,
+          "skill": 0.378,
+          "direction": 0.791,
           "coverage": 0.801
         },
         {
-          "horizon": 12,
-          "n": 200,
-          "mape": 6.35,
-          "naive_mape": 10.2,
-          "skill": 0.378,
-          "direction": 0.79,
-          "coverage": 0.8
-        },
-        {
           "horizon": 13,
-          "n": 199,
-          "mape": 6.47,
-          "naive_mape": 10.75,
-          "skill": 0.398,
-          "direction": 0.804,
-          "coverage": 0.794
-        },
-        {
-          "horizon": 14,
-          "n": 198,
-          "mape": 6.66,
-          "naive_mape": 11.22,
-          "skill": 0.406,
-          "direction": 0.808,
-          "coverage": 0.798
-        },
-        {
-          "horizon": 15,
-          "n": 197,
-          "mape": 6.93,
-          "naive_mape": 11.67,
-          "skill": 0.406,
-          "direction": 0.817,
-          "coverage": 0.797
-        },
-        {
-          "horizon": 16,
-          "n": 196,
-          "mape": 7.2,
-          "naive_mape": 12.09,
-          "skill": 0.405,
-          "direction": 0.801,
-          "coverage": 0.796
-        },
-        {
-          "horizon": 17,
-          "n": 195,
-          "mape": 7.49,
-          "naive_mape": 12.51,
-          "skill": 0.401,
-          "direction": 0.821,
+          "n": 200,
+          "mape": 6.45,
+          "naive_mape": 10.72,
+          "skill": 0.399,
+          "direction": 0.805,
           "coverage": 0.795
         },
         {
+          "horizon": 14,
+          "n": 199,
+          "mape": 6.65,
+          "naive_mape": 11.18,
+          "skill": 0.405,
+          "direction": 0.804,
+          "coverage": 0.799
+        },
+        {
+          "horizon": 15,
+          "n": 198,
+          "mape": 6.92,
+          "naive_mape": 11.64,
+          "skill": 0.405,
+          "direction": 0.813,
+          "coverage": 0.798
+        },
+        {
+          "horizon": 16,
+          "n": 197,
+          "mape": 7.2,
+          "naive_mape": 12.06,
+          "skill": 0.403,
+          "direction": 0.797,
+          "coverage": 0.797
+        },
+        {
+          "horizon": 17,
+          "n": 196,
+          "mape": 7.48,
+          "naive_mape": 12.48,
+          "skill": 0.401,
+          "direction": 0.821,
+          "coverage": 0.796
+        },
+        {
           "horizon": 18,
-          "n": 194,
-          "mape": 7.77,
-          "naive_mape": 12.94,
-          "skill": 0.4,
-          "direction": 0.845,
-          "coverage": 0.794
+          "n": 195,
+          "mape": 7.74,
+          "naive_mape": 12.92,
+          "skill": 0.401,
+          "direction": 0.846,
+          "coverage": 0.795
         }
       ],
       "fans": [
@@ -16995,135 +17081,135 @@
     }
   },
   "current": {
-    "vintage": "2026-08-01",
-    "vintage_label": "août 2026",
-    "run_date": "2026-10-05",
-    "r2": 0.915,
+    "vintage": "2026-09-01",
+    "vintage_label": "septembre 2026",
+    "run_date": "2026-11-02",
+    "r2": 0.914,
     "points": [
       {
-        "date": "2026-09-01",
-        "predicted": 922840,
-        "lo": 871724,
-        "hi": 958479,
-        "assured": false
-      },
-      {
         "date": "2026-10-01",
-        "predicted": 907996,
-        "lo": 846067,
-        "hi": 952877,
+        "predicted": 910674,
+        "lo": 859558,
+        "hi": 946313,
         "assured": false
       },
       {
         "date": "2026-11-01",
-        "predicted": 925852,
-        "lo": 860250,
-        "hi": 976094,
+        "predicted": 915502,
+        "lo": 853573,
+        "hi": 960383,
         "assured": false
       },
       {
         "date": "2026-12-01",
-        "predicted": 918548,
-        "lo": 849969,
-        "hi": 969819,
+        "predicted": 895141,
+        "lo": 829539,
+        "hi": 945383,
         "assured": false
       },
       {
         "date": "2027-01-01",
-        "predicted": 915826,
-        "lo": 837282,
-        "hi": 971166,
+        "predicted": 892414,
+        "lo": 823835,
+        "hi": 943685,
         "assured": false
       },
       {
         "date": "2027-02-01",
-        "predicted": 912187,
-        "lo": 827672,
-        "hi": 974867,
+        "predicted": 888770,
+        "lo": 810226,
+        "hi": 944110,
         "assured": false
       },
       {
         "date": "2027-03-01",
-        "predicted": 910381,
-        "lo": 824245,
-        "hi": 980489,
+        "predicted": 886959,
+        "lo": 802444,
+        "hi": 949639,
         "assured": false
       },
       {
         "date": "2027-04-01",
-        "predicted": 902161,
-        "lo": 818927,
-        "hi": 979222,
+        "predicted": 878735,
+        "lo": 792598,
+        "hi": 948842,
         "assured": false
       },
       {
         "date": "2027-05-01",
-        "predicted": 897606,
-        "lo": 815253,
-        "hi": 981550,
+        "predicted": 874175,
+        "lo": 790941,
+        "hi": 951236,
         "assured": false
       },
       {
         "date": "2027-06-01",
-        "predicted": 893051,
-        "lo": 808339,
-        "hi": 976873,
+        "predicted": 869616,
+        "lo": 787263,
+        "hi": 953560,
         "assured": false
       },
       {
         "date": "2027-07-01",
-        "predicted": 893051,
-        "lo": 804060,
-        "hi": 969712,
+        "predicted": 867805,
+        "lo": 783093,
+        "hi": 951627,
         "assured": false
       },
       {
         "date": "2027-08-01",
-        "predicted": 893051,
-        "lo": 804771,
-        "hi": 970292,
+        "predicted": 867805,
+        "lo": 778813,
+        "hi": 944465,
         "assured": false
       },
       {
         "date": "2027-09-01",
-        "predicted": 893051,
-        "lo": 797292,
-        "hi": 974898,
+        "predicted": 867805,
+        "lo": 779524,
+        "hi": 945045,
         "assured": false
       },
       {
         "date": "2027-10-01",
-        "predicted": 893051,
-        "lo": 791372,
-        "hi": 985131,
+        "predicted": 867805,
+        "lo": 772045,
+        "hi": 949652,
         "assured": false
       },
       {
         "date": "2027-11-01",
-        "predicted": 893051,
-        "lo": 786800,
-        "hi": 991182,
+        "predicted": 867805,
+        "lo": 766125,
+        "hi": 959884,
         "assured": false
       },
       {
         "date": "2027-12-01",
-        "predicted": 893051,
-        "lo": 782464,
-        "hi": 991630,
+        "predicted": 867805,
+        "lo": 761554,
+        "hi": 965935,
         "assured": false
       },
       {
         "date": "2028-01-01",
-        "predicted": 893051,
-        "lo": 780812,
-        "hi": 994291,
+        "predicted": 867805,
+        "lo": 757218,
+        "hi": 966383,
         "assured": false
       },
       {
         "date": "2028-02-01",
-        "predicted": 893051,
-        "lo": 775128,
-        "hi": 1002988,
+        "predicted": 867805,
+        "lo": 755566,
+        "hi": 969045,
+        "assured": false
+      },
+      {
+        "date": "2028-03-01",
+        "predicted": 867805,
+        "lo": 749881,
+        "hi": 977741,
         "assured": false
       }
     ]
@@ -17971,10 +18057,14 @@
     },
     {
       "date": "2026-07-01",
-      "value": 957000
+      "value": 959000
     },
     {
       "date": "2026-08-01",
+      "value": 954000
+    },
+    {
+      "date": "2026-09-01",
       "value": 951000
     }
   ],
@@ -17999,17 +18089,17 @@
           },
           {
             "bloc": "4-6",
-            "mape": 5.02,
+            "mape": 5.0,
             "skill_pct": 0.0
           },
           {
             "bloc": "7-12",
-            "mape": 8.54,
+            "mape": 8.51,
             "skill_pct": 0.0
           },
           {
             "bloc": "13-18",
-            "mape": 11.86,
+            "mape": 11.83,
             "skill_pct": 0.0
           }
         ],
@@ -18022,26 +18112,26 @@
         "blocs": [
           {
             "bloc": "1-3",
-            "mape": 3.93,
-            "skill_pct": -76.1
+            "mape": 3.92,
+            "skill_pct": -76.3
           },
           {
             "bloc": "4-6",
-            "mape": 5.33,
-            "skill_pct": -6.0
+            "mape": 5.31,
+            "skill_pct": -6.2
           },
           {
             "bloc": "7-12",
-            "mape": 6.22,
-            "skill_pct": 27.2
+            "mape": 6.2,
+            "skill_pct": 27.1
           },
           {
             "bloc": "13-18",
-            "mape": 7.09,
-            "skill_pct": 40.3
+            "mape": 7.07,
+            "skill_pct": 40.2
           }
         ],
-        "direction": 0.729
+        "direction": 0.728
       },
       {
         "cle": "holt_winters",
@@ -18051,22 +18141,22 @@
           {
             "bloc": "1-3",
             "mape": 1.36,
-            "skill_pct": 39.0
+            "skill_pct": 38.9
           },
           {
             "bloc": "4-6",
-            "mape": 3.36,
-            "skill_pct": 33.2
+            "mape": 3.35,
+            "skill_pct": 33.1
           },
           {
             "bloc": "7-12",
-            "mape": 7.05,
-            "skill_pct": 17.5
+            "mape": 7.02,
+            "skill_pct": 17.4
           },
           {
             "bloc": "13-18",
-            "mape": 11.48,
-            "skill_pct": 3.2
+            "mape": 11.43,
+            "skill_pct": 3.4
           }
         ],
         "direction": 0.704
@@ -18079,25 +18169,25 @@
           {
             "bloc": "1-3",
             "mape": 1.17,
-            "skill_pct": 47.6
+            "skill_pct": 47.5
           },
           {
             "bloc": "4-6",
-            "mape": 2.58,
+            "mape": 2.57,
             "skill_pct": 48.6
           },
           {
             "bloc": "7-12",
-            "mape": 5.16,
-            "skill_pct": 39.6
+            "mape": 5.14,
+            "skill_pct": 39.5
           },
           {
             "bloc": "13-18",
-            "mape": 8.15,
+            "mape": 8.12,
             "skill_pct": 31.3
           }
         ],
-        "direction": 0.802
+        "direction": 0.801
       },
       {
         "cle": "combinaison",
@@ -18107,25 +18197,25 @@
           {
             "bloc": "1-3",
             "mape": 2.13,
-            "skill_pct": 4.6
+            "skill_pct": 4.5
           },
           {
             "bloc": "4-6",
-            "mape": 3.02,
+            "mape": 3.01,
             "skill_pct": 39.8
           },
           {
             "bloc": "7-12",
-            "mape": 4.43,
-            "skill_pct": 48.2
+            "mape": 4.41,
+            "skill_pct": 48.1
           },
           {
             "bloc": "13-18",
-            "mape": 6.84,
+            "mape": 6.82,
             "skill_pct": 42.3
           }
         ],
-        "direction": 0.796
+        "direction": 0.795
       }
     ],
     "trajectoires": [
@@ -19182,7 +19272,7 @@
     ]
   },
   "period": {
-    "min": 2000,
+    "min": 2001,
     "max": 2026
   }
 }
