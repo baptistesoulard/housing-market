@@ -50,7 +50,7 @@ const data = await FileAttachment("./data/synthese.json").json();
 <div class="hm-hero-grille">
 <!-- hm:reponse:début — régénéré par web/export/accueil.py -->
 <div class="hm-reponse">
-<p class="hm-reponse-chiffre"><span class="n">−8 %</span> <span class="l"><strong>de ventes de logements anciens d'ici mai 2027</strong> <span class="s">dans six mois : de 951 000 à 874 000 ventes sur douze mois, selon le modèle du site.</span></span></p>
+<p class="hm-reponse-chiffre"><span class="n">−7 %</span> <span class="l"><strong>de ventes de logements anciens d'ici mai 2027</strong> <span class="s">dans six mois : de 951 000 à 884 000 ventes sur douze mois, selon le modèle du site.</span></span></p>
 <p>Aujourd'hui, les ventes de logements anciens plafonnent depuis 10 mois, les permis de construire et les mises en chantier repartent et le crédit renchérit (3,19 %, +0,2 pt sur un an).</p>
 <p class="hm-reponse-maj">Dernier mois publié par les sources : septembre 2026 — elles paraissent avec quelques mois de décalage.</p>
 </div>

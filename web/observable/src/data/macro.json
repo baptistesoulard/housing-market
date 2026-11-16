@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T14:35:44+00:00",
+  "generated_at": "2026-11-16T14:36:59+00:00",
   "title": "🏦 Contexte Macroéconomique et Financement",
   "caption": "Indicateurs de contexte macroéconomique et de conditions de financement : confiance des ménages (INSEE), taux du crédit habitat (BdF/BCE), Euribor 3 mois et OAT 10 ans (BCE), intentions d'achat de logement et taux de chômage BIT (INSEE).",
   "how_to_read": "Ces indicateurs expliquent le marché plus qu'ils ne le décrivent, et la plupart le précèdent.\n\nLes soldes d'opinion (confiance, intentions d'achat, rénovation, demande de crédits) se lisent en écart à leur repère — le zéro ou la moyenne de longue période — et non en niveau absolu : c'est leur mouvement qui informe.\n\nLa demande de crédits (enquête BLS) paraît avant les chiffres de ventes. Testée comme indicateur avancé, elle n'a pourtant pas amélioré la prévision du site : la mesure est publiée sur la page Méthode de la prévision.\n\nDans les volumes de crédit, les renégociations sont isolées : elles ne déclenchent ni vente ni chantier.",
@@ -5766,6 +5766,11 @@
         "date": "2026-09-01",
         "series": "OAT 10 ans",
         "value": 4.44
+      },
+      {
+        "date": "2026-10-01",
+        "series": "OAT 10 ans",
+        "value": 4.89
       }
     ],
     "meta": [
@@ -7316,7 +7321,7 @@
     },
     {
       "date": "2019-01-01",
-      "value": 8.8
+      "value": 8.7
     },
     {
       "date": "2019-04-01",
@@ -7433,6 +7438,10 @@
     {
       "date": "2026-04-01",
       "value": 8.3
+    },
+    {
+      "date": "2026-07-01",
+      "value": 8.2
     }
   ],
   "credit": {
