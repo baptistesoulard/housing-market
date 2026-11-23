@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T14:35:44+00:00",
+  "generated_at": "2026-11-23T17:13:29+00:00",
   "title": "📰 Actualités — aides & plans de relance logement",
   "caption": "Veille sur les grands dispositifs publics français et européens qui soutiennent (ou freinent) le marché du logement, avec pour chaque mesure : statut, jalons, montants et impact potentiel sur les trois piliers du modèle (neuf, ancien, rénovation).",
   "how_to_read": "Chaque mesure est notée de ⬇⬇ (frein fort) à ⬆⬆ (soutien fort) sur le neuf, l'ancien et la rénovation, selon le sens et l'intensité de l'effet attendu : c'est une appréciation d'auteur, révisable, pas un résultat calculé.\n\nLe statut distingue ce qui est en vigueur de ce qui est seulement adopté ou en discussion : seules les mesures en vigueur agissent déjà sur les chiffres des autres pages.",
@@ -23,9 +23,9 @@
     },
     {
       "label": "Prochaine échéance",
-      "value": "novembre 2026",
+      "value": "décembre 2026",
       "subs": [
-        "PTZ — Adoption visée du PLF 2027 à l'Assemblée"
+        "Loi Relance logement — Adoption définitive visée avant la fin de l'année"
       ]
     }
   ],
